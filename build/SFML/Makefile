@@ -57,6 +57,18 @@ PROJECTS = \
   demos/bidir \
   demos/multiTarget \
   demos/rc \
+  demos/astar-map \
+  demos/suboptimal-map \
+  demos/STP \
+  demos/transit-routing-maps \
+  demos/gridabstraction \
+  demos/JPS \
+  demos/bb \
+  demos/reach \
+  demos/dh-place \
+  demos/bidirnecessary \
+  demos/GMX \
+  demos/inconsistency-graph \
   papers/IBEX \
   papers/DWA \
   papers/BGS \
@@ -116,8 +128,25 @@ PROJECTS_ALL = \
   demos/DFID \
   demos/dijkstra \
   demos/astar \
-  demos/bidir \
   demos/idastar \
+  demos/fastmap \
+  demos/pancake \
+  demos/racetrack \
+  demos/bidir \
+  demos/multiTarget \
+  demos/rc \
+  demos/astar-map \
+  demos/suboptimal-map \
+  demos/STP \
+  demos/transit-routing-maps \
+  demos/gridabstraction \
+  demos/JPS \
+  demos/bb \
+  demos/reach \
+  demos/dh-place \
+  demos/bidirnecessary \
+  demos/GMX \
+  demos/inconsistency-graph \
   apps/snakebird \
   papers/DSDWA \
 #  papers/IBEX \
