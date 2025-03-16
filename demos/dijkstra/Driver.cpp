@@ -38,15 +38,38 @@ GraphEnvironment *ge;
 graphState from=-1, to=-1;
 Graphics::point currLoc;
 
-TextOverlay te(35);
+TextOverlay te(30);
 
 void ShowSearchInfo();
 static char name[2] = "a";
 
+std::vector<int> buttons;
+typedef enum : int {
+	kLoadGraphButton = 0,
+	kClearGraphButton = 1,
+	kAddNodesButton = 2,
+	kAddEdgesButton = 3,
+	kMoveNodesButton = 4,
+	kFindPathButton = 5,
+	kEdgeCost1Button = 6,
+	kEdgeCost2Button = 7,
+	kEdgeCost3Button = 8,
+	kEdgeCost4Button = 9,
+	kEdgeCost5Button = 10,
+	kEdgeCost6Button = 11,
+	kEdgeCost7Button = 12,
+	kEdgeCost8Button = 13,
+	kEdgeCost9Button = 14,
+	kStepSearchButton = 15,
+} buttonID;
+void ActivateModeButton(buttonID bId);
+void ActivateEdgeCostButton(buttonID bId);
+void SetupGUI(int windowID);
+
 int main(int argc, char* argv[])
 {
 	InstallHandlers();
-	RunHOGGUI(argc, argv, 1600, 800);
+	RunHOGGUI(argc, argv, 1500, 1000);
 	return 0;
 }
 
@@ -91,11 +114,15 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 	{
 		printf("Window %ld created\n", windowID);
 		//glClearColor(0.99, 0.99, 0.99, 1.0);
-		ReinitViewports(windowID, {-1, -1, 0.0, 1}, kScaleToFill);
-		AddViewport(windowID, {0, -1, 1, 1}, kScaleToFill);
 //		ReinitViewports(windowID, {-1, -1, 1, 0}, kScaleToFill);
 //		AddViewport(windowID, {-1, 0, 1, 1}, kScaleToFill);
 
+		// Left part of screen
+		ReinitViewports(windowID, {-1, -1, 0.33f, 1}, kScaleToSquare);
+		// Split right part into two
+		AddViewport(windowID, {0.33f, -1, 1, 0}, kScaleToSquare);  // Buttons
+		AddViewport(windowID, {0.33f, 0, 1, 1}, kScaleToSquare);  // Text overlay
+		SetupGUI(windowID);
 		
 		InstallFrameHandler(MyFrameHandler, windowID, 0);
 //		SetNumPorts(windowID, 2);
@@ -114,49 +141,186 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 
 int frameCnt = 0;
 
+void DrawSim(Graphics::Display &display)
+{
+	display.FillRect({-1.0, -1.0, 1.0, 1}, Colors::white);
+	if (ge == 0 || g == 0)
+		return;
+	// Draw edges, costs/labels
+	ge->SetColor(Colors::gray);
+	ge->Draw(display);
+	if (from != -1 && to != -1)
+	{
+		ge->SetColor(0.5, 0, 0);
+		auto loc1 = ge->GetLocation(from);
+		ge->DrawLine(display, loc1.x, loc1.y, currLoc.x, currLoc.y, 2);
+	}
+	
+	// Draw nodes
+	ge->SetColor(Colors::white);
+	for (int x = 0; x < g->GetNumNodes(); x++)
+		ge->Draw(display, x);
+	
+	// Draw search state
+	if (running)
+	{
+		astar.Draw(display);
+	}
+
+	// Draw path
+	if (path.size() > 0)
+	{
+		ge->SetColor(0, 0.5, 0);
+		for (size_t x = 1; x < path.size(); x++)
+		{
+			ge->DrawLine(display, path[x-1], path[x], 6);
+		}
+	}
+}
+
+void SetupGUI(int windowID)
+{
+	const float borderPaddingX = 0.1f;
+	const float borderPaddingY = 0.35f;
+	const float verticalSep = 0.25f;
+	const float buttonHeight = 0.1f;
+
+	// General graph management
+	float horizontalSep = 0.3f;
+	float buttonWidth = 0.75f;
+	float top = -1+borderPaddingY;
+	float bot = top+buttonHeight;
+	Graphics::roundedRect graphButton({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	Graphics::rect offsetRect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	int b = CreateButton(windowID, 1, graphButton, "Load Graph", 'a', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	graphButton.r += offsetRect;
+	b = CreateButton(windowID, 1, graphButton, "Clear Graph", '|', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	// Mode for modifying graph
+	horizontalSep = 0.15f;
+	buttonWidth = 0.5f;
+	top = bot+verticalSep;
+	bot = top+buttonHeight;
+	Graphics::roundedRect modeButton({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	b = CreateButton(windowID, 1, modeButton, "Add Nodes", 'n', 0.01f, Colors::black, Colors::black,
+					Colors::yellow, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	modeButton.r += offsetRect;
+	b = CreateButton(windowID, 1, modeButton, "Add Edges", 'e', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	modeButton.r += offsetRect;
+	b = CreateButton(windowID, 1, modeButton, "Move Nodes", 'm', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	// Finding path
+	top = bot+0.1f;
+	bot = top+buttonHeight;
+	Graphics::roundedRect pathButton({-1+0.75f, top, -1+0.75f+buttonWidth, bot}, 0.01f);
+	b = CreateButton(windowID, 1, pathButton, "Find Path", 'f', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	// Edge cost
+	horizontalSep = 0.06f;
+	buttonWidth = 0.15f;
+	top = bot+verticalSep;
+	bot = top+buttonHeight;
+	Graphics::roundedRect edgeButton({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	b = CreateButton(windowID, 1, edgeButton, "1", '1', 0.01f, Colors::black, Colors::black,
+					Colors::yellow, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	edgeButton.r += offsetRect;
+	b = CreateButton(windowID, 1, edgeButton, "2", '2', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	edgeButton.r += offsetRect;
+	b = CreateButton(windowID, 1, edgeButton, "3", '3', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	edgeButton.r += offsetRect;
+	b = CreateButton(windowID, 1, edgeButton, "4", '4', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	edgeButton.r += offsetRect;
+	b = CreateButton(windowID, 1, edgeButton, "5", '5', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	edgeButton.r += offsetRect;
+	b = CreateButton(windowID, 1, edgeButton, "6", '6', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	edgeButton.r += offsetRect;
+	b = CreateButton(windowID, 1, edgeButton, "7", '7', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	edgeButton.r += offsetRect;
+	b = CreateButton(windowID, 1, edgeButton, "8", '8', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	edgeButton.r += offsetRect;
+	b = CreateButton(windowID, 1, edgeButton, "9", '9', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	// Simulating search
+	buttonWidth = 0.75f;
+	top = bot+verticalSep;
+	bot = top+buttonHeight;
+	Graphics::roundedRect simulationButton({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	b = CreateButton(windowID, 1, simulationButton, "Step Search", 'o', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+}
+
+void DrawGUI(Graphics::Display &display)
+{
+	const float e = 0.03f;
+	display.FillRect({-1, -1, 1, 1}, Colors::darkgray);
+	display.FillRect({-1+e, -1+e, 1-e, 1-e}, Colors::lightgray);
+	display.DrawText("Graph: ", {-1+0.1f, -0.8f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+	display.DrawText("Mode: ", {-1+0.1f, -0.45f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+	display.DrawText("Edge Cost: ", {-1+0.1f, 0.1f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+	display.DrawText("Search: ", {-1+0.1f, 0.45f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+}
+
+void ActivateModeButton(buttonID bId)
+{
+	SetButtonFillColor(buttons[kAddNodesButton], bId == kAddNodesButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kAddEdgesButton], bId == kAddEdgesButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kMoveNodesButton], bId == kMoveNodesButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kFindPathButton], bId == kFindPathButton ? Colors::yellow : Colors::white);
+}
+
+void ActivateEdgeCostButton(buttonID bId)
+{
+	SetButtonFillColor(buttons[kEdgeCost1Button], bId == kEdgeCost1Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kEdgeCost2Button], bId == kEdgeCost2Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kEdgeCost3Button], bId == kEdgeCost3Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kEdgeCost4Button], bId == kEdgeCost4Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kEdgeCost5Button], bId == kEdgeCost5Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kEdgeCost6Button], bId == kEdgeCost6Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kEdgeCost7Button], bId == kEdgeCost7Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kEdgeCost8Button], bId == kEdgeCost8Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kEdgeCost9Button], bId == kEdgeCost9Button ? Colors::yellow : Colors::white);
+}
+
 void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 {
 	Graphics::Display &display = getCurrentContext()->display;
 	if (viewport == 0)
-	{
-		display.FillRect({-1.0, -1.0, 1.0, 1}, Colors::white);
-		if (ge == 0 || g == 0)
-			return;
-		// Draw edges, costs/labels
-		ge->SetColor(Colors::gray);
-		ge->Draw(display);
-		if (from != -1 && to != -1)
-		{
-			ge->SetColor(0.5, 0, 0);
-			auto loc1 = ge->GetLocation(from);
-			ge->DrawLine(display, loc1.x, loc1.y, currLoc.x, currLoc.y, 2);
-		}
-		
-		// Draw nodes
-		ge->SetColor(Colors::white);
-		for (int x = 0; x < g->GetNumNodes(); x++)
-			ge->Draw(display, x);
-		
-		// Draw search state
-		if (running)
-		{
-			astar.Draw(display);
-		}
-
-		// Draw path
-		if (path.size() > 0)
-		{
-			ge->SetColor(0, 0.5, 0);
-			for (size_t x = 1; x < path.size(); x++)
-			{
-				ge->DrawLine(display, path[x-1], path[x], 6);
-			}
-		}
-	}
-	if (viewport == 1)
-	{
+		DrawSim(display);
+	else if (viewport == 1)
+		DrawGUI(display);
+	else
 		te.Draw(display);
-	}
 	
 	if (recording && viewport == GetNumPorts(windowID)-1)
 	{
@@ -190,18 +354,18 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 {
 	switch (key)
 	{
-		case 'n': m = kAddNodes; te.AddLine("Current mode: add nodes"); break;
-		case 'e': m = kAddEdges; te.AddLine("Current mode: add edges"); break;
-		case 'm': m = kMoveNodes; te.AddLine("Current mode: moves nodes"); break;
-		case 'f': m = kFindPath; te.AddLine("Current mode: find path"); break;
+		case 'n': m = kAddNodes; te.AddLine("Current mode: add nodes"); ActivateModeButton(kAddNodesButton); break;
+		case 'e': m = kAddEdges; te.AddLine("Current mode: add edges"); ActivateModeButton(kAddEdgesButton); break;
+		case 'm': m = kMoveNodes; te.AddLine("Current mode: moves nodes"); ActivateModeButton(kMoveNodesButton); break;
+		case 'f': m = kFindPath; te.AddLine("Current mode: find path"); ActivateModeButton(kFindPathButton); break;
 		case ']':
 		{
 			switch (m)
 			{
-				case kAddNodes: m = kAddEdges; te.AddLine("Current mode: add edges"); break;
-				case kAddEdges: m = kMoveNodes; te.AddLine("Current mode: moves nodes"); break;
-				case kMoveNodes: m = kFindPath; te.AddLine("Current mode: find path"); break;
-				case kFindPath: m = kAddNodes; te.AddLine("Current mode: add nodes"); break;
+				case kAddNodes: m = kAddEdges; te.AddLine("Current mode: add edges"); ActivateModeButton(kAddEdgesButton); break;
+				case kAddEdges: m = kMoveNodes; te.AddLine("Current mode: moves nodes"); ActivateModeButton(kMoveNodesButton); break;
+				case kMoveNodes: m = kFindPath; te.AddLine("Current mode: find path"); ActivateModeButton(kFindPathButton); break;
+				case kFindPath: m = kAddNodes; te.AddLine("Current mode: add nodes"); ActivateModeButton(kAddNodesButton); break;
 			}
 
 		}
@@ -210,10 +374,10 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 		{
 			switch (m)
 			{
-				case kMoveNodes: m = kAddEdges; te.AddLine("Current mode: add edges"); break;
-				case kFindPath: m = kMoveNodes; te.AddLine("Current mode: moves nodes"); break;
-				case kAddNodes: m = kFindPath; te.AddLine("Current mode: find path"); break;
-				case kAddEdges: m = kAddNodes; te.AddLine("Current mode: add nodes"); break;
+				case kMoveNodes: m = kAddEdges; te.AddLine("Current mode: add edges"); ActivateModeButton(kAddEdgesButton); break;
+				case kFindPath: m = kMoveNodes; te.AddLine("Current mode: moves nodes"); ActivateModeButton(kMoveNodesButton); break;
+				case kAddNodes: m = kFindPath; te.AddLine("Current mode: find path"); ActivateModeButton(kFindPathButton); break;
+				case kAddEdges: m = kAddNodes; te.AddLine("Current mode: add nodes"); ActivateModeButton(kAddNodesButton); break;
 			}
 		}
 			break;
@@ -222,6 +386,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			name[0] = 'a';
 			g->Reset();
 			te.AddLine("Current mode: add nodes");
+			ActivateModeButton(kAddNodesButton);
 			m = kAddNodes;
 			path.resize(0);
 			running = false;
@@ -231,15 +396,15 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			recording = !recording;
 			break;
 		case '0':
-		case '1': edgeCost = 1.0; te.AddLine("Adding edges; New edges cost 1"); m = kAddEdges; break;
-		case '2': edgeCost = 2.0; te.AddLine("Adding edges; New edges cost 2"); m = kAddEdges; break;
-		case '3': edgeCost = 3.0; te.AddLine("Adding edges; New edges cost 3"); m = kAddEdges; break;
-		case '4': edgeCost = 4.0; te.AddLine("Adding edges; New edges cost 4"); m = kAddEdges; break;
-		case '5': edgeCost = 5.0; te.AddLine("Adding edges; New edges cost 5"); m = kAddEdges; break;
-		case '6': edgeCost = 6.0; te.AddLine("Adding edges; New edges cost 6"); m = kAddEdges; break;
-		case '7': edgeCost = 7.0; te.AddLine("Adding edges; New edges cost 7"); m = kAddEdges; break;
-		case '8': edgeCost = 8.0; te.AddLine("Adding edges; New edges cost 8"); m = kAddEdges; break;
-		case '9': edgeCost = 9.0; te.AddLine("Adding edges; New edges cost 9"); m = kAddEdges; break;
+		case '1': edgeCost = 1.0; te.AddLine("Adding edges; New edges cost 1"); m = kAddEdges; ActivateEdgeCostButton(kEdgeCost1Button); ActivateModeButton(kAddEdgesButton); break;
+		case '2': edgeCost = 2.0; te.AddLine("Adding edges; New edges cost 2"); m = kAddEdges; ActivateEdgeCostButton(kEdgeCost2Button); ActivateModeButton(kAddEdgesButton); break;
+		case '3': edgeCost = 3.0; te.AddLine("Adding edges; New edges cost 3"); m = kAddEdges; ActivateEdgeCostButton(kEdgeCost3Button); ActivateModeButton(kAddEdgesButton); break;
+		case '4': edgeCost = 4.0; te.AddLine("Adding edges; New edges cost 4"); m = kAddEdges; ActivateEdgeCostButton(kEdgeCost4Button); ActivateModeButton(kAddEdgesButton); break;
+		case '5': edgeCost = 5.0; te.AddLine("Adding edges; New edges cost 5"); m = kAddEdges; ActivateEdgeCostButton(kEdgeCost5Button); ActivateModeButton(kAddEdgesButton); break;
+		case '6': edgeCost = 6.0; te.AddLine("Adding edges; New edges cost 6"); m = kAddEdges; ActivateEdgeCostButton(kEdgeCost6Button); ActivateModeButton(kAddEdgesButton); break;
+		case '7': edgeCost = 7.0; te.AddLine("Adding edges; New edges cost 7"); m = kAddEdges; ActivateEdgeCostButton(kEdgeCost7Button); ActivateModeButton(kAddEdgesButton); break;
+		case '8': edgeCost = 8.0; te.AddLine("Adding edges; New edges cost 8"); m = kAddEdges; ActivateEdgeCostButton(kEdgeCost8Button); ActivateModeButton(kAddEdgesButton); break;
+		case '9': edgeCost = 9.0; te.AddLine("Adding edges; New edges cost 9"); m = kAddEdges; ActivateEdgeCostButton(kEdgeCost9Button); ActivateModeButton(kAddEdgesButton); break;
 		case '\t':
 			break;
 		case 'p':

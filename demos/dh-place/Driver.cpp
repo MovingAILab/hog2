@@ -81,10 +81,24 @@ public:
 
 DifferentialHeuristic searchHeuristic;
 
+std::vector<int> buttons;
+typedef enum : int {
+	kPlaceDHButton = 0,
+	kClearDHButton = 1,
+	kGradientButton = 2,
+	kFindPathButton = 3,
+	kSlowerButton = 4,
+	kFasterButton = 5,
+	kLowHeuristicButton = 6,
+	kHighHeuristicButton = 7,
+} buttonID;
+void ActivateModeButton(buttonID bId);
+void SetupGUI(int windowID);
+
 int main(int argc, char* argv[])
 {
 	InstallHandlers();
-	RunHOGGUI(argc, argv, 1200, 1200);
+	RunHOGGUI(argc, argv, 1600, 1200);
 	return 0;
 }
 
@@ -122,7 +136,12 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 		printf("Window %ld created\n", windowID);
 		//glClearColor(0.99, 0.99, 0.99, 1.0);
 		InstallFrameHandler(MyFrameHandler, windowID, 0);
-		SetNumPorts(windowID, 1);
+		SetNumPorts(windowID, 2);
+		// Left part of screen
+		ReinitViewports(windowID, {-1, -1, 0.5f, 1}, kScaleToSquare);
+		// Right part of screen (buttons)
+		AddViewport(windowID, {0.5f, -1, 1, 1}, kScaleToSquare);
+		SetupGUI(windowID);
 		
 		Map *map = new Map(1,1);
 		LoadMap(map);
@@ -138,10 +157,8 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 
 int frameCnt = 0;
 
-void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
+void DrawSim(Graphics::Display &display)
 {
-	Graphics::Display &display = getCurrentContext()->display;
-	
 	if (mapChange == true)
 	{
 		display.StartBackground();
@@ -223,6 +240,104 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 			}
 		}
 	}
+}
+
+void SetupGUI(int windowID)
+{
+	const float borderPaddingX = 0.1f;
+	const float borderPaddingY = 0.35f;
+	const float verticalSep = 0.25f;
+	const float buttonHeight = 0.1f;
+
+	// Differential heuristic controls
+	float horizontalSep = 0.3f;
+	float buttonWidth = 0.75f;
+	float top = -1+borderPaddingY;
+	float bot = top+buttonHeight;
+	Graphics::roundedRect dhButton({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	Graphics::rect offsetRect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	int b = CreateButton(windowID, 1, dhButton, "Place DH", 'a', 0.01f, Colors::black, Colors::black,
+					Colors::yellow, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	dhButton.r += offsetRect;
+	b = CreateButton(windowID, 1, dhButton, "Clear DH", '|', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	buttonWidth = 1.2f;
+	top = bot+0.1f;
+	bot = top+buttonHeight;
+	Graphics::roundedRect drawButton({-1+0.4f, top, -1+0.4f+buttonWidth, bot}, 0.01f);
+	b = CreateButton(windowID, 1, drawButton, "Toggle Drawing Gradient", 'd', 0.01f, Colors::black, Colors::black,
+		Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	// Simulation controls
+	horizontalSep = 0.15f;
+	buttonWidth = 0.6f;
+	top = bot+verticalSep;
+	bot = top+buttonHeight;
+	Graphics::roundedRect pathButton({-1+0.7f, top, -1+0.7f+buttonWidth, bot}, 0.01f);
+	b = CreateButton(windowID, 1, pathButton, "Find Path", 'p', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	horizontalSep = 0.2f;
+	buttonWidth = 0.8f;
+	top = bot+0.1f;
+	bot = top+buttonHeight;
+	Graphics::roundedRect speedButton({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	b = CreateButton(windowID, 1, speedButton, "Simulate Slower", '[', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	speedButton.r += offsetRect;
+	b = CreateButton(windowID, 1, speedButton, "Simulate Faster", ']', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	// Minigame
+	horizontalSep = 0.2f;
+	buttonWidth = 0.6f;
+	top = bot+verticalSep;
+	bot = top+buttonHeight;
+	Graphics::roundedRect testButton({-1+0.3f, top, -1+0.3f+buttonWidth, bot}, 0.01f);
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	b = CreateButton(windowID, 1, testButton, "Low", 'l', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	testButton.r += offsetRect;
+	b = CreateButton(windowID, 1, testButton, "High", 'h', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+}
+
+void DrawGUI(Graphics::Display &display)
+{
+	const float e = 0.03f;
+	display.FillRect({-1, -2.45f, 1, 2.45f}, Colors::darkgray);
+	display.FillRect({-1+e, -2.45f+e, 1-e, 2.45f-e}, Colors::lightgray);
+	display.DrawText("DH: ", {-1+0.1f, -0.8f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+	display.DrawText("Path: ", {-1+0.1f, -0.25f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+	display.DrawText("Find Heuristics: ", {-1+0.1f, 0.3f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+}
+
+void ActivateModeButton(buttonID bId)
+{
+	SetButtonFillColor(buttons[kPlaceDHButton], bId == kPlaceDHButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kFindPathButton], bId == kFindPathButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kLowHeuristicButton], bId == kLowHeuristicButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kHighHeuristicButton], bId == kHighHeuristicButton ? Colors::yellow : Colors::white);
+}
+
+void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
+{
+	Graphics::Display &display = getCurrentContext()->display;
+	
+	if (viewport == 0)
+		DrawSim(display);
+	else
+		DrawGUI(display);
 
 //	if (viewport == 0)
 //	{
@@ -262,7 +377,6 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 //		}
 //	}
 //	return;
-	
 }
 
 int MyCLHandler(char *argument[], int maxNumArgs)
@@ -299,6 +413,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			break;
 		case 'a':
 			submitTextToBuffer("Click anywhere in the map to place a differential heuristic");
+			ActivateModeButton(kPlaceDHButton);
 			m = kAddDH;
 			break;
 		case 'm':
@@ -311,6 +426,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			break;
 		case 'd':
 			showDH = !showDH;
+			SetButtonFillColor(buttons[kGradientButton], showDH ? Colors::yellow : Colors::white);
 			mapChange = true;
 			break;
 		case 'p':
@@ -320,6 +436,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 				showDH = false;
 				mapChange = true;
 			}
+			ActivateModeButton(kFindPathButton);
 			m = kFindPath;
 			start = goal = {0, 0};
 			path.resize(0);
@@ -333,6 +450,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 				break;
 			}
 			submitTextToBuffer("Select two of the points that have a high heuristic value in the current DH");
+			ActivateModeButton(kHighHeuristicButton);
 			m = kIdentifyHighHeuristic;
 			FindSamplePoints();
 			break;
@@ -343,6 +461,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 				break;
 			}
 			submitTextToBuffer("Select two of the points that have a low heuristic value in the current DH");
+			ActivateModeButton(kLowHeuristicButton);
 			m = kIdentifyLowHeuristic;
 			FindSamplePoints();
 			break;
@@ -505,8 +624,12 @@ void GetMeasureHandler(tMouseEventType mType, point3d loc)
 	submitTextToBuffer(ss.str().c_str());
 }
 
-bool MyClickHandler(unsigned long , int windowX, int windowY, point3d loc, tButtonType button, tMouseEventType mType)
+bool MyClickHandler(unsigned long , int viewport, int windowX, int windowY, point3d loc, tButtonType button, tMouseEventType mType)
 {
+	// Prevent button clicks from affecting simulation.
+	if (viewport != 0)
+		return false;
+
 	switch (m)
 	{
 		case kAddDH: DHMouseHandler(mType, loc); break;

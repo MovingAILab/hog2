@@ -26,6 +26,25 @@ bool running = false;
 
 int drawMode = 2; // bit 0 [dfid] bit 1 [dfs] bit 2 [bfs]
 
+std::vector<int> buttons;
+typedef enum : int {
+	kRunButton = 0,
+	kPauseButton = 1,
+	kDFSButton = 2,
+	kDFIDButton = 3,
+	kBFSButton = 4,
+	kBF2Button = 5,
+	kBF3Button = 6,
+	kBF4Button = 7,
+	kBF5Button = 8,
+	kBF6Button = 9,
+	kBF7Button = 10,
+	kBF8Button = 11,
+	kBF9Button = 12,
+} buttonID;
+void ActivateBFButton(buttonID bId);
+void SetupGUI(int windowID);
+
 int main(int argc, char* argv[])
 {
 	InstallHandlers();
@@ -69,9 +88,13 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 	{
 		printf("Window %ld created\n", windowID);
 		InstallFrameHandler(MyFrameHandler, windowID, 0);
-		SetNumPorts(windowID, 1);
+		SetNumPorts(windowID, 2);
 //		ReinitViewports(windowID, Graphics::rect{-1.f, -1.f, 1.f, 1.f}, kScaleToFill);
-		ReinitViewports(windowID, Graphics::rect{-1.f, -1.f, 1.f, 1.f}, kScaleToSquare);
+		// Bottom part of screen (for buttons)
+		ReinitViewports(windowID, {-1, 0, 1, 1}, kScaleToSquare);
+		// Top part of screen (overlapping, but on top -> allows for larger text size for button viewport)
+		AddViewport(windowID, {-1, -1, 1, 0.5f}, kScaleToSquare);
+		SetupGUI(windowID);
 		
 		{
 			char txt[] = "Algorithms: ";
@@ -107,9 +130,8 @@ NaryState goal = tree.GetLastNode();
 
 int frameCnt = 0;
 
-void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
+void DrawSim(Graphics::Display &display, unsigned long windowID, unsigned int viewport)
 {
-	Graphics::Display &display = getCurrentContext()->display;
 	display.FillRect({-1.5, -1.0, 1.5, 1}, Colors::white);
 	tree.SetColor(Colors::black);
 	if (running)
@@ -142,7 +164,121 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		frameCnt++;
 	}
 	return;
+}
+
+void SetupGUI(int windowID)
+{
+	const float borderPaddingX = 1.4f;
+	const float borderPaddingY = 0.2f;
+	const float verticalSep = 0.1f;
+	const float buttonHeight = 0.1f;
+
+	// Basic controls
+	float horizontalSep = 0.1f;
+	float buttonWidth = 0.4f;
+	float top = 0+borderPaddingY;
+	float bot = top+buttonHeight;
+	Graphics::roundedRect controlButton({-2.25f+borderPaddingX, top, -2.25f+borderPaddingX+buttonWidth, bot}, 0.01f);
+	Graphics::rect offsetRect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	int b = CreateButton(windowID, 0, controlButton, "Run", 'r', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	controlButton.r += offsetRect;
+	b = CreateButton(windowID, 0, controlButton, "Pause", 'p', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	// Choose search algorithm
+	horizontalSep = 0.1f;
+	buttonWidth = 0.4f;
+	top = bot+verticalSep;
+	bot = top+buttonHeight;
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	Graphics::roundedRect algButton({-2.25f+borderPaddingX, top, -2.25f+borderPaddingX+buttonWidth, bot}, 0.01f);
+	b = CreateButton(windowID, 0, algButton, "DFS", 'd', 0.01f, Colors::black, Colors::black,
+					 Colors::yellow, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	algButton.r += offsetRect;
+	b = CreateButton(windowID, 0, algButton, "DFID", 'i', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	algButton.r += offsetRect;
+	b = CreateButton(windowID, 0, algButton, "BFS", 'b', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	algButton.r += offsetRect;
+
+	// Choose branching factor
+	horizontalSep = 0.1f;
+	buttonWidth = 0.15f;
+	top = bot+verticalSep;
+	bot = top+buttonHeight;
+	Graphics::roundedRect bfButton({-2.25f+borderPaddingX, top, -2.25f+borderPaddingX+buttonWidth, bot}, 0.01f);
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	b = CreateButton(windowID, 0, bfButton, "2", '2', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	bfButton.r += offsetRect;
+	b = CreateButton(windowID, 0, bfButton, "3", '3', 0.01f, Colors::black, Colors::black,
+					 Colors::yellow, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	bfButton.r += offsetRect;
+	b = CreateButton(windowID, 0, bfButton, "4", '4', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	bfButton.r += offsetRect;
+	b = CreateButton(windowID, 0, bfButton, "5", '5', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	bfButton.r += offsetRect;
+	b = CreateButton(windowID, 0, bfButton, "6", '6', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	bfButton.r += offsetRect;
+	b = CreateButton(windowID, 0, bfButton, "7", '7', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	bfButton.r += offsetRect;
+	b = CreateButton(windowID, 0, bfButton, "8", '8', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	bfButton.r += offsetRect;
+	b = CreateButton(windowID, 0, bfButton, "9", '9', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	bfButton.r += offsetRect;
+}
+
+void ActivateBFButton(buttonID bId)
+{
+	SetButtonFillColor(buttons[kBF2Button], bId == kBF2Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kBF3Button], bId == kBF3Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kBF4Button], bId == kBF4Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kBF5Button], bId == kBF5Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kBF6Button], bId == kBF6Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kBF7Button], bId == kBF7Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kBF8Button], bId == kBF8Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kBF9Button], bId == kBF9Button ? Colors::yellow : Colors::white);
+}
+
+void DrawGUI(Graphics::Display &display)
+{
+	const float e = 0.03f;
+	display.FillRect({-2.25f, 0, 2.25f, 1}, Colors::darkgray);
+	display.FillRect({-2.25f+e, 0+e, 2.25f-e, 1-e}, Colors::lightgray);
+	display.DrawText("Control: ", {-2.25f+0.1f, 0.2f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+	display.DrawText("Search Algorithm: ", {-2.25f+0.1f, 0.4f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+	display.DrawText("Branching Factor: ", {-2.25f+0.1f, 0.6f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+}
+
+void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
+{
+	Graphics::Display &display = getCurrentContext()->display;
 	
+	if (viewport == 0)
+		DrawGUI(display);
+	else
+		DrawSim(display, windowID, viewport);
 }
 
 int MyCLHandler(char *argument[], int maxNumArgs)
@@ -164,6 +300,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			dfid.Reset();
 			dfs.Reset();
 			bfs.Reset();
+			SetButtonFillColor(buttons[kDFIDButton], drawMode&0x1 ? Colors::yellow : Colors::white);
 			break;
 		}
 		case 'd':
@@ -173,6 +310,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			dfid.Reset();
 			dfs.Reset();
 			bfs.Reset();
+			SetButtonFillColor(buttons[kDFSButton], drawMode&0x2 ? Colors::yellow : Colors::white);
 			break;
 		}
 		case 'b':
@@ -182,6 +320,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			dfid.Reset();
 			dfs.Reset();
 			bfs.Reset();
+			SetButtonFillColor(buttons[kBFSButton], drawMode&0x4 ? Colors::yellow : Colors::white);
 			break;
 		}
 		case '{':
@@ -216,6 +355,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			break;
 		case 'r':
 //			recording = !recording; running = true;
+			running = true;
 			break;
 		case '0':
 		{
@@ -233,6 +373,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			dfid.Reset();
 			dfs.Reset();
 			bfs.Reset();
+			ActivateBFButton(kBF2Button);
 			break;
 		}
 		case '3':
@@ -243,6 +384,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			dfid.Reset();
 			dfs.Reset();
 			bfs.Reset();
+			ActivateBFButton(kBF3Button);
 			break;
 		}
 		case '4':
@@ -253,6 +395,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			dfid.Reset();
 			dfs.Reset();
 			bfs.Reset();
+			ActivateBFButton(kBF4Button);
 			break;
 		}
 		case '5':
@@ -263,6 +406,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			dfid.Reset();
 			dfs.Reset();
 			bfs.Reset();
+			ActivateBFButton(kBF5Button);
 			break;
 		}
 		case '6':
@@ -273,6 +417,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			dfid.Reset();
 			dfs.Reset();
 			bfs.Reset();
+			ActivateBFButton(kBF6Button);
 			break;
 		}
 		case '7':
@@ -283,6 +428,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			dfid.Reset();
 			dfs.Reset();
 			bfs.Reset();
+			ActivateBFButton(kBF7Button);
 			break;
 		}
 		case '8':
@@ -293,6 +439,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			dfid.Reset();
 			dfs.Reset();
 			bfs.Reset();
+			ActivateBFButton(kBF8Button);
 			break;
 		}
 		case '9':
@@ -303,6 +450,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			dfid.Reset();
 			dfs.Reset();
 			bfs.Reset();
+			ActivateBFButton(kBF9Button);
 			break;
 		}
 			break;
@@ -344,8 +492,12 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 }
 
 
-bool MyClickHandler(unsigned long , int x, int y, point3d loc, tButtonType , tMouseEventType e)
+bool MyClickHandler(unsigned long , int viewport, int x, int y, point3d loc, tButtonType , tMouseEventType e)
 {
+	// Prevent button clicks from affecting simulation.
+	if (viewport == 0)
+		return false;
+
 	if (e == kMouseDown)
 	{
 		goal = tree.GetClosestNode(loc.x, loc.y);

@@ -48,6 +48,8 @@ PermutationPDB<MNPuzzleState<4, 4>, slideDir, MNPuzzle<4, 4>> *pdb2 = 0;
 PermutationPDB<MNPuzzleState<4, 4>, slideDir, MNPuzzle<4, 4>> *pdb3 = 0;
 PermutationPDB<MNPuzzleState<4, 4>, slideDir, MNPuzzle<4, 4>> *pdb4 = 0;
 
+void SetupGUI(int windowID);
+
 #ifndef __EMSCRIPTEN__
 void MakeAnimation();
 #endif
@@ -140,9 +142,21 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 		InstallFrameHandler(MyFrameHandler, windowID, 0);
 
 		ReinitViewports(windowID, {-1, -1, 1, 1}, kScaleToSquare);
+		SetupGUI(windowID);
 	}
 }
 
+void SetupGUI(int windowID)
+{
+	// Reset state
+	const float buttonHeight = 0.1f;
+	const float borderPaddingX = 0.2f;
+	const float borderPaddingY = 0.05f;
+	const float buttonWidth = 1.0f;
+	Graphics::roundedRect resetButton({1-borderPaddingX-buttonWidth, 1-buttonHeight-borderPaddingY, 1-borderPaddingX, 1-borderPaddingY}, 0.01f);
+	CreateButton(windowID, 0, resetButton, "Reset to random puzzle", 's', 0.01f, Colors::black, Colors::black,
+				Colors::white, Colors::lightblue, Colors::lightbluegray);
+}
 
 void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 {
