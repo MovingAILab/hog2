@@ -7,11 +7,11 @@
 #include <cstdio>
 #include <thread>
 #include <deque>
-#include "SearchEnvironment.h"
-#include "Timer.h"
-#include "SharedQueue.h"
-#include "RangeCompression.h"
-#include "MR1Permutation.h"
+#include "../search/SearchEnvironment.h"
+#include "../utils/Timer.h"
+#include "../utils/SharedQueue.h"
+#include "../utils/RangeCompression.h"
+#include "../utils/MR1Permutation.h"
 
 #ifndef PERMPUZZ_H
 #define PERMPUZZ_H
@@ -1357,30 +1357,28 @@ namespace PermutationPuzzle {
 	 n, each of the integers from 0 to n-1 occurs exactly once.
 	 **/
 	template <class state, class action>
-	bool PermutationPuzzleEnvironment<state, action>::Check_Permutation(const std::vector<int> &to_check)
+	bool PermutationPuzzleEnvironment<state, action>::Check_Permutation(const std::vector<int>& to_check)
 	{
-		const auto size = to_check.size();
-		
-		bool in_puzzle[size];
-		
-		for (size_t i = 0; i < size; i++)
-		{
-			in_puzzle[i] = false;
-		}
-		
-		for (size_t i = 0; i < size; i++)
-		{
-			in_puzzle[to_check[i]] = true;
-		}
-		
-		for (size_t i = 0; i < size; i++)
-		{
-			if (!in_puzzle[i])
+		const size_t n = to_check.size();
+
+		// היה: bool in_puzzle[n];  // לא חוקי ב-MSVC
+		std::vector<char> in_puzzle(n, 0);  // "בדגל" לכל ערך 0..n-1
+
+		for (size_t i = 0; i < n; ++i) {
+			const int v = to_check[i];
+			if (v < 0 || v >= static_cast<int>(n))        // ערך מחוץ לטווח
 				return false;
+			if (in_puzzle[static_cast<size_t>(v)])         // כפילות
+				return false;
+			in_puzzle[static_cast<size_t>(v)] = 1;
 		}
-		
+		// לוודא שכל הערכים 0..n-1 הופיעו
+		for (size_t v = 0; v < n; ++v)
+			if (!in_puzzle[v]) return false;
+
 		return true;
 	}
+
 	
 	/**
 	 Outputs the set of puzzles in puzzle_vector to standard output. The output is of the
