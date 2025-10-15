@@ -15,10 +15,10 @@
 #include <cinttypes>
 
 #include "Heuristic.h"
-#include "SharedQueue.h"
-#include "NBitArray.h"
-#include "Timer.h"
-#include "RangeCompression.h"
+#include "../utils/SharedQueue.h"
+#include "../utils/NBitArray.h"
+#include "../utils/Timer.h"
+#include "../utils/RangeCompression.h"
 
 enum PDBLookupType {
 	kPlain,
@@ -244,7 +244,7 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 		printf("Depth %d complete; %1.2fs elapsed. %" PRId64 " new states written; %" PRId64 " of %" PRId64 " total\n",
 			   depth, timer.EndTimer(), total, entries, COUNT);
 		depth++;
-	} while (entries != COUNT);
+	} while (newEntries > 0);
 	
 	printf("%1.2fs elapsed\n", t.EndTimer());
 	if (entries != COUNT)
@@ -282,7 +282,7 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 	
 	uint64_t entries = goalState.size();
 	std::cout << "Num Entries: " << COUNT << std::endl;
-	std::cout << "Goal State: " << goalState[0] << std::endl;
+	//std::cout << "Goal State: " << goalState[0] << std::endl;
 	//std::cout << "State Hash of Goal: " << GetStateHash(goal) << std::endl;
 	std::cout << "PDB Hash of Goal: " << GetPDBHash(goalState[0]) << std::endl;
 	
@@ -361,7 +361,7 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 				   depth, s.EndTimer(), total, entries, COUNT);
 		depth++;
 		coarseOpenCurr.swap(coarseOpenNext);
-	} while (entries != COUNT);
+	} while (newEntries > 0);
 	
 	if (verbose)
 		printf("%1.2fs elapsed\n", t.EndTimer());
@@ -369,7 +369,7 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 	{
 		if (verbose)
 			printf("Entries: %" PRId64 "; count: %" PRId64 "\n", entries, COUNT);
-		assert(entries == COUNT);
+		//assert(entries == COUNT);
 	}
 	if (verbose)
 		PrintHistogram();
@@ -451,7 +451,7 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 		printf("Depth %d complete; %1.2fs elapsed. %" PRId64 " new states written; %" PRId64 " of %" PRId64 " total\n",
 			   depth, s.EndTimer(), total, entries, COUNT);
 		depth++;
-	} while (entries != COUNT);
+	} while (newEntries > 0);
 	
 	printf("%1.2fs elapsed\n", t.EndTimer());
 	if (entries != COUNT)
@@ -966,7 +966,7 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 //			}
 //			break;
 //		}
-	} while (entries != COUNT);
+	} while (newEntries > 0);
 	
 	printf("%1.2fs elapsed\n", t.EndTimer());
 	if (entries != COUNT)
