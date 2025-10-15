@@ -31,7 +31,7 @@ public:
 
 	std::string GetFileName(const char *prefix) override;
 private:
-	// using PermutationPDB<state, action, environment, bits>::example;
+	//using PermutationPDB<state, action, environment, bits>::example;
 	using PermutationPDB<state, action, environment, bits>::distinct;
 
 	uint64_t Factorial(int val) const;
@@ -146,7 +146,7 @@ uint64_t TreePermutationPDB<state, action, environment, bits>::GetPDBHash(const 
 template <class state, class action, class environment, int bits>
 void TreePermutationPDB<state, action, environment, bits>::GetStateFromPDBHash(uint64_t hash, state &s, int threadID) const
 {
-	size_t count = example.puzzle.size();
+	size_t count = goalState.puzzle.size();
 	s.puzzle.resize(count);
 	int k = mylog2(count);
 	std::vector<int> &temp = tempCache[threadID];
