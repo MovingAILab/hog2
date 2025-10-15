@@ -42,7 +42,7 @@ private:
 	mutable std::vector<std::vector<int> > locsCache;
 	mutable std::vector<std::vector<int> > tempCache;
 
-	state example;
+	state st;
 };
 
 inline int mylog2(int val)
