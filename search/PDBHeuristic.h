@@ -1479,7 +1479,7 @@ bool PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 {
 	if (fread(&type, sizeof(type), 1, f) != 1)
 		return false;
-	goalState.resize(0);
+	goalState.resize(1);
 	if (fread(&goalState[0], sizeof(goalState[0]), 1, f) != 1)
 		return false;
 	return PDB.Read(f);
