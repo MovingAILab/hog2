@@ -307,33 +307,34 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 		s.StartTimer();
 
 		// TODO: clean up interface
-		if (!useCoarseOpen)
-		{
-			uint64_t smallestDepth = (1<<pdbBits)-1;
-			for (uint64_t x = 0; x < COUNT; x++)
-			{
-				uint64_t next = PDB.Get(x);
-				if (next >= depth && next < smallestDepth)
-					smallestDepth = next;
-			}
-			depth = smallestDepth;
-		}
+		// if (!useCoarseOpen)
+		// {
+		// 	uint64_t smallestDepth = (1<<pdbBits)-1;
+		// 	for (uint64_t x = 0; x < COUNT; x++)
+		// 	{
+		// 		uint64_t next = PDB.Get(x);
+		// 		if (next >= depth && next < smallestDepth)
+		// 			smallestDepth = next;
+		// 	}
+		// 	depth = smallestDepth;
+		// }
 
 		for (int x = 0; x < numThreads; x++)
 		{
-			threads[x] = new std::thread(&PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdbBits>::ForwardThreadWorker,
+			threads[x] = new std::thread(&PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdbBits>::BackwardThreadWorker,
 										 this,
-										 x, depth, std::ref(PDB), std::ref(coarseOpenNext),
+										 x, depth, std::ref(PDB), std::ref(coarseClosed),
 										 &workQueue, &resultQueue, &lock);
 		}
 		
 		for (uint64_t x = 0; x < COUNT; x+=coarseSize)
 		{
-			if ((useCoarseOpen && coarseOpenCurr[x/coarseSize]) || !useCoarseOpen)
+			// if ((useCoarseOpen && coarseOpenCurr[x/coarseSize]) || !useCoarseOpen)
+			if (coarseClosed[x/coarseSize] == false)
 			{
 				workQueue.WaitAdd({x, std::min(COUNT, x+coarseSize)});
 			}
-			coarseOpenCurr[x/coarseSize] = false;
+			// coarseOpenCurr[x/coarseSize] = false;
 		}
 		for (int x = 0; x < numThreads; x++)
 		{
@@ -356,13 +357,13 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 		}
 		
 		entries += total;//newEntries;
-		if (verbose)
+		// if (verbose)
 			printf("Depth %d complete; %1.2fs elapsed. %" PRId64 " new states written; %" PRId64 " of %" PRId64 " total\n",
 				   depth, s.EndTimer(), total, entries, COUNT);
 		depth++;
-		coarseOpenCurr.swap(coarseOpenNext);
-	} while (newEntries > 0);
-	
+		// coarseOpenCurr.swap(coarseOpenNext);
+} while (entries != COUNT);
+
 	if (verbose)
 		printf("%1.2fs elapsed\n", t.EndTimer());
 	if (entries != COUNT)
