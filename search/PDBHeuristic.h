@@ -323,18 +323,19 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 		{
 			threads[x] = new std::thread(&PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdbBits>::BackwardThreadWorker,
 										 this,
-										 x, depth, std::ref(PDB), std::ref(coarseClosed),
+										 x, depth, std::ref(PDB), std::ref(coarseOpenNext),
 										 &workQueue, &resultQueue, &lock);
 		}
 		
 		for (uint64_t x = 0; x < COUNT; x+=coarseSize)
 		{
 			// if ((useCoarseOpen && coarseOpenCurr[x/coarseSize]) || !useCoarseOpen)
-			if (coarseClosed[x/coarseSize] == false)
+			if ((useCoarseOpen && coarseOpenCurr[x / coarseSize]) || !useCoarseOpen)
 			{
 				workQueue.WaitAdd({x, std::min(COUNT, x+coarseSize)});
 			}
-			// coarseOpenCurr[x/coarseSize] = false;
+			if (useCoarseOpen)
+				coarseOpenCurr[x/coarseSize] = false;
 		}
 		for (int x = 0; x < numThreads; x++)
 		{
@@ -361,7 +362,7 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 			printf("Depth %d complete; %1.2fs elapsed. %" PRId64 " new states written; %" PRId64 " of %" PRId64 " total\n",
 				   depth, s.EndTimer(), total, entries, COUNT);
 		depth++;
-		// coarseOpenCurr.swap(coarseOpenNext);
+		coarseOpenCurr.swap(coarseOpenNext);
 } while (entries != COUNT);
 
 	if (verbose)
