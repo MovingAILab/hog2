@@ -10,8 +10,6 @@
 #define TreePermutationPDB_h
 
 #include "PermutationPDB.h"
-#include <cstring>
-
 
 /**
  * This class does the basic permutation calculation in lexicographical order.
@@ -24,14 +22,14 @@ class TreePermutationPDB : public PermutationPDB<state, action, environment, bit
 public:
 	TreePermutationPDB(environment *e, const state &s, const std::vector<int> &distincts);
 	
-	virtual uint64_t GetPDBHash(const state &s, int threadID = 0) const override;
-	virtual void GetStateFromPDBHash(uint64_t hash, state &s, int threadID = 0) const override;
-	virtual uint64_t GetAbstractHash(const state &s, int threadID = 0) const override { return GetPDBHash(s); }
+	virtual uint64_t GetPDBHash(const state &s, int threadID = 0) const;
+	virtual void GetStateFromPDBHash(uint64_t hash, state &s, int threadID = 0) const;
+	virtual uint64_t GetAbstractHash(const state &s, int threadID = 0) const { return GetPDBHash(s); }
 	virtual state GetStateFromAbstractState(state &s) const override { return s; }
-
-	std::string GetFileName(const char *prefix) override;
+	
+	std::string GetFileName(const char *prefix);
 private:
-	//using PermutationPDB<state, action, environment, bits>::example;
+	using PermutationPDB<state, action, environment, bits>::example;
 	using PermutationPDB<state, action, environment, bits>::distinct;
 
 	uint64_t Factorial(int val) const;
@@ -44,7 +42,7 @@ private:
 	mutable std::vector<std::vector<int> > locsCache;
 	mutable std::vector<std::vector<int> > tempCache;
 
-	state goalState;
+	state new_example;
 };
 
 inline int mylog2(int val)
@@ -102,7 +100,7 @@ uint64_t TreePermutationPDB<state, action, environment, bits>::GetPDBHash(const 
 	std::vector<int> &values = locsCache[threadID];
 	std::vector<int> &dual = dualCache[threadID];
 	// TODO: test definition
-	values.resize(this->distinct.size()); // vector for distinct item locations
+	values.resize(distinct.size()); // vector for distinct item locations
 	dual.resize(s.puzzle.size()); // vector for distinct item locations
 	
 	// find item locations
@@ -111,7 +109,7 @@ uint64_t TreePermutationPDB<state, action, environment, bits>::GetPDBHash(const 
 		if (s.puzzle[x] != -1)
 			dual[s.puzzle[x]] = x;
 	}
-	for (int x = 0; x < this->distinct.size(); x++)
+	for (int x = 0; x < distinct.size(); x++)
 	{
 		values[x] = dual[distinct[x]];
 	}
@@ -146,7 +144,7 @@ uint64_t TreePermutationPDB<state, action, environment, bits>::GetPDBHash(const 
 template <class state, class action, class environment, int bits>
 void TreePermutationPDB<state, action, environment, bits>::GetStateFromPDBHash(uint64_t hash, state &s, int threadID) const
 {
-	size_t count = goalState.puzzle.size();
+	size_t count = example.puzzle.size();
 	s.puzzle.resize(count);
 	int k = mylog2(count);
 	std::vector<int> &temp = tempCache[threadID];
@@ -155,8 +153,8 @@ void TreePermutationPDB<state, action, environment, bits>::GetStateFromPDBHash(u
 		temp[x] = (1<<(k-mylog2(x+2)+1));
 	
 	std::vector<int> &values = locsCache[threadID];
-	values.resize(this->distinct.size());
-	int numEntriesLeft = (int)s.puzzle.size()-(int)this->distinct.size()+1;
+	values.resize(distinct.size());
+	int numEntriesLeft = s.puzzle.size()-distinct.size()+1;
 	for (int x = (int)values.size()-1; x >= 0; x--)
 	{
 		values[x] = hash%numEntriesLeft;
@@ -184,7 +182,7 @@ void TreePermutationPDB<state, action, environment, bits>::GetStateFromPDBHash(u
 		}
 		temp[node] = 0;
 		values[x] = node - (1<<k) + 1;
-		s.puzzle[values[x]] = this->distinct[x];
+		s.puzzle[values[x]] = distinct[x];
 	}
 	s.FinishUnranking();
 }

@@ -15,10 +15,10 @@
 #include <cinttypes>
 
 #include "Heuristic.h"
-#include "../utils/SharedQueue.h"
-#include "../utils/NBitArray.h"
-#include "../utils/Timer.h"
-#include "../utils/RangeCompression.h"
+#include "SharedQueue.h"
+#include "NBitArray.h"
+#include "Timer.h"
+#include "RangeCompression.h"
 
 enum PDBLookupType {
 	kPlain,
@@ -244,7 +244,7 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 		printf("Depth %d complete; %1.2fs elapsed. %" PRId64 " new states written; %" PRId64 " of %" PRId64 " total\n",
 			   depth, timer.EndTimer(), total, entries, COUNT);
 		depth++;
-	} while (newEntries > 0);
+	} while (entries != COUNT);
 	
 	printf("%1.2fs elapsed\n", t.EndTimer());
 	if (entries != COUNT)
@@ -282,7 +282,7 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 	
 	uint64_t entries = goalState.size();
 	std::cout << "Num Entries: " << COUNT << std::endl;
-	//std::cout << "Goal State: " << goalState[0] << std::endl;
+	std::cout << "Goal State: " << goalState[0] << std::endl;
 	//std::cout << "State Hash of Goal: " << GetStateHash(goal) << std::endl;
 	std::cout << "PDB Hash of Goal: " << GetPDBHash(goalState[0]) << std::endl;
 	
@@ -291,6 +291,7 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 	
 	Timer t;
 	t.StartTimer();
+
 	for (auto &i : goalState)
 	{
 		PDB.Set(GetPDBHash(i), 0);
@@ -305,38 +306,43 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 		newEntries = 0;
 		Timer s;
 		s.StartTimer();
-
+		// std::cout << "Im here 8 \n";
 		// TODO: clean up interface
-		// if (!useCoarseOpen)
-		// {
-		// 	uint64_t smallestDepth = (1<<pdbBits)-1;
-		// 	for (uint64_t x = 0; x < COUNT; x++)
-		// 	{
-		// 		uint64_t next = PDB.Get(x);
-		// 		if (next >= depth && next < smallestDepth)
-		// 			smallestDepth = next;
-		// 	}
-		// 	depth = smallestDepth;
-		// }
+		if (!useCoarseOpen)
+		{
+			// std::cout << "Im here 9 \n";
+
+			uint64_t smallestDepth = (1<<pdbBits)-1;
+			for (uint64_t x = 0; x < COUNT; x++)
+			{
+				uint64_t next = PDB.Get(x);
+				if (next >= depth && next < smallestDepth)
+					smallestDepth = next;
+			}
+			depth = smallestDepth;
+		}
 
 		for (int x = 0; x < numThreads; x++)
 		{
-			threads[x] = new std::thread(&PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdbBits>::BackwardThreadWorker,
+			threads[x] = new std::thread(&PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdbBits>::ForwardThreadWorker,
 										 this,
 										 x, depth, std::ref(PDB), std::ref(coarseOpenNext),
 										 &workQueue, &resultQueue, &lock);
 		}
-		
+		// std::cout << "Im here 10 \n";
+		int added = 0;
+
 		for (uint64_t x = 0; x < COUNT; x+=coarseSize)
 		{
-			// if ((useCoarseOpen && coarseOpenCurr[x/coarseSize]) || !useCoarseOpen)
-			if ((useCoarseOpen && coarseOpenCurr[x / coarseSize]) || !useCoarseOpen)
+			if ((useCoarseOpen && coarseOpenCurr[x/coarseSize]) || !useCoarseOpen)
 			{
 				workQueue.WaitAdd({x, std::min(COUNT, x+coarseSize)});
+				added++;
 			}
-			if (useCoarseOpen)
-				coarseOpenCurr[x/coarseSize] = false;
+			coarseOpenCurr[x/coarseSize] = false;
 		}
+		std::cout << "Added " << added << " work ranges to queue\n";
+
 		for (int x = 0; x < numThreads; x++)
 		{
 			workQueue.WaitAdd({0,0});
@@ -348,11 +354,14 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 			threads[x] = 0;
 		}
 		// read out node counts
+		// std::cout << "Im here 11 \n";
+
 		uint64_t total = 0;
 		{
 			uint64_t val;
 			while (resultQueue.Remove(val))
 			{
+				// std::cout << "Im here 15 \n";
 				total+=val;
 			}
 		}
@@ -363,15 +372,15 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 				   depth, s.EndTimer(), total, entries, COUNT);
 		depth++;
 		coarseOpenCurr.swap(coarseOpenNext);
-} while (entries != COUNT);
-
+	} while (entries != COUNT);
+	
 	if (verbose)
 		printf("%1.2fs elapsed\n", t.EndTimer());
 	if (entries != COUNT)
 	{
 		if (verbose)
 			printf("Entries: %" PRId64 "; count: %" PRId64 "\n", entries, COUNT);
-		//assert(entries == COUNT);
+		assert(entries == COUNT);
 	}
 	if (verbose)
 		PrintHistogram();
@@ -453,7 +462,7 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 		printf("Depth %d complete; %1.2fs elapsed. %" PRId64 " new states written; %" PRId64 " of %" PRId64 " total\n",
 			   depth, s.EndTimer(), total, entries, COUNT);
 		depth++;
-	} while (newEntries > 0);
+	} while (entries != COUNT);
 	
 	printf("%1.2fs elapsed\n", t.EndTimer());
 	if (entries != COUNT)
@@ -563,7 +572,7 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 		}
 		entries += total;//newEntries;
 		distribution.push_back(total);
-		if (verbose)
+		// if (verbose)
 		printf("Depth %d complete; %1.2fs elapsed. %" PRId64 " new states written; %" PRId64 " of %" PRId64 " total [%s]\n",
 			   depth, s.EndTimer(), total, entries, COUNT, searchForward?"forward":"backward");
 		if (double(total)*double(total)*0.4 > double(COUNT-entries)*double(distribution[distribution.size()-2]))// || depth == 8)
@@ -643,18 +652,28 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 		lock->lock();
 		for (auto d : cache)
 		{
+			// std::cout << "im hereeeeeeeeee " << "\n";
+
 			if (d.newGCost < DB.Get(d.rank)) // shorter path
 			{
 				if (DB.Get(d.rank) == (1<<pdbBits)-1)
+				{
 					count++;
+					// std::cout << "count " << count << "\n";
+				}
 				coarse[d.rank/coarseSize] = true;
 				DB.Set(d.rank, d.newGCost);
 			}
+
 		}
 		lock->unlock();
+		// std::cout << "countttttttttttttttttt " << count << "\n";
+
 		cache.resize(0);
 	}
+	// std::cout << "im hereeeeee countttt" << count << "\n";
 	results->Add(count);
+
 //	lock->lock();
 //	printf("Thread %d offline\n", threadNum);
 //	lock->unlock();
@@ -968,7 +987,7 @@ void PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 //			}
 //			break;
 //		}
-	} while (newEntries > 0);
+	} while (entries != COUNT);
 	
 	printf("%1.2fs elapsed\n", t.EndTimer());
 	if (entries != COUNT)
@@ -1481,7 +1500,7 @@ bool PDBHeuristic<abstractState, abstractAction, abstractEnvironment, state, pdb
 {
 	if (fread(&type, sizeof(type), 1, f) != 1)
 		return false;
-	goalState.resize(1);
+	goalState.resize(0);
 	if (fread(&goalState[0], sizeof(goalState[0]), 1, f) != 1)
 		return false;
 	return PDB.Read(f);
