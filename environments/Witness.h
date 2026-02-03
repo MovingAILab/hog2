@@ -2167,7 +2167,7 @@ void Witness<width, height>::ApplyAction(std::pair<int, int> &s, WitnessAction a
 template<int width, int height>
 void Witness<width, height>::ApplyAction(WitnessState<width, height> &s, WitnessAction a) const
 {
-    const auto &prevAction = s.leftRightRegions.back().action;
+    const auto prevAction = s.leftRightRegions.empty() ? kStart : s.leftRightRegions.back().action;
     auto leftRightRegion = LeftRightRegion{a};
     switch (a)
     {
