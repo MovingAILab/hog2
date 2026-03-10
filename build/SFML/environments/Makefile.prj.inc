@@ -44,6 +44,7 @@ SRC_CPP = \
 	environments/Map3DGrid.cpp \
 	environments/Map2DHeading.cpp \
 	environments/MinimalSectorAbstraction.cpp \
+	environments/Map2DSectorAbstractionEnvironment.cpp \
 	environments/MNAgentPuzzle.cpp \
 	environments/RC.cpp \
 	environments/RubiksCubeEdges.cpp \

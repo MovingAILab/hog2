@@ -51,6 +51,24 @@ bool mapChange = true;
 
 int stepsPerFrame = 1;
 
+std::vector<int> buttons;
+typedef enum : int {
+	kBasicButton = 0,
+	kFullButton = 1,
+	kBasicJPButton = 2,
+	kAStarButton = 3,
+	kCAStarButton = 4,
+	kJPSButton = 5,
+	kBJPS4Button = 6,
+	kCDijkstraButton = 7,
+	kFasterButton = 8,
+	kSlowerButton = 9,
+	kPauseButton = 10,
+	kStepButton = 11,
+} buttonID;
+void ActivateModeButton(buttonID bId);
+void SetupGUI(int windowID);
+
 int main(int argc, char* argv[])
 {
 	InstallHandlers();
@@ -91,8 +109,12 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 		printf("Window %ld created\n", windowID);
 		//glClearColor(0.99, 0.99, 0.99, 1.0);
 		InstallFrameHandler(MyFrameHandler, windowID, 0);
-		SetNumPorts(windowID, 1);
-		ReinitViewports(windowID, {-1, -1, 1, 1}, kScaleToSquare);
+		SetNumPorts(windowID, 2);
+		// Left half of screen
+		ReinitViewports(windowID, {-1, -1, 0, 1}, kScaleToSquare);
+		// Right half of screen (buttons)
+		AddViewport(windowID, {0, -1, 1, 1}, kScaleToSquare);
+		SetupGUI(windowID);
 
 		Map *map = new Map(1,1);
 		LoadMap(map);
@@ -105,10 +127,8 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 
 int frameCnt = 0;
 
-void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
+void DrawSim(Graphics::Display &display)
 {
-	Graphics::Display &display = getCurrentContext()->display;
-	
 	if (mapChange == true)
 	{
 		display.StartBackground();
@@ -210,6 +230,129 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 //	if (m == kBasicCanonical || m == kFullCanonical || m == kBasicCanonicalJumpPoint)
 //		else if (m != kCanonicalDijkstra)
 //	}
+}
+
+void SetupGUI(int windowID)
+{
+	const float borderPaddingX = 0.1f;
+	const float borderPaddingY = 0.35f;
+	const float verticalSep = 0.25f;
+	const float buttonHeight = 0.1f;
+
+	// Choosing canonical ordering
+	float horizontalSep = 0.2f;
+	float buttonWidth = 0.6f;
+	float top = -1+borderPaddingY;
+	float bot = top+buttonHeight;
+	Graphics::roundedRect coButton({-1+0.3f, top, -1+0.3f+buttonWidth, bot}, 0.01f);
+	Graphics::rect offsetRect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	int b = CreateButton(windowID, 1, coButton, "Basic", 'b', 0.01f, Colors::black, Colors::black,
+					Colors::yellow, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	coButton.r += offsetRect;
+	b = CreateButton(windowID, 1, coButton, "Full", 'f', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	buttonWidth = 1.1f;
+	top = bot+0.1f;
+	bot = top+buttonHeight;
+	Graphics::roundedRect coBothButton({-1+0.45f, top, -1+0.45f+buttonWidth, bot}, 0.01f);
+	b = CreateButton(windowID, 1, coBothButton, "Basic And Jump Points", 'j', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	// Choosing algorithm
+	horizontalSep = 0.075f;
+	buttonWidth = 0.55f;
+	top = bot+verticalSep;
+	bot = top+buttonHeight;
+	Graphics::roundedRect algButton({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	b = CreateButton(windowID, 1, algButton, "A*", '5', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	algButton.r += offsetRect;
+	b = CreateButton(windowID, 1, algButton, "Canonical A*", '1', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	algButton.r += offsetRect;
+	b = CreateButton(windowID, 1, algButton, "JPS", '3', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	horizontalSep = 0.1f;
+	buttonWidth = 0.85f;
+	top = bot+0.1f;
+	bot = top+buttonHeight;
+	Graphics::roundedRect alg2Button({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	b = CreateButton(windowID, 1, alg2Button, "Bounded JPS(4)", '2', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	alg2Button.r += offsetRect;
+	b = CreateButton(windowID, 1, alg2Button, "Canonical Dijkstra", '4', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	// Simulation settings
+	horizontalSep = 0.2f;
+	buttonWidth = 0.6f;
+	top = bot+verticalSep;
+	bot = top+buttonHeight;
+	Graphics::roundedRect speedButton({-1+0.3f, top, -1+0.3f+buttonWidth, bot}, 0.01f);
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	b = CreateButton(windowID, 1, speedButton, "Run Faster", ']', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	speedButton.r += offsetRect;
+	b = CreateButton(windowID, 1, speedButton, "Run Slower", '[', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	top = bot+0.1f;
+	bot = top+buttonHeight;
+	Graphics::roundedRect simButton({-1+0.3f, top, -1+0.3f+buttonWidth, bot}, 0.01f);
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	b = CreateButton(windowID, 1, simButton, "Pause", '0', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	simButton.r += offsetRect;
+	b = CreateButton(windowID, 1, simButton, "Step", 'o', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+}
+
+void DrawGUI(Graphics::Display &display)
+{
+	const float e = 0.03f;
+	display.FillRect({-1, -1, 1, 1}, Colors::darkgray);
+	display.FillRect({-1+e, -1+e, 1-e, 1-e}, Colors::lightgray);
+	display.DrawText("Canonical Orderings: ", {-1+0.1f, -0.8f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+	display.DrawText("Algorithms: ", {-1+0.1f, -0.25f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+	display.DrawText("Algorithm Control: ", {-1+0.1f, 0.3f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+}
+
+void ActivateModeButton(buttonID bId)
+{
+	SetButtonFillColor(buttons[kBasicButton], bId == kBasicButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kBasicJPButton], bId == kBasicJPButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kFullButton], bId == kFullButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kAStarButton], bId == kAStarButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kCAStarButton], bId == kCAStarButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kBJPS4Button], bId == kBJPS4Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kJPSButton], bId == kJPSButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kCDijkstraButton], bId == kCDijkstraButton ? Colors::yellow : Colors::white);
+}
+
+void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
+{
+	Graphics::Display &display = getCurrentContext()->display;
+	if (viewport == 0)
+		DrawSim(display);
+	else
+		DrawGUI(display);
+	
 //	if (recording && viewport == GetNumPorts(windowID)-1)
 //	{
 //		char fname[255];
@@ -281,6 +424,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			break;
 		case '1':
 			m = kCanonicalAStar;
+			ActivateModeButton(kCAStarButton);
 			submitTextToBuffer("Running Canonical A*");
 			jpsPath.resize(0);
 			if (running)
@@ -293,6 +437,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			break;
 		case '2':
 			m = kBoundedJPS;
+			ActivateModeButton(kBJPS4Button);
 			submitTextToBuffer("Running Bounded JPS(4)");
 			jpsPath.resize(0);
 			if (running)
@@ -305,6 +450,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			break;
 		case '3':
 			m = kJPS;
+			ActivateModeButton(kJPSButton);
 			submitTextToBuffer("Running JPS");
 			jpsPath.resize(0);
 			if (running)
@@ -317,6 +463,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			break;
 		case '4':
 			m = kCanonicalDijkstra;
+			ActivateModeButton(kCDijkstraButton);
 			submitTextToBuffer("Running Canonical Dijkstra");
 			dijPath.resize(0);
 			if (running)
@@ -329,6 +476,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			break;
 		case '5':
 			m = kAStar;
+			ActivateModeButton(kAStarButton);
 			submitTextToBuffer("Running (classic) A*");
 			astarPath.resize(0);
 			if (running)
@@ -358,14 +506,17 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 		case 'b':
 			submitTextToBuffer("Click/drag to show basic canonical ordering");
 			m = kBasicCanonical;
+			ActivateModeButton(kBasicButton);
 			break;
 		case 'j':
 			submitTextToBuffer("Click/drag to show basic canonical ordering with jump points");
 			m = kBasicCanonicalJumpPoint;
+			ActivateModeButton(kBasicJPButton);
 			break;
 		case 'f':
 			submitTextToBuffer("Click/drag to show full canonical ordering");
 			m = kFullCanonical;
+			ActivateModeButton(kFullButton);
 			break;
 	}
 }
@@ -391,8 +542,12 @@ void GetPathHandler(tMouseEventType mType, point3d loc)
 	}
 }
 
-bool MyClickHandler(unsigned long , int windowX, int windowY, point3d loc, tButtonType button, tMouseEventType mType)
+bool MyClickHandler(unsigned long , int viewport, int windowX, int windowY, point3d loc, tButtonType button, tMouseEventType mType)
 {
+	// Prevent button clicks from affecting simulation.
+	if (viewport != 0)
+		return false;
+
 	int x, y;
 	me->GetMap()->GetPointFromCoordinate(loc, x, y);
 	xyLoc tmp(x, y);

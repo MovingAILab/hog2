@@ -1,13 +1,13 @@
 /*
- *  $Id: sample.cpp
- *  hog2
- *
- *  Created by Nathan Sturtevant on 5/31/05.
- *  Modified by Nathan Sturtevant on 02/29/20.
- *
- * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
- *
- */
+*  $Id: sample.cpp
+*  hog2
+*
+*  Created by Nathan Sturtevant on 5/31/05.
+*  Modified by Nathan Sturtevant on 02/29/20.
+*
+* This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
+*
+*/
 
 #include "Common.h"
 #include "Driver.h"
@@ -39,7 +39,7 @@ GraphEnvironment *ge;
 graphState from=-1, to=-1;
 Graphics::point currLoc;
 
-TextOverlay te(35);
+TextOverlay te(30);
 
 void SaveGraph(const char *file);
 void LoadGraph(const char *file);
@@ -58,10 +58,28 @@ public:
 
 GraphDistHeuristic searchHeuristic;
 
+std::vector<int> buttons;
+typedef enum : int {
+	kClearGraphButton = 0,
+	kLoadDefaultButton = 1,
+	kAddNodesButton = 2,
+	kAddEdgesButton = 3,
+	kMoveNodesButton = 4,
+	kDijkstraButton = 5,
+	kAStarButton = 6,
+	kWAStar2Button = 7,
+	kWAStar100Button = 8,
+	kFindPathButton = 9,
+	kStepSearchButton = 10,
+} buttonID;
+void ActivateModeButton(buttonID bId);
+void ActivateAlgButton(buttonID bId);
+void SetupGUI(int windowID);
+
 int main(int argc, char* argv[])
 {
 	InstallHandlers();
-	RunHOGGUI(argc, argv, 1600, 800);
+	RunHOGGUI(argc, argv, 1500, 1000);
 	return 0;
 }
 
@@ -114,7 +132,7 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 		glClearColor(0.99, 0.99, 0.99, 1.0);
 		InstallFrameHandler(MyFrameHandler, windowID, 0);
 		
-		SetNumPorts(windowID, 2);
+		SetNumPorts(windowID, 3);
 		g = new Graph();
 		ge = new GraphEnvironment(g);
 		ge->SetNodeScale(2.0);
@@ -127,9 +145,156 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 		te.AddLine("Current mode: add nodes (click to add node)");
 		te.AddLine("Press [ or ] to change modes. '?' for help.");
 
-		ReinitViewports(windowID, {-1, -1, 0.0, 1}, kScaleToFill);
-		AddViewport(windowID, {0, -1, 1, 1}, kScaleToFill);
+		// Left half of screen
+		ReinitViewports(windowID, {-1, -1, 0.33f, 1}, kScaleToSquare);
+		// Split right half into two
+		AddViewport(windowID, {0.33f, -1, 1, 0}, kScaleToSquare);  // Buttons
+		AddViewport(windowID, {0.33f, 0, 1, 1}, kScaleToSquare);  // Text overlay
+		SetupGUI(windowID);
 	}
+}
+
+void DrawSim(Graphics::Display &display)
+{
+	if (ge == 0 || g == 0)
+		return;
+	display.FillRect({-1.0, -1.0, 1.0, 1}, Colors::white);
+	ge->SetColor(Colors::black);
+	ge->Draw(display);
+	
+	if (from != -1 && to != -1)
+	{
+		ge->SetColor(Colors::lightgray);
+		auto loc1 = ge->GetLocation(from);
+		ge->DrawLine(display, loc1.x, loc1.y, currLoc.x, currLoc.y, 2);
+	}
+	
+	ge->SetColor(Colors::white);
+	for (int x = 0; x < g->GetNumNodes(); x++)
+		ge->Draw(display, x);
+
+	if (running)
+	{
+		astar.Draw(display);
+	}
+	
+	if (path.size() > 0)
+	{
+		ge->SetColor(0, 1, 0);
+		for (size_t x = 1; x < path.size(); x++)
+		{
+			ge->DrawLine(display, path[x-1], path[x], 4);
+		}
+	}
+
+	return;
+}
+
+void SetupGUI(int windowID)
+{
+	const float borderPaddingX = 0.1f;
+	const float borderPaddingY = 0.35f;
+	const float verticalSep = 0.25f;
+	const float buttonHeight = 0.1f;
+
+	// General graph management
+	float horizontalSep = 0.3f;
+	float buttonWidth = 0.75f;
+	float top = -1+borderPaddingY;
+	float bot = top+buttonHeight;
+	Graphics::roundedRect graphButton({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	Graphics::rect offsetRect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	int b = CreateButton(windowID, 1, graphButton, "Clear Graph", '|', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	graphButton.r += offsetRect;
+	b = CreateButton(windowID, 1, graphButton, "Load Default", 'd', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	// Modifying the graph
+	horizontalSep = 0.15f;
+	buttonWidth = 0.5f;
+	top = bot+verticalSep;
+	bot = top+buttonHeight;
+	Graphics::roundedRect modeButton({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	b = CreateButton(windowID, 1, modeButton, "Add Nodes", 'n', 0.01f, Colors::black, Colors::black,
+					Colors::yellow, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	modeButton.r += offsetRect;
+	b = CreateButton(windowID, 1, modeButton, "Add Edges", 'e', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	modeButton.r += offsetRect;
+	b = CreateButton(windowID, 1, modeButton, "Move Nodes", 'm', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	// Search algorithms
+	horizontalSep = 0.1f;
+	buttonWidth = 0.375f;
+	top = bot+verticalSep;
+	bot = top+buttonHeight;
+	Graphics::roundedRect algButton({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	b = CreateButton(windowID, 1, algButton, "Dijkstra", '1', 0.01f, Colors::black, Colors::black,
+					Colors::yellow, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	algButton.r += offsetRect;
+	b = CreateButton(windowID, 1, algButton, "A*", '2', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	algButton.r += offsetRect;
+	b = CreateButton(windowID, 1, algButton, "WA*(2)", '3', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	algButton.r += offsetRect;
+	b = CreateButton(windowID, 1, algButton, "WA*(100)", '4', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	// Simulating search
+	horizontalSep = 0.3f;
+	buttonWidth = 0.75f;
+	top = bot+verticalSep;
+	bot = top+buttonHeight;
+	Graphics::roundedRect simulationButton({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	b = CreateButton(windowID, 1, simulationButton, "Find Path", 'a', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	simulationButton.r += offsetRect;
+	b = CreateButton(windowID, 1, simulationButton, "Step Search", 'o', 0.01f, Colors::black, Colors::black,
+					Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+}
+
+void DrawGUI(Graphics::Display &display)
+{
+	const float e = 0.03f;
+	display.FillRect({-1, -1, 1, 1}, Colors::darkgray);
+	display.FillRect({-1+e, -1+e, 1-e, 1-e}, Colors::lightgray);
+	display.DrawText("Graph: ", {-1+0.1f, -0.8f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+	display.DrawText("Mode: ", {-1+0.1f, -0.45f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+	display.DrawText("Algorithm: ", {-1+0.1f, -0.10f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+	display.DrawText("Simulation: ", {-1+0.1f, 0.25f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+}
+
+void ActivateModeButton(buttonID bId)
+{
+	SetButtonFillColor(buttons[kAddNodesButton], bId == kAddNodesButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kAddEdgesButton], bId == kAddEdgesButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kMoveNodesButton], bId == kMoveNodesButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kFindPathButton], bId == kFindPathButton ? Colors::yellow : Colors::white);
+}
+
+void ActivateAlgButton(buttonID bId)
+{
+	SetButtonFillColor(buttons[kDijkstraButton], bId == kDijkstraButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kAStarButton], bId == kAStarButton ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kWAStar2Button], bId == kWAStar2Button ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kWAStar100Button], bId == kWAStar100Button ? Colors::yellow : Colors::white);
 }
 
 int frameCnt = 0;
@@ -137,43 +302,13 @@ int frameCnt = 0;
 void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 {
 	Graphics::Display &display = getCurrentContext()->display;
-	if (viewport == 0)
-	{
-		if (ge == 0 || g == 0)
-			return;
-		display.FillRect({-1.0, -1.0, 1.0, 1}, Colors::white);
-		ge->SetColor(Colors::black);
-		ge->Draw(display);
-		
-		if (from != -1 && to != -1)
-		{
-			ge->SetColor(Colors::lightgray);
-			auto loc1 = ge->GetLocation(from);
-			ge->DrawLine(display, loc1.x, loc1.y, currLoc.x, currLoc.y, 2);
-		}
-		
-		ge->SetColor(Colors::white);
-		for (int x = 0; x < g->GetNumNodes(); x++)
-			ge->Draw(display, x);
 
-		if (running)
-		{
-			astar.Draw(display);
-		}
-		
-		if (path.size() > 0)
-		{
-			ge->SetColor(0, 1, 0);
-			for (size_t x = 1; x < path.size(); x++)
-			{
-				ge->DrawLine(display, path[x-1], path[x], 4);
-			}
-		}
-	}
-	if (viewport == 1)
-	{
+	if (viewport == 0)
+		DrawSim(display);
+	else if (viewport == 1)
+		DrawGUI(display);
+	else
 		te.Draw(display);
-	}
 	
 //	if (recording && viewport == GetNumPorts(windowID)-1)
 //	{
@@ -191,8 +326,6 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 //			recording = false;
 //		}
 //	}
-	return;
-	
 }
 
 int MyCLHandler(char *argument[], int maxNumArgs)
@@ -207,16 +340,13 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 {
 	switch (key)
 	{
-		case 'a':
-			m = kFindPath; te.AddLine("Current mode: find path"); break;
-		case 'n':
-			m = kAddNodes; te.AddLine("Current mode: add nodes"); break;
-		case 'e':
-			m = kAddEdges; te.AddLine("Current mode: add edges"); break;
-		case 'm':
-			m = kMoveNodes; te.AddLine("Current mode: moves nodes"); break;
+		case 'a': m = kFindPath; te.AddLine("Current mode: find path"); ActivateModeButton(kFindPathButton); break;
+		case 'n': m = kAddNodes; te.AddLine("Current mode: add nodes"); ActivateModeButton(kAddNodesButton); break;
+		case 'e': m = kAddEdges; te.AddLine("Current mode: add edges"); ActivateModeButton(kAddEdgesButton); break;
+		case 'm': m = kMoveNodes; te.AddLine("Current mode: moves nodes"); ActivateModeButton(kMoveNodesButton); break;
 		case '1': // Dijkstra
 			te.AddLine("Algorithm: Dijkstra");
+			ActivateAlgButton(kDijkstraButton);
 			weight = 0.0;
 			astar.SetWeight(weight);
 			if (running)
@@ -225,11 +355,12 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 				ShowSearchInfo();
 			}
 			else {
-				m = kFindPath; te.AddLine("Current mode: find path"); break;
+				m = kFindPath; te.AddLine("Current mode: find path"); ActivateModeButton(kFindPathButton); break;
 			}
 			break;
 		case '2': // A*
 			te.AddLine("Algorithm: A*");
+			ActivateAlgButton(kAStarButton);
 			weight = 1.0;
 			astar.SetWeight(weight);
 			if (running)
@@ -238,11 +369,12 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 				ShowSearchInfo();
 			}
 			else {
-				m = kFindPath; te.AddLine("Current mode: find path"); break;
+				m = kFindPath; te.AddLine("Current mode: find path"); ActivateModeButton(kFindPathButton); break;
 			}
 			break;
 		case '3': // WA*(2)
 			te.AddLine("Algorithm: WA*(2)");
+			ActivateAlgButton(kWAStar2Button);
 			weight = 2.0;
 			astar.SetWeight(weight);
 			if (running)
@@ -251,11 +383,12 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 				ShowSearchInfo();
 			}
 			else {
-				m = kFindPath; te.AddLine("Current mode: find path"); break;
+				m = kFindPath; te.AddLine("Current mode: find path"); ActivateModeButton(kFindPathButton); break;
 			}
 			break;
 		case '4': // WA*(100)
 			te.AddLine("Algorithm: WA*(100)");
+			ActivateAlgButton(kWAStar100Button);
 			weight = 100.0;
 			astar.SetWeight(weight);
 			if (running)
@@ -264,7 +397,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 				ShowSearchInfo();
 			}
 			else {
-				m = kFindPath; te.AddLine("Current mode: find path"); break;
+				m = kFindPath; te.AddLine("Current mode: find path"); ActivateModeButton(kFindPathButton); break;
 			}
 			break;
 
@@ -272,10 +405,10 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 		{
 			switch (m)
 			{
-				case kAddNodes: m = kAddEdges; te.AddLine("Current mode: add edges"); break;
-				case kAddEdges: m = kMoveNodes; te.AddLine("Current mode: moves nodes"); break;
-				case kMoveNodes: m = kFindPath; te.AddLine("Current mode: find path"); break;
-				case kFindPath: m = kAddNodes; te.AddLine("Current mode: add nodes"); break;
+				case kAddNodes: m = kAddEdges; te.AddLine("Current mode: add edges"); ActivateModeButton(kAddEdgesButton); break;
+				case kAddEdges: m = kMoveNodes; te.AddLine("Current mode: moves nodes"); ActivateModeButton(kMoveNodesButton); break;
+				case kMoveNodes: m = kFindPath; te.AddLine("Current mode: find path"); ActivateModeButton(kFindPathButton); break;
+				case kFindPath: m = kAddNodes; te.AddLine("Current mode: add nodes"); ActivateModeButton(kAddNodesButton); break;
 			}
 
 		}
@@ -284,10 +417,10 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 		{
 			switch (m)
 			{
-				case kMoveNodes: m = kAddEdges; te.AddLine("Current mode: add edges"); break;
-				case kFindPath: m = kMoveNodes; te.AddLine("Current mode: moves nodes"); break;
-				case kAddNodes: m = kFindPath; te.AddLine("Current mode: find path"); break;
-				case kAddEdges: m = kAddNodes; te.AddLine("Current mode: add nodes"); break;
+				case kMoveNodes: m = kAddEdges; te.AddLine("Current mode: add edges"); ActivateModeButton(kAddEdgesButton); break;
+				case kFindPath: m = kMoveNodes; te.AddLine("Current mode: moves nodes"); ActivateModeButton(kMoveNodesButton); break;
+				case kAddNodes: m = kFindPath; te.AddLine("Current mode: find path"); ActivateModeButton(kFindPathButton); break;
+				case kAddEdges: m = kAddNodes; te.AddLine("Current mode: add nodes"); ActivateModeButton(kAddNodesButton); break;
 			}
 		}
 			break;
@@ -296,6 +429,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			name[0] = 'a';
 			g->Reset();
 			te.AddLine("Current mode: add nodes");
+			ActivateModeButton(kAddNodesButton);
 			m = kAddNodes;
 			path.resize(0);
 			running = false;
@@ -318,7 +452,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 				ShowSearchInfo();
 			}
 			else {
-				m = kFindPath; te.AddLine("Current mode: find path"); break;
+				m = kFindPath; te.AddLine("Current mode: find path"); ActivateModeButton(kFindPathButton); break;
 			}
 
 			break;
@@ -609,8 +743,12 @@ node *FindClosestNode(Graph *gr, point3d loc)
 }
 
 
-bool MyClickHandler(unsigned long , int windowX, int windowY, point3d loc, tButtonType button, tMouseEventType mType)
+bool MyClickHandler(unsigned long , int viewport, int windowX, int windowY, point3d loc, tButtonType button, tMouseEventType mType)
 {
+	// Prevent button clicks from drawing on the graph.
+	if (viewport != 0)
+		return false;
+
 	if (mType == kMouseDown)
 	{
 		switch (button)

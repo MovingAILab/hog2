@@ -34,6 +34,22 @@ std::vector<RacetrackState> bestPath;
 std::vector<RacetrackState> legalSuccessors;
 bool mapUpdated = true;
 TemplateAStar<RacetrackState, RacetrackMove, Racetrack> astar;
+
+std::vector<int> buttons;
+typedef enum : int {
+	kResetButton = 0,
+	kOptimalButton = 1,
+	kRandomButton = 2,
+	kLargeRoomsButton = 3,
+	kMediumRoomsButton = 4,
+	kSmallRoomsButton = 5,
+	kLargeMazeButton = 6,
+	kMediumMazeButton = 7,
+	kSmallMazeButton = 8,
+} buttonID;
+void ActivateMapButton(int mapType);
+void SetupGUI(int windowID);
+
 // -------------- MAIN FUNCTION ----------- //
 int main(int argc, char* argv[])
 {
@@ -78,6 +94,7 @@ void MakeMap(int mapType = -1)
 	{
 		which = random()%7;
 	}
+	ActivateMapButton(6-which);
 	switch (which)
 	{
 		case 0:
@@ -140,7 +157,12 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 	{
 		printf("Window %ld created\n", windowID);
 		InstallFrameHandler(MyFrameHandler, windowID, 0);
-		ReinitViewports(windowID, {-1, -1, 1, 1}, kScaleToSquare);
+
+		// Left half of screen
+		ReinitViewports(windowID, {-1, -1, 0, 1}, kScaleToSquare);
+		// Right half of screen (buttons)
+		AddViewport(windowID, {0, -1, 1, 1}, kScaleToSquare);
+		SetupGUI(windowID);
 
 		srandom((unsigned int)time(0));
 		MakeMap();
@@ -155,11 +177,8 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 	}
 }
 
-
-void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
+void DrawSim(Graphics::Display &display)
 {
-	Graphics::Display &display = getCurrentContext()->display;
-
 	if (mapUpdated)
 	{
 		mapUpdated = false;
@@ -250,6 +269,106 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		display.DrawText("You Crashed!", {0, 0}, Colors::purple, 0.15f, Graphics::textAlignCenter, Graphics::textBaselineMiddle);
 		display.DrawText("Reset to try again", {0.0f, 0.1f}, Colors::darkred, 0.04f, Graphics::textAlignCenter, Graphics::textBaselineBottom);
 	}
+}
+
+void SetupGUI(int windowID)
+{
+	const float borderPaddingX = 0.1f;
+	const float borderPaddingY = 0.35f;
+	const float verticalSep = 0.25f;
+	const float buttonHeight = 0.1f;
+
+	// Basic controls
+	float horizontalSep = 0.1f;
+	float buttonWidth = 0.8f;
+	float top = -1+borderPaddingY;
+	float bot = top+buttonHeight;
+	Graphics::roundedRect problemButton({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	Graphics::rect offsetRect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	int b = CreateButton(windowID, 1, problemButton, "Reset Problem", 'r', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	problemButton.r += offsetRect;
+	b = CreateButton(windowID, 1, problemButton, "Optimal Solution", 'o', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	// Random map
+	buttonWidth = 0.55f;
+	top = bot+verticalSep;
+	bot = top+buttonHeight;
+	Graphics::roundedRect randomButton({-1+0.725f, top, -1+0.725f+buttonWidth, bot}, 0.01f);
+	b = CreateButton(windowID, 1, randomButton, "Random", 'm', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+
+	// Rooms map
+	horizontalSep = 0.075f;
+	buttonWidth = 0.55f;
+	top = bot+0.1f;
+	bot = top+buttonHeight;
+	Graphics::roundedRect roomButton({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	b = CreateButton(windowID, 1, roomButton, "Large Rooms", '0', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	roomButton.r += offsetRect;
+	b = CreateButton(windowID, 1, roomButton, "Medium Rooms", '1', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	roomButton.r += offsetRect;
+	b = CreateButton(windowID, 1, roomButton, "Small Rooms", '2', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	roomButton.r += offsetRect;
+
+	// Maze map
+	horizontalSep = 0.075f;
+	buttonWidth = 0.55f;
+	top = bot+0.1f;
+	bot = top+buttonHeight;
+	Graphics::roundedRect mazeButton({-1+borderPaddingX, top, -1+borderPaddingX+buttonWidth, bot}, 0.01f);
+	offsetRect = Graphics::rect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	b = CreateButton(windowID, 1, mazeButton, "Large Maze", '4', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	mazeButton.r += offsetRect;
+	b = CreateButton(windowID, 1, mazeButton, "Medium Maze", '5', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+	mazeButton.r += offsetRect;
+	b = CreateButton(windowID, 1, mazeButton, "Small Maze", '6', 0.01f, Colors::black, Colors::black,
+					 Colors::white, Colors::lightblue, Colors::lightbluegray);
+	buttons.push_back(b);
+}
+
+void ActivateMapButton(int mapType)
+{
+	SetButtonFillColor(buttons[kLargeRoomsButton], mapType == 0 ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kMediumRoomsButton], mapType == 1 ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kSmallRoomsButton], mapType == 2 ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kLargeMazeButton], mapType == 4 ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kMediumMazeButton], mapType == 5 ? Colors::yellow : Colors::white);
+	SetButtonFillColor(buttons[kSmallMazeButton], mapType == 6 ? Colors::yellow : Colors::white);
+}
+
+void DrawGUI(Graphics::Display &display)
+{
+	const float e = 0.03f;
+	display.FillRect({-1, -1, 1, 1}, Colors::darkgray);
+	display.FillRect({-1+e, -1+e, 1-e, 1-e}, Colors::lightgray);
+	display.DrawText("Control: ", {-1+0.1f, -0.8f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+	display.DrawText("Map: ", {-1+0.1f, -0.45f}, Colors::black, 0.1f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+}
+
+void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
+{
+	Graphics::Display &display = getCurrentContext()->display;
+
+	if (viewport == 0)
+		DrawSim(display);
+	else
+		DrawGUI(display);
 }
 
 int MyCLHandler(char *argument[], int maxNumArgs)
@@ -414,8 +533,12 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key) /
  *
  * Application does not currently need mouse support
  */
-bool MyClickHandler(unsigned long , int windowX, int windowY, point3d loc, tButtonType button, tMouseEventType mType)
+bool MyClickHandler(unsigned long , int viewport, int windowX, int windowY, point3d loc, tButtonType button, tMouseEventType mType)
 {
+	// Prevent button clicks from affecting simulation.
+	if (viewport != 0)
+		return false;
+
 	int x, y;
 	m->GetPointFromCoordinate(loc, x, y);
 

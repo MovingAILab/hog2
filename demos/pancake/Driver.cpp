@@ -37,6 +37,8 @@ std::vector<PancakePuzzleAction> acts;
 //std::vector<PancakePuzzleState<16>> path;
 PancakePuzzleAction drawAction = 0;
 
+void SetupGUI(int windowID);
+
 int main(int argc, char* argv[])
 {
 	InstallHandlers();
@@ -73,9 +75,26 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 		InstallFrameHandler(MyFrameHandler, windowID, 0);
 
 		ReinitViewports(windowID, {-1, -1, 1, 1}, kScaleToFill);
+		SetupGUI(windowID);
 	}
 }
 
+void SetupGUI(int windowID)
+{
+	// Basic controls
+	const float buttonHeight = 0.1f;
+	const float borderPaddingX = 0.15f;
+	const float borderPaddingY = 0.1f;
+	const float buttonWidth = 0.8f;
+	const float horizontalSep = 0.1f;
+	Graphics::roundedRect puzzleButton({-1+borderPaddingX, 1-buttonHeight-borderPaddingY, -1+borderPaddingX+buttonWidth, 1-borderPaddingY}, 0.01f);
+	Graphics::rect offsetRect(buttonWidth+horizontalSep, 0, buttonWidth+horizontalSep, 0);
+	CreateButton(windowID, 0, puzzleButton, "Randomize Puzzle", 's', 0.01f, Colors::black, Colors::black,
+				Colors::white, Colors::lightblue, Colors::lightbluegray);
+				puzzleButton.r += offsetRect;
+	CreateButton(windowID, 0, puzzleButton, "Solve Puzzle", 'o', 0.01f, Colors::black, Colors::black,
+				Colors::white, Colors::lightblue, Colors::lightbluegray);
+}
 
 void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 {
