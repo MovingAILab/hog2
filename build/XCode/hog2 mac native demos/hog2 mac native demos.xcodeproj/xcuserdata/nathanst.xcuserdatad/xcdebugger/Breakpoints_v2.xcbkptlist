@@ -357,56 +357,6 @@
             endingLineNumber = "512"
             landmarkName = "string()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "54189606-C5FE-4A7A-A37F-2A04C6189B95 - 4d459a8b74d1e39c"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Witness&lt;3, 3&gt;::GetDimensionsFromHashString(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt; const&amp;, int&amp;, int&amp;) const"
-                  moduleName = "Witness"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/environments/Witness.h"
-                  timestampString = "570266107.033597"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "451"
-                  endingLineNumber = "451"
-                  offsetFromSymbolStart = "436">
-               </Location>
-               <Location
-                  uuid = "54189606-C5FE-4A7A-A37F-2A04C6189B95 - ddc4eec6b333b79d"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Witness&lt;3, 4&gt;::GetDimensionsFromHashString(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt; const&amp;, int&amp;, int&amp;) const"
-                  moduleName = "Witness"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/environments/Witness.h"
-                  timestampString = "570266107.03553"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "451"
-                  endingLineNumber = "451"
-                  offsetFromSymbolStart = "436">
-               </Location>
-               <Location
-                  uuid = "54189606-C5FE-4A7A-A37F-2A04C6189B95 - 7969eef291960c82"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Witness&lt;4, 4&gt;::GetDimensionsFromHashString(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt; const&amp;, int&amp;, int&amp;) const"
-                  moduleName = "Witness"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/environments/Witness.h"
-                  timestampString = "570266107.037406"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "451"
-                  endingLineNumber = "451"
-                  offsetFromSymbolStart = "436">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -424,56 +374,6 @@
             endingLineNumber = "542"
             landmarkName = "string()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "9E232AC0-B8E7-4939-BAED-95FE1CD890B3 - bc9bf091dd206dc7"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Witness&lt;3, 3&gt;::LoadFromHashString(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;)"
-                  moduleName = "Witness"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/environments/Witness.h"
-                  timestampString = "570266330.2775429"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "481"
-                  endingLineNumber = "481"
-                  offsetFromSymbolStart = "623">
-               </Location>
-               <Location
-                  uuid = "9E232AC0-B8E7-4939-BAED-95FE1CD890B3 - 9a5e1fc11e8239c8"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Witness&lt;3, 4&gt;::LoadFromHashString(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;)"
-                  moduleName = "Witness"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/environments/Witness.h"
-                  timestampString = "570266330.281571"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "481"
-                  endingLineNumber = "481"
-                  offsetFromSymbolStart = "623">
-               </Location>
-               <Location
-                  uuid = "9E232AC0-B8E7-4939-BAED-95FE1CD890B3 - 95be770663e496c9"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Witness&lt;4, 4&gt;::LoadFromHashString(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;)"
-                  moduleName = "Witness"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/environments/Witness.h"
-                  timestampString = "570266330.283995"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "481"
-                  endingLineNumber = "481"
-                  offsetFromSymbolStart = "623">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -491,56 +391,6 @@
             endingLineNumber = "546"
             landmarkName = "string()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "C60AC300-38AF-40AA-AA96-5904D085593D - bc9bf091dd206c09"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Witness&lt;3, 3&gt;::LoadFromHashString(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;)"
-                  moduleName = "Witness"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/environments/Witness.h"
-                  timestampString = "570267280.753837"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "487"
-                  endingLineNumber = "487"
-                  offsetFromSymbolStart = "708">
-               </Location>
-               <Location
-                  uuid = "C60AC300-38AF-40AA-AA96-5904D085593D - 9a5e1fc11e823806"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Witness&lt;3, 4&gt;::LoadFromHashString(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;)"
-                  moduleName = "Witness"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/environments/Witness.h"
-                  timestampString = "570267280.755989"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "487"
-                  endingLineNumber = "487"
-                  offsetFromSymbolStart = "708">
-               </Location>
-               <Location
-                  uuid = "C60AC300-38AF-40AA-AA96-5904D085593D - 95be770663e49707"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Witness&lt;4, 4&gt;::LoadFromHashString(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;)"
-                  moduleName = "Witness"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/environments/Witness.h"
-                  timestampString = "570267280.758082"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "487"
-                  endingLineNumber = "487"
-                  offsetFromSymbolStart = "708">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -588,8 +438,8 @@
             timestampString = "592332118.197726"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "516"
-            endingLineNumber = "516"
+            startingLineNumber = "519"
+            endingLineNumber = "519"
             landmarkName = "GetPlotPoints()"
             landmarkType = "9">
          </BreakpointContent>
@@ -605,8 +455,8 @@
             timestampString = "592332118.213655"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "506"
-            endingLineNumber = "506"
+            startingLineNumber = "509"
+            endingLineNumber = "509"
             landmarkName = "GetPlotPoints()"
             landmarkType = "9">
          </BreakpointContent>
@@ -622,8 +472,8 @@
             timestampString = "592332118.2140321"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "510"
-            endingLineNumber = "510"
+            startingLineNumber = "513"
+            endingLineNumber = "513"
             landmarkName = "GetPlotPoints()"
             landmarkType = "9">
          </BreakpointContent>
@@ -809,8 +659,8 @@
             timestampString = "592332118.220446"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "672"
-            endingLineNumber = "672"
+            startingLineNumber = "687"
+            endingLineNumber = "687"
             landmarkName = "MyFrameHandler(windowID, viewport)"
             landmarkType = "9">
          </BreakpointContent>
@@ -826,8 +676,8 @@
             timestampString = "592332118.220891"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "212"
-            endingLineNumber = "212"
+            startingLineNumber = "215"
+            endingLineNumber = "215"
             landmarkName = "StepAlgorithms(numSteps)"
             landmarkType = "9">
          </BreakpointContent>
@@ -1122,8 +972,8 @@
             filePath = "../../../demos/suboptimal-map/Driver.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1078"
-            endingLineNumber = "1078"
+            startingLineNumber = "1119"
+            endingLineNumber = "1119"
             landmarkName = "unknown"
             landmarkType = "0">
          </BreakpointContent>
@@ -1174,38 +1024,6 @@
             endingLineNumber = "273"
             landmarkName = "Remove(k)"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "473C803D-6E33-4665-B5E6-78D9D1C638A0 - d9669b159479934e"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Treap&lt;Focal&lt;xyLoc, tDirection, MapEnvironment&gt;::OpenTreapItem&gt;::Remove(Focal&lt;xyLoc, tDirection, MapEnvironment&gt;::OpenTreapItem&amp;)"
-                  moduleName = "Suboptimal Map"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/algorithms/Treap.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "270"
-                  endingLineNumber = "270"
-                  offsetFromSymbolStart = "243">
-               </Location>
-               <Location
-                  uuid = "473C803D-6E33-4665-B5E6-78D9D1C638A0 - c4bc1b120c399815"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Treap&lt;Focal&lt;xyLoc, tDirection, MapEnvironment&gt;::FocalTreapItem&gt;::Remove(Focal&lt;xyLoc, tDirection, MapEnvironment&gt;::FocalTreapItem&amp;)"
-                  moduleName = "Suboptimal Map"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/algorithms/Treap.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "270"
-                  endingLineNumber = "270"
-                  offsetFromSymbolStart = "243">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1398,68 +1216,6 @@
             endingLineNumber = "285"
             landmarkName = "InitializeSearch(_env, from, to, thePath)"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "6D21E04C-A491-4614-962E-2D0B61D80879 - 4f4f810fb11968ac"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TemplateAStar&lt;CanonicalGrid::xyLoc, CanonicalGrid::tDirection, CanonicalGrid::CanonicalGrid, AStarOpenClosed&lt;CanonicalGrid::xyLoc, AStarCompareWithF&lt;CanonicalGrid::xyLoc&gt;, AStarOpenClosedDataWithF&lt;CanonicalGrid::xyLoc&gt; &gt; &gt;::InitializeSearch(CanonicalGrid::CanonicalGrid*, CanonicalGrid::xyLoc const&amp;, CanonicalGrid::xyLoc const&amp;, std::__1::vector&lt;CanonicalGrid::xyLoc, std::__1::allocator&lt;CanonicalGrid::xyLoc&gt; &gt;&amp;)"
-                  moduleName = "Transit"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/generic/TemplateAStar.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "272"
-                  endingLineNumber = "272"
-                  offsetFromSymbolStart = "672">
-               </Location>
-               <Location
-                  uuid = "6D21E04C-A491-4614-962E-2D0B61D80879 - d0a29491c7106ef0"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TemplateAStar&lt;recVec, line2d, ConfigEnvironment, AStarOpenClosed&lt;recVec, AStarCompareWithF&lt;recVec&gt;, AStarOpenClosedDataWithF&lt;recVec&gt; &gt; &gt;::InitializeSearch(ConfigEnvironment*, recVec const&amp;, recVec const&amp;, std::__1::vector&lt;recVec, std::__1::allocator&lt;recVec&gt; &gt;&amp;)"
-                  moduleName = "Transit"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/generic/TemplateAStar.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "272"
-                  endingLineNumber = "272"
-                  offsetFromSymbolStart = "570">
-               </Location>
-               <Location
-                  uuid = "6D21E04C-A491-4614-962E-2D0B61D80879 - 24e1580887c65e12"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TemplateAStar&lt;xyLoc, tDirection, MapEnvironment, AStarOpenClosed&lt;xyLoc, AStarCompareWithF&lt;xyLoc&gt;, AStarOpenClosedDataWithF&lt;xyLoc&gt; &gt; &gt;::InitializeSearch(MapEnvironment*, xyLoc const&amp;, xyLoc const&amp;, std::__1::vector&lt;xyLoc, std::__1::allocator&lt;xyLoc&gt; &gt;&amp;)"
-                  moduleName = "Transit"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/generic/TemplateAStar.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "272"
-                  endingLineNumber = "272"
-                  offsetFromSymbolStart = "677">
-               </Location>
-               <Location
-                  uuid = "6D21E04C-A491-4614-962E-2D0B61D80879 - fde33fb1e9020f6"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TemplateAStar&lt;unsigned long, graphMove, GraphEnvironment, AStarOpenClosed&lt;unsigned long, AStarCompareWithF&lt;unsigned long&gt;, AStarOpenClosedDataWithF&lt;unsigned long&gt; &gt; &gt;::InitializeSearch(GraphEnvironment*, unsigned long const&amp;, unsigned long const&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
-                  moduleName = "Transit"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/generic/TemplateAStar.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "272"
-                  endingLineNumber = "272"
-                  offsetFromSymbolStart = "620">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1492,38 +1248,6 @@
             endingLineNumber = "43"
             landmarkName = "Unrank(hash, items)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "029555DA-6129-4C39-A152-E56996B9EBDE - aeb329e7276f8a03"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Permutations&lt;5&gt;::Unrank(unsigned long long, int*) const"
-                  moduleName = "Pancake"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/utils/Permutations.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "43"
-                  endingLineNumber = "43"
-                  offsetFromSymbolStart = "20">
-               </Location>
-               <Location
-                  uuid = "029555DA-6129-4C39-A152-E56996B9EBDE - 64e116b2c9e79374"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Permutations&lt;16&gt;::Unrank(unsigned long long, int*) const"
-                  moduleName = "Pancake"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/utils/Permutations.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "43"
-                  endingLineNumber = "43"
-                  offsetFromSymbolStart = "20">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1540,38 +1264,6 @@
             endingLineNumber = "48"
             landmarkName = "Unrank(hash, items)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "C7972D9C-5D19-497D-8472-2CBE4E85BD47 - 2e9ab5069e5302af"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Permutations&lt;8&gt;::Unrank(unsigned long long, int*) const"
-                  moduleName = "Pancake"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/utils/Permutations.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "48"
-                  endingLineNumber = "48"
-                  offsetFromSymbolStart = "157">
-               </Location>
-               <Location
-                  uuid = "C7972D9C-5D19-497D-8472-2CBE4E85BD47 - 64e116b2c9e79cdf"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Permutations&lt;16&gt;::Unrank(unsigned long long, int*) const"
-                  moduleName = "Pancake"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/utils/Permutations.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "48"
-                  endingLineNumber = "48"
-                  offsetFromSymbolStart = "157">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1668,38 +1360,6 @@
             endingLineNumber = "456"
             landmarkName = "MyClickHandler(, windowX, windowY, loc, button, mType)"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "C9E13834-F5F4-4F9E-9DCD-784757872880 - e9bad787f6d55dda"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MyClickHandler(unsigned long, int, int, Graphics::point, tButtonType, tMouseEventType)"
-                  moduleName = "Racetrack"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/demos/racetrack/Driver.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "353"
-                  endingLineNumber = "353"
-                  offsetFromSymbolStart = "617">
-               </Location>
-               <Location
-                  uuid = "C9E13834-F5F4-4F9E-9DCD-784757872880 - e9bad787f6d55dda"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MyClickHandler(unsigned long, int, int, Graphics::point, tButtonType, tMouseEventType)"
-                  moduleName = "Racetrack"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/hog2/demos/racetrack/Driver.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "353"
-                  endingLineNumber = "353"
-                  offsetFromSymbolStart = "682">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1793,8 +1453,7 @@
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "426"
-                  endingLineNumber = "426"
-                  offsetFromSymbolStart = "24">
+                  endingLineNumber = "426">
                </Location>
                <Location
                   uuid = "DD87DEF2-4EF5-4206-966D-CB897258024A - b897e281ce1a1e7e"
@@ -1808,8 +1467,7 @@
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "426"
-                  endingLineNumber = "426"
-                  offsetFromSymbolStart = "36">
+                  endingLineNumber = "426">
                </Location>
                <Location
                   uuid = "DD87DEF2-4EF5-4206-966D-CB897258024A - 18f8112d7d27e73b"
@@ -1823,8 +1481,7 @@
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "426"
-                  endingLineNumber = "426"
-                  offsetFromSymbolStart = "36">
+                  endingLineNumber = "426">
                </Location>
                <Location
                   uuid = "DD87DEF2-4EF5-4206-966D-CB897258024A - 8807d26d07739285"
@@ -1838,8 +1495,7 @@
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "426"
-                  endingLineNumber = "426"
-                  offsetFromSymbolStart = "36">
+                  endingLineNumber = "426">
                </Location>
                <Location
                   uuid = "DD87DEF2-4EF5-4206-966D-CB897258024A - 38c692fae98ed4e3"
@@ -1853,8 +1509,7 @@
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "426"
-                  endingLineNumber = "426"
-                  offsetFromSymbolStart = "36">
+                  endingLineNumber = "426">
                </Location>
                <Location
                   uuid = "DD87DEF2-4EF5-4206-966D-CB897258024A - 3578ef040b628414"
@@ -1868,8 +1523,7 @@
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "426"
-                  endingLineNumber = "426"
-                  offsetFromSymbolStart = "36">
+                  endingLineNumber = "426">
                </Location>
                <Location
                   uuid = "DD87DEF2-4EF5-4206-966D-CB897258024A - 3578ef040b628490"
@@ -1883,8 +1537,7 @@
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "430"
-                  endingLineNumber = "430"
-                  offsetFromSymbolStart = "36">
+                  endingLineNumber = "430">
                </Location>
                <Location
                   uuid = "DD87DEF2-4EF5-4206-966D-CB897258024A - 38c692fae98ed467"
@@ -1898,8 +1551,7 @@
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "430"
-                  endingLineNumber = "430"
-                  offsetFromSymbolStart = "36">
+                  endingLineNumber = "430">
                </Location>
                <Location
                   uuid = "DD87DEF2-4EF5-4206-966D-CB897258024A - 4fd708923aa77b8"
@@ -1913,8 +1565,7 @@
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "430"
-                  endingLineNumber = "430"
-                  offsetFromSymbolStart = "36">
+                  endingLineNumber = "430">
                </Location>
                <Location
                   uuid = "DD87DEF2-4EF5-4206-966D-CB897258024A - d7ddc0b8a3944318"
@@ -1928,8 +1579,7 @@
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "430"
-                  endingLineNumber = "430"
-                  offsetFromSymbolStart = "220">
+                  endingLineNumber = "430">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -2137,8 +1787,8 @@
             filePath = "../../../demos/suboptimal-map/Driver.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "454"
-            endingLineNumber = "454"
+            startingLineNumber = "457"
+            endingLineNumber = "457"
             landmarkName = "GetPlotPoints()"
             landmarkType = "9">
          </BreakpointContent>
@@ -2285,38 +1935,6 @@
             endingLineNumber = "238"
             landmarkName = "NaryTree::Draw(display)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "4A224C9C-0DD2-494B-B167-8F0B6E86C486 - f56a9c04e1a7f8a9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NaryTree::Draw(Graphics::Display&amp;) const"
-                  moduleName = "DFID"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/environments/NaryTree.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "237"
-                  endingLineNumber = "237"
-                  offsetFromSymbolStart = "420">
-               </Location>
-               <Location
-                  uuid = "4A224C9C-0DD2-494B-B167-8F0B6E86C486 - f56a9c04e1a7f956"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NaryTree::Draw(Graphics::Display&amp;) const"
-                  moduleName = "DFID"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/environments/NaryTree.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "238"
-                  endingLineNumber = "238"
-                  offsetFromSymbolStart = "420">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -2381,38 +1999,6 @@
             endingLineNumber = "299"
             landmarkName = "SVGDrawStrokedText(x1, y1, txt, c, strokeColor, size)"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "84CE8E9B-2944-49F1-86B7-D89D41EBB357 - 23483c2218cd72a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "HandleCommand(Graphics::Display const&amp;, std::__1::vector&lt;Graphics::Display::data, std::__1::allocator&lt;Graphics::Display::data&gt;&gt; const&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt;&amp;, int, int, int)"
-                  moduleName = "Bidir"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/utils/SVGUtil.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "299"
-                  endingLineNumber = "299"
-                  offsetFromSymbolStart = "84">
-               </Location>
-               <Location
-                  uuid = "84CE8E9B-2944-49F1-86B7-D89D41EBB357 - 23483c2218cd72a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "HandleCommand(Graphics::Display const&amp;, std::__1::vector&lt;Graphics::Display::data, std::__1::allocator&lt;Graphics::Display::data&gt;&gt; const&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt;&amp;, int, int, int)"
-                  moduleName = "Bidir"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/utils/SVGUtil.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "299"
-                  endingLineNumber = "299"
-                  offsetFromSymbolStart = "92">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -2509,38 +2095,6 @@
             endingLineNumber = "421"
             landmarkName = "DoSingleSearchStep(thePath)"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "ED9598D6-5958-444B-837A-FF09A9C07181 - 4227d07cf7b53a53"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "DynamicPotentialSearch&lt;xyLoc, tDirection, MapEnvironment&gt;::DoSingleSearchStep(std::__1::vector&lt;xyLoc, std::__1::allocator&lt;xyLoc&gt;&gt;&amp;)"
-                  moduleName = "Suboptimal Map"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/generic/DynamicPotentialSearch.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "359"
-                  endingLineNumber = "359"
-                  offsetFromSymbolStart = "1792">
-               </Location>
-               <Location
-                  uuid = "ED9598D6-5958-444B-837A-FF09A9C07181 - 4227d07cf7b5473b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "DynamicPotentialSearch&lt;xyLoc, tDirection, MapEnvironment&gt;::DoSingleSearchStep(std::__1::vector&lt;xyLoc, std::__1::allocator&lt;xyLoc&gt;&gt;&amp;)"
-                  moduleName = "Suboptimal Map"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/generic/DynamicPotentialSearch.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "383"
-                  endingLineNumber = "383"
-                  offsetFromSymbolStart = "1792">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -2685,38 +2239,6 @@
             endingLineNumber = "643"
             landmarkName = "HandlePhiClick(loc, button, mType)"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "8EE65057-D89E-41B7-911D-D8C98C7C5129 - c67cadbcc4f2b251"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "HandlePhiClick(Graphics::point, tButtonType, tMouseEventType)"
-                  moduleName = "Dynamic Phi"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/demos/dynamic-phi/Driver.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "546"
-                  endingLineNumber = "546"
-                  offsetFromSymbolStart = "52">
-               </Location>
-               <Location
-                  uuid = "8EE65057-D89E-41B7-911D-D8C98C7C5129 - c67cadbcc4f2b236"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "HandlePhiClick(Graphics::point, tButtonType, tMouseEventType)"
-                  moduleName = "Dynamic Phi"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/demos/dynamic-phi/Driver.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "547"
-                  endingLineNumber = "547"
-                  offsetFromSymbolStart = "52">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

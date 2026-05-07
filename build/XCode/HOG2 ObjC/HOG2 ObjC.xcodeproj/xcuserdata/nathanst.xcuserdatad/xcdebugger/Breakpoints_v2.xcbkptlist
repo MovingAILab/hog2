@@ -98,38 +98,6 @@
             endingLineNumber = "115"
             landmarkName = "Phi(h, g)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "CA7FEA74-7600-4CF0-A92E-2978973F7E7A - 21a598da6438ecc9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "DSDWAStar&lt;xyLoc, tDirection, MapEnvironment, AStarOpenClosed&lt;xyLoc, AStarCompareWithF&lt;xyLoc&gt;, AStarOpenClosedDataWithF&lt;xyLoc&gt; &gt; &gt;::GetPriority(float, float)"
-                  moduleName = "DSDWA*"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/papers/DSDWA/DSDWAStar.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "112"
-                  endingLineNumber = "112"
-                  offsetFromSymbolStart = "208">
-               </Location>
-               <Location
-                  uuid = "CA7FEA74-7600-4CF0-A92E-2978973F7E7A - 83e19b56c7fde72e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "DSDWAStar&lt;MNPuzzleState&lt;4, 4&gt;, slideDir, MNPuzzle&lt;4, 4&gt;, AStarOpenClosed&lt;MNPuzzleState&lt;4, 4&gt;, AStarCompareWithF&lt;MNPuzzleState&lt;4, 4&gt; &gt;, AStarOpenClosedDataWithF&lt;MNPuzzleState&lt;4, 4&gt; &gt; &gt; &gt;::GetPriority(float, float)"
-                  moduleName = "DSDWA*"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/papers/DSDWA/DSDWAStar.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "112"
-                  endingLineNumber = "112"
-                  offsetFromSymbolStart = "208">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -174,72 +142,10 @@
             filePath = "../../../generic/TemplateAStar.h"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "406"
-            endingLineNumber = "406"
+            startingLineNumber = "400"
+            endingLineNumber = "400"
             landmarkName = "DoSingleSearchStep(thePath)"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "4E3FAF3B-B9C1-4A8A-B912-E437BFA5A1FE - b058dcd99759b166"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TemplateAStar&lt;xyLoc, tDirection, MapEnvironment, AStarOpenClosed&lt;xyLoc, AStarCompareWithF&lt;xyLoc&gt;, AStarOpenClosedDataWithF&lt;xyLoc&gt; &gt; &gt;::DoSingleSearchStep(std::__1::vector&lt;xyLoc, std::__1::allocator&lt;xyLoc&gt; &gt;&amp;)"
-                  moduleName = "FM+DH"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/generic/TemplateAStar.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "486"
-                  endingLineNumber = "486"
-                  offsetFromSymbolStart = "3836">
-               </Location>
-               <Location
-                  uuid = "4E3FAF3B-B9C1-4A8A-B912-E437BFA5A1FE - b2e9b98d45d789c4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TemplateAStar&lt;unsigned long, graphMove, GraphEnvironment, AStarOpenClosed&lt;unsigned long, AStarCompareWithF&lt;unsigned long&gt;, AStarOpenClosedDataWithF&lt;unsigned long&gt; &gt; &gt;::DoSingleSearchStep(std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
-                  moduleName = "FM+DH"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/generic/TemplateAStar.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "486"
-                  endingLineNumber = "486"
-                  offsetFromSymbolStart = "3836">
-               </Location>
-               <Location
-                  uuid = "4E3FAF3B-B9C1-4A8A-B912-E437BFA5A1FE - 20c9e4642caad002"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TemplateAStar&lt;CanonicalGrid::xyLoc, CanonicalGrid::tDirection, CanonicalGrid::CanonicalGrid, AStarOpenClosed&lt;CanonicalGrid::xyLoc, AStarCompareWithF&lt;CanonicalGrid::xyLoc&gt;, AStarOpenClosedDataWithF&lt;CanonicalGrid::xyLoc&gt; &gt; &gt;::DoSingleSearchStep(std::__1::vector&lt;CanonicalGrid::xyLoc, std::__1::allocator&lt;CanonicalGrid::xyLoc&gt; &gt;&amp;)"
-                  moduleName = "FM+DH"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/generic/TemplateAStar.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "486"
-                  endingLineNumber = "486"
-                  offsetFromSymbolStart = "3836">
-               </Location>
-               <Location
-                  uuid = "4E3FAF3B-B9C1-4A8A-B912-E437BFA5A1FE - 89262dd710ebf4cf"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TemplateAStar&lt;recVec, line2d, ConfigEnvironment, AStarOpenClosed&lt;recVec, AStarCompareWithF&lt;recVec&gt;, AStarOpenClosedDataWithF&lt;recVec&gt; &gt; &gt;::DoSingleSearchStep(std::__1::vector&lt;recVec, std::__1::allocator&lt;recVec&gt; &gt;&amp;)"
-                  moduleName = "FM+DH"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/generic/TemplateAStar.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "486"
-                  endingLineNumber = "486"
-                  offsetFromSymbolStart = "3852">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -317,8 +223,7 @@
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "258"
-                  endingLineNumber = "258"
-                  offsetFromSymbolStart = "132">
+                  endingLineNumber = "258">
                </Location>
                <Location
                   uuid = "A807230D-3F74-4CE9-8035-5E4F17E9C7B7 - 3740f05661064ded"
@@ -332,8 +237,7 @@
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "257"
-                  endingLineNumber = "257"
-                  offsetFromSymbolStart = "144">
+                  endingLineNumber = "257">
                </Location>
                <Location
                   uuid = "A807230D-3F74-4CE9-8035-5E4F17E9C7B7 - 3740f05661064269"
@@ -347,8 +251,7 @@
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "261"
-                  endingLineNumber = "261"
-                  offsetFromSymbolStart = "144">
+                  endingLineNumber = "261">
                </Location>
                <Location
                   uuid = "A807230D-3F74-4CE9-8035-5E4F17E9C7B7 - 3740f0566106420a"
@@ -362,8 +265,7 @@
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "262"
-                  endingLineNumber = "262"
-                  offsetFromSymbolStart = "144">
+                  endingLineNumber = "262">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -382,38 +284,6 @@
             endingLineNumber = "476"
             landmarkName = "BuildPDBForwardBackward(goal, numThreads, verbose)"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "6A3FA577-12E1-49B0-9B2F-7E98B4CE0F2E - 30e54e7bf83a113e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PDBHeuristic&lt;TOHState&lt;6&gt;, TOHMove, TOH&lt;6&gt;, TOHState&lt;18&gt;, 8ull&gt;::BuildPDBForwardBackward(TOHState&lt;18&gt; const&amp;, int)"
-                  moduleName = "TOH"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/search/PDBHeuristic.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "473"
-                  endingLineNumber = "473"
-                  offsetFromSymbolStart = "172">
-               </Location>
-               <Location
-                  uuid = "6A3FA577-12E1-49B0-9B2F-7E98B4CE0F2E - 143ee0b383e57167"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PDBHeuristic&lt;TOHState&lt;12&gt;, TOHMove, TOH&lt;12&gt;, TOHState&lt;18&gt;, 8ull&gt;::BuildPDBForwardBackward(TOHState&lt;18&gt; const&amp;, int)"
-                  moduleName = "TOH"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/search/PDBHeuristic.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "473"
-                  endingLineNumber = "473"
-                  offsetFromSymbolStart = "172">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -430,68 +300,6 @@
             endingLineNumber = "500"
             landmarkName = "Graphics::Display::ViewportToGlobalHOG(v, where)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "9FC6AD24-A58F-4F5E-BD3F-595727F45797 - 38bb55b92ee369cb"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Graphics::Display::ViewportToGlobalHOG(Graphics::viewport const&amp;, Graphics::point, int, int) const"
-                  moduleName = "Hexagon"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/utils/Graphics.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "499"
-                  endingLineNumber = "499"
-                  offsetFromSymbolStart = "228">
-               </Location>
-               <Location
-                  uuid = "9FC6AD24-A58F-4F5E-BD3F-595727F45797 - 38bb55b92ee36954"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Graphics::Display::ViewportToGlobalHOG(Graphics::viewport const&amp;, Graphics::point, int, int) const"
-                  moduleName = "Hexagon"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/utils/Graphics.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "502"
-                  endingLineNumber = "502"
-                  offsetFromSymbolStart = "228">
-               </Location>
-               <Location
-                  uuid = "9FC6AD24-A58F-4F5E-BD3F-595727F45797 - 38bb55b92ee36eb7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Graphics::Display::ViewportToGlobalHOG(Graphics::viewport const&amp;, Graphics::point, int, int) const"
-                  moduleName = "Hexagon"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/utils/Graphics.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "503"
-                  endingLineNumber = "503"
-                  offsetFromSymbolStart = "228">
-               </Location>
-               <Location
-                  uuid = "9FC6AD24-A58F-4F5E-BD3F-595727F45797 - 3939c275fabd474d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Graphics::Display::ViewportToGlobalHOG(Graphics::viewport const&amp;, Graphics::point, int, int) const"
-                  moduleName = "Example"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/utils/Graphics.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "495"
-                  endingLineNumber = "495"
-                  offsetFromSymbolStart = "540">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -508,53 +316,6 @@
             endingLineNumber = "453"
             landmarkName = "Graphics::Display::GlobalHOGToViewport(v, where, width, height)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "6CF11B23-FB3C-464F-9A43-CC136D990996 - bc060c9bea426aeb"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Graphics::Display::GlobalHOGToViewport(Graphics::viewport const&amp;, Graphics::point, int, int) const"
-                  moduleName = "Hexagon"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/utils/Graphics.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "452"
-                  endingLineNumber = "452"
-                  offsetFromSymbolStart = "184">
-               </Location>
-               <Location
-                  uuid = "6CF11B23-FB3C-464F-9A43-CC136D990996 - bc060c9bea426b4e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Graphics::Display::GlobalHOGToViewport(Graphics::viewport const&amp;, Graphics::point, int, int) const"
-                  moduleName = "Hexagon"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/utils/Graphics.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "447"
-                  endingLineNumber = "447"
-                  offsetFromSymbolStart = "156">
-               </Location>
-               <Location
-                  uuid = "6CF11B23-FB3C-464F-9A43-CC136D990996 - bc060c9bea426b4e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Graphics::Display::GlobalHOGToViewport(Graphics::viewport const&amp;, Graphics::point, int, int) const"
-                  moduleName = "Hexagon"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/utils/Graphics.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "447"
-                  endingLineNumber = "447"
-                  offsetFromSymbolStart = "152">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -571,53 +332,6 @@
             endingLineNumber = "508"
             landmarkName = "HandleCommand(disp, drawCommands, s, width, height, viewport)"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "DD234542-5285-457D-B47D-37213AB23F23 - 55ceb8683837531c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "HandleCommand(Graphics::Display const&amp;, std::__1::vector&lt;Graphics::Display::data, std::__1::allocator&lt;Graphics::Display::data&gt;&gt; const&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt;&amp;, int, int, int)"
-                  moduleName = "Snakebird"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/utils/SVGUtil.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "496"
-                  endingLineNumber = "496"
-                  offsetFromSymbolStart = "456">
-               </Location>
-               <Location
-                  uuid = "DD234542-5285-457D-B47D-37213AB23F23 - 55ceb8683837531c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "HandleCommand(Graphics::Display const&amp;, std::__1::vector&lt;Graphics::Display::data, std::__1::allocator&lt;Graphics::Display::data&gt;&gt; const&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt;&amp;, int, int, int)"
-                  moduleName = "Snakebird"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/utils/SVGUtil.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "496"
-                  endingLineNumber = "496"
-                  offsetFromSymbolStart = "612">
-               </Location>
-               <Location
-                  uuid = "DD234542-5285-457D-B47D-37213AB23F23 - 55ceb8683837531c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "HandleCommand(Graphics::Display const&amp;, std::__1::vector&lt;Graphics::Display::data, std::__1::allocator&lt;Graphics::Display::data&gt;&gt; const&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt;&amp;, int, int, int)"
-                  moduleName = "Snakebird"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/utils/SVGUtil.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "496"
-                  endingLineNumber = "496"
-                  offsetFromSymbolStart = "600">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -634,38 +348,6 @@
             endingLineNumber = "323"
             landmarkName = "MyFrameHandler(id, viewport)"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "9DE13C4D-0E1F-47AE-876B-5C7BEC413588 - d13705456f40f97"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MyFrameHandler(unsigned long, unsigned int, void*)"
-                  moduleName = "Robotic Arm"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/apps/arm/RoboticArmTest.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "266"
-                  endingLineNumber = "266"
-                  offsetFromSymbolStart = "568">
-               </Location>
-               <Location
-                  uuid = "9DE13C4D-0E1F-47AE-876B-5C7BEC413588 - d13705456f40fb4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MyFrameHandler(unsigned long, unsigned int, void*)"
-                  moduleName = "Robotic Arm"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/apps/arm/RoboticArmTest.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "267"
-                  endingLineNumber = "267"
-                  offsetFromSymbolStart = "568">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -730,38 +412,6 @@
             endingLineNumber = "105"
             landmarkName = "GetPath(env1, env2, from, to, thePath)"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "EC356A7D-B944-4C57-9DF4-8E4A22481CAF - 57824ea0840c39f5"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ParallelAStarIDAStar&lt;RubiksCube, RubiksState, int&gt;::GetPath(RubiksCube*, RubiksState, RubiksState, std::__1::vector&lt;int, std::__1::allocator&lt;int&gt;&gt;&amp;)"
-                  moduleName = "RC"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/generic/ParallelAStarIDAStar.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "102"
-                  endingLineNumber = "102"
-                  offsetFromSymbolStart = "488">
-               </Location>
-               <Location
-                  uuid = "EC356A7D-B944-4C57-9DF4-8E4A22481CAF - 57824ea0840c3916"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ParallelAStarIDAStar&lt;RubiksCube, RubiksState, int&gt;::GetPath(RubiksCube*, RubiksState, RubiksState, std::__1::vector&lt;int, std::__1::allocator&lt;int&gt;&gt;&amp;)"
-                  moduleName = "RC"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/generic/ParallelAStarIDAStar.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "103"
-                  endingLineNumber = "103"
-                  offsetFromSymbolStart = "284">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -778,38 +428,6 @@
             endingLineNumber = "242"
             landmarkName = "StartThreadedIteration(env, bound)"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "917E912C-A6FF-41D6-9568-002FC589EA1B - b6ba38faf1f031e9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ParallelAStarIDAStar&lt;RubiksCube, RubiksState, int&gt;::StartThreadedIteration(RubiksCube, double)"
-                  moduleName = "RC"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/generic/ParallelAStarIDAStar.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "215"
-                  endingLineNumber = "215"
-                  offsetFromSymbolStart = "508">
-               </Location>
-               <Location
-                  uuid = "917E912C-A6FF-41D6-9568-002FC589EA1B - b6ba38faf1f031e9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ParallelAStarIDAStar&lt;RubiksCube, RubiksState, int&gt;::StartThreadedIteration(RubiksCube, double)"
-                  moduleName = "RC"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/generic/ParallelAStarIDAStar.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "215"
-                  endingLineNumber = "215"
-                  offsetFromSymbolStart = "448">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -918,87 +536,10 @@
             filePath = "../../../tests/MNPuzzle/Driver.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "124"
-            endingLineNumber = "124"
+            startingLineNumber = "129"
+            endingLineNumber = "129"
             landmarkName = "TestParallelIDA_PDB()"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "51BA0259-5DE8-4F4A-B19A-363E14D220A1 - 5f5f4adbf455b335"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TestParallelIDA_PDB()"
-                  moduleName = "Testing"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/tests/MNPuzzle/Driver.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "131"
-                  endingLineNumber = "131"
-                  offsetFromSymbolStart = "684">
-               </Location>
-               <Location
-                  uuid = "51BA0259-5DE8-4F4A-B19A-363E14D220A1 - 5f5f4adbf455b3b9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TestParallelIDA_PDB()"
-                  moduleName = "Testing"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/tests/MNPuzzle/Driver.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "135"
-                  endingLineNumber = "135"
-                  offsetFromSymbolStart = "604">
-               </Location>
-               <Location
-                  uuid = "51BA0259-5DE8-4F4A-B19A-363E14D220A1 - 5f5f4adbf455b21e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TestParallelIDA_PDB()"
-                  moduleName = "Testing"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/tests/MNPuzzle/Driver.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "138"
-                  endingLineNumber = "138"
-                  offsetFromSymbolStart = "604">
-               </Location>
-               <Location
-                  uuid = "51BA0259-5DE8-4F4A-B19A-363E14D220A1 - 5f5f4adbf455b23d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TestParallelIDA_PDB()"
-                  moduleName = "Testing"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/tests/MNPuzzle/Driver.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "139"
-                  endingLineNumber = "139"
-                  offsetFromSymbolStart = "604">
-               </Location>
-               <Location
-                  uuid = "51BA0259-5DE8-4F4A-B19A-363E14D220A1 - 5f5f4adbf455b377"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TestParallelIDA_PDB()"
-                  moduleName = "Testing"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/tests/MNPuzzle/Driver.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "129"
-                  endingLineNumber = "129"
-                  offsetFromSymbolStart = "604">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1047,68 +588,6 @@
             endingLineNumber = "119"
             landmarkName = "GetStateFromPDBHash(hash, s, threadID)"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "FC41D35A-877B-45D3-9D55-413B92068C2C - dde242ba87de893c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "LexPermutationPDB&lt;MNPuzzleState&lt;4, 4&gt;, slideDir, MNPuzzle&lt;4, 4&gt;, 8&gt;::GetStateFromPDBHash(unsigned long long, MNPuzzleState&lt;4, 4&gt;&amp;, int) const"
-                  moduleName = "Testing"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/search/LexPermutationPDB.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "124"
-                  endingLineNumber = "124"
-                  offsetFromSymbolStart = "176">
-               </Location>
-               <Location
-                  uuid = "FC41D35A-877B-45D3-9D55-413B92068C2C - dde242ba87de893c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "LexPermutationPDB&lt;MNPuzzleState&lt;4, 4&gt;, slideDir, MNPuzzle&lt;4, 4&gt;, 8&gt;::GetStateFromPDBHash(unsigned long long, MNPuzzleState&lt;4, 4&gt;&amp;, int) const"
-                  moduleName = "Testing"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/search/LexPermutationPDB.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "124"
-                  endingLineNumber = "124"
-                  offsetFromSymbolStart = "256">
-               </Location>
-               <Location
-                  uuid = "FC41D35A-877B-45D3-9D55-413B92068C2C - 3a5c4fe3e7f72cc2"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "LexPermutationPDB&lt;MNPuzzleState&lt;4, 4&gt;, slideDir, MNPuzzle&lt;4, 4&gt;, 8&gt;::GetFileName(char const*)"
-                  moduleName = "Testing"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include/c++/v1/string"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1698"
-                  endingLineNumber = "1698"
-                  offsetFromSymbolStart = "32">
-               </Location>
-               <Location
-                  uuid = "FC41D35A-877B-45D3-9D55-413B92068C2C - dde242ba87de89e3"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "LexPermutationPDB&lt;MNPuzzleState&lt;4, 4&gt;, slideDir, MNPuzzle&lt;4, 4&gt;, 8&gt;::GetStateFromPDBHash(unsigned long long, MNPuzzleState&lt;4, 4&gt;&amp;, int) const"
-                  moduleName = "Testing"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nathanst/Documents/GitHub/hog2/search/LexPermutationPDB.h"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "125"
-                  endingLineNumber = "125"
-                  offsetFromSymbolStart = "272">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
