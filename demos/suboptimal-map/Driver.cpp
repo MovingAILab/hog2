@@ -39,9 +39,11 @@ enum mode {
 	kFindPathIOSXDP = 10,
 	kFindPathIOSXUP = 11,
 	kFindPathGamma = 12,
+	kFindPathTri = 13,
 };
 
-double proveBound = 1.5, exploreBound = 3.0;
+float proveBound = 1.5, exploreBound = 3.0;
+float alpha = 0.0f;
 
 MapEnvironment *me = 0;
 TemplateAStar<xyLoc, tDirection, MapEnvironment> astar;
@@ -125,6 +127,7 @@ void InstallHandlers()
 	InstallKeyboardHandler(MyDisplayHandler, "IOS(XUP)", "Improved Optimistic", kAnyModifier, 'm');
 	InstallKeyboardHandler(MyDisplayHandler, "A*_e", "A*_e", kAnyModifier, 'e');
 	InstallKeyboardHandler(MyDisplayHandler, "DPS", "DPS", kAnyModifier, 'd');
+	InstallKeyboardHandler(MyDisplayHandler, "WA*(tri)", "WA*(tri)", kAnyModifier, '=');
 	InstallKeyboardHandler(MyDisplayHandler, "Weight", "Set weight", kAnyModifier, '0', '9');
 
 	//InstallCommandLineHandler(MyCLHandler, "-map", "-map filename", "Selects the default map to be loaded.");
@@ -607,6 +610,18 @@ void GetPlotPoints()
 				
 			}
 				break;
+			case kFindPathTri:
+			{
+				static Plotting::Line line2("");
+				float w1 = 1.0f+alpha*(2.0f*proveBound-2.0f);
+
+				line.AddPoint(0, target*w);
+				line.AddPoint(0.25f*target, target*(w-w1/4));
+				line.AddPoint(0.75f*target, target*w1/4);
+				line.AddPoint(target, 0);
+				plot.AddLine(&line2);
+				break;
+			}
 			default:
 			{
 				// f(g, h) = g+w*h = target
@@ -801,6 +816,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 		case 'k': m = kFindPathIOSXDP; StartSearch(); break;
 		case 'm': m = kFindPathIOSXUP; StartSearch(); break;
 		case '+': m = kFindPathGamma; StartSearch(); break;
+		case '=': m = kFindPathTri; StartSearch(); break;
 		case '1': proveBound = 1.5; StartSearch(); break;
 		case '2': proveBound = 2; StartSearch(); break;
 		case '3': proveBound = 3; StartSearch(); break;
@@ -961,6 +977,31 @@ void StartSearch()
 			double g = astar.GetOpenItem(x).g;
 			double h = astar.GetOpenItem(x).h;
 			solutionCost = std::max(solutionCost, g+proveBound*h);
+		}
+		printf("Cost: %1.2f\n", me->GetPathLength(path));
+		astar.InitializeSearch(me, start, goal, path);
+		running = true;
+	}
+	else if (m == kFindPathTri)
+	{
+		submitTextToBuffer("Searching with PHI_tri");
+		std::string tmp = "(0.1, "+std::to_string(proveBound)+")";
+		appendTextToBuffer(tmp.c_str());
+//		float alpha = 0.0f;
+		float w1 = 1.0f+alpha*(2.0f*proveBound-2.0f);
+		float w2 = 2*proveBound-1-alpha*(2.0f*proveBound-2.0f);
+		astar.SetWeight(proveBound);
+		astar.SetPhi([=](double h,double g){
+			if (3*g <= w1*h) return (g+w1*h)/w1;
+			else if (g <= h*(4*proveBound-w1)) return 4*(g+w2*h)/(w1+3*w2);
+			else return (g+w1*h)/proveBound;
+		});
+		astar.GetPath(me, start, goal, path);
+		for (int x = 0; x < astar.GetNumOpenItems(); x++)
+		{
+			double g = astar.GetOpenItem(x).g;
+			double h = astar.GetOpenItem(x).h;
+			solutionCost = astar.Phi(h, g)*proveBound;
 		}
 		printf("Cost: %1.2f\n", me->GetPathLength(path));
 		astar.InitializeSearch(me, start, goal, path);
