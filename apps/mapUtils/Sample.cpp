@@ -9,6 +9,8 @@
  *
  */
 
+#include <random>
+#include <algorithm>
 #include "Common.h"
 #include "Sample.h"
 #include "UnitSimulation.h"
@@ -176,6 +178,7 @@ void InstallHandlers()
 	InstallCommandLineHandler(MyCLHandler, "-problems3", "-problems3 filename", "Selects the problem set to run.");
 	InstallCommandLineHandler(MyCLHandler, "-problems4", "-problems4 filename", "Selects the problem set to run comparing weighted A* with and without re-openings.");
 	InstallCommandLineHandler(MyCLHandler, "-problems5", "-problems5 filename additive_bound", "Selects the problem set to run comparing different methods of additive bounds.");
+	InstallCommandLineHandler(MyCLHandler, "-problems6", "-problems6 filename", "Tests alpha.");
 	InstallCommandLineHandler(MyCLHandler, "-screen", "-screen <map>", "take a screenshot of the screen and then exit");
 	InstallCommandLineHandler(MyCLHandler, "-svg", "-svg <map> <output> <optional-x> <optional-y>", "Save the map as SVG format");
 	InstallCommandLineHandler(MyCLHandler, "-size", "-batch integer", "If size is set, we create a square maze with the x and y dimensions specified.");
@@ -699,7 +702,9 @@ void buildRandomSet(const char *output = 0)
 	{
 		points.push_back(astar.GetItem(x).data);
 	}
-	std::random_shuffle ( points.begin(), points.end());
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle( points.begin(), points.end(), g);
 	if (1 == points.size()%2)
 		points.pop_back();
 	if (points.size() > 2000)
@@ -895,6 +900,132 @@ void runProblemSet5(char *scenario, double bound)
 	exit(0);
 }
 
+#include "GridHeuristics.h"
+void runProblemSet6(char *scenario, bool heuristic)
+{
+	printf("Loading scenario %s\n", scenario);
+	ScenarioLoader sl(scenario);
+	
+	printf("Loading map %s\n", sl.GetNthExperiment(0).GetMapName());
+	Map *map = new Map(sl.GetNthExperiment(0).GetMapName());
+	map->Scale(sl.GetNthExperiment(0).GetXScale(),
+			   sl.GetNthExperiment(0).GetYScale());
+	
+	std::vector<xyLoc> thePath;
+	MapEnvironment ma(map);
+	ma.SetEightConnected();
+	
+	TemplateAStar<xyLoc, tDirection, MapEnvironment> astar;
+
+	GridEmbedding *ge = new GridEmbedding(&ma, 10, kLINF);
+	if (heuristic)
+	{
+		for (int x = 0; x < 10; x++)
+			ge->AddDimension(kDifferential, kFurthest);
+		astar.SetHeuristic(ge);
+	}
+	
+	
+	Timer t;
+	for (float w = 9; w >= 1.05; w=(w-1)/2.0f+1) // weight
+		//		for (float w = 9; w >= 1.2; w=(w-1)/2.0f+1) // weight
+		//for (float w = 1.25; w <= 10; w=(w-1)*2+1) // weight
+	{
+		for (float alpha = 0; flesseq(alpha, 1); alpha += 0.25f*0.5f) // alpha
+		{
+			for (int z = 0; z < 4; z++) // priority functions
+			{
+				switch (z)
+				{
+					case 0:
+					{
+						// 0: XDP/XUP            (no reopenings)
+						float w1 = 1.0f+alpha*(2.0f*w-2.0f);
+						float w2 = (2*w-1)-alpha*(2.0f*w-2.0f);
+						astar.SetReopenNodes(false);
+						astar.SetWeight(w);
+						astar.SetPhi([=](double h,double g){
+							if (g <= w1*h) return (g+w1*h)/w1;
+							else return (g+w2*h)/w;
+						});
+					}
+						break;
+					case 1:
+					{
+						// 1: XDP/XUP-0.5 offset (no reopenings)
+						float w1 = 1.0f+alpha*(2.0f*w-2.0f);
+						float w2 = (2*w-1)-alpha*(2.0f*w-2.0f);
+						astar.SetReopenNodes(false);
+						astar.SetWeight(w);
+						astar.SetPhi([=](double h,double g){
+							if (3*g <= w1*h) return (g+w1*h)/w1;
+							else if (g <= h*(4*w-w1)) return 4*(g+w2*h)/(w1+3*w2);
+							else return (g+w1*h)/w;
+						});
+					}
+						break;
+					case 2:
+					{
+						// 0: XDP/XUP            (no reopenings)
+						float w1 = 1.0f+alpha*(2.0f*w-2.0f);
+						float w2 = (2*w-1)-alpha*(2.0f*w-2.0f);
+						astar.SetReopenNodes(true);
+						astar.SetWeight(w);
+						astar.SetPhi([=](double h,double g){
+							if (g <= w1*h) return (g+w1*h)/w1;
+							else return (g+w2*h)/w;
+						});
+					}
+						break;
+					case 3:
+					{
+						// 3: XDP/XUP-0.5 offset (   reopenings)
+						float w1 = 1.0f+alpha*(2.0f*w-2.0f);
+						float w2 = (2*w-1)-alpha*(2.0f*w-2.0f);
+						astar.SetReopenNodes(true);
+						astar.SetWeight(w);
+						astar.SetPhi([=](double h,double g){
+							if (3*g <= w1*h) return (g+w1*h)/w1;
+							else if (g <= h*(4*w-w1)) return 4*(g+w2*h)/(w1+3*w2);
+							else return (g+w1*h)/w;
+						});
+					}
+						break;
+				}
+				printf("Starting w=%1.2f, alpha=%1.2f, alg = %d\n", w, alpha, z);
+				for (int x = 0; x < sl.GetNumExperiments(); x++)
+				{
+					if (sl.GetNthExperiment(x).GetBucket() < 25 || sl.GetNthExperiment(x).GetBucket() >= 50)
+						continue;
+					xyLoc from, to;
+//					printf("%d\t", sl.GetNthExperiment(x).GetBucket());
+					from.x = sl.GetNthExperiment(x).GetStartX();
+					from.y = sl.GetNthExperiment(x).GetStartY();
+					to.x = sl.GetNthExperiment(x).GetGoalX();
+					to.y = sl.GetNthExperiment(x).GetGoalY();
+//					printf("(%d, %d) (%d, %d)\t", from.x, from.y, to.x, to.y);
+					Timer t;
+					
+					t.StartTimer();
+					astar.GetPath(&ma, from, to, path);
+					t.EndTimer();
+					printf("[Re-open: %s. w = %1.2f. alpha=%1.2f. Alg: %d.] Problem %d solved in %f seconds. %llu expanded. Solution length %f; h = %s\n",
+						   astar.GetReopenNodes() ? "yes" : "no", w, alpha, z,
+						   x+1,
+						   t.GetElapsedTime(), astar.GetNodesExpanded(), ma.GetPathLength(path), heuristic?"yes":"no");
+				}
+//				for (int x = 0; x < 100; x++)
+//				{
+//					start = STP::GetKorfInstance(x);
+//					goal.Reset();
+//					t.StartTimer();
+//					astar.GetPath(&mnp44, start, goal, path);
+//					t.EndTimer();
+//				}
+			}
+		}
+	}
+}
 void runProblemSet2(char *problems, int multiplier)
 {
 	/*
@@ -1239,6 +1370,14 @@ int MyCLHandler(char *argument[], int maxNumArgs)
 	{
 		if (maxNumArgs <= 2) exit(0);
 		runProblemSet5(argument[1], atof(argument[2]));
+		return 3;
+	}
+	else if (strcmp(argument[0], "-problems6" ) == 0 )
+	{
+		if (maxNumArgs <= 1) exit(0);
+		runProblemSet6(argument[1], false);
+		runProblemSet6(argument[1], true);
+		exit(0);
 		return 3;
 	}
 	return 2; //ignore typos
