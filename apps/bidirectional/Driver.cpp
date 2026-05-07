@@ -9,6 +9,8 @@
  *
  */
 
+#include <algorithm>
+#include <random>
 #include <cassert>
 #include <stdlib.h>
 #include <stdio.h>
@@ -1066,12 +1068,14 @@ void PDBTest()
 			}
 		}
 		printf("Success!\n");
+std::random_device rd;
+std::mt19937 g(rd());
 
 		for (int t = 0; t < 10000; t++)
 		{
 			for (int x = 0; x < N; x++)
 				items[x] = x;
-			std::random_shuffle(&items[0], &items[N]);
+			std::shuffle(&items[0], &items[N], g);
 			for (int x = 0; x < N; x++)
 			{
 				printf("%d ", items[x]);
