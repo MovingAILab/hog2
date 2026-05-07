@@ -223,12 +223,6 @@ void TemplateAStar<state,action,environment,openList>::GetPath(environment *_env
   	}
   	while (!DoSingleSearchStep(thePath))
 	{
-		if (10000000 <= nodesExpanded)
-        {
-            //Terminate the search after 10 million node expansions.
-            // printf("%" PRId64 " nodes expanded, %" PRId64 " generated => Terminated.\n", nodesExpanded, nodesTouched);
-            break;
-        }
 //		if (0 == nodesExpanded%100000)
 //			printf("%" PRId64 " nodes expanded, %" PRId64 " generated\n", nodesExpanded, nodesTouched);
 	}
