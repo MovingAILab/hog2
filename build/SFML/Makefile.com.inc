@@ -6,7 +6,7 @@
 #-----------------------------------------------------------------------------
 
 CXX = g++ # clang++
-COMMON_CXXFLAGS += -Wall -std=c++14 -Wno-deprecated
+COMMON_CXXFLAGS += -Wall -std=c++17 -Wno-deprecated
 
 #COMMON_CXXFLAGS += -ansi -pedantic
 

@@ -17,7 +17,7 @@ REL_OBJDIR = $(ROOT)/objs/$(NAME)/release
 DBG_BINDIR = $(ROOT)/bin/debug
 REL_BINDIR = $(ROOT)/bin/release
 
-PROJ_CXXFLAGS = -I$(ROOT)/absmapalgorithms -I$(ROOT)/graphalgorithms -I$(ROOT)/gui -I$(ROOT)/simulation -I$(ROOT)/environments -I$(ROOT)/mapalgorithms -I$(ROOT)/algorithms -I$(ROOT)/generic -I$(ROOT)/utils -I$(ROOT)/graph -I$(ROOT)/search
+PROJ_CXXFLAGS = -I$(ROOT)/absmapalgorithms -I$(ROOT)/graphalgorithms -I$(ROOT)/gui -I$(ROOT)/simulation -I$(ROOT)/environments -I$(ROOT)/mapalgorithms -I$(ROOT)/algorithms -I$(ROOT)/generic -I$(ROOT)/utils -I$(ROOT)/graph -I$(ROOT)/search -I$(ROOT)/envutil -I$(ROOT)/grids
 
 PROJ_DBG_CXXFLAGS = $(PROJ_CXXFLAGS)
 PROJ_REL_CXXFLAGS = $(PROJ_CXXFLAGS)
@@ -25,8 +25,8 @@ PROJ_REL_CXXFLAGS = $(PROJ_CXXFLAGS)
 PROJ_DBG_LNFLAGS = -L$(DBG_BINDIR)
 PROJ_REL_LNFLAGS = -L$(REL_BINDIR)
 
-PROJ_DBG_LIB = -lgraph -lenvironments -lmapalgorithms -lalgorithms -lgraphalgorithms -lgui -lutils
-PROJ_REL_LIB = -lgraph -lenvironments -lmapalgorithms -lalgorithms -lgraphalgorithms -lgui -lutils
+PROJ_DBG_LIB = -lgraph -lenvironments -lmapalgorithms -lalgorithms -lgraphalgorithms -lgui -lutils -lenvutil -lgrids
+PROJ_REL_LIB = -lgraph -lenvironments -lmapalgorithms -lalgorithms -lgraphalgorithms -lgui -lutils -lenvutil -lgrids
 
 
 PROJ_DBG_DEP = \
