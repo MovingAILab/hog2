@@ -576,7 +576,8 @@ void GetPlotPoints()
 				line2.Clear();
 				line2.SetColor(Colors::purple);
 				line2.AddPoint(0, 0);
-				line2.AddPoint(w*target, w*target);
+				line2.AddPoint(solutionCost, solutionCost);
+				//line2.AddPoint(w*target, w*target);
 				plot.AddLine(&line2);
 
 				// lower line
@@ -595,7 +596,9 @@ void GetPlotPoints()
 				line2.Clear();
 				line2.SetColor(Colors::purple);
 				line2.AddPoint(0, 0);
-				line2.AddPoint(w*target/(2*w-1), w*target);
+				//line2.AddPoint(w*target/(2*w-1), w*target);
+				double slope = (2*w-1);
+				line2.AddPoint(solutionCost/slope, solutionCost);
 
 //				line2.AddPoint((2*w-1)*w*target, w*target);
 //				line2.AddPoint(target, target*w);
@@ -604,6 +607,7 @@ void GetPlotPoints()
 				plot.AddLine(&line2);
 				
 				// lower line
+				line.Clear();
 				line.AddPoint(target, 0);
 				line.AddPoint(target/2, target*(2*w-1)/2.0);
 				line.AddPoint(0, target*w);
@@ -619,6 +623,18 @@ void GetPlotPoints()
 				line.AddPoint(0.25f*target, target*(w-w1/4));
 				line.AddPoint(0.75f*target, target*w1/4);
 				line.AddPoint(target, 0);
+				
+				line2.SetWidth(1);
+				line2.Clear();
+				line2.SetColor(Colors::purple);
+//				line2.AddPoint((1.33f*w)*0.75f*target, (1.33f*w)*target*w1/4);
+				double slope1 = (target*w1/4)/(0.75f*target);
+				line2.AddPoint(solutionCost, solutionCost*slope1);
+				line2.AddPoint(0, 0);
+				//float ktmp = w/(w-w1/4.0f); // scaling factor
+				//line2.AddPoint(ktmp*0.25f*target, ktmp*target*(w-w1/4));
+				double slope2 = (w-w1/4)/(0.25f);
+				line2.AddPoint(solutionCost/slope2, solutionCost);
 				plot.AddLine(&line2);
 				break;
 			}
