@@ -115,8 +115,8 @@ void RunHOGGUI(int argc, char* argv[], int xDimension, int yDimension)
 	srandom(unsigned(time(0)));
 	ProcessCommandLineArgs(argc, argv);
 	pContextInfo = new recContext;
-
-    sf::Window window(sf::VideoMode(xDimension, yDimension), "My window");
+	unsigned int xd = xDimension, yd = yDimension;
+	sf::Window window(sf::VideoMode({xd, yd}), "My window");
 	window.setFramerateLimit(30); // call it once, after creating the window
 	initialConditions(pContextInfo);
 	initCameras();
@@ -130,106 +130,112 @@ void RunHOGGUI(int argc, char* argv[], int xDimension, int yDimension)
 	
 	while (window.isOpen())
     {
-        // check all the window's events that were triggered since the last iteration of the loop
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            // "close requested" event: we close the window
-			switch (event.type)
+		while (const std::optional event = window.pollEvent())
+		{
+			if (event->is<sf::Event::Closed>())
 			{
-			case sf::Event::Closed:
-                window.close();
+				window.close();
 				break;
-			case sf::Event::TextEntered:
-				if (event.text.unicode < 128)
-					DoKeyboardCommand(pContextInfo, event.text.unicode, false, false, false);
-				break;
-			case sf::Event::KeyPressed:
-				switch (event.key.code)
-				{
-				case sf::Keyboard::Left: DoKeyboardCommand(pContextInfo, kLeftArrow, event.key.shift, event.key.control, event.key.alt); break;
-				case sf::Keyboard::Right: DoKeyboardCommand(pContextInfo, kRightArrow, event.key.shift, event.key.control, event.key.alt); break;
-				case sf::Keyboard::Up: DoKeyboardCommand(pContextInfo, kUpArrow, event.key.shift, event.key.control, event.key.alt); break;
-				case sf::Keyboard::Down: DoKeyboardCommand(pContextInfo, kDownArrow, event.key.shift, event.key.control, event.key.alt); break;
-				default: break; // others handled by TextEntered
-				}
-				break;
-			case sf::Event::Resized:
-				resizeWindow(event.size.width, event.size.height);
+			}
+			else if (event->is<sf::Event::Resized>())
+			{
+				sf::Vector2u size = window.getSize();
+				//				float ratio = static_cast<float>(size.x) / size.y;
+				//				size.x = size.y * mAspectRatio; // Maintain aspect ratio
+				//				mWindow->setSize(size);
+				resizeWindow(size.x, size.y);
 				//printf("Window now %dx%d\n", event.size.width, event.size.height);
-				xDimension = event.size.width;
-				yDimension = event.size.height;
+				xDimension = size.x;
+				yDimension = size.y;
 				pContextInfo->display.windowHeight = yDimension;
 				pContextInfo->display.windowWidth = xDimension;
 				resizeGL(pContextInfo, xDimension, yDimension); // forces projection matrix update
 				break;
-			case sf::Event::MouseButtonPressed:
+			}
+			else if (const auto* keyPressed = event->getIf<sf::Event::TextEntered>())
+			{
+				if (keyPressed->unicode < 128)
 				{
-					Graphics::point p = WindowToHOG(Graphics::point(event.mouseButton.x, event.mouseButton.y));//convertToGlobalHogCoordinate(event.mouseButton.x, event.mouseButton.y);
-					//printf("Click (%d, %d) - {%f, %f, %f}\n", event.mouseButton.x, event.mouseButton.y, p.x, p.y, p.z);
-					mousePressCount+=1;
-					switch (event.mouseButton.button)
-					{
-					case sf::Mouse::Right:
-						//HandleMouseClick(pContextInfo, event.mouseButton.x, event.mouseButton.y, p, kRightButton, kMouseDown);
-						//printf("Right (%d, %d) - {%f, %f, %f}\n", event.mouseButton.x, event.mouseButton.y, p.x, p.y, p.z);
-						HandleMouse(pContextInfo, event.mouseButton.x, event.mouseButton.y, p, kRightButton, kMouseDown);
+					DoKeyboardCommand(pContextInfo, keyPressed->unicode, false, false, false);
+				}
+			}
+			else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
+			{
+				switch (keyPressed->code)
+				{
+					case sf::Keyboard::Key::Left: DoKeyboardCommand(pContextInfo, kLeftArrow, keyPressed->shift, keyPressed->control, keyPressed->alt); break;
+					case sf::Keyboard::Key::Right: DoKeyboardCommand(pContextInfo, kRightArrow, keyPressed->shift, keyPressed->control, keyPressed->alt); break;
+					case sf::Keyboard::Key::Up: DoKeyboardCommand(pContextInfo, kUpArrow, keyPressed->shift, keyPressed->control, keyPressed->alt); break;
+					case sf::Keyboard::Key::Down: DoKeyboardCommand(pContextInfo, kDownArrow, keyPressed->shift, keyPressed->control, keyPressed->alt); break;
+					default: break; // others handled by TextEntered
+				}
+			}
+			else if (const auto* mouse = event->getIf<sf::Event::MouseButtonPressed>())
+			{
+				Graphics::point p = WindowToHOG(Graphics::point(mouse->position.x, mouse->position.y));//convertToGlobalHogCoordinate(mouse->position.x, mouse->position.y);
+				//printf("Click (%d, %d) - {%f, %f, %f}\n", mouse->position.x, mouse->position.y, p.x, p.y, p.z);
+				mousePressCount+=1;
+				switch (mouse->button)
+				{
+						
+					case sf::Mouse::Button::Right:
+						//HandleMouseClick(pContextInfo, mouse->position.x, mouse->position.y, p, kRightButton, kMouseDown);
+						//printf("Right (%d, %d) - {%f, %f, %f}\n", mouse->position.x, mouse->position.y, p.x, p.y, p.z);
+						HandleMouse(pContextInfo, mouse->position.x, mouse->position.y, p, kRightButton, kMouseDown);
 						break;
-					case sf::Mouse::Left:
-						//printf("Left (%d, %d) - {%f, %f, %f}\n", event.mouseButton.x, event.mouseButton.y, p.x, p.y, p.z);
-						HandleMouse(pContextInfo, event.mouseButton.x, event.mouseButton.y, p, kLeftButton, kMouseDown);
+					case sf::Mouse::Button::Left:
+						//printf("Left (%d, %d) - {%f, %f, %f}\n", mouse->position.x, mouse->position.y, p.x, p.y, p.z);
+						HandleMouse(pContextInfo, mouse->position.x, mouse->position.y, p, kLeftButton, kMouseDown);
 						break;
-					case sf::Mouse::Middle:
-						HandleMouse(pContextInfo, event.mouseButton.x, event.mouseButton.y, p, kMiddleButton, kMouseDown);
+					case sf::Mouse::Button::Middle:
+						HandleMouse(pContextInfo, mouse->position.x, mouse->position.y, p, kMiddleButton, kMouseDown);
 						break;
 					default: break;
-					}
 				}
-				break;
-			case sf::Event::MouseButtonReleased:
-				{
-					Graphics::point p = WindowToHOG(Graphics::point(event.mouseButton.x, event.mouseButton.y));
-					mousePressCount-=1;
-					switch (event.mouseButton.button)
-					{
-					case sf::Mouse::Right:
-						HandleMouse(pContextInfo, event.mouseButton.x, event.mouseButton.y, p, kRightButton, kMouseUp);
-						break;
-					case sf::Mouse::Left:
-						HandleMouse(pContextInfo, event.mouseButton.x, event.mouseButton.y, p, kLeftButton, kMouseUp);
-						break;
-					case sf::Mouse::Middle:
-						HandleMouse(pContextInfo, event.mouseButton.x, event.mouseButton.y, p, kMiddleButton, kMouseUp);
-						break;
-					}
-				}
-				break;
-			case sf::Event::MouseMoved:
-				{
-					Graphics::point p = WindowToHOG(Graphics::point(event.mouseMove.x, event.mouseMove.y));
-					tButtonType bType = kNoButton;
-					if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
-						bType = kLeftButton;
-					else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
-						bType = kRightButton;
-					else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle))
-						bType = kMiddleButton;
-
-					if (bType == kNoButton)
-					{
-						HandleMouse(pContextInfo, event.mouseMove.x, event.mouseMove.y, p, bType, kMouseMove);
-					}
-					else {
-						HandleMouse(pContextInfo, event.mouseMove.x, event.mouseMove.y, p, bType, kMouseDrag);
-					}
-				}
-				//std::cout << "new mouse x: " << event.mouseMove.x << std::endl;
-				//std::cout << "new mouse y: " << event.mouseMove.y << std::endl;
-				break;
 			}
+			else if (const auto* mouse = event->getIf<sf::Event::MouseButtonReleased>())
+			{
+				Graphics::point p = WindowToHOG(Graphics::point(mouse->position.x, mouse->position.y));
+				mousePressCount-=1;
+				switch (mouse->button)
+				{
+					case sf::Mouse::Button::Right:
+						HandleMouse(pContextInfo, mouse->position.x, mouse->position.y, p, kRightButton, kMouseUp);
+						break;
+					case sf::Mouse::Button::Left:
+						HandleMouse(pContextInfo, mouse->position.x, mouse->position.y, p, kLeftButton, kMouseUp);
+						break;
+					case sf::Mouse::Button::Middle:
+						HandleMouse(pContextInfo, mouse->position.x, mouse->position.y, p, kMiddleButton, kMouseUp);
+						break;
+					default: break;
+				}
+			}
+			else if (const auto* mouse = event->getIf<sf::Event::MouseMoved>())
+			{
+				Graphics::point p = WindowToHOG(Graphics::point(mouse->position.x, mouse->position.y));
+				tButtonType bType = kNoButton;
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+					bType = kLeftButton;
+				else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
+					bType = kRightButton;
+				else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle))
+					bType = kMiddleButton;
+				
+				if (bType == kNoButton)
+				{
+					HandleMouse(pContextInfo, mouse->position.x, mouse->position.y, p, bType, kMouseMove);
+				}
+				else {
+					HandleMouse(pContextInfo, mouse->position.x, mouse->position.y, p, bType, kMouseDrag);
+				}
+			}
+			//std::cout << "new mouse x: " << mouse->position.x << std::endl;
+			//std::cout << "new mouse y: " << mouse->position.y << std::endl;
+			break;
 		}
 		drawGL (pContextInfo, window);
-    }
+	}
 	delete pContextInfo;
 }
 
