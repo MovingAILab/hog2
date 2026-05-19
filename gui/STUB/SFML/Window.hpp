@@ -198,12 +198,26 @@ public:
 };
 
 
+template <typename T>
+class Vector2
+{
+public:
+  constexpr Vector2() = default;
+  constexpr Vector2(T x, T y) {}
+  T x{}; 
+  T y{}; 
+};
+
+  using Vector2u = Vector2<unsigned int>;
+
 	
 class SFML_WINDOW_API VideoMode
 {
 public:
     VideoMode();
     VideoMode(unsigned int modeWidth, unsigned int modeHeight, unsigned int modeBitsPerPixel = 32);
+    explicit VideoMode(Vector2u modeSize, unsigned int modeBitsPerPixel = 32);
+
 };
 	
 
@@ -213,14 +227,21 @@ public:
 bool isOpen() const;
 bool pollEvent(Event& event);
 };
-  
+
+enum class State
+{
+  Windowed,  
+  Fullscreen 
+};
+
 class SFML_WINDOW_API Window : GlResource, NonCopyable
 {
 public:
     //Window();
 	// used
 	Window(VideoMode mode, const String& title, Uint32 style = Style::Default, const ContextSettings& settings = ContextSettings());
-	
+
+	Window(VideoMode mode, const String &title, std::uint32_t style = Style::Default, State state = State::Windowed, const ContextSettings &settings = {} );
     //explicit Window(WindowHandle handle, const ContextSettings& settings = ContextSettings());
 	// used
     virtual ~Window();

@@ -10,12 +10,14 @@ namespace sf
 
 	VideoMode::VideoMode(){}
 	VideoMode::VideoMode(unsigned int modeWidth, unsigned int modeHeight, unsigned int modeBitsPerPixel){}
+  VideoMode::VideoMode(Vector2u modeSize, unsigned int modeBitsPerPixel){}
 
   bool WindowBase::isOpen() const { return true; }
   bool WindowBase::pollEvent(Event& event) { return false; }
 
   
 	Window::Window(VideoMode mode, const String& title, Uint32 style, const ContextSettings& settings) {}
+  Window::Window(VideoMode mode, const String &title, std::uint32_t style, State state, const ContextSettings &settings ) {}
 	Window::~Window() {}
     void Window::close() {}
 	bool Window::isOpen() const {return true;}
