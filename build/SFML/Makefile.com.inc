@@ -17,7 +17,6 @@ LN = $(CXX)
 #COMMON_LNFLAGS += -stdlib=libc++
 
 AR = ar
-#OPENGL=STUB
 
 # Use -Wextra only for GCC version > 3
 #ifneq ($(shell echo __GNUC__ | $(CXX) -E -xc - | tail -n 1), 3)
@@ -31,7 +30,8 @@ COMMON_LNFLAGS += -L /opt/homebrew/lib/
 endif
 
 ifeq ("$(OPENGL)", "STUB")
-COMMON_CXXFLAGS += -I$(ROOT)/gui/STUB/GL/ -DNO_OPENGL
+COMMON_CXXFLAGS += -DNO_OPENGL
+COMMON_CXXFLAGS += -I$(ROOT)/gui/STUB/GL/
 COMMON_CXXFLAGS += -I$(ROOT)/gui/STUB/SFML/
 COMMON_CXXFLAGS += -I$(ROOT)/gui/STUB/
 
@@ -49,21 +49,6 @@ COMMON_LNFLAGS += -pthread -lGL #-lGLU -lglut
 endif
 
 endif
-
-
-
-#COMMON_LNFLAGS += -Lapps/libs -Ldemos/libs -Lpapers/libs -L/usr/X11R6/lib64 -L/usr/X11R6/lib -pthread #--stdlib=libstdc++ # -lXi -lXmu
-#else
-#COMMON_LNFLAGS += -Lapps/libs -Ldemos/libs -Lpapers/libs -L/usr/X11R6/lib64 -L/usr/X11R6/lib -lpthread #--stdlib=libstdc++ # -lXi -lXmu
-#endif
-
-#ifeq ("$(OPENGL)", "STUB")
-#COMMON_CXXFLAGS += -I$(ROOT)/gui/ -I$(ROOT)/gui/GL/ -DNO_OPENGL
-#else
-#COMMON_CXXFLAGS += -I/usr/include/GL
-#COMMON_LNFLAGS +=  -lGL -lGLU -lglut
-#endif
-#endif
 
 DBG_CXXFLAGS = $(PROJ_DBG_CXXFLAGS) $(COMMON_CXXFLAGS) -g
 REL_CXXFLAGS = $(PROJ_REL_CXXFLAGS) $(COMMON_CXXFLAGS) -g -O3 #-DNDEBUG

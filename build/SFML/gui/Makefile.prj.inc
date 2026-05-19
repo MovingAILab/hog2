@@ -17,22 +17,32 @@ REL_OBJDIR = $(ROOT)/objs/$(NAME)/release
 DBG_BINDIR = $(ROOT)/bin/debug
 REL_BINDIR = $(ROOT)/bin/release
 
-PROJ_CXXFLAGS = -I$(ROOT)/utils
-PROJ_DBG_CXXFLAGS = $(PROJ_CXXFLAGS)
-PROJ_REL_CXXFLAGS = $(PROJ_CXXFLAGS)
+PROJ_CXXFLAGS = -I$(ROOT)/utils -I$(ROOT)/gui
+PROJ_DBG_CXXFLAGS = $(PROJ_CXXFLAGS) -I/usr/local/include/SFML/
+PROJ_REL_CXXFLAGS = $(PROJ_CXXFLAGS) -I/usr/local/include/SFML/
 
-PROJ_DBG_LNFLAGS =
-PROJ_REL_LNFLAGS =
+PROJ_DBG_LNFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
+PROJ_REL_LNFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
 PROJ_DBG_LIB =
 PROJ_REL_LIB =
 
 default : all
 
+ifeq ("$(OPENGL)", "STUB")
 SRC_CPP = \
   gui/Common.cpp \
-  gui/SFML_HOG.cpp \
+  gui/STUB/STUB_HOG.cpp \
   gui/TextBox.cpp \
   gui/Trackball.cpp
 
+else
+
+SRC_CPP = \
+  gui/Common.cpp \
+  gui/SFML/SFML_HOG.cpp \
+  gui/TextBox.cpp \
+  gui/Trackball.cpp
+
+endif
 

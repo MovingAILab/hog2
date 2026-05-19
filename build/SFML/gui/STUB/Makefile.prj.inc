@@ -17,7 +17,7 @@ REL_OBJDIR = $(ROOT)/objs/$(NAME)/release
 DBG_BINDIR = $(ROOT)/bin/debug
 REL_BINDIR = $(ROOT)/bin/release
 
-PROJ_CXXFLAGS = 
+PROJ_CXXFLAGS = -I$(ROOT)/gui/ -I$(ROOT)/utils/
 PROJ_DBG_CXXFLAGS = $(PROJ_CXXFLAGS)
 PROJ_REL_CXXFLAGS = $(PROJ_CXXFLAGS)
 
@@ -30,9 +30,6 @@ PROJ_REL_LIB =
 default : all
 
 SRC_CPP = \
-  gui/STUB/GL/gl.cpp \
-  gui/STUB/GL/glut.cpp \
-  gui/STUB/SFML/Window.cpp \
-  gui/STUB/SFML/OpenGL.cpp
+  gui/STUB/STUB_HOG.cpp \
 
 
