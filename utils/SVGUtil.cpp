@@ -418,6 +418,8 @@ void DrawLineCommand(const Graphics::Display &disp, const std::vector<Graphics::
 			}
 		}
 		x++;
+		if (x >= drawCommands.size())
+			break;
 	}
 	x--;
 	s += SVGEndLinePath();
