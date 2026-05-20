@@ -121,7 +121,7 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 		AddViewport(windowID, {0, -1, 1, 1}, kScaleToSquare);
 
 		printf("Window %ld created\n", windowID);
-		glClearColor(0.99, 0.99, 0.99, 1.0);
+		
 		InstallFrameHandler(MyFrameHandler, windowID, 0);
 		SetNumPorts(windowID, 2);
 		g = new Graph();

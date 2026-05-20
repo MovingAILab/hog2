@@ -214,12 +214,12 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 			if (path.size() != 0)
 			{
 				me->SetColor(0, 1, 0);
-				glLineWidth(10);
+				//glLineWidth(10);
 				for (int x = 1; x < path.size(); x++)
 				{
 					me->DrawLine(display, path[x-1], path[x]);
 				}
-				glLineWidth(1);
+				//glLineWidth(1);
 			}
 		}
 	}

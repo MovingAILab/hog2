@@ -426,7 +426,7 @@ void DrawRegularGoalArea(Graphics::Display &display, tDirection dir, bool drawBo
 		//printf("Bounds: (%d, %d) to (%d, %d)\n", minx, miny, maxx, maxy);
 		me->GetMap()->GetCoord(minx, miny, l, t, z, rad);
 		me->GetMap()->GetCoord(maxx, maxy, r, b, z, rad);
-		glColor3f(1.0, 1.0, 1.0);
+		//glColor3f(1.0, 1.0, 1.0);
 		display.FrameRect({static_cast<float>(l-rad),
 			static_cast<float>(t-rad),
 			static_cast<float>(r+rad),
@@ -500,7 +500,7 @@ void DrawJPSGoalArea(Graphics::Display &display, CanonicalGrid::tDirection dir, 
 		//printf("Bounds: (%d, %d) to (%d, %d)\n", minx, miny, maxx, maxy);
 		me->GetMap()->GetCoord(minx, miny, l, t, z, rad);
 		me->GetMap()->GetCoord(maxx, maxy, r, b, z, rad);
-		glColor3f(1.0, 1.0, 1.0);
+		//glColor3f(1.0, 1.0, 1.0);
 		display.FrameRect({static_cast<float>(l-rad),
 			static_cast<float>(t-rad),
 			static_cast<float>(r+rad),
