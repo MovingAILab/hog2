@@ -179,16 +179,16 @@ public:
 		e.Draw(display, s.edge);
 	}
 
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const RubiksState&) const;
-	virtual void OpenGLDrawCorners(const RubiksState&) const;
-	virtual void OpenGLDrawEdges(const RubiksState&) const;
-	virtual void OpenGLDrawEdgeDual(const RubiksState&) const;
-	virtual void OpenGLDrawCenters() const;
-	virtual void OpenGLDrawCubeBackground() const;
-	/** Draw the transition at some percentage 0...1 between two states */
-	virtual void OpenGLDraw(const RubiksState&, const RubiksState&, float) const;
-	virtual void OpenGLDraw(const RubiksState&, const RubiksAction&) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const RubiksState&) const;
+//	virtual void OpenGLDrawCorners(const RubiksState&) const;
+//	virtual void OpenGLDrawEdges(const RubiksState&) const;
+//	virtual void OpenGLDrawEdgeDual(const RubiksState&) const;
+//	virtual void OpenGLDrawCenters() const;
+//	virtual void OpenGLDrawCubeBackground() const;
+//	/** Draw the transition at some percentage 0...1 between two states */
+//	virtual void OpenGLDraw(const RubiksState&, const RubiksState&, float) const;
+//	virtual void OpenGLDraw(const RubiksState&, const RubiksAction&) const;
 	
 	//int64_t percentage;
 	int compressionFactor;
@@ -201,8 +201,8 @@ public:
 	BloomFilter *depth8, *depth9;
 	MinBloomFilter *minBloom;
 //private:
-	void OpenGLDrawCube(int cube) const;
-	void SetFaceColor(int face) const;
+//	void OpenGLDrawCube(int cube) const;
+//	void SetFaceColor(int face) const;
 	mutable std::vector<RubiksAction> history;
 	RubiksCorner c;
 	RubikEdge e;
@@ -236,12 +236,12 @@ public:
 	void GetStateFromPDBHash(uint64_t hash, RubiksState &s, int threadID = 0) const;
 	RubiksState GetStateFromAbstractState(RubiksState &s) const { return s; }
 
-	void OpenGLDraw() const
-	{
-		RubiksState s;
-		GetStateFromPDBHash(0, s);
-		env->OpenGLDraw(s);
-	}
+//	void OpenGLDraw() const
+//	{
+//		RubiksState s;
+//		GetStateFromPDBHash(0, s);
+//		env->OpenGLDraw(s);
+//	}
 	
 	//	const char *GetName();
 	bool Load(const char *prefix);

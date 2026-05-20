@@ -86,11 +86,11 @@ public:
 	
 	//virtual double GetPathLength(std::vector<steeringState> &neighbors);
 	
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const steeringState&) const;
-	/** Draw the transition at some percentage 0...1 between two states */
-	virtual void OpenGLDraw(const steeringState&, const steeringState&, float) const;
-	virtual void OpenGLDraw(const steeringState&, const steeringAction&) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const steeringState&) const;
+//	/** Draw the transition at some percentage 0...1 between two states */
+//	virtual void OpenGLDraw(const steeringState&, const steeringState&, float) const;
+//	virtual void OpenGLDraw(const steeringState&, const steeringAction&) const;
 private:
 };
 

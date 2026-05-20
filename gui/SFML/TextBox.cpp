@@ -11,6 +11,7 @@
 
 #include <string.h>
 #include "TextBox.h"
+#include "GLUtil.h"
 
 TextBox::TextBox(char *_text, int _charLine, point3d topLeft, point3d bottomRight, double _duration, bool _deform, bool _scrolling)
 {

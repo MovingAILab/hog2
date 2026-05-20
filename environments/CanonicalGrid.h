@@ -76,13 +76,13 @@ namespace CanonicalGrid {
 		uint64_t GetMaxHash() const;
 		uint64_t GetStateHash(const xyLoc &node) const;
 		uint64_t GetActionHash(tDirection act) const;
-		void OpenGLDraw() const;
-		void OpenGLDraw(const xyLoc &l) const;
-		void OpenGLDraw(const xyLoc &l1, const xyLoc &l2, float v) const;
-		void OpenGLDraw(const xyLoc &, const tDirection &) const;
-		void GLLabelState(const xyLoc &, const char *) const;
-		void GLLabelState(const xyLoc &s, const char *str, double scale) const;
-		void GLDrawLine(const xyLoc &x, const xyLoc &y) const;
+//		void OpenGLDraw() const;
+//		void OpenGLDraw(const xyLoc &l) const;
+//		void OpenGLDraw(const xyLoc &l1, const xyLoc &l2, float v) const;
+//		void OpenGLDraw(const xyLoc &, const tDirection &) const;
+//		void GLLabelState(const xyLoc &, const char *) const;
+//		void GLLabelState(const xyLoc &s, const char *str, double scale) const;
+//		void GLDrawLine(const xyLoc &x, const xyLoc &y) const;
 		Map* GetMap() const { return map; }
 		
 		std::string SVGHeader();

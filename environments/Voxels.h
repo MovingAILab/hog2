@@ -79,12 +79,12 @@ public:
 	
 	uint64_t GetActionHash(voxelAction act) const;
 	
-	void OpenGLDraw() const;
-	void OpenGLDraw(const voxelState&) const;
-	void OpenGLDraw(const voxelState&, const voxelState&, float) const;
-	void OpenGLDraw(const voxelState&, const voxelAction&) const;
-	void GLLabelState(const voxelState&, const char *) const;
-	void GLDrawLine(const voxelState &x, const voxelState &y) const;
+//	void OpenGLDraw() const;
+//	void OpenGLDraw(const voxelState&) const;
+//	void OpenGLDraw(const voxelState&, const voxelState&, float) const;
+//	void OpenGLDraw(const voxelState&, const voxelAction&) const;
+//	void GLLabelState(const voxelState&, const char *) const;
+//	void GLDrawLine(const voxelState &x, const voxelState &y) const;
 
 	void Draw(Graphics::Display &display) const;
 

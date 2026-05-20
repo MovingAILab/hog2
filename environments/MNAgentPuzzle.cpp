@@ -146,64 +146,64 @@ uint64_t MNAgentEnvironment::GetActionHash(tAgentAction act) const
 	return act;
 }
 
-void MNAgentEnvironment::OpenGLDraw() const
-{
-}
-
-void MNAgentEnvironment::OpenGLDraw(const MNAgentPuzzleState&s) const
-{
-	glBegin(GL_QUADS);
-	glColor3f(0.5, 0.5, 0.5);
-	glVertex3f(-1, -1, 0.0);
-	glVertex3f( 1, -1, 0.0);
-	glVertex3f( 1,  1, 0.0);
-	glVertex3f(-1,  1, 0.0);
-	glEnd();
-
-	double radius = max(s.height, s.width);
-	radius = 1/radius;
-	for (unsigned int x = 0; x < s.locations.size(); x++)
-	{
-		if (s.locations[x] == -1)
-		{
-			glColor3f(0.0, 0.0, 0.0);
-			DrawSphere(-1.0+radius+(x%s.width)*2.0*radius,
-					   -1.0+radius+((double)((int)x/s.width))*2.0*radius,
-					   0, radius);
-		}
-		else if (s.locations[x] > 0)
-		{
-			glColor3f(0.0, (double)s.locations[x]/(double)(1<<s.numAgents), 1-(double)s.locations[x]/(double)(1<<s.numAgents));
-			DrawSphere(-1.0+radius+(x%s.width)*2.0*radius,
-					   -1.0+radius+((double)((int)x/s.width))*2.0*radius,
-					   0, radius);
-//			glPushMatrix();
-//			
-//			GLdouble xx, yy, zz, rad;
-//			GLfloat r, g, b, t;
-//			GetColor(r, g, b, t);
-//			glColor4f(r, g, b, t);
-//			
-//			glTranslatef(xx-rad, yy+rad/2, zz-rad);
-//			glScalef(rad/(300.0), rad/300.0, 1);
-//			glRotatef(180, 0.0, 0.0, 1.0);
-//			glRotatef(180, 0.0, 1.0, 0.0);
-//			//glTranslatef((float)x/width-0.5, (float)y/height-0.5, 0);
-//			glDisable(GL_LIGHTING);
-//			glutStrokeCharacter(GLUT_STROKE_ROMAN, '0'+);
-//			glEnable(GL_LIGHTING);
-//			//glTranslatef(-x/width+0.5, -y/height+0.5, 0);
-//			glPopMatrix();
+//void MNAgentEnvironment::OpenGLDraw() const
+//{
+//}
 //
-		}
-	}
-}
-
-/** Draw the transition at some percentage 0...1 between two MNAgentPuzzleStates */
-void MNAgentEnvironment::OpenGLDraw(const MNAgentPuzzleState&, const MNAgentPuzzleState&, float) const
-{
-}
-
-void MNAgentEnvironment::OpenGLDraw(const MNAgentPuzzleState&, const tAgentAction&) const
-{
-}
+//void MNAgentEnvironment::OpenGLDraw(const MNAgentPuzzleState&s) const
+//{
+//	glBegin(GL_QUADS);
+//	glColor3f(0.5, 0.5, 0.5);
+//	glVertex3f(-1, -1, 0.0);
+//	glVertex3f( 1, -1, 0.0);
+//	glVertex3f( 1,  1, 0.0);
+//	glVertex3f(-1,  1, 0.0);
+//	glEnd();
+//
+//	double radius = max(s.height, s.width);
+//	radius = 1/radius;
+//	for (unsigned int x = 0; x < s.locations.size(); x++)
+//	{
+//		if (s.locations[x] == -1)
+//		{
+//			glColor3f(0.0, 0.0, 0.0);
+//			DrawSphere(-1.0+radius+(x%s.width)*2.0*radius,
+//					   -1.0+radius+((double)((int)x/s.width))*2.0*radius,
+//					   0, radius);
+//		}
+//		else if (s.locations[x] > 0)
+//		{
+//			glColor3f(0.0, (double)s.locations[x]/(double)(1<<s.numAgents), 1-(double)s.locations[x]/(double)(1<<s.numAgents));
+//			DrawSphere(-1.0+radius+(x%s.width)*2.0*radius,
+//					   -1.0+radius+((double)((int)x/s.width))*2.0*radius,
+//					   0, radius);
+////			glPushMatrix();
+////			
+////			GLdouble xx, yy, zz, rad;
+////			GLfloat r, g, b, t;
+////			GetColor(r, g, b, t);
+////			glColor4f(r, g, b, t);
+////			
+////			glTranslatef(xx-rad, yy+rad/2, zz-rad);
+////			glScalef(rad/(300.0), rad/300.0, 1);
+////			glRotatef(180, 0.0, 0.0, 1.0);
+////			glRotatef(180, 0.0, 1.0, 0.0);
+////			//glTranslatef((float)x/width-0.5, (float)y/height-0.5, 0);
+////			glDisable(GL_LIGHTING);
+////			glutStrokeCharacter(GLUT_STROKE_ROMAN, '0'+);
+////			glEnable(GL_LIGHTING);
+////			//glTranslatef(-x/width+0.5, -y/height+0.5, 0);
+////			glPopMatrix();
+////
+//		}
+//	}
+//}
+//
+///** Draw the transition at some percentage 0...1 between two MNAgentPuzzleStates */
+//void MNAgentEnvironment::OpenGLDraw(const MNAgentPuzzleState&, const MNAgentPuzzleState&, float) const
+//{
+//}
+//
+//void MNAgentEnvironment::OpenGLDraw(const MNAgentPuzzleState&, const tAgentAction&) const
+//{
+//}

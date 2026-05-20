@@ -1367,42 +1367,42 @@ void RC::GetStateFromHash(uint64_t hash, RCState &node) const
 // TODO: write
 }
 
-void RC::OpenGLDraw() const
-{}
-
-void RC::OpenGLDraw(const RCState&s) const
-{}
-
-void RC::OpenGLDrawCorners(const RCState&s) const
-{}
-
-void RC::OpenGLDrawEdges(const RCState&s) const
-{}
-
-void RC::OpenGLDrawEdgeDual(const RCState&s) const
-{}
-
-void RC::OpenGLDrawCubeBackground() const
-{}
-
-void RC::OpenGLDrawCenters() const
-{}
-
-void RC::OpenGLDrawCube(int cube) const
-{}
+//void RC::OpenGLDraw() const
+//{}
+//
+//void RC::OpenGLDraw(const RCState&s) const
+//{}
+//
+//void RC::OpenGLDrawCorners(const RCState&s) const
+//{}
+//
+//void RC::OpenGLDrawEdges(const RCState&s) const
+//{}
+//
+//void RC::OpenGLDrawEdgeDual(const RCState&s) const
+//{}
+//
+//void RC::OpenGLDrawCubeBackground() const
+//{}
+//
+//void RC::OpenGLDrawCenters() const
+//{}
+//
+//void RC::OpenGLDrawCube(int cube) const
+//{}
 
 void RC::SetFaceColor(int theColor) const
 {}
 
 
-/** Draw the transition at some percentage 0...1 between two states */
-void RC::OpenGLDraw(const RCState &s1, const RCState &s2, float t) const
-{}
-
-void RC::OpenGLDraw(const RCState&, const RCAction&) const
-{
-	
-}
+///** Draw the transition at some percentage 0...1 between two states */
+//void RC::OpenGLDraw(const RCState &s1, const RCState &s2, float t) const
+//{}
+//
+//void RC::OpenGLDraw(const RCState&, const RCAction&) const
+//{
+//	
+//}
 
 // Draw a RCState. Internally do the 3d transform for the drawing.
 void RC::Draw(Graphics::Display &display, const RCState &state) const

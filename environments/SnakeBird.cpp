@@ -10,6 +10,7 @@
 #include <fstream>
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 namespace SnakeBird {
 

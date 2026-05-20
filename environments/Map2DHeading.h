@@ -78,12 +78,12 @@ public:
 	uint64_t GetStateHash(const xyhLoc &node) const;
 	void GetStateFromHash(uint64_t hash, xyhLoc &node) const;
 	uint64_t GetActionHash(xyhAct act) const;
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const xyhLoc &l) const;
-	virtual void OpenGLDraw(const xyhLoc &l1, const xyhLoc &l2, float v) const;
-	virtual void OpenGLDraw(const xyhLoc &, const xyhAct &) const;
-	virtual void GLLabelState(const xyhLoc &, const char *) const;
-	virtual void GLDrawLine(const xyhLoc &x, const xyhLoc &y) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const xyhLoc &l) const;
+//	virtual void OpenGLDraw(const xyhLoc &l1, const xyhLoc &l2, float v) const;
+//	virtual void OpenGLDraw(const xyhLoc &, const xyhAct &) const;
+//	virtual void GLLabelState(const xyhLoc &, const char *) const;
+//	virtual void GLDrawLine(const xyhLoc &x, const xyhLoc &y) const;
 	//virtual void OpenGLDraw(const xyhLoc &, const xyhAct &, GLfloat r, GLfloat g, GLfloat b) const;
 	//virtual void OpenGLDraw(const xyhLoc &l, GLfloat r, GLfloat g, GLfloat b) const;
 	Map* GetMap() const { return map; }

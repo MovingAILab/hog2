@@ -88,10 +88,10 @@ public:
 	void Change_Op_Order(const std::vector<unsigned> op_order);
 
 	// currently not drawing anything
-	void OpenGLDraw() const{}
-	void OpenGLDraw(const BurnedPancakePuzzleState &) const {}
-	void OpenGLDraw(const BurnedPancakePuzzleState &, const unsigned &) const {}
-	void OpenGLDraw(const BurnedPancakePuzzleState&, const BurnedPancakePuzzleState&, float) const {}
+//	void OpenGLDraw() const{}
+//	void OpenGLDraw(const BurnedPancakePuzzleState &) const {}
+//	void OpenGLDraw(const BurnedPancakePuzzleState &, const unsigned &) const {}
+//	void OpenGLDraw(const BurnedPancakePuzzleState&, const BurnedPancakePuzzleState&, float) const {}
 
 	/**
 	**/

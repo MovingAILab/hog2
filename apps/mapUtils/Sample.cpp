@@ -266,7 +266,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 	//	for (unsigned int x = 0; x < astars.size(); x++)
 //		astars[x].OpenGLDraw();
 	//	astar.OpenGLDraw();	
-	unitSims[windowID]->OpenGLDraw();
+	//	unitSims[windowID]->OpenGLDraw();
 	//unitSims[windowID]->GetEnvironment()->OpenGLDraw();
 	
 	if (screenShot)
@@ -285,19 +285,14 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 	
 	if (mouseTracking)
 	{
-		glBegin(GL_LINES);
-		glColor3f(1.0f, 0.0f, 0.0f);
 		Map *m = unitSims[windowID]->GetEnvironment()->GetMap();
-		GLdouble x, y, z, r;
-		m->GetOpenGLCoord(px1, py1, x, y, z, r);
-		glVertex3f(x, y, z-3*r);
-		m->GetOpenGLCoord(px2, py2, x, y, z, r);
-		glVertex3f(x, y, z-3*r);
-		glEnd();
+		double x, y, z, r;
+		m->GetCoord(px1, py1, x, y, z, r);
+		m->GetCoord(px2, py2, x, y, z, r);
 	}
 	
-	if ((gdh) && (!ma1))
-		gdh->OpenGLDraw();
+	//	if ((gdh) && (!ma1))
+	//	gdh->OpenGLDraw();
 
 	if ((ma1) && (viewport == 0)) // only do this once...
 	{
@@ -363,7 +358,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 	//glLineWidth(2.0);
 	for (auto &x : subgoalEdges)
 	{
-		unitSims[windowID]->GetEnvironment()->GLDrawLine(x.first, x.second);
+	  //unitSims[windowID]->GetEnvironment()->GLDrawLine(x.first, x.second);
 		printf("<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" style=\"stroke:rgb(0,0,0);stroke-width:1\" />\n",
 			   10*x.first.x,
 			   10*x.first.y,
@@ -374,7 +369,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 	unitSims[windowID]->GetEnvironment()->SetColor(1.0, 0.0, 0.0);
 	for (const xyLoc &x : subgoals)
 	{
-		unitSims[windowID]->GetEnvironment()->OpenGLDraw(x);
+	  //unitSims[windowID]->GetEnvironment()->OpenGLDraw(x);
 		
 		printf("<circle cx=\"%d\" cy=\"%d\" r=\"5\" stroke=\"black\" stroke-width=\"0.25\" fill=\"red\" />\n", 10*x.x, 10*x.y);
 	}
@@ -1139,25 +1134,25 @@ int MyCLHandler(char *argument[], int maxNumArgs)
 			{
 				if (x+1 < map.GetMapWidth() && map.GetTerrainType(x, y) != kGround && map.GetTerrainType(x+1, y) != kGround)
 				{
-					GLdouble a, b, c, d, e, f, r;
-					map.GetOpenGLCoord(x, y, a, b, c, r);
-					map.GetOpenGLCoord(x+1, y, d, e, f, r);
+					double a, b, c, d, e, f, r;
+					map.GetCoord(x, y, a, b, c, r);
+					map.GetCoord(x+1, y, d, e, f, r);
 					disp.DrawLine(Graphics::point(a, b), Graphics::point(d, e), r/4.0, Colors::black);
 				}
 				if (y+1 < map.GetMapHeight() && map.GetTerrainType(x, y) != kGround && map.GetTerrainType(x, y+1) != kGround)
 				{
-					GLdouble a, b, c, d, e, f, r;
-					map.GetOpenGLCoord(x, y, a, b, c, r);
-					map.GetOpenGLCoord(x, y+1, d, e, f, r);
+					double a, b, c, d, e, f, r;
+					map.GetCoord(x, y, a, b, c, r);
+					map.GetCoord(x, y+1, d, e, f, r);
 					disp.DrawLine(Graphics::point(a, b), Graphics::point(d, e), r/4.0, Colors::black);
 				}
 			}
 		}
 		{
-			GLdouble a, b, c, r;
-			map.GetOpenGLCoord(1, 1, a, b, c, r);
+			double a, b, c, r;
+			map.GetCoord(1, 1, a, b, c, r);
 			disp.DrawText("S", Graphics::point(a, b), Colors::blue, r*2);
-			map.GetOpenGLCoord((int)map.GetMapWidth()-2, (int)map.GetMapHeight()-2, a, b, c, r);
+			map.GetCoord((int)map.GetMapWidth()-2, (int)map.GetMapHeight()-2, a, b, c, r);
 			disp.DrawText("F", Graphics::point(a, b), Colors::blue, r*2);
 		}
 		//map.Save(argument[4]);

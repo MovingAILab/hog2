@@ -60,10 +60,10 @@ public:
 	virtual uint64_t GetStateHash(const xytLoc &node) const;
 	virtual uint64_t GetActionHash(tDirection act) const;
 
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const xytLoc&) const;
-	virtual void OpenGLDraw(const xytLoc&, const tDirection&) const;
-	virtual void GLDrawLine(const xytLoc &x, const xytLoc &y) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const xytLoc&) const;
+//	virtual void OpenGLDraw(const xytLoc&, const tDirection&) const;
+//	virtual void GLDrawLine(const xytLoc &x, const xytLoc &y) const;
 private:
 	bool ViolatesConstraint(const xyLoc &from, const xyLoc &to, int time) const;
 

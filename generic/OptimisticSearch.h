@@ -124,7 +124,7 @@ public:
 	
 	void LogFinalStats(StatCollection *) {}
 	
-	void OpenGLDraw() const;
+//	void OpenGLDraw() const;
 	void Draw(Graphics::Display &d) const;
 	
 	void SetWeight(double w) {weight = w;}
@@ -596,69 +596,69 @@ bool OptimisticSearch<state, action,environment>::GetClosedItem(const state &s, 
  * @date 03/12/09
  *
  */
-template <class state, class action, class environment>
-void OptimisticSearch<state, action,environment>::OpenGLDraw() const
-{
-	double transparency = 1.0;
-	if (fhat.size() == 0)
-		return;
-	uint64_t top = -1;
-	double bound = DBL_MAX;
-
-	//	double minf = 1e9, maxf = 0;
-	if (fhat.OpenSize() > 0)
-	{
-		top = fhat.Peek();
-		const auto &i = f.Lookat(f.Peek());
-		bound = i.g+i.h;
-		printf("Lowest f on open: %f\n", bound);
-	}
-	for (unsigned int x = 0; x < fhat.size(); x++)
-	{
-		const auto &data = fhat.Lookat(x);
-		if (x == top)
-		{
-			env->SetColor(1.0, 1.0, 0.0, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		if ((data.where == kClosedList && !fgreater(data.g+data.h/weight, bound)))
-		{
-			env->SetColor(0.0, 0.0, 1.0, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		else if ((data.where == kOpenList) && (data.reopened))
-		{
-			env->SetColor(0.0, 0.5, 0.5, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		else if (data.where == kOpenList)
-		{
-			env->SetColor(0.0, 1.0, 0.0, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		else if ((data.where == kClosedList) && (data.reopened))
-		{
-			env->SetColor(0.5, 0.0, 0.5, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		else if (data.where == kClosedList)
-		{
-			//			if (top != -1)
-			//			{
-			//				env->SetColor((data.g+data.h-minf)/(maxf-minf), 0.0, 0.0, transparency);
-			//			}
-			//			else {
-			if (data.parentID == x)
-				env->SetColor(1.0, 0.5, 0.5, transparency);
-			else
-				env->SetColor(1.0, 0.0, 0.0, transparency);
-			//			}
-			env->OpenGLDraw(data.data);
-		}
-	}
-	env->SetColor(1.0, 0.5, 1.0, 0.5);
-	env->OpenGLDraw(goal);
-}
+//template <class state, class action, class environment>
+//void OptimisticSearch<state, action,environment>::OpenGLDraw() const
+//{
+//	double transparency = 1.0;
+//	if (fhat.size() == 0)
+//		return;
+//	uint64_t top = -1;
+//	double bound = DBL_MAX;
+//
+//	//	double minf = 1e9, maxf = 0;
+//	if (fhat.OpenSize() > 0)
+//	{
+//		top = fhat.Peek();
+//		const auto &i = f.Lookat(f.Peek());
+//		bound = i.g+i.h;
+//		printf("Lowest f on open: %f\n", bound);
+//	}
+//	for (unsigned int x = 0; x < fhat.size(); x++)
+//	{
+//		const auto &data = fhat.Lookat(x);
+//		if (x == top)
+//		{
+//			env->SetColor(1.0, 1.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		if ((data.where == kClosedList && !fgreater(data.g+data.h/weight, bound)))
+//		{
+//			env->SetColor(0.0, 0.0, 1.0, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		else if ((data.where == kOpenList) && (data.reopened))
+//		{
+//			env->SetColor(0.0, 0.5, 0.5, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		else if (data.where == kOpenList)
+//		{
+//			env->SetColor(0.0, 1.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		else if ((data.where == kClosedList) && (data.reopened))
+//		{
+//			env->SetColor(0.5, 0.0, 0.5, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		else if (data.where == kClosedList)
+//		{
+//			//			if (top != -1)
+//			//			{
+//			//				env->SetColor((data.g+data.h-minf)/(maxf-minf), 0.0, 0.0, transparency);
+//			//			}
+//			//			else {
+//			if (data.parentID == x)
+//				env->SetColor(1.0, 0.5, 0.5, transparency);
+//			else
+//				env->SetColor(1.0, 0.0, 0.0, transparency);
+//			//			}
+//			env->OpenGLDraw(data.data);
+//		}
+//	}
+//	env->SetColor(1.0, 0.5, 1.0, 0.5);
+//	env->OpenGLDraw(goal);
+//}
 
 template <class state, class action, class environment>
 void OptimisticSearch<state, action,environment>::Draw(Graphics::Display &d) const

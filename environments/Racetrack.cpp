@@ -376,7 +376,7 @@ void Racetrack::Draw(Graphics::Display &display, const RacetrackState &s) const
 	me->SetColor(GetColor()); // sets agent color
 //	me->Draw(display, agent); // draws agent location
 //	GLdouble xx, yy, zz, rad;
-//	map->GetOpenGLCoord(s.xLoc, s.yLoc, xx, yy, zz, rad);
+//	map->GetCoord(s.xLoc, s.yLoc, xx, yy, zz, rad);
 //
 //	Graphics::point center(xx, yy);
 //	Graphics::point p1(s.xVelocity, s.yVelocity);
@@ -398,8 +398,8 @@ void Racetrack::Draw(Graphics::Display &display, const RacetrackState &s) const
 
 void Racetrack::GetCarCoordinates(const RacetrackState &s, Graphics::point &center, Graphics::point &t1, Graphics::point &t2, Graphics::point &t3) const
 {
-	GLdouble xx, yy, zz, r;
-	map->GetOpenGLCoord(s.xLoc, s.yLoc, xx, yy, zz, r);
+	double xx, yy, zz, r;
+	map->GetCoord(s.xLoc, s.yLoc, xx, yy, zz, r);
 	float rad = (float)r;
 	
 	center = Graphics::point(xx, yy);

@@ -11,45 +11,45 @@
 
 #include <stack>
 #include "Map.h"
-#include "GLUtil.h"
+#include "Constants.h"
 #include <cstdlib>
 #include <cstring>
 #include "BitMap.h"
 
-GLuint wall = -1;
+//GLuint wall = -1;
 
 using namespace std;
 
 static const bool verbose = false; 
 
-void InitTextures()
-{
-	if (wall == -1)
-	{
-		BitMapPic p("/Users/nathanst/hog2/textures/u.bmp");
-		p.Save("/Users/nathanst/hog2/textures/out.bmp");
-		// Use OpenGL ES to generate a name for the texture.
-		glGenTextures(1, &wall);
-		// Bind the texture name. 
-		glBindTexture(GL_TEXTURE_2D, wall);
-		// Set the texture parameters to use a minifying filter and a linear filer (weighted average)
-		
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 	
-		
-//		if (p.BytesReversed())
-		{
-			// Specify a 2D texture image, providing the a pointer to the image data in memory
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p.GetWidth(), p.GetHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, p.GetBytes());
-		}
-//		else {
+//void InitTextures()
+//{
+//	if (wall == -1)
+//	{
+//		BitMapPic p("/Users/nathanst/hog2/textures/u.bmp");
+//		p.Save("/Users/nathanst/hog2/textures/out.bmp");
+//		// Use OpenGL ES to generate a name for the texture.
+//		glGenTextures(1, &wall);
+//		// Bind the texture name. 
+//		glBindTexture(GL_TEXTURE_2D, wall);
+//		// Set the texture parameters to use a minifying filter and a linear filer (weighted average)
+//		
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 	
+//		
+////		if (p.BytesReversed())
+//		{
 //			// Specify a 2D texture image, providing the a pointer to the image data in memory
-//			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p.GetWidth(), p.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, p.GetBytes());
+//			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p.GetWidth(), p.GetHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, p.GetBytes());
 //		}
-	}
-}
+////		else {
+////			// Specify a 2D texture image, providing the a pointer to the image data in memory
+////			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p.GetWidth(), p.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, p.GetBytes());
+////		}
+//	}
+//}
 
 /** 
 * Construct a half tile, initializing to flat values.
@@ -93,7 +93,7 @@ Map::Map(long _width, long _height)
 	//		g[x] = 0;
 	for (int x = 0; x < width; x++) land[x] = new Tile [height];
 	drawLand = true;
-	dList = 0;
+//	dList = 0;
 	updated = true;
 	revision = 0;
 	//	numAbstractions = 1;
@@ -118,7 +118,7 @@ Map::Map(Map *m)
 	for (int x = 0; x < width; x++) land[x] = new Tile [height];
 	
 	drawLand = m->drawLand;
-	dList = 0;
+//	dList = 0;
 	updated = true;
 	revision = m->revision;
 	
@@ -162,7 +162,7 @@ Map::Map(FILE *f)
 Map::Map(std::istringstream &/*data*/)
 {
 	sizeMultiplier = 1;
-	dList = 0;
+//	dList = 0;
 	tileSet = kFall;
 }
 
@@ -280,7 +280,7 @@ void Map::Load(const char *filename)
 		for (int x = 0; x < width; x++)
 			land[x] = new Tile [height];
 		drawLand = true;
-		dList = 0;
+//		dList = 0;
 		updated = true;
 		map_name[0] = 0;
 	}
@@ -331,7 +331,7 @@ void Map::Load(FILE *f)
 		//		g[x] = 0;
 		for (int x = 0; x < width; x++) land[x] = new Tile [height];
 		drawLand = true;
-		dList = 0;
+//		dList = 0;
 		updated = true;
 		map_name[0] = 0;
 	}
@@ -346,7 +346,7 @@ void Map::loadRaw(FILE *f, int high, int wide)
 	for (int x = 0; x < wide; x++)
 		land[x] = new Tile [high];
 	drawLand = true;
-	dList = 0;
+//	dList = 0;
 	updated = true;
 	for (int x = 0; x < wide; x++)
 	{
@@ -367,7 +367,7 @@ void Map::loadOctile(FILE *f, int high, int wide)
 	land = new Tile *[wide*sizeMultiplier];
 	for (int x = 0; x < wide*sizeMultiplier; x++) land[x] = new Tile [high*sizeMultiplier];
 	drawLand = true;
-	dList = 0;
+//	dList = 0;
 	updated = true;
 	for (int y = 0; y < high; y++)
 	{
@@ -433,7 +433,7 @@ void Map::loadOctileCorner(FILE *f, int high, int wide)
 	land = new Tile *[width];
 	for (int x = 0; x < width; x++) land[x] = new Tile [height];
 	drawLand = true;
-	dList = 0;
+//	dList = 0;
 	updated = true;
 	for (int y = 0; y < high; y++)
 	{
@@ -651,7 +651,7 @@ bool Map::tryDragonAge(FILE *f)
 					land = new Tile *[width];
 					for (int x = 0; x < width; x++) land[x] = new Tile [height];
 					drawLand = true;
-					dList = 0;
+//					dList = 0;
 					updated = true;
 					
 					fseek(f, h.dataoffset+loc, SEEK_SET);
@@ -737,7 +737,7 @@ bool Map::tryLoadRollingStone(FILE *f)
 	land = new Tile *[width];
 	for (int x = 0; x < width; x++) land[x] = new Tile [width];
 	drawLand = true;
-	dList = 0;
+//	dList = 0;
 	updated = true;
 	for (int y = 0; y < height; y++)
 	{
@@ -1748,8 +1748,8 @@ void Map::SetTileSet(tTileset ts)
 {
 	updated = true; // force the display list to re-draw
 	tileSet = ts;
-	if (ts == kBitmap)
-		InitTextures();
+//	if (ts == kBitmap)
+//		InitTextures();
 }
 
 /**
@@ -1774,47 +1774,47 @@ tTileset Map::GetTileSet()
  * kPolygon is the default mode. The map is cached in a display list unless
  * it changes.
  */
-void Map::OpenGLDraw(tDisplay how) const
-{
-	glDisable(GL_LIGHTING);
-	if (drawLand)
-	{
-		if (updated)
-		{
-			updated = false;
-			if (dList)
-				glDeleteLists(dList, 1);
-			dList = 0;
-		}
-		
-		if (dList)
-		{
-			glCallList(dList);
-		}
-		else {
-			if (verbose)
-				printf("Drawing land into display list\n");
-			dList = glGenLists(1);
-			glNewList(dList, GL_COMPILE_AND_EXECUTE);
-			
-			if (tileSet == kFast)
-			{
-				drawLandQuickly();
-			}
-			else {
-				for (int y = 0; y < height; y++)
-				{
-					for (int x = 0; x < width; x++)
-					{
-						DrawTile(&land[x][y], x, y, how);
-					}
-				}
-			}
-			glEndList();
-			// printf("Done\n");
-		}
-	}
-}
+//void Map::OpenGLDraw(tDisplay how) const
+//{
+//	glDisable(GL_LIGHTING);
+//	if (drawLand)
+//	{
+//		if (updated)
+//		{
+//			updated = false;
+//			if (dList)
+//				glDeleteLists(dList, 1);
+//			dList = 0;
+//		}
+//		
+//		if (dList)
+//		{
+//			glCallList(dList);
+//		}
+//		else {
+//			if (verbose)
+//				printf("Drawing land into display list\n");
+//			dList = glGenLists(1);
+//			glNewList(dList, GL_COMPILE_AND_EXECUTE);
+//			
+//			if (tileSet == kFast)
+//			{
+//				drawLandQuickly();
+//			}
+//			else {
+//				for (int y = 0; y < height; y++)
+//				{
+//					for (int x = 0; x < width; x++)
+//					{
+//						DrawTile(&land[x][y], x, y, how);
+//					}
+//				}
+//			}
+//			glEndList();
+//			// printf("Done\n");
+//		}
+//	}
+//}
 
 /**
 * Get the openGL coordinates of a given tile.
@@ -1823,7 +1823,7 @@ void Map::OpenGLDraw(tDisplay how) const
  * that tile along with the radius of the tile square. The map is drawn in the
  * x<->z plane, with the y plane up.
  */
-bool Map::GetOpenGLCoord(int _x, int _y, GLdouble &x, GLdouble &y, GLdouble &z, GLdouble &radius) const
+bool Map::GetCoord(int _x, int _y, double &x, double &y, double &z, double &radius) const
 {
 	if (_x >= width) return false;
 	if (_y >= height) return false;
@@ -1852,13 +1852,13 @@ bool Map::GetOpenGLCoord(int _x, int _y, GLdouble &x, GLdouble &y, GLdouble &z, 
 }
 
 /**
- * Get the openGL coordinates of a given tile.
+ * Get the open coordinates of a given tile.
  *
- * Given a tile in (x, y) coordinates, it returns the OpenGL space coordinates of
+ * Given a tile in (x, y) coordinates, it returns the coordinates of
  * that tile along with the radius of the tile square. The map is drawn in the
  * x<->z plane, with the y plane up.
  */
-bool Map::GetOpenGLCoord(float _x, float _y, GLdouble &x, GLdouble &y, GLdouble &z, GLdouble &radius) const
+bool Map::GetCoord(float _x, float _y, double &x, double &y, double &z, double &radius) const
 {
 	if (isnan(_x) || isnan(_y))
 	{
@@ -1869,7 +1869,7 @@ bool Map::GetOpenGLCoord(float _x, float _y, GLdouble &x, GLdouble &y, GLdouble 
 	}
 	int iX = floor(_x);
 	int iY = floor(_y);
-	return GetOpenGLCoord(iX, iY, x, y, z, radius);
+	return GetCoord(iX, iY, x, y, z, radius);
 //	double _scale;
 //	if (height > width)
 //		_scale = 1/(double)(height+1);
@@ -1897,7 +1897,7 @@ double Map::GetCoordinateScale()
 	return (double)(width)/2.0;
 }
 
-void Map::GetPointFromCoordinate(point3d loc, int &px, int &py) const
+void Map::GetPointFromCoordinate(Graphics::point loc, int &px, int &py) const
 {
 	double _x, _y;
 	double _scale, xOffset, yOffset;
@@ -1938,205 +1938,205 @@ void Map::GetPointFromCoordinate(point3d loc, int &px, int &py) const
  * (technically we don't have to pass the tile, we could get it
 		* from the x,y coordinates)
  */
-void Map::DrawTile(Tile *t, int x, int y, tDisplay how) const
-{
-	GLdouble xx, yy, zz, rr;
-	if (GetOpenGLCoord(x,y,xx,yy,zz,rr) == false)
-		return;
-	
-	if (tileSet == kBitmap)
-	{
-		glNormal3d(0, 0, -1);
-		glColor3f(1, 1, 1);
-
-		float l, r, u, b;
-		switch (t->tile1.type)
-		{
-			case kTrees:
-				l = 0; r = 0.5;
-				u = 0.0; b = 0.5;
-				break;
-			case kGround:
-				l = 0; r = 0.5;
-				u = 0.5; b = 1.0;
-				break;
-			case kWater:
-				glColor3f(0.5, 0.5, 0.5);
-			case kSwamp:
-				l = 0.5; r = 1.0;
-				u = 0; b = 0.5;
-				break;
-
-			default:
-				l = 0.5; r = 1.0;
-				u = 0.5; b = 1.0;
-		}
-
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, wall);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-		glBegin(GL_QUADS);
-
-		glTexCoord2f(l,b);
-		glVertex3f(xx-rr, yy-rr, /*-2*rr*/-rr*t->tile1.corners[0]);
-		glTexCoord2f(l,u);
-		glVertex3f(xx-rr, yy+rr, /*-2*rr*/-rr*t->tile1.corners[1]);
-		glTexCoord2f(r,u);
-		glVertex3f(xx+rr, yy+rr, /*-2*rr*/-rr*t->tile1.corners[2]);
-		glTexCoord2f(r,b);
-		glVertex3f(xx+rr, yy-rr, /*-2*rr*/-rr*t->tile2.corners[0]);
-
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
-		return;
-	}
-	
-	switch (how) {
-		case kPolygons:
-			if (t->split == kNoSplit)
-				glBegin(GL_QUADS);
-			else
-				glBegin(GL_TRIANGLES);
-			break;
-		case kLines:
-			glBegin(GL_LINE_LOOP);
-			break;
-		case kPoints:
-		default:
-			glBegin(GL_POINTS);
-			break;
-	}
-	switch (t->split) {
-		case kNoSplit:
-			if (t->tile1.type != kOutOfBounds)
-			{
-				if ((tileSet == kWinterTile) || 
-						(tileSet == kFallTile))
-					rr *= 0.9;   // Leave empty grid lines between
-				
-				DoVertexColor(t->tile1.type, t->tile1.corners[0], !AdjacentCorners(x, y, kTopLeft));
-				DoNormal(t->split, &t->tile1, x, y);
-				glVertex3f(xx-rr, yy-rr, -rr*t->tile1.corners[0]);
-				
-				DoVertexColor(t->tile1.type, t->tile1.corners[1], !AdjacentCorners(x, y, kBottomLeft));
-				glVertex3f(xx-rr, yy+rr, -rr*t->tile1.corners[1]);
-				
-				DoVertexColor(t->tile1.type, t->tile1.corners[2], !AdjacentCorners(x, y, kBottomRight));
-				glVertex3f(xx+rr, yy+rr, -rr*t->tile1.corners[2]);
-				
-				DoVertexColor(t->tile1.type, t->tile2.corners[0], !AdjacentCorners(x, y, kTopRight));
-				glVertex3f(xx+rr, yy-rr, -rr*t->tile2.corners[0]);
-			}
-			else {
-//				if (wall != -1)
-//				{
-				glColor3f(0, 0, 0);
-//				}
-//				else
-//					glColor3f(0.3, 0.3, 0.3);
-				// top
-
-				glNormal3d(0, 0, -1);
-				glTexCoord2f(0.51,1);
-				glVertex3f(xx-rr, yy-rr, /*-2*rr*/-rr*t->tile1.corners[0]);
-				glTexCoord2f(0.51,0.51);
-				glVertex3f(xx-rr, yy+rr, /*-2*rr*/-rr*t->tile1.corners[1]);
-				glTexCoord2f(1,0.51);
-				glVertex3f(xx+rr, yy+rr, /*-2*rr*/-rr*t->tile1.corners[2]);
-				glTexCoord2f(1,1);
-				glVertex3f(xx+rr, yy-rr, /*-2*rr*/-rr*t->tile2.corners[0]);
-
-
-//				glColor3f(1.0, 0.1, 0.1);
-//				// side 1
-//				glVertex3f(xx-rr, yy-rr, -2*rr-rr*t->tile1.corners[0]);
-//				glVertex3f(xx-rr, yy+rr, -2*rr-rr*t->tile1.corners[1]);
-//				glVertex3f(xx-rr, yy+rr, -rr*t->tile1.corners[2]);
-//				glVertex3f(xx-rr, yy-rr, -rr*t->tile2.corners[0]);
+//void Map::DrawTile(Tile *t, int x, int y, tDisplay how) const
+//{
+//	GLdouble xx, yy, zz, rr;
+//	if (GetCoord(x,y,xx,yy,zz,rr) == false)
+//		return;
+//	
+//	if (tileSet == kBitmap)
+//	{
+//		glNormal3d(0, 0, -1);
+//		glColor3f(1, 1, 1);
 //
-//				glColor3f(1.0, 1.0, 0.1);
-//				// side 2
-//				glVertex3f(xx+rr, yy-rr, -rr*t->tile1.corners[0]);
-//				glVertex3f(xx+rr, yy+rr, -rr*t->tile1.corners[1]);
-//				glVertex3f(xx+rr, yy+rr, -2*rr-rr*t->tile1.corners[2]);
-//				glVertex3f(xx+rr, yy-rr, -2*rr-rr*t->tile2.corners[0]);
+//		float l, r, u, b;
+//		switch (t->tile1.type)
+//		{
+//			case kTrees:
+//				l = 0; r = 0.5;
+//				u = 0.0; b = 0.5;
+//				break;
+//			case kGround:
+//				l = 0; r = 0.5;
+//				u = 0.5; b = 1.0;
+//				break;
+//			case kWater:
+//				glColor3f(0.5, 0.5, 0.5);
+//			case kSwamp:
+//				l = 0.5; r = 1.0;
+//				u = 0; b = 0.5;
+//				break;
 //
-//				glColor3f(0.0, 1.0, 0.1);
-//				// side 3
-//				glVertex3f(xx-rr, yy-rr, -2*rr-rr*t->tile1.corners[0]);
-//				glVertex3f(xx-rr, yy-rr, -rr*t->tile1.corners[1]);
-//				glVertex3f(xx+rr, yy-rr, -rr*t->tile1.corners[2]);
-//				glVertex3f(xx+rr, yy-rr, -2*rr-rr*t->tile2.corners[0]);
+//			default:
+//				l = 0.5; r = 1.0;
+//				u = 0.5; b = 1.0;
+//		}
 //
-//				glColor3f(0.0, 0.0, 1.0);
-//				// side 4
-//				glVertex3f(xx-rr, yy+rr, -2*rr-rr*t->tile1.corners[0]);
+//		glEnable(GL_TEXTURE_2D);
+//		glBindTexture(GL_TEXTURE_2D, wall);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//
+//		glBegin(GL_QUADS);
+//
+//		glTexCoord2f(l,b);
+//		glVertex3f(xx-rr, yy-rr, /*-2*rr*/-rr*t->tile1.corners[0]);
+//		glTexCoord2f(l,u);
+//		glVertex3f(xx-rr, yy+rr, /*-2*rr*/-rr*t->tile1.corners[1]);
+//		glTexCoord2f(r,u);
+//		glVertex3f(xx+rr, yy+rr, /*-2*rr*/-rr*t->tile1.corners[2]);
+//		glTexCoord2f(r,b);
+//		glVertex3f(xx+rr, yy-rr, /*-2*rr*/-rr*t->tile2.corners[0]);
+//
+//		glEnd();
+//		glDisable(GL_TEXTURE_2D);
+//		return;
+//	}
+//	
+//	switch (how) {
+//		case kPolygons:
+//			if (t->split == kNoSplit)
+//				glBegin(GL_QUADS);
+//			else
+//				glBegin(GL_TRIANGLES);
+//			break;
+//		case kLines:
+//			glBegin(GL_LINE_LOOP);
+//			break;
+//		case kPoints:
+//		default:
+//			glBegin(GL_POINTS);
+//			break;
+//	}
+//	switch (t->split) {
+//		case kNoSplit:
+//			if (t->tile1.type != kOutOfBounds)
+//			{
+//				if ((tileSet == kWinterTile) || 
+//						(tileSet == kFallTile))
+//					rr *= 0.9;   // Leave empty grid lines between
+//				
+//				DoVertexColor(t->tile1.type, t->tile1.corners[0], !AdjacentCorners(x, y, kTopLeft));
+//				DoNormal(t->split, &t->tile1, x, y);
+//				glVertex3f(xx-rr, yy-rr, -rr*t->tile1.corners[0]);
+//				
+//				DoVertexColor(t->tile1.type, t->tile1.corners[1], !AdjacentCorners(x, y, kBottomLeft));
 //				glVertex3f(xx-rr, yy+rr, -rr*t->tile1.corners[1]);
+//				
+//				DoVertexColor(t->tile1.type, t->tile1.corners[2], !AdjacentCorners(x, y, kBottomRight));
 //				glVertex3f(xx+rr, yy+rr, -rr*t->tile1.corners[2]);
-//				glVertex3f(xx+rr, yy+rr, -2*rr-rr*t->tile2.corners[0]);
-
-			}
-			break;
-		case kForwardSplit:
-			if (t->tile1.type != kOutOfBounds)
-			{
-				DoNormal(t->split, &t->tile1, x, y);
-				DoVertexColor(t->tile1.type, t->tile1.corners[0]);
-				glVertex3f(xx-rr, yy-rr, -rr*t->tile1.corners[0]);
-				DoVertexColor(t->tile1.type, t->tile1.corners[1]);
-				glVertex3f(xx-rr, yy+rr, -rr*t->tile1.corners[1]);
-				DoVertexColor(t->tile1.type, t->tile1.corners[2]);
-				glVertex3f(xx+rr, yy-rr, -rr*t->tile1.corners[2]);
-			}
-			if (how == kLines)
-			{ glEnd(); glBegin(GL_LINE_LOOP); }
-			if (t->tile2.type != kOutOfBounds)
-			{
-				DoNormal(t->split, &t->tile2, x, y);
-				DoVertexColor(t->tile2.type, t->tile2.corners[0]);
-				glVertex3f(xx+rr, yy-rr, -rr*t->tile2.corners[0]);
-				DoVertexColor(t->tile2.type, t->tile2.corners[1]);
-				glVertex3f(xx+rr, yy+rr, -rr*t->tile2.corners[1]);
-				DoVertexColor(t->tile2.type, t->tile2.corners[2]);
-				glVertex3f(xx-rr, yy+rr, -rr*t->tile2.corners[2]);
-			}
-			break;
-		case kBackwardSplit:
-			if (t->tile1.type != kOutOfBounds)
-			{
-				DoNormal(t->split, &t->tile1, x, y);
-				DoVertexColor(t->tile1.type, t->tile1.corners[0]);
-				glVertex3f(xx-rr, yy-rr, -rr*t->tile1.corners[0]);
-				//glVertex3f((double)x/width-.5, (double)2.0*t->tile1.corners[0]/(height+width), (double)y/height-.5);
-				DoVertexColor(t->tile1.type, t->tile1.corners[1]);
-				glVertex3f(xx-rr, yy+rr, -rr*t->tile1.corners[1]);
-				//glVertex3f((double)x/width-.5, (double)2.0*t->tile1.corners[1]/(height+width), (double)y/height+1.0/height-.5);
-				DoVertexColor(t->tile1.type, t->tile1.corners[2]);
-				glVertex3f(xx+rr, yy+rr, -rr*t->tile1.corners[2]);
-				//glVertex3f((double)x/width+1.0/width-.5, (double)2.0*t->tile1.corners[2]/(height+width), (double)y/height+1.0/height-.5);
-			}
-			if (how == kLines)
-			{ glEnd(); glBegin(GL_LINE_LOOP); }
-			
-			if (t->tile2.type != kOutOfBounds)
-			{
-				DoNormal(t->split, &t->tile2, x, y);
-				DoVertexColor(t->tile2.type, t->tile2.corners[0]);
-				glVertex3f(xx+rr, yy-rr, -rr*t->tile2.corners[0]);
-				//glVertex3f((double)x/width+1.0/width-.5, (double)2.0*t->tile2.corners[0]/(height+width), (double)y/height-.5);
-				DoVertexColor(t->tile2.type, t->tile2.corners[1]);
-				glVertex3f(xx+rr, yy+rr, -rr*t->tile2.corners[1]);
-				//glVertex3f((double)x/width+1.0/width-.5, (double)2.0*t->tile2.corners[1]/(height+width), (double)y/height+1.0/height-.5);
-				DoVertexColor(t->tile2.type, t->tile2.corners[2]);
-				glVertex3f(xx-rr, yy-rr, -rr*t->tile2.corners[2]);
-				//glVertex3f((double)x/width-.5, (double)2.0*t->tile2.corners[2]/(height+width), (double)y/height-.5);
-			}
-			break;
-	}
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-}
+//				
+//				DoVertexColor(t->tile1.type, t->tile2.corners[0], !AdjacentCorners(x, y, kTopRight));
+//				glVertex3f(xx+rr, yy-rr, -rr*t->tile2.corners[0]);
+//			}
+//			else {
+////				if (wall != -1)
+////				{
+//				glColor3f(0, 0, 0);
+////				}
+////				else
+////					glColor3f(0.3, 0.3, 0.3);
+//				// top
+//
+//				glNormal3d(0, 0, -1);
+//				glTexCoord2f(0.51,1);
+//				glVertex3f(xx-rr, yy-rr, /*-2*rr*/-rr*t->tile1.corners[0]);
+//				glTexCoord2f(0.51,0.51);
+//				glVertex3f(xx-rr, yy+rr, /*-2*rr*/-rr*t->tile1.corners[1]);
+//				glTexCoord2f(1,0.51);
+//				glVertex3f(xx+rr, yy+rr, /*-2*rr*/-rr*t->tile1.corners[2]);
+//				glTexCoord2f(1,1);
+//				glVertex3f(xx+rr, yy-rr, /*-2*rr*/-rr*t->tile2.corners[0]);
+//
+//
+////				glColor3f(1.0, 0.1, 0.1);
+////				// side 1
+////				glVertex3f(xx-rr, yy-rr, -2*rr-rr*t->tile1.corners[0]);
+////				glVertex3f(xx-rr, yy+rr, -2*rr-rr*t->tile1.corners[1]);
+////				glVertex3f(xx-rr, yy+rr, -rr*t->tile1.corners[2]);
+////				glVertex3f(xx-rr, yy-rr, -rr*t->tile2.corners[0]);
+////
+////				glColor3f(1.0, 1.0, 0.1);
+////				// side 2
+////				glVertex3f(xx+rr, yy-rr, -rr*t->tile1.corners[0]);
+////				glVertex3f(xx+rr, yy+rr, -rr*t->tile1.corners[1]);
+////				glVertex3f(xx+rr, yy+rr, -2*rr-rr*t->tile1.corners[2]);
+////				glVertex3f(xx+rr, yy-rr, -2*rr-rr*t->tile2.corners[0]);
+////
+////				glColor3f(0.0, 1.0, 0.1);
+////				// side 3
+////				glVertex3f(xx-rr, yy-rr, -2*rr-rr*t->tile1.corners[0]);
+////				glVertex3f(xx-rr, yy-rr, -rr*t->tile1.corners[1]);
+////				glVertex3f(xx+rr, yy-rr, -rr*t->tile1.corners[2]);
+////				glVertex3f(xx+rr, yy-rr, -2*rr-rr*t->tile2.corners[0]);
+////
+////				glColor3f(0.0, 0.0, 1.0);
+////				// side 4
+////				glVertex3f(xx-rr, yy+rr, -2*rr-rr*t->tile1.corners[0]);
+////				glVertex3f(xx-rr, yy+rr, -rr*t->tile1.corners[1]);
+////				glVertex3f(xx+rr, yy+rr, -rr*t->tile1.corners[2]);
+////				glVertex3f(xx+rr, yy+rr, -2*rr-rr*t->tile2.corners[0]);
+//
+//			}
+//			break;
+//		case kForwardSplit:
+//			if (t->tile1.type != kOutOfBounds)
+//			{
+//				DoNormal(t->split, &t->tile1, x, y);
+//				DoVertexColor(t->tile1.type, t->tile1.corners[0]);
+//				glVertex3f(xx-rr, yy-rr, -rr*t->tile1.corners[0]);
+//				DoVertexColor(t->tile1.type, t->tile1.corners[1]);
+//				glVertex3f(xx-rr, yy+rr, -rr*t->tile1.corners[1]);
+//				DoVertexColor(t->tile1.type, t->tile1.corners[2]);
+//				glVertex3f(xx+rr, yy-rr, -rr*t->tile1.corners[2]);
+//			}
+//			if (how == kLines)
+//			{ glEnd(); glBegin(GL_LINE_LOOP); }
+//			if (t->tile2.type != kOutOfBounds)
+//			{
+//				DoNormal(t->split, &t->tile2, x, y);
+//				DoVertexColor(t->tile2.type, t->tile2.corners[0]);
+//				glVertex3f(xx+rr, yy-rr, -rr*t->tile2.corners[0]);
+//				DoVertexColor(t->tile2.type, t->tile2.corners[1]);
+//				glVertex3f(xx+rr, yy+rr, -rr*t->tile2.corners[1]);
+//				DoVertexColor(t->tile2.type, t->tile2.corners[2]);
+//				glVertex3f(xx-rr, yy+rr, -rr*t->tile2.corners[2]);
+//			}
+//			break;
+//		case kBackwardSplit:
+//			if (t->tile1.type != kOutOfBounds)
+//			{
+//				DoNormal(t->split, &t->tile1, x, y);
+//				DoVertexColor(t->tile1.type, t->tile1.corners[0]);
+//				glVertex3f(xx-rr, yy-rr, -rr*t->tile1.corners[0]);
+//				//glVertex3f((double)x/width-.5, (double)2.0*t->tile1.corners[0]/(height+width), (double)y/height-.5);
+//				DoVertexColor(t->tile1.type, t->tile1.corners[1]);
+//				glVertex3f(xx-rr, yy+rr, -rr*t->tile1.corners[1]);
+//				//glVertex3f((double)x/width-.5, (double)2.0*t->tile1.corners[1]/(height+width), (double)y/height+1.0/height-.5);
+//				DoVertexColor(t->tile1.type, t->tile1.corners[2]);
+//				glVertex3f(xx+rr, yy+rr, -rr*t->tile1.corners[2]);
+//				//glVertex3f((double)x/width+1.0/width-.5, (double)2.0*t->tile1.corners[2]/(height+width), (double)y/height+1.0/height-.5);
+//			}
+//			if (how == kLines)
+//			{ glEnd(); glBegin(GL_LINE_LOOP); }
+//			
+//			if (t->tile2.type != kOutOfBounds)
+//			{
+//				DoNormal(t->split, &t->tile2, x, y);
+//				DoVertexColor(t->tile2.type, t->tile2.corners[0]);
+//				glVertex3f(xx+rr, yy-rr, -rr*t->tile2.corners[0]);
+//				//glVertex3f((double)x/width+1.0/width-.5, (double)2.0*t->tile2.corners[0]/(height+width), (double)y/height-.5);
+//				DoVertexColor(t->tile2.type, t->tile2.corners[1]);
+//				glVertex3f(xx+rr, yy+rr, -rr*t->tile2.corners[1]);
+//				//glVertex3f((double)x/width+1.0/width-.5, (double)2.0*t->tile2.corners[1]/(height+width), (double)y/height+1.0/height-.5);
+//				DoVertexColor(t->tile2.type, t->tile2.corners[2]);
+//				glVertex3f(xx-rr, yy-rr, -rr*t->tile2.corners[2]);
+//				//glVertex3f((double)x/width-.5, (double)2.0*t->tile2.corners[2]/(height+width), (double)y/height-.5);
+//			}
+//			break;
+//	}
+//	glEnd();
+//	glDisable(GL_TEXTURE_2D);
+//}
 
 /**
 * Using OpenGL set the correct color for a particular vertex.
@@ -2209,12 +2209,12 @@ void Map::DoVertexColor(tTerrain type, int vHeight, bool darken) const
 		default:
 			break;
 	}
-	if ((darken) && (type != kGround))
-		glColor4f(.5*red, .5*green, .5*blue, alpha);
-	else if ((darken) && (type == kGround))
-		glColor4f(.8*red, .8*green, .8*blue, alpha);
-	else
-		glColor4f(red, green, blue, alpha);
+//	if ((darken) && (type != kGround))
+//		glColor4f(.5*red, .5*green, .5*blue, alpha);
+//	else if ((darken) && (type == kGround))
+//		glColor4f(.8*red, .8*green, .8*blue, alpha);
+//	else
+//		glColor4f(red, green, blue, alpha);
 }
 
 /**
@@ -2223,10 +2223,10 @@ void Map::DoVertexColor(tTerrain type, int vHeight, bool darken) const
  */
 void Map::DoNormal(tSplit split, halfTile *t, int /*x*/, int /*y*/) const
 {
-	recVec n,pa,pb;
+	Graphics::point n,pa,pb;
 	
 	pa.x = 0;
-	pa.y = (double)(t->corners[1]-t->corners[0])/(height+width);
+	pa.y = (t->corners[1]-t->corners[0])/(height+width);
 	pa.z = 1/height;
 	
 	pb.x = 1/width;
@@ -2239,7 +2239,7 @@ void Map::DoNormal(tSplit split, halfTile *t, int /*x*/, int /*y*/) const
 			pb.z = 0;
 			break;
 	}
-	pb.y = (double)(t->corners[2]-t->corners[0])/(height+width);
+	pb.y = (t->corners[2]-t->corners[0])/(height+width);
 	pa.normalise();
 	pb.normalise();
 	
@@ -2248,65 +2248,65 @@ void Map::DoNormal(tSplit split, halfTile *t, int /*x*/, int /*y*/) const
 	n.z = pb.x * pa.y - pb.y * pa.x;
 	n.normalise();
 	
-	glNormal3f(n.x,n.y,n.z);
+//	glNormal3f(n.x,n.y,n.z);
 }
 
-void Map::drawLandQuickly() const
-{
-	GLdouble xx, yy, zz, rr;
-	glBegin(GL_QUADS);
-	glColor3f(0.5, 0.5, 0.5);
-	for (int y = 0; y < height; y++)
-	{
-		if (GetTerrainType(0, y) == kGround)
-		{
-			GetOpenGLCoord(0, y, xx, yy, zz, rr);
-			glVertex3f(xx-rr, yy-rr, zz);
-			glVertex3f(xx-rr, yy+rr, zz);
-		}
-		for (int x = 1; x < width; x++)
-		{
-			if (GetTerrainType(x, y) != GetTerrainType(x-1, y))
-			{
-				if (GetTerrainType(x-1, y) == kGround)
-				{
-					GetOpenGLCoord(x, y, xx, yy, zz, rr);
-					glVertex3f(xx-rr, yy+rr, zz);
-					glVertex3f(xx-rr, yy-rr, zz);
-				}
-				if (GetTerrainType(x, y) == kGround)
-				{
-					GetOpenGLCoord(x, y, xx, yy, zz, rr);
-					glVertex3f(xx-rr, yy-rr, zz);
-					glVertex3f(xx-rr, yy+rr, zz);
-				}
-			}
-		}
-		if (GetTerrainType(width-1, y) == kGround)
-		{
-			GetOpenGLCoord(width-1, y, xx, yy, zz, rr);
-			glVertex3f(xx+rr, yy+rr, zz);
-			glVertex3f(xx+rr, yy-rr, zz);
-		}
-	}
-
-//  this will draw the lines for the map, but can be too busy
+//void Map::drawLandQuickly() const
+//{
+//	GLdouble xx, yy, zz, rr;
+//	glBegin(GL_QUADS);
+//	glColor3f(0.5, 0.5, 0.5);
 //	for (int y = 0; y < height; y++)
 //	{
-//		GetOpenGLCoord(0, y, xx, yy, zz, rr);
-//		glVertex3f(xx-rr, yy-rr, zz);
-//		GetOpenGLCoord(width-1, y, xx, yy, zz, rr);
-//		glVertex3f(xx+rr, yy-rr, zz);
+//		if (GetTerrainType(0, y) == kGround)
+//		{
+//			GetCoord(0, y, xx, yy, zz, rr);
+//			glVertex3f(xx-rr, yy-rr, zz);
+//			glVertex3f(xx-rr, yy+rr, zz);
+//		}
+//		for (int x = 1; x < width; x++)
+//		{
+//			if (GetTerrainType(x, y) != GetTerrainType(x-1, y))
+//			{
+//				if (GetTerrainType(x-1, y) == kGround)
+//				{
+//					GetCoord(x, y, xx, yy, zz, rr);
+//					glVertex3f(xx-rr, yy+rr, zz);
+//					glVertex3f(xx-rr, yy-rr, zz);
+//				}
+//				if (GetTerrainType(x, y) == kGround)
+//				{
+//					GetCoord(x, y, xx, yy, zz, rr);
+//					glVertex3f(xx-rr, yy-rr, zz);
+//					glVertex3f(xx-rr, yy+rr, zz);
+//				}
+//			}
+//		}
+//		if (GetTerrainType(width-1, y) == kGround)
+//		{
+//			GetCoord(width-1, y, xx, yy, zz, rr);
+//			glVertex3f(xx+rr, yy+rr, zz);
+//			glVertex3f(xx+rr, yy-rr, zz);
+//		}
 //	}
-//	for (int y = 0; y < height; y++)
-//	{
-//		GetOpenGLCoord(x, 0, xx, yy, zz, rr);
-//		glVertex3f(xx-rr, yy-rr, zz);
-//		GetOpenGLCoord(x, height-1, xx, yy, zz, rr);
-//		glVertex3f(xx-rr, yy+rr, zz);
-//	}
-	glEnd();
-}
+//
+////  this will draw the lines for the map, but can be too busy
+////	for (int y = 0; y < height; y++)
+////	{
+////		GetCoord(0, y, xx, yy, zz, rr);
+////		glVertex3f(xx-rr, yy-rr, zz);
+////		GetCoord(width-1, y, xx, yy, zz, rr);
+////		glVertex3f(xx+rr, yy-rr, zz);
+////	}
+////	for (int y = 0; y < height; y++)
+////	{
+////		GetCoord(x, 0, xx, yy, zz, rr);
+////		glVertex3f(xx-rr, yy-rr, zz);
+////		GetCoord(x, height-1, xx, yy, zz, rr);
+////		glVertex3f(xx-rr, yy+rr, zz);
+////	}
+//	glEnd();
+//}
 
 /**
 * Sets the abstract Graph node number for this tile.

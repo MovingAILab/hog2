@@ -76,25 +76,20 @@ public:
 	bool GoalTest(const airplaneState &) const { assert(false); return false; }
 	uint64_t GetStateHash(const airplaneState &node) const;
 	uint64_t GetActionHash(airplaneAction act) const;
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const airplaneState &l) const;
-	virtual void OpenGLDraw(const airplaneState& oldState, const airplaneState &newState, float perc) const;
-	virtual void OpenGLDraw(const airplaneState &, const airplaneAction &) const;
-	void GLDrawLine(const airplaneState &a, const airplaneState &b) const;
-	recVec GetCoordinate(int x, int y, int z) const;
+	Graphics::point GetCoordinate(int x, int y, int z) const;
 private:
 	void SetGround(int x, int y, uint8_t val);
 	uint8_t GetGround(int x, int y) const;
 	bool Valid(int x, int y);
-	recVec &GetNormal(int x, int y);
-	recVec GetNormal(int x, int y) const;
+	Graphics::point &GetNormal(int x, int y);
+	Graphics::point GetNormal(int x, int y) const;
 	void RecurseGround(int x1, int y1, int x2, int y2);
 	const int width = 80;
 	const int length = 80;
 	const int height = 20;
 	std::vector<uint8_t> ground;
-	std::vector<recVec> groundNormals;
-	void DoNormal(recVec pa, recVec pb) const;
+	std::vector<Graphics::point> groundNormals;
+	void DoNormal(Graphics::point pa, Graphics::point pb) const;
 	mutable std::vector<airplaneAction> internalActions;
 };
 

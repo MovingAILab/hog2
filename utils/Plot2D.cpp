@@ -135,41 +135,41 @@ void Line::SetColor(double _r, double _g, double _b)
 	r = _r; g = _g; b = _b;
 }
 
-void Line::OpenGLDraw() const
-{
-	if (hidden)
-		return;
-	switch (plotType)
-	{
-		case kLinePlot:
-		{
-			glBegin(GL_LINE_STRIP);
-			if (r != -1)
-			{
-				glColor3f(r, g, b);
-			}
-			for (unsigned int t = 0; t < x.size(); t++)
-				glVertex2d(x[t], y[t]);
-			glEnd();
-		}
-			break;
-		case kImpulsePlot:
-		{
-			glBegin(GL_LINES);
-			if (r != -1)
-			{
-				glColor3f(r, g, b);
-			}
-			for (unsigned int t = 0; t < x.size(); t++)
-			{
-				glVertex2d(x[t], 0);
-				glVertex2d(x[t], y[t]);
-			}
-			glEnd();
-		}
-			break;
-	}
-}
+//void Line::OpenGLDraw() const
+//{
+//	if (hidden)
+//		return;
+//	switch (plotType)
+//	{
+//		case kLinePlot:
+//		{
+//			glBegin(GL_LINE_STRIP);
+//			if (r != -1)
+//			{
+//				glColor3f(r, g, b);
+//			}
+//			for (unsigned int t = 0; t < x.size(); t++)
+//				glVertex2d(x[t], y[t]);
+//			glEnd();
+//		}
+//			break;
+//		case kImpulsePlot:
+//		{
+//			glBegin(GL_LINES);
+//			if (r != -1)
+//			{
+//				glColor3f(r, g, b);
+//			}
+//			for (unsigned int t = 0; t < x.size(); t++)
+//			{
+//				glVertex2d(x[t], 0);
+//				glVertex2d(x[t], y[t]);
+//			}
+//			glEnd();
+//		}
+//			break;
+//	}
+//}
 
 void Line::Draw(Graphics::Display &display, double xOff, double yOff, double xScale, double yScale) const
 {
@@ -537,72 +537,72 @@ void Plot2D::NormalizeAxes()
 	dBottom = yMin;
 }
 
-void Plot2D::OpenGLDraw() const
-{
-	GLint matrixMode;
-	
-	if (recomputeBorders)
-		assert(false);
-	//			ResetAxis();
-	
-	glGetIntegerv(GL_MATRIX_MODE, &matrixMode);
-	
-	glEnable(GL_BLEND); // for text fading
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // ditto
-	
-	// set orthograhic 1:1  pixel transform in local view coords
-	glDisable(GL_DEPTH_TEST);
-	
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glColor3f(0, 1, 0);
-	
-	// left, right, bottom, top, near, far
-	double tpW = (dRight-dLeft)*.05;
-	double tpH = (dTop-dBottom)*.05;
-	glOrtho(dLeft-tpW, dRight+tpW, dBottom-tpH, dTop+tpH, -1, 1);
-	//printf("Drawing axis (%1.2f, %1.2f, %1.2f, %1.2f)\n", dLeft, dTop, dRight, dBottom);
-	
-	glColor3f(1, 1, 1); // draw axis
-	glBegin(GL_LINES);
-	glVertex2d(dLeft-tpW, 0); glVertex2d(dRight+tpW, 0);
-	glVertex2d(0, dBottom-tpH); glVertex2d(0, dTop+tpH);
-	glEnd();
-	
-	for (unsigned int x = 0; x < lines.size(); x++)
-	{
-		if (lines[x]->GetChanged())
-			assert(false);
-		//recomputeBorders = true;
-		lines[x]->OpenGLDraw();
-	}
-	
-	glLineWidth(3.0);
-	if (lastSelectedLine != -1)
-		lines[lastSelectedLine]->OpenGLDraw();
-	glLineWidth(1.0);
-	
-	// draw mouse - temporary hack
-	if (drawMouse)
-	{
-		glColor4f(0, 1, 0, .5); // draw axis
-		glBegin(GL_LINES);
-		glVertex2d(mouseXLoc, dBottom-tpH); glVertex2d(mouseXLoc, dTop+tpH);
-		glVertex2d(dLeft-tpW, mouseYLoc); glVertex2d(dRight+tpW, mouseYLoc);
-		glEnd();
-	}
-	
-	glPopMatrix(); // GL_MODELVIEW
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(matrixMode);
-	
-	glEnable(GL_DEPTH_TEST);
-}
+//void Plot2D::OpenGLDraw() const
+//{
+//	GLint matrixMode;
+//	
+//	if (recomputeBorders)
+//		assert(false);
+//	//			ResetAxis();
+//	
+//	glGetIntegerv(GL_MATRIX_MODE, &matrixMode);
+//	
+//	glEnable(GL_BLEND); // for text fading
+//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // ditto
+//	
+//	// set orthograhic 1:1  pixel transform in local view coords
+//	glDisable(GL_DEPTH_TEST);
+//	
+//	glMatrixMode(GL_PROJECTION);
+//	glPushMatrix();
+//	glLoadIdentity();
+//	glMatrixMode(GL_MODELVIEW);
+//	glPushMatrix();
+//	glLoadIdentity();
+//	glColor3f(0, 1, 0);
+//	
+//	// left, right, bottom, top, near, far
+//	double tpW = (dRight-dLeft)*.05;
+//	double tpH = (dTop-dBottom)*.05;
+//	glOrtho(dLeft-tpW, dRight+tpW, dBottom-tpH, dTop+tpH, -1, 1);
+//	//printf("Drawing axis (%1.2f, %1.2f, %1.2f, %1.2f)\n", dLeft, dTop, dRight, dBottom);
+//	
+//	glColor3f(1, 1, 1); // draw axis
+//	glBegin(GL_LINES);
+//	glVertex2d(dLeft-tpW, 0); glVertex2d(dRight+tpW, 0);
+//	glVertex2d(0, dBottom-tpH); glVertex2d(0, dTop+tpH);
+//	glEnd();
+//	
+//	for (unsigned int x = 0; x < lines.size(); x++)
+//	{
+//		if (lines[x]->GetChanged())
+//			assert(false);
+//		//recomputeBorders = true;
+//		lines[x]->OpenGLDraw();
+//	}
+//	
+//	glLineWidth(3.0);
+//	if (lastSelectedLine != -1)
+//		lines[lastSelectedLine]->OpenGLDraw();
+//	glLineWidth(1.0);
+//	
+//	// draw mouse - temporary hack
+//	if (drawMouse)
+//	{
+//		glColor4f(0, 1, 0, .5); // draw axis
+//		glBegin(GL_LINES);
+//		glVertex2d(mouseXLoc, dBottom-tpH); glVertex2d(mouseXLoc, dTop+tpH);
+//		glVertex2d(dLeft-tpW, mouseYLoc); glVertex2d(dRight+tpW, mouseYLoc);
+//		glEnd();
+//	}
+//	
+//	glPopMatrix(); // GL_MODELVIEW
+//	glMatrixMode(GL_PROJECTION);
+//	glPopMatrix();
+//	glMatrixMode(matrixMode);
+//	
+//	glEnable(GL_DEPTH_TEST);
+//}
 
 point3d Plot2D::MakeHOG(double x, double y) const
 {

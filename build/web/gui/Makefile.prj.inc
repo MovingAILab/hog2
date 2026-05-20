@@ -31,7 +31,6 @@ default : all
 
 SRC_CPP = \
   gui/Common.cpp \
-  gui/TextBox.cpp \
   gui/Trackball.cpp
 
 

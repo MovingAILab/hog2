@@ -163,11 +163,11 @@ public:
 	virtual uint64_t GetActionHash(Rubik7EdgeAction act) const { return 0; }
 	virtual void GetStateFromHash(uint64_t hash, Rubik7EdgeState &node) const;
 	
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const Rubik7EdgeState&) const;
-	/** Draw the transition at some percentage 0...1 between two states */
-	virtual void OpenGLDraw(const Rubik7EdgeState&, const Rubik7EdgeState&, float) const;
-	virtual void OpenGLDraw(const Rubik7EdgeState&, const Rubik7EdgeAction&) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const Rubik7EdgeState&) const;
+//	/** Draw the transition at some percentage 0...1 between two states */
+//	virtual void OpenGLDraw(const Rubik7EdgeState&, const Rubik7EdgeState&, float) const;
+//	virtual void OpenGLDraw(const Rubik7EdgeState&, const Rubik7EdgeAction&) const;
 private:
 	void MRUnrank(int n, uint64_t r, uint64_t &perm) const;
 	void MRUnrank2(int n, uint64_t r, uint64_t &perm) const;

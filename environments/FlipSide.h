@@ -94,10 +94,10 @@ public:
 
 	uint64_t GetStateHash(const FlipSideState &state) const;
 	uint64_t GetActionHash(flipMove act) const;
-	void OpenGLDraw() const;
-	void OpenGLDraw(const FlipSideState &s) const;
-	void OpenGLDraw(const FlipSideState &, const flipMove &)  const{ /* currently not drawing moves */ }
-	void OpenGLDraw(const FlipSideState&, const FlipSideState&, float) const { /* currently not drawing moves */ }
+//	void OpenGLDraw() const;
+//	void OpenGLDraw(const FlipSideState &s) const;
+//	void OpenGLDraw(const FlipSideState &, const flipMove &)  const{ /* currently not drawing moves */ }
+//	void OpenGLDraw(const FlipSideState&, const FlipSideState&, float) const { /* currently not drawing moves */ }
 
 	void StoreGoal(FlipSideState &){}
 	void ClearGoal(){}

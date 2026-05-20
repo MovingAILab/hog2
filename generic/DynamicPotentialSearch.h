@@ -113,7 +113,7 @@ public:
 	
 //	void LogFinalStats(StatCollection *) {}
 	
-	void OpenGLDraw() const {};
+//	void OpenGLDraw() const {};
 	void Draw(Graphics::Display &d) const;
 	
 //	void SetWeight(double w) {weight = w;}

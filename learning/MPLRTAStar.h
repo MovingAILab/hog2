@@ -71,8 +71,8 @@ namespace MPLRTA {
 		}
 		
 		double GetAmountLearned() { return fAmountLearned; }
-		void OpenGLDraw() const {}
-		void OpenGLDraw(const MapEnvironment *env) const;
+//		void OpenGLDraw() const {}
+//		void OpenGLDraw(const MapEnvironment *env) const;
 	private:
 		typedef std::unordered_map<uint64_t, learnedData, Hash64 > LearnedHeuristic;
 		
@@ -207,30 +207,30 @@ namespace MPLRTA {
 		return;
 	}
 	
-	void MPLRTAStar::OpenGLDraw(const MapEnvironment *e) const
-	{
-		double learned = 0;
-		for (LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
-		{
-			double thisState = (*it).second.theHeuristic;
-			if (learned < thisState)
-				learned = thisState;
-		}
-		for (LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
-		{
-			double r = (*it).second.theHeuristic;
-			if ((*it).second.dead)
-			{
-				e->SetColor(0,0,0);
-				e->OpenGLDraw((*it).second.theState);
-			}
-			else if (r > 0)
-			{
-				e->SetColor(0.5+0.5*r/learned, 0, 0, 0.1+0.8*r/learned);
-				e->OpenGLDraw((*it).second.theState);
-			}
-		}
-	}
+//	void MPLRTAStar::OpenGLDraw(const MapEnvironment *e) const
+//	{
+//		double learned = 0;
+//		for (LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
+//		{
+//			double thisState = (*it).second.theHeuristic;
+//			if (learned < thisState)
+//				learned = thisState;
+//		}
+//		for (LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
+//		{
+//			double r = (*it).second.theHeuristic;
+//			if ((*it).second.dead)
+//			{
+//				e->SetColor(0,0,0);
+//				e->OpenGLDraw((*it).second.theState);
+//			}
+//			else if (r > 0)
+//			{
+//				e->SetColor(0.5+0.5*r/learned, 0, 0, 0.1+0.8*r/learned);
+//				e->OpenGLDraw((*it).second.theState);
+//			}
+//		}
+//	}
 
 }
 

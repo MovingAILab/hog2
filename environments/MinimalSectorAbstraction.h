@@ -92,7 +92,7 @@ inline bool operator==(const tempEdgeData& x, const tempEdgeData& y)
 class MinimalSectorAbstraction {
 public:
 	MinimalSectorAbstraction(Map *map, int sectorSize);
-	void OpenGLDraw();
+//	void OpenGLDraw();
 	void Draw(Graphics::Display &display) const;
 	int GetSector(int x, int y);
 	int GetRegion(int x, int y);

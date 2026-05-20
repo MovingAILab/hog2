@@ -53,13 +53,13 @@ public:
 	
 	virtual uint64_t GetActionHash(abstractMove act) const;
 	
-	virtual void OpenGLDraw() const {};
-	virtual void OpenGLDraw(const abstractGridState&) const {};
-	/** Draw the transition at some percentage 0...1 between two abstractGridStates */
-	virtual void OpenGLDraw(const abstractGridState&, const abstractGridState&, float) const {}
-	virtual void OpenGLDraw(const abstractGridState&, const abstractMove&) const {};
-	virtual void GLLabelabstractGridState(const abstractGridState&, const char *) const {}
-	virtual void GLDrawLine(const abstractGridState &x, const abstractGridState &y) const {}
+//	virtual void OpenGLDraw() const {};
+//	virtual void OpenGLDraw(const abstractGridState&) const {};
+//	/** Draw the transition at some percentage 0...1 between two abstractGridStates */
+//	virtual void OpenGLDraw(const abstractGridState&, const abstractGridState&, float) const {}
+//	virtual void OpenGLDraw(const abstractGridState&, const abstractMove&) const {};
+//	virtual void GLLabelabstractGridState(const abstractGridState&, const char *) const {}
+//	virtual void GLDrawLine(const abstractGridState &x, const abstractGridState &y) const {}
 	
 	virtual void Draw(Graphics::Display &display) const;
 	virtual void Draw(Graphics::Display &display, const abstractGridState&) const;

@@ -159,7 +159,7 @@ public:
 	void SetStopAfterGoal(bool val) { stopAfterGoal = val; }
 	bool GetStopAfterGoal() { return stopAfterGoal; }
 	
-	void OpenGLDraw() const;
+//	void OpenGLDraw() const;
 	
 	/** Use weighted A* and set the weight
 	 *
@@ -640,17 +640,17 @@ bool OldTemplateAStar<state, action,environment>::GetClosedListGCost(state &val,
  * @date 03/12/09
  * 
  */
-template <class state, class action, class environment>
-void OldTemplateAStar<state, action,environment>::OpenGLDraw() const
-{
-	int x = 0;
-	if (env == 0)
-		return;
-	//env->SetColor(0.0, 0.0, 0.0, 0.15);
-	for (closedList_iterator it = closedList.begin(); it != closedList.end(); it++)
-	{
-		env->OpenGLDraw((*it).second.currNode);
-	}
-}
+//template <class state, class action, class environment>
+//void OldTemplateAStar<state, action,environment>::OpenGLDraw() const
+//{
+//	int x = 0;
+//	if (env == 0)
+//		return;
+//	//env->SetColor(0.0, 0.0, 0.0, 0.15);
+//	for (closedList_iterator it = closedList.begin(); it != closedList.end(); it++)
+//	{
+//		env->OpenGLDraw((*it).second.currNode);
+//	}
+//}
 
 #endif

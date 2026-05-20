@@ -262,16 +262,16 @@ class WeightedUnitGroup : public UnitGroup<state,action,environment>
 			currDrawEnv = (currDrawEnv + 1)%(unitWme.size()+1);
 		}
 		
-		virtual void OpenGLDraw(const environment *, const SimulationInfo<state,action,environment> *)  const
-		{ 
-			if (currDrawEnv == unitWme.size())
-				wme->OpenGLDraw();
-			else
-			{
-				//this->GetMembers()[currDrawEnv]->SetColor(0,0,1);
-				unitWme[currDrawEnv]->OpenGLDraw();
-			}
-		}
+//		virtual void OpenGLDraw(const environment *, const SimulationInfo<state,action,environment> *)  const
+//		{ 
+//			if (currDrawEnv == unitWme.size())
+//				wme->OpenGLDraw();
+//			else
+//			{
+//				//this->GetMembers()[currDrawEnv]->SetColor(0,0,1);
+//				unitWme[currDrawEnv]->OpenGLDraw();
+//			}
+//		}
 		
 		double ComputeArrowMetric(bool b, double t,bool b2, double mt)
 		{

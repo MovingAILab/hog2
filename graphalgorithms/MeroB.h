@@ -265,7 +265,7 @@ public:
 	bool DoSingleStepB(std::vector<graphState> &thePath);
 	bool DoSingleStepBP(std::vector<graphState> &thePath);
 	void ExtractPathToStart(graphState goalNode, std::vector<graphState> &thePath);
-	void OpenGLDraw() const;
+//	void OpenGLDraw() const;
 	//void OpenGLDraw() const;
 	void DrawText(double x, double y, double z, float r, float g, float b, char* str);
 	void DrawEdge(unsigned int from, unsigned int to, double weight);

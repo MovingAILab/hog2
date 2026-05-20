@@ -157,50 +157,50 @@ uint64_t Map2DConstrainedEnvironment::GetActionHash(tDirection act) const
 }
 
 
-void Map2DConstrainedEnvironment::OpenGLDraw() const
-{
-	mapEnv->OpenGLDraw();
-	// draw constrains
-	Map *map = mapEnv->GetMap();
-	for (unsigned int x = 0; x < constraints.size(); x++)
-	{
-		GLdouble xx, yy, zz, rad;
-		map->GetOpenGLCoord(constraints[x].loc.l.x, constraints[x].loc.l.y, xx, yy, zz, rad);
-		glColor4f(1.0, 0.0, 0.0, 0.5);
-		//glColor3f(0.5, 0.5, 0.5);
-		DrawSphere(xx, yy, zz-constraints[x].loc.t*rad, rad);
-	}
-}
-
-void Map2DConstrainedEnvironment::OpenGLDraw(const xytLoc& l) const
-{
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-	Map *map = mapEnv->GetMap();
-	GLdouble xx, yy, zz, rad;
-	map->GetOpenGLCoord(l.l.x, l.l.y, xx, yy, zz, rad);
-	glColor4f(r, g, b, t);
-	DrawSphere(xx, yy, zz-l.t*rad, rad); // zz-l.t*2*rad
-}
-
-void Map2DConstrainedEnvironment::OpenGLDraw(const xytLoc&, const tDirection&) const
-{
-	
-}
-
-void Map2DConstrainedEnvironment::GLDrawLine(const xytLoc &x, const xytLoc &y) const
-{
-	GLdouble xx, yy, zz, rad;
-	Map *map = mapEnv->GetMap();
-	map->GetOpenGLCoord(x.l.x, x.l.y, xx, yy, zz, rad);
-	
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-	glColor4f(r, g, b, t);
-	glBegin(GL_LINES);
-	glVertex3f(xx, yy, zz-x.t*rad);
-	map->GetOpenGLCoord(y.l.x, y.l.y, xx, yy, zz, rad);
-	glVertex3f(xx, yy, zz-y.t*rad);
-	glEnd();
-}
-
+//void Map2DConstrainedEnvironment::OpenGLDraw() const
+//{
+//	mapEnv->OpenGLDraw();
+//	// draw constrains
+//	Map *map = mapEnv->GetMap();
+//	for (unsigned int x = 0; x < constraints.size(); x++)
+//	{
+//		GLdouble xx, yy, zz, rad;
+//		map->GetCoord(constraints[x].loc.l.x, constraints[x].loc.l.y, xx, yy, zz, rad);
+//		glColor4f(1.0, 0.0, 0.0, 0.5);
+//		//glColor3f(0.5, 0.5, 0.5);
+//		DrawSphere(xx, yy, zz-constraints[x].loc.t*rad, rad);
+//	}
+//}
+//
+//void Map2DConstrainedEnvironment::OpenGLDraw(const xytLoc& l) const
+//{
+//	GLfloat r, g, b, t;
+//	GetColor(r, g, b, t);
+//	Map *map = mapEnv->GetMap();
+//	GLdouble xx, yy, zz, rad;
+//	map->GetCoord(l.l.x, l.l.y, xx, yy, zz, rad);
+//	glColor4f(r, g, b, t);
+//	DrawSphere(xx, yy, zz-l.t*rad, rad); // zz-l.t*2*rad
+//}
+//
+//void Map2DConstrainedEnvironment::OpenGLDraw(const xytLoc&, const tDirection&) const
+//{
+//	
+//}
+//
+//void Map2DConstrainedEnvironment::GLDrawLine(const xytLoc &x, const xytLoc &y) const
+//{
+//	GLdouble xx, yy, zz, rad;
+//	Map *map = mapEnv->GetMap();
+//	map->GetCoord(x.l.x, x.l.y, xx, yy, zz, rad);
+//	
+//	GLfloat r, g, b, t;
+//	GetColor(r, g, b, t);
+//	glColor4f(r, g, b, t);
+//	glBegin(GL_LINES);
+//	glVertex3f(xx, yy, zz-x.t*rad);
+//	map->GetCoord(y.l.x, y.l.y, xx, yy, zz, rad);
+//	glVertex3f(xx, yy, zz-y.t*rad);
+//	glEnd();
+//}
+//

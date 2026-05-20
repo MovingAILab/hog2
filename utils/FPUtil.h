@@ -35,4 +35,23 @@ inline bool fequal(double a, double b, double tolerance=TOLERANCE)
 inline double min(double a, double b) { return fless(a, b)?a:b; }
 inline double max(double a, double b) { return fless(a, b)?b:a; }
 
+#include <ostream>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <string>
+
+
+// Code from: https://stackoverflow.com/questions/16605967/set-precision-of-stdto-string-when-converting-floating-point-values/16606128#16606128
+template <typename T>
+std::string to_string_with_precision(const T a_value, const int n = 6)
+{
+	std::ostringstream out;
+	out.precision(n);
+	out << std::fixed << a_value;
+	return out.str();
+}
+
+
+
 #endif

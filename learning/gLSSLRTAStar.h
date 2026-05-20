@@ -157,8 +157,8 @@ public:
 	}
 	
 	double GetAmountLearned() { return fAmountLearned; }
-	void OpenGLDraw() const {}
-	void OpenGLDraw(const environment *env) const;
+//	void OpenGLDraw() const {}
+//	void OpenGLDraw(const environment *env) const;
 private:
 	typedef std::unordered_map<uint64_t, glssLearnedData<state>, Hash64 > LearnedHeuristic;
 	typedef std::unordered_map<uint64_t, bool, Hash64 > ClosedList;
@@ -354,29 +354,29 @@ void gLSSLRTAStar<state, action, environment>::GetPath(environment *env, const s
 	//std::cout << GetName() << "\t" << nodesExpanded << "\t" << t.GetElapsedTime() << "\t" << nodesExpanded/t.GetElapsedTime() << std::endl;
 }
 
-template <class state, class action, class environment>
-void gLSSLRTAStar<state, action, environment>::OpenGLDraw(const environment *e) const
-{
-	astar.OpenGLDraw();
-	
-	double learned = 0;
-	for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
-	{
-		double thisState = (*it).second.theHeuristic;
-//		double thisState = (*it).second.gCost;
-		if (learned < thisState)
-			learned = thisState;
-	}
-	for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
-	{
-		double r = (*it).second.theHeuristic;
-		//double r = (*it).second.gCost;
-		if (r > 0)
-		{
-			e->SetColor(0.5+0.5*r/learned, 0, 0, 0.1+0.8*r/learned);
-			e->OpenGLDraw((*it).second.theState);
-		}
-	}
-}
+//template <class state, class action, class environment>
+//void gLSSLRTAStar<state, action, environment>::OpenGLDraw(const environment *e) const
+//{
+//	astar.OpenGLDraw();
+//	
+//	double learned = 0;
+//	for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
+//	{
+//		double thisState = (*it).second.theHeuristic;
+////		double thisState = (*it).second.gCost;
+//		if (learned < thisState)
+//			learned = thisState;
+//	}
+//	for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
+//	{
+//		double r = (*it).second.theHeuristic;
+//		//double r = (*it).second.gCost;
+//		if (r > 0)
+//		{
+//			e->SetColor(0.5+0.5*r/learned, 0, 0, 0.1+0.8*r/learned);
+//			e->OpenGLDraw((*it).second.theState);
+//		}
+//	}
+//}
 
 #endif /* gLSSLRTAStar_h */

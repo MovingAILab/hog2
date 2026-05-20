@@ -232,8 +232,8 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 
 	if (GetNumPorts(windowID) == unitSims[windowID]->GetNumUnits())
 	{
-		unitSims[windowID]->GetEnvironment()->OpenGLDraw();
-		unitSims[windowID]->OpenGLDraw(viewport);
+	  //		unitSims[windowID]->GetEnvironment()->OpenGLDraw();
+	  //		unitSims[windowID]->OpenGLDraw(viewport);
 		//measure.OpenGLDraw(unitSims[windowID]->GetEnvironment());
 
 //		int tmp = GetActivePort(windowID);
@@ -247,12 +247,13 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 //		SetActivePort(windowID, tmp);
 	}
 	else {
-		unitSims[windowID]->GetEnvironment()->OpenGLDraw();
-		unitSims[windowID]->OpenGLDraw();
+	  //		unitSims[windowID]->GetEnvironment()->OpenGLDraw();
+	  //		unitSims[windowID]->OpenGLDraw();
 	}
 	
 	if (mouseTracking)
 	{
+	  /*
 		glBegin(GL_LINES);
 		glColor3f(1.0f, 0.0f, 0.0f);
 		Map *m = unitSims[windowID]->GetEnvironment()->GetMap();
@@ -262,15 +263,20 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		m->GetOpenGLCoord(px2, py2, x, y, z, r);
 		glVertex3f(x, y, z-3*r);
 		glEnd();
+	  */
 	}
 	if (runningSearch1)
 	{
+	  /*
 		a1.OpenGLDraw();
+	  */
 		a1.DoSingleSearchStep(path);
 	}
 	if (runningSearch2)
 	{
+	  /*
 		a2.OpenGLDraw();
+	  */
 		a2.DoSingleSearchStep(path);
 	}
 	
@@ -488,8 +494,8 @@ void MyRandomUnitKeyHandler(unsigned long windowID, tKeyboardModifier mod, char)
 	xyLoc a(x1, y1), b(x2, y2);
 	//xyLoc a(0, 0), b(mazeSize-1, mazeSize-1);
 	//	xyLoc a(0, 0), b(mazeSize-1, 0);
-	GLdouble a1, b1, c1, r1;
-	m->GetOpenGLCoord((x1+x2)/2, (y1+y2)/2, a1, b1, c1, r1);
+	double a1, b1, c1, r1;
+	m->GetCoord((x1+x2)/2, (y1+y2)/2, a1, b1, c1, r1);
 	
 	for (int x = 0; x < 4; x++)
 	{ //break;

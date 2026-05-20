@@ -33,7 +33,6 @@ ifeq ("$(OPENGL)", "STUB")
 SRC_CPP = \
   gui/Common.cpp \
   gui/STUB/STUB_HOG.cpp \
-  gui/TextBox.cpp \
   gui/Trackball.cpp
 
 else
@@ -41,7 +40,8 @@ else
 SRC_CPP = \
   gui/Common.cpp \
   gui/SFML/SFML_HOG.cpp \
-  gui/TextBox.cpp \
+  gui/SFML/TextBox.cpp \
+  gui/SFML/GLUtil.cpp \
   gui/Trackball.cpp
 
 endif

@@ -185,16 +185,16 @@ uint64_t SFBDPancakeEnvironment::GetActionHash(pancakeMovePair act) const
 	return (act.theAction<<1)|(act.applyToStart?1:0);
 }
 
-void SFBDPancakeEnvironment::OpenGLDraw() const
-{
-}
-
-void SFBDPancakeEnvironment::OpenGLDraw(const pancakeStatePair &) const
-{
-}
-
-void SFBDPancakeEnvironment::OpenGLDraw(const pancakeStatePair &, const pancakeMovePair &) const
-{
-	// if we want to draw a set of moves we use this to do so
-}
-
+//void SFBDPancakeEnvironment::OpenGLDraw() const
+//{
+//}
+//
+//void SFBDPancakeEnvironment::OpenGLDraw(const pancakeStatePair &) const
+//{
+//}
+//
+//void SFBDPancakeEnvironment::OpenGLDraw(const pancakeStatePair &, const pancakeMovePair &) const
+//{
+//	// if we want to draw a set of moves we use this to do so
+//}
+//

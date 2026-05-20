@@ -7,7 +7,7 @@
  */
 
 #include "TextOverlay.h"
-#include "GLUtil.h"
+#include "Constants.h"
 #include <string.h>
 #include <stdint.h>
 
@@ -72,79 +72,79 @@ void TextOverlay::Clear()
     index = 0;
 }
 
-void TextOverlay::OpenGLDraw(int window)
-{
-    if (text.size() == 0)
-        return;
-    
-    glDisable(GL_LIGHTING);
-	if (bold)
-		glLineWidth(3.0);
-	else
-		glLineWidth(2.0);
-    glEnable(GL_LINE_SMOOTH);
-    
-    GLint matrixMode;
-    
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND); // for text fading
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // ditto
-                                                        // set orthograhic 1:1  pixel transform in local view coords
-    glGetIntegerv(GL_MATRIX_MODE, &matrixMode);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glFrustum(-1, 1, -1, 1, 1.9, 2.1);	
-    //gluLookAt(0, 0, -2, 0, 0, 0, 0, -1, 0);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    
-    // draw transparent background behind text
-    glLoadIdentity();
-    glBegin(GL_QUADS);
-    glColor4f(0.0, 0.0, 0.0, 0.5);
-    glVertex3f(-1-0.01, -1-0.07, 0.0);
-    glVertex3f( 1+0.01, -1-0.07, 0.0);
-//    glVertex3f( 1+0.01, -1+(text.size()-index-1)*0.06+0.01, 0.0);
-//    glVertex3f(-1-0.01, -1+(text.size()-index-1)*0.06+0.01, 0.0);
-	glVertex3f( 1+0.01, -1+(maxNumLines-index-1)*0.06+0.01, 0.0);
-	glVertex3f(-1-0.01, -1+(maxNumLines-index-1)*0.06+0.01, 0.0);
-    glEnd();
-    
-	int lineOffset = 0;
-    for (unsigned int x = index; x < text.size(); x++)
-    {
-		
-		int charOffset = 0;
-		while (charOffset != -1)
-		{
-			glLoadIdentity();
-			glTranslatef(-1, -1+lineOffset*0.06, 0);
-			glScalef(1.0/(24*120.0), 1.0/(24*120.0), 1);
-			glRotatef(180, 0.0, 0.0, 1.0);
-			glRotatef(180, 0.0, 1.0, 0.0);
-			glColor3f(1.0, 1.0, 1.0);
-			lineOffset++;
-//			printf("Drawing '%s' on line %d\n", &(text[x].c_str()[charOffset]), lineOffset);
-			if (x == text.size()-1)
-				charOffset = DrawString(text[x]+"_", charOffset);
-			else
-				charOffset = DrawString(text[x], charOffset);
-		}
-    }
-	if (lineOffset > maxNumLines)
-		index++;
-    
-    // reset orginal martices
-    glPopMatrix(); // GL_MODELVIEW
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(matrixMode);
-    glEnable(GL_DEPTH_TEST);
-	glDisable(GL_LINE_SMOOTH);
-	glLineWidth(1.0);
-
-}
+//void TextOverlay::OpenGLDraw(int window)
+//{
+//    if (text.size() == 0)
+//        return;
+//    
+//    glDisable(GL_LIGHTING);
+//	if (bold)
+//		glLineWidth(3.0);
+//	else
+//		glLineWidth(2.0);
+//    glEnable(GL_LINE_SMOOTH);
+//    
+//    GLint matrixMode;
+//    
+//    glDisable(GL_DEPTH_TEST);
+//    glEnable(GL_BLEND); // for text fading
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // ditto
+//                                                        // set orthograhic 1:1  pixel transform in local view coords
+//    glGetIntegerv(GL_MATRIX_MODE, &matrixMode);
+//    glMatrixMode(GL_PROJECTION);
+//    glPushMatrix();
+//    glLoadIdentity();
+//    glFrustum(-1, 1, -1, 1, 1.9, 2.1);	
+//    //gluLookAt(0, 0, -2, 0, 0, 0, 0, -1, 0);
+//    glMatrixMode(GL_MODELVIEW);
+//    glPushMatrix();
+//    
+//    // draw transparent background behind text
+//    glLoadIdentity();
+//    glBegin(GL_QUADS);
+//    glColor4f(0.0, 0.0, 0.0, 0.5);
+//    glVertex3f(-1-0.01, -1-0.07, 0.0);
+//    glVertex3f( 1+0.01, -1-0.07, 0.0);
+////    glVertex3f( 1+0.01, -1+(text.size()-index-1)*0.06+0.01, 0.0);
+////    glVertex3f(-1-0.01, -1+(text.size()-index-1)*0.06+0.01, 0.0);
+//	glVertex3f( 1+0.01, -1+(maxNumLines-index-1)*0.06+0.01, 0.0);
+//	glVertex3f(-1-0.01, -1+(maxNumLines-index-1)*0.06+0.01, 0.0);
+//    glEnd();
+//    
+//	int lineOffset = 0;
+//    for (unsigned int x = index; x < text.size(); x++)
+//    {
+//		
+//		int charOffset = 0;
+//		while (charOffset != -1)
+//		{
+//			glLoadIdentity();
+//			glTranslatef(-1, -1+lineOffset*0.06, 0);
+//			glScalef(1.0/(24*120.0), 1.0/(24*120.0), 1);
+//			glRotatef(180, 0.0, 0.0, 1.0);
+//			glRotatef(180, 0.0, 1.0, 0.0);
+//			glColor3f(1.0, 1.0, 1.0);
+//			lineOffset++;
+////			printf("Drawing '%s' on line %d\n", &(text[x].c_str()[charOffset]), lineOffset);
+//			if (x == text.size()-1)
+//				charOffset = DrawString(text[x]+"_", charOffset);
+//			else
+//				charOffset = DrawString(text[x], charOffset);
+//		}
+//    }
+//	if (lineOffset > maxNumLines)
+//		index++;
+//    
+//    // reset orginal martices
+//    glPopMatrix(); // GL_MODELVIEW
+//    glMatrixMode(GL_PROJECTION);
+//    glPopMatrix();
+//    glMatrixMode(matrixMode);
+//    glEnable(GL_DEPTH_TEST);
+//	glDisable(GL_LINE_SMOOTH);
+//	glLineWidth(1.0);
+//
+//}
 
 void TextOverlay::Draw(Graphics::Display &display) const
 {

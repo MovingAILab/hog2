@@ -98,7 +98,7 @@ public:
 	
 	void LogFinalStats(StatCollection *) {}
 //
-	void OpenGLDraw() const;
+//	void OpenGLDraw() const;
 	void Draw(Graphics::Display &d) const;
 	
 	void SetPhi(std::function<double(double, double)> p)
@@ -515,32 +515,32 @@ void AStarEpsilon<state, action,environment>::ExtractPathToStart(state &node, st
  * @date 03/12/09
  *
  */
-template <class state, class action, class environment>
-void AStarEpsilon<state, action,environment>::OpenGLDraw() const
-{
-	double transparency = 1.0;
-	//GetMinFOnOpen();
-
-	for (unsigned int x = 0; x < allStates.size(); x++)
-	{
-		if (allStates[x].open)
-		{
-			if (flesseq(Phi(allStates[x].hCost, allStates[x].gCost), minf))
-				env->SetColor(0.0, 1.0, 1.0, transparency);
-			else
-				env->SetColor(0.0, 1.0, 0.0, transparency);
-		}
-		else {
-			env->SetColor(1.0, 0.0, 0.0, transparency);
-		}
-		if (allStates[x].parent == x)
-			env->SetColor(1.0, 0.5, 0.5, transparency);
-		env->OpenGLDraw(allStates[x].s);
-
-	}
-	env->SetColor(1.0, 0.5, 1.0, 0.5);
-	env->OpenGLDraw(goal);
-}
+//template <class state, class action, class environment>
+//void AStarEpsilon<state, action,environment>::OpenGLDraw() const
+//{
+//	double transparency = 1.0;
+//	//GetMinFOnOpen();
+//
+//	for (unsigned int x = 0; x < allStates.size(); x++)
+//	{
+//		if (allStates[x].open)
+//		{
+//			if (flesseq(Phi(allStates[x].hCost, allStates[x].gCost), minf))
+//				env->SetColor(0.0, 1.0, 1.0, transparency);
+//			else
+//				env->SetColor(0.0, 1.0, 0.0, transparency);
+//		}
+//		else {
+//			env->SetColor(1.0, 0.0, 0.0, transparency);
+//		}
+//		if (allStates[x].parent == x)
+//			env->SetColor(1.0, 0.5, 0.5, transparency);
+//		env->OpenGLDraw(allStates[x].s);
+//
+//	}
+//	env->SetColor(1.0, 0.5, 1.0, 0.5);
+//	env->OpenGLDraw(goal);
+//}
 
 template <class state, class action, class environment>
 void AStarEpsilon<state, action,environment>::Draw(Graphics::Display &d) const

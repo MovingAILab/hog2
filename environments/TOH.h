@@ -152,11 +152,11 @@ public:
 	uint64_t GetActionHash(TOHMove act) const;
 
 	std::string GetName() { return "TOH("+std::to_string(disks)+")"; }
-	void OpenGLDraw() const;
-	void OpenGLDraw(const TOHState<disks>&) const;
-	/** Draw the transition at some percentage 0...1 between two TOHState<disks>s */
-	void OpenGLDraw(const TOHState<disks>&, const TOHState<disks>&, float) const;
-	void OpenGLDraw(const TOHState<disks>&, const TOHMove&) const;
+//	void OpenGLDraw() const;
+//	void OpenGLDraw(const TOHState<disks>&) const;
+//	/** Draw the transition at some percentage 0...1 between two TOHState<disks>s */
+//	void OpenGLDraw(const TOHState<disks>&, const TOHState<disks>&, float) const;
+//	void OpenGLDraw(const TOHState<disks>&, const TOHMove&) const;
 
     void Draw(Graphics::Display &display, std::string str) const; // draws text
 	void Draw(Graphics::Display &display) const; // draws the base and lines
@@ -349,88 +349,88 @@ uint64_t TOH<disks>::GetActionHash(TOHMove act) const
 	return (act.source<<8)|act.dest;
 }
 
-template <int disks>
-void TOH<disks>::OpenGLDraw() const
-{
-	glColor3f(0.5, 0.5, 0.5);
-	DrawCylinder(-0.75, 0, 0, 0, 0.01, 0.8);
-	DrawCylinder(-0.25, 0, 0, 0, 0.01, 0.8);
-	DrawCylinder( 0.25, 0, 0, 0, 0.01, 0.8);
-	DrawCylinder( 0.75, 0, 0, 0, 0.01, 0.8);
-	glColor3f(0.6, 0.4, 0.2);
-	glPushMatrix();
-	glScalef(1.0, 0.05, 0.25);
-	DrawBox(0, 0.4/0.05+1, 0, 1.0);
-	glPopMatrix();
-	//	DrawBox(0, 0, 0, 0.5);
-}
-
-template <int disks>
-void TOH<disks>::OpenGLDraw(const TOHState<disks>&s) const
-{
-	glColor3f(0.0, 0.0, 1.0);
-	double offset[4] = {-0.75, -0.25, 0.25, 0.75};
-	for (int x = 0; x < 4; x++)
-	{
-		for (int y = 0; y < s.GetDiskCountOnPeg(x); y++)
-		{
-			int which = s.GetDiskOnPeg(x, y);
-			glColor3f(0.0, 1.0-float(which)/float(disks), 1.0);
-			DrawCylinder(offset[x], 0.4-0.4/(1+float(disks))-y*0.8/(1+float(disks)), 0,
-						 0.02, 0.04+0.2*which/float(disks), 0.8/(1+float(disks)));
-		}
-	}
-}
-
-/** Draw the transition at some percentage 0...1 between two TOHState<disks>s */
-template <int disks>
-void TOH<disks>::OpenGLDraw(const TOHState<disks>&s, const TOHState<disks>&s2, float interval) const
-{
-	TOHMove m = this->GetAction(s, s2);
-	int animatingDisk = s.GetSmallestDiskOnPeg(m.source);
-	int initialHeight = s.GetDiskCountOnPeg(m.source)-1;
-	int finalHeight = s.GetDiskCountOnPeg(m.dest);
-	
-	glColor3f(0.0, 0.0, 1.0);
-	double offset[4] = {-0.75, -0.25, 0.25, 0.75};
-	for (int x = 0; x < 4; x++)
-	{
-		for (int y = 0; y < s.GetDiskCountOnPeg(x); y++)
-		{
-			int which = s.GetDiskOnPeg(x, y);
-			if (which != animatingDisk)
-			{
-				glColor3f(0.0, 1.0-float(which)/float(disks), 1.0);
-				DrawCylinder(offset[x], 0.4-0.4/(1+float(disks))-y*0.8/(1+float(disks)), 0,
-							 0.02, 0.04+0.2*which/float(disks), 0.8/(1+float(disks)));
-			}
-		}
-	}
-	glColor3f(0.0, 1.0-float(animatingDisk)/float(disks), 1.0);
-	if (interval <= 0.333)
-	{
-		interval *= 3;
-		DrawCylinder(offset[m.source], 0.4-0.4/(1+float(disks))-initialHeight*0.8/(1+float(disks)) - (interval)*(disks+1-initialHeight)*0.8/(1+float(disks)), 0,
-					 0.02, 0.04+0.2*animatingDisk/float(disks), 0.8/(1+float(disks)));
-	}
-	else if (interval <= 0.666)
-	{
-		interval *= 3;
-		DrawCylinder((2-interval)*offset[m.source]+(interval-1)*offset[m.dest], 0.4-0.4/(1+float(disks))-0.8-0.2*sin((interval-1)*PI), 0,
-					 0.02, 0.04+0.2*animatingDisk/float(disks), 0.8/(1+float(disks)));
-	}
-	else {
-		DrawCylinder(offset[m.dest], 0.4-0.4/(1+float(disks))-finalHeight*0.8/(1+float(disks)) -
-					 ((1.0-interval)/0.334)*(disks+1-finalHeight)*0.8/(1+float(disks)), 0,
-					 0.02, 0.04+0.2*animatingDisk/float(disks), 0.8/(1+float(disks)));
-	}
-}
-
-template <int disks>
-void TOH<disks>::OpenGLDraw(const TOHState<disks>&, const TOHMove&) const
-{
-	
-}
+//template <int disks>
+//void TOH<disks>::OpenGLDraw() const
+//{
+//	glColor3f(0.5, 0.5, 0.5);
+//	DrawCylinder(-0.75, 0, 0, 0, 0.01, 0.8);
+//	DrawCylinder(-0.25, 0, 0, 0, 0.01, 0.8);
+//	DrawCylinder( 0.25, 0, 0, 0, 0.01, 0.8);
+//	DrawCylinder( 0.75, 0, 0, 0, 0.01, 0.8);
+//	glColor3f(0.6, 0.4, 0.2);
+//	glPushMatrix();
+//	glScalef(1.0, 0.05, 0.25);
+//	DrawBox(0, 0.4/0.05+1, 0, 1.0);
+//	glPopMatrix();
+//	//	DrawBox(0, 0, 0, 0.5);
+//}
+//
+//template <int disks>
+//void TOH<disks>::OpenGLDraw(const TOHState<disks>&s) const
+//{
+//	glColor3f(0.0, 0.0, 1.0);
+//	double offset[4] = {-0.75, -0.25, 0.25, 0.75};
+//	for (int x = 0; x < 4; x++)
+//	{
+//		for (int y = 0; y < s.GetDiskCountOnPeg(x); y++)
+//		{
+//			int which = s.GetDiskOnPeg(x, y);
+//			glColor3f(0.0, 1.0-float(which)/float(disks), 1.0);
+//			DrawCylinder(offset[x], 0.4-0.4/(1+float(disks))-y*0.8/(1+float(disks)), 0,
+//						 0.02, 0.04+0.2*which/float(disks), 0.8/(1+float(disks)));
+//		}
+//	}
+//}
+//
+///** Draw the transition at some percentage 0...1 between two TOHState<disks>s */
+//template <int disks>
+//void TOH<disks>::OpenGLDraw(const TOHState<disks>&s, const TOHState<disks>&s2, float interval) const
+//{
+//	TOHMove m = this->GetAction(s, s2);
+//	int animatingDisk = s.GetSmallestDiskOnPeg(m.source);
+//	int initialHeight = s.GetDiskCountOnPeg(m.source)-1;
+//	int finalHeight = s.GetDiskCountOnPeg(m.dest);
+//	
+//	glColor3f(0.0, 0.0, 1.0);
+//	double offset[4] = {-0.75, -0.25, 0.25, 0.75};
+//	for (int x = 0; x < 4; x++)
+//	{
+//		for (int y = 0; y < s.GetDiskCountOnPeg(x); y++)
+//		{
+//			int which = s.GetDiskOnPeg(x, y);
+//			if (which != animatingDisk)
+//			{
+//				glColor3f(0.0, 1.0-float(which)/float(disks), 1.0);
+//				DrawCylinder(offset[x], 0.4-0.4/(1+float(disks))-y*0.8/(1+float(disks)), 0,
+//							 0.02, 0.04+0.2*which/float(disks), 0.8/(1+float(disks)));
+//			}
+//		}
+//	}
+//	glColor3f(0.0, 1.0-float(animatingDisk)/float(disks), 1.0);
+//	if (interval <= 0.333)
+//	{
+//		interval *= 3;
+//		DrawCylinder(offset[m.source], 0.4-0.4/(1+float(disks))-initialHeight*0.8/(1+float(disks)) - (interval)*(disks+1-initialHeight)*0.8/(1+float(disks)), 0,
+//					 0.02, 0.04+0.2*animatingDisk/float(disks), 0.8/(1+float(disks)));
+//	}
+//	else if (interval <= 0.666)
+//	{
+//		interval *= 3;
+//		DrawCylinder((2-interval)*offset[m.source]+(interval-1)*offset[m.dest], 0.4-0.4/(1+float(disks))-0.8-0.2*sin((interval-1)*PI), 0,
+//					 0.02, 0.04+0.2*animatingDisk/float(disks), 0.8/(1+float(disks)));
+//	}
+//	else {
+//		DrawCylinder(offset[m.dest], 0.4-0.4/(1+float(disks))-finalHeight*0.8/(1+float(disks)) -
+//					 ((1.0-interval)/0.334)*(disks+1-finalHeight)*0.8/(1+float(disks)), 0,
+//					 0.02, 0.04+0.2*animatingDisk/float(disks), 0.8/(1+float(disks)));
+//	}
+//}
+//
+//template <int disks>
+//void TOH<disks>::OpenGLDraw(const TOHState<disks>&, const TOHMove&) const
+//{
+//	
+//}
 
 
 // Draw for text area

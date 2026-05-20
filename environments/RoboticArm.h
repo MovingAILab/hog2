@@ -34,8 +34,8 @@ public:
 	void SetAngle(int which, int value);
 	int GetNumArms() const;
 	void SetNumArms(int count);
-	void SetGoal(double x, double y);
-	void GetGoal(double &x, double &y) const;
+	void SetGoal(float x, float y);
+	void GetGoal(float &x, float &y) const;
 	bool IsGoalState() const;
 	uint64_t angles;
 };
@@ -44,7 +44,7 @@ static std::ostream& operator <<(std::ostream & out, const armAngles &loc)
 {
 	if (loc.IsGoalState())
 	{
-		double x, y;
+		float x, y;
 		loc.GetGoal(x, y);
 		out << "(" << x << ", " << y << ")" << std::endl;
 	}
@@ -124,10 +124,10 @@ public:
 	uint64_t GetActionHash(armRotations act) const;
 
 private:
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const armAngles &l) const;
-	virtual void OpenGLDraw(const armAngles &, const armRotations &) const;
-	virtual void OpenGLDraw(const armAngles&, const armAngles&, float) const {}
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const armAngles &l) const;
+//	virtual void OpenGLDraw(const armAngles &, const armRotations &) const;
+//	virtual void OpenGLDraw(const armAngles&, const armAngles&, float) const {}
 public:
 //	virtual void OpenGLDraw(const armAngles &, const armRotations &, GLfloat r, GLfloat g, GLfloat b) const;
 //	virtual void OpenGLDraw(const armAngles &l, GLfloat r, GLfloat g, GLfloat b) const;
@@ -165,11 +165,11 @@ private:
 	std::vector<line2d> obstacles;
 	mutable std::vector<line2d> armSegments;
 
-	mutable std::vector<recVec> states;
+	mutable std::vector<Graphics::point> states;
 
 	std::vector<RoboticArmHeuristic *> heuristics;
 	ConfigEnvironment *ce;
-	mutable TemplateAStar<recVec, line2d, ConfigEnvironment> localAStar;
+	mutable TemplateAStar<Graphics::point, line2d, ConfigEnvironment> localAStar;
 };
 
 class ArmToArmHeuristic : public RoboticArmHeuristic {

@@ -1439,169 +1439,169 @@ void Map3DGrid::GetPointFromCoordinate(point3d loc, int &px, int &py, int &pz) c
 }
 
 
-void Map3DGrid::OpenGLDraw() const
-{
-	glColor4f(0.0, 1.0, 0.0, 1.0);
-//	glBegin(GL_LINE_LOOP);
-//	glVertex3f(-1, -1, 0);
-//	glVertex3f(-1,  1, 0);
-//	glVertex3f( 1,  1, 0);
-//	glVertex3f( 1, -1, 0);
+//void Map3DGrid::OpenGLDraw() const
+//{
+//	glColor4f(0.0, 1.0, 0.0, 1.0);
+////	glBegin(GL_LINE_LOOP);
+////	glVertex3f(-1, -1, 0);
+////	glVertex3f(-1,  1, 0);
+////	glVertex3f( 1,  1, 0);
+////	glVertex3f( 1, -1, 0);
+////	glEnd();
+//	GLdouble x1, y1, z1, rad, h;
+////	GLdouble x2, y2, z2, rad2, h2;
+//	GLdouble left, right, top, bottom;
+//	GetCoord(0, 0, 0, left, top, z1, rad, h);
+//	GetCoord(mWidth, mHeight, 0, right, bottom, z1, rad, h);
+//	glBegin(GL_LINES);
+//	for (int x = 0; x < mWidth; x+=gSectorSize)
+//	{
+//		GetCoord(x, 0, 0, x1, y1, z1, rad, h);
+//		glVertex3f(x1-rad, top, z1);
+//		glVertex3f(x1-rad, bottom, z1);
+//	}
+//	GetCoord(mWidth, 0, 0, x1, y1, z1, rad, h);
+//	glVertex3f(x1-rad, top, z1);
+//	glVertex3f(x1-rad, bottom, z1);
+//
+//	for (int y = 0; y < mHeight; y+=gSectorSize)
+//	{
+//		GetCoord(0, y, 0, x1, y1, z1, rad, h);
+//		glVertex3f(left, y1-rad, z1);
+//		glVertex3f(right,  y1-rad, z1);
+//	}
+//	GetCoord(0, mHeight, 0, x1, y1, z1, rad, h);
+//	glVertex3f(left, y1-rad, z1);
+//	glVertex3f(right,  y1-rad, z1);
 //	glEnd();
-	GLdouble x1, y1, z1, rad, h;
-//	GLdouble x2, y2, z2, rad2, h2;
-	GLdouble left, right, top, bottom;
-	GetOpenGLCoord(0, 0, 0, left, top, z1, rad, h);
-	GetOpenGLCoord(mWidth, mHeight, 0, right, bottom, z1, rad, h);
-	glBegin(GL_LINES);
-	for (int x = 0; x < mWidth; x+=gSectorSize)
-	{
-		GetOpenGLCoord(x, 0, 0, x1, y1, z1, rad, h);
-		glVertex3f(x1-rad, top, z1);
-		glVertex3f(x1-rad, bottom, z1);
-	}
-	GetOpenGLCoord(mWidth, 0, 0, x1, y1, z1, rad, h);
-	glVertex3f(x1-rad, top, z1);
-	glVertex3f(x1-rad, bottom, z1);
-
-	for (int y = 0; y < mHeight; y+=gSectorSize)
-	{
-		GetOpenGLCoord(0, y, 0, x1, y1, z1, rad, h);
-		glVertex3f(left, y1-rad, z1);
-		glVertex3f(right,  y1-rad, z1);
-	}
-	GetOpenGLCoord(0, mHeight, 0, x1, y1, z1, rad, h);
-	glVertex3f(left, y1-rad, z1);
-	glVertex3f(right,  y1-rad, z1);
-	glEnd();
-
-	glColor3f(0, 0, 0);
-	glBegin(GL_QUADS);
-	glVertex3f(-1, -1, 0.01);
-	glVertex3f( 1, -1, 0.01);
-	glVertex3f( 1,  1, 0.01);
-	glVertex3f(-1,  1, 0.01);
-	glEnd();
-	
-	glEnable(GL_LIGHTING);
-	for (unsigned int x = 0; x < sectors.size(); x++)
-	{
-		//printf("%d regions in sector %d\n", sectors[x].regions.size(), x);
-		for (unsigned int y = 0; y < sectors[x].regions.size(); y++)
-		{
-			//SetColor(0.7, 0.7, 0.7, 0.7);
-			SetColor(1.0, 1.0, 1.0, 1.0);
-			glTranslatef(0, 0, -5*h);
-			for (unsigned int z = 0; z < sectors[x].regions[y].edges.size(); z++)
-			{
-				state3d s1, s2;
-				s1.Init(x, y, sectors[x].regions[y].centerLocation);
-				s2.Init(sectors[x].regions[y].edges[z].sector,
-						sectors[x].regions[y].edges[z].region,
-						sectors[sectors[x].regions[y].edges[z].sector].regions[sectors[x].regions[y].edges[z].region].centerLocation);
-				glLineWidth(2+sectors[x].regions[y].edges[z].support/4);
-				GLDrawLine(s1, s2);
-			}
-			glTranslatef(0, 0, 5*h);
-			glLineWidth(1.0);
-
-			GLdouble r=0, g=0, b=0;
-			switch ((y+x)%4)
-			{
-				case 0: g=0.25;r=0.5;b=0.15; break;
-				case 1: g=0.35;r=0.5;b=0.15; break;
-				case 2: g=0.25;r=0.4;b=0.15; break;
-				case 3: g=0.25;r=0.5;b=0.25; break;
-			}
-			for (unsigned int z = 0; z < gSectorSize*gSectorSize; z++)
-			{
-				int xLoc, yLoc, zLoc;
-				int xRegLoc, yRegLoc;
-				xyFromIndex(z, xLoc, yLoc);
-				xRegLoc = xLoc;
-				yRegLoc = yLoc;
-				if (!sectors[x].regions[y].grid.IsPointPassable(xRegLoc, yRegLoc))
-					continue;
-				
-				zLoc = sectors[x].regions[y].baseHeight + sectors[x].regions[y].grid.GetHeightOffset(xRegLoc, yRegLoc);
-				xLoc += (x%mXSectors)*gSectorSize;
-				yLoc += (x/mXSectors)*gSectorSize;
-				GetOpenGLCoord(xLoc, yLoc, zLoc, x1, y1, z1, rad, h);
-				glColor3f(r, g, b);
-				glBegin(GL_QUADS);
-				glNormal3f(0, 0, -1);
-				glVertex3f(x1-rad, y1-rad, z1);
-				glVertex3f(x1-rad, y1+rad, z1);
-				glVertex3f(x1+rad, y1+rad, z1);
-				glVertex3f(x1+rad, y1-rad, z1);
-				glEnd();
-				
-				if (drawGrid)
-				{
-					std::vector<state3d> suc;
-					state3d currState;
-					currState.Init(x, y, indexFromXY(xRegLoc, yRegLoc));
-					GetSuccessors(currState, suc);
-					for (unsigned int t = 0; t < suc.size(); t++)
-					{
-	//					printf("Drawing line between (%d/%d/%d) and (%d/%d/%d)\n", 
-	//						   currState.GetSector(), currState.GetRegion(), currState.GetOffset(),
-	//						   suc[t].GetSector(), suc[t].GetRegion(), suc[t].GetOffset());
-						SetColor(1, 1, 1, 1);
-						GLDrawLine(currState, suc[t]);
-					}
-				}
-			}
-		}
-	}
-}
-
-
-void Map3DGrid::OpenGLDraw(const state3d &s) const
-{
-//	s.part1
-}
-
-void Map3DGrid::GLDrawLine(const state3d &a, const state3d &b) const
-{
-	GLdouble x1, y1, z1, rad, h;
-	GLfloat rr, gg, bb, tt;
-	int xLoc, yLoc, zLoc;
-
-	GetXYZFromState(a, xLoc, yLoc, zLoc);
-	GetOpenGLCoord(xLoc, yLoc, zLoc, x1, y1, z1, rad, h);
-
-	//glLineWidth(2.0);
-	glDisable(GL_LIGHTING);
-	GetColor(rr, gg, bb, tt);
-	glColor4f(rr, gg, bb, tt);
-	glBegin(GL_LINES);
-	glVertex3f(x1, y1, z1-h);
-
-	GetXYZFromState(b, xLoc, yLoc, zLoc);
-	GetOpenGLCoord(xLoc, yLoc, zLoc, x1, y1, z1, rad, h);
-	
-	glVertex3f(x1, y1, z1-h);
-	glEnd();
-	glEnable(GL_LIGHTING);
-	//glLineWidth(1.0);
-}
-
-
-void Map3DGrid::GetOpenGLCoord(int xLoc, int yLoc, int zLoc,
-							   GLdouble &x, GLdouble &y, GLdouble &z,
-							   GLdouble &r, GLdouble &h) const
-{
-	int xOffset = max(mHeight, mWidth)-mWidth;
-	int yOffset = max(mHeight, mWidth)-mHeight;
-	double scale = max(mHeight, mWidth);
-	scale = 1.0/scale;
-	x = 2.0*xLoc*scale-1+scale+xOffset*scale;
-	y = 2.0*yLoc*scale-1+scale+yOffset*scale;
-	h = scale*0.2;
-	z = -zLoc*h;
-	r = scale;
-}
+//
+//	glColor3f(0, 0, 0);
+//	glBegin(GL_QUADS);
+//	glVertex3f(-1, -1, 0.01);
+//	glVertex3f( 1, -1, 0.01);
+//	glVertex3f( 1,  1, 0.01);
+//	glVertex3f(-1,  1, 0.01);
+//	glEnd();
+//	
+//	glEnable(GL_LIGHTING);
+//	for (unsigned int x = 0; x < sectors.size(); x++)
+//	{
+//		//printf("%d regions in sector %d\n", sectors[x].regions.size(), x);
+//		for (unsigned int y = 0; y < sectors[x].regions.size(); y++)
+//		{
+//			//SetColor(0.7, 0.7, 0.7, 0.7);
+//			SetColor(1.0, 1.0, 1.0, 1.0);
+//			glTranslatef(0, 0, -5*h);
+//			for (unsigned int z = 0; z < sectors[x].regions[y].edges.size(); z++)
+//			{
+//				state3d s1, s2;
+//				s1.Init(x, y, sectors[x].regions[y].centerLocation);
+//				s2.Init(sectors[x].regions[y].edges[z].sector,
+//						sectors[x].regions[y].edges[z].region,
+//						sectors[sectors[x].regions[y].edges[z].sector].regions[sectors[x].regions[y].edges[z].region].centerLocation);
+//				glLineWidth(2+sectors[x].regions[y].edges[z].support/4);
+//				GLDrawLine(s1, s2);
+//			}
+//			glTranslatef(0, 0, 5*h);
+//			glLineWidth(1.0);
+//
+//			GLdouble r=0, g=0, b=0;
+//			switch ((y+x)%4)
+//			{
+//				case 0: g=0.25;r=0.5;b=0.15; break;
+//				case 1: g=0.35;r=0.5;b=0.15; break;
+//				case 2: g=0.25;r=0.4;b=0.15; break;
+//				case 3: g=0.25;r=0.5;b=0.25; break;
+//			}
+//			for (unsigned int z = 0; z < gSectorSize*gSectorSize; z++)
+//			{
+//				int xLoc, yLoc, zLoc;
+//				int xRegLoc, yRegLoc;
+//				xyFromIndex(z, xLoc, yLoc);
+//				xRegLoc = xLoc;
+//				yRegLoc = yLoc;
+//				if (!sectors[x].regions[y].grid.IsPointPassable(xRegLoc, yRegLoc))
+//					continue;
+//				
+//				zLoc = sectors[x].regions[y].baseHeight + sectors[x].regions[y].grid.GetHeightOffset(xRegLoc, yRegLoc);
+//				xLoc += (x%mXSectors)*gSectorSize;
+//				yLoc += (x/mXSectors)*gSectorSize;
+//				GetCoord(xLoc, yLoc, zLoc, x1, y1, z1, rad, h);
+//				glColor3f(r, g, b);
+//				glBegin(GL_QUADS);
+//				glNormal3f(0, 0, -1);
+//				glVertex3f(x1-rad, y1-rad, z1);
+//				glVertex3f(x1-rad, y1+rad, z1);
+//				glVertex3f(x1+rad, y1+rad, z1);
+//				glVertex3f(x1+rad, y1-rad, z1);
+//				glEnd();
+//				
+//				if (drawGrid)
+//				{
+//					std::vector<state3d> suc;
+//					state3d currState;
+//					currState.Init(x, y, indexFromXY(xRegLoc, yRegLoc));
+//					GetSuccessors(currState, suc);
+//					for (unsigned int t = 0; t < suc.size(); t++)
+//					{
+//	//					printf("Drawing line between (%d/%d/%d) and (%d/%d/%d)\n", 
+//	//						   currState.GetSector(), currState.GetRegion(), currState.GetOffset(),
+//	//						   suc[t].GetSector(), suc[t].GetRegion(), suc[t].GetOffset());
+//						SetColor(1, 1, 1, 1);
+//						GLDrawLine(currState, suc[t]);
+//					}
+//				}
+//			}
+//		}
+//	}
+//}
+//
+//
+//void Map3DGrid::OpenGLDraw(const state3d &s) const
+//{
+////	s.part1
+//}
+//
+//void Map3DGrid::GLDrawLine(const state3d &a, const state3d &b) const
+//{
+//	GLdouble x1, y1, z1, rad, h;
+//	GLfloat rr, gg, bb, tt;
+//	int xLoc, yLoc, zLoc;
+//
+//	GetXYZFromState(a, xLoc, yLoc, zLoc);
+//	GetCoord(xLoc, yLoc, zLoc, x1, y1, z1, rad, h);
+//
+//	//glLineWidth(2.0);
+//	glDisable(GL_LIGHTING);
+//	GetColor(rr, gg, bb, tt);
+//	glColor4f(rr, gg, bb, tt);
+//	glBegin(GL_LINES);
+//	glVertex3f(x1, y1, z1-h);
+//
+//	GetXYZFromState(b, xLoc, yLoc, zLoc);
+//	GetCoord(xLoc, yLoc, zLoc, x1, y1, z1, rad, h);
+//	
+//	glVertex3f(x1, y1, z1-h);
+//	glEnd();
+//	glEnable(GL_LIGHTING);
+//	//glLineWidth(1.0);
+//}
+//
+//
+//void Map3DGrid::GetCoord(int xLoc, int yLoc, int zLoc,
+//							   GLdouble &x, GLdouble &y, GLdouble &z,
+//							   GLdouble &r, GLdouble &h) const
+//{
+//	int xOffset = max(mHeight, mWidth)-mWidth;
+//	int yOffset = max(mHeight, mWidth)-mHeight;
+//	double scale = max(mHeight, mWidth);
+//	scale = 1.0/scale;
+//	x = 2.0*xLoc*scale-1+scale+xOffset*scale;
+//	y = 2.0*yLoc*scale-1+scale+yOffset*scale;
+//	h = scale*0.2;
+//	z = -zLoc*h;
+//	r = scale;
+//}
 
 void Map3DGrid::PrintStats()
 {

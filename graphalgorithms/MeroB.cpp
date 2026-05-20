@@ -571,8 +571,8 @@ void MeroB::ExtractPathToStart(graphState goalNode, std::vector<graphState> &the
 //	OpenGLDraw();
 //}
 
-void MeroB::OpenGLDraw() const
-{
+//void MeroB::OpenGLDraw() const
+//{
 //	//float r,gcost,b;
 //	double x,y,z;
 //	const MeroBUtil::SearchNode sn;
@@ -668,50 +668,50 @@ void MeroB::OpenGLDraw() const
 //	{
 //		DrawEdge(e->getFrom(), e->getTo(), e->GetWeight());
 //	}
-}
-
-void MeroB::DrawText(double x, double y, double z, float r, float gg, float b, char* str)
-{
-	//glPushMatrix();
-	// rotate ?
-
-	glPushMatrix();
-	glColor3f(r,gg,b);
-	glTranslatef(x,y,z);
-	glScalef(1.0/(20*120.0), 1.0/(20*120.0), 1);
-	glRotatef(180, 0.0, 0.0, 1.0);
-	glRotatef(180, 0.0, 1.0, 0.0);
-	
-	int i=0;
-	while(str[i]) 
-	{
-		//glutStrokeCharacter(GLUT_STROKE_ROMAN,str[i]);
-		i++;
-	}
-	glPopMatrix();
-}
-
-void MeroB::DrawEdge(unsigned int from, unsigned int to, double weight)
-{
-	double x1,y1,z1;
-	double x2,y2,z2;
-	char buf[100] = {0};
-
-	node* nfrom = g->GetNode(from);
-	node* nto = g->GetNode(to);
-
-	MeroBUtil::graphGenerator::GetLoc(nfrom,x1,y1,z1);
-	MeroBUtil::graphGenerator::GetLoc(nto,x2,y2,z2);
-
-	// draw line segment
-	glBegin(GL_LINES);
-	glColor3f(1,1,0); // yellow
-	glVertex3f(x1,y1,z1);
-	glVertex3f(x2,y2,z2);
-	glEnd();
-
-	// draw weight info
-	sprintf(buf,"%ld",(long)weight);
-	DrawText((x1+x2)/2, (y1+y2)/2, (z1+z2)/2 + 0.05, 1, 0, 0, buf); // in red
-}
-
+//}
+//
+//void MeroB::DrawText(double x, double y, double z, float r, float gg, float b, char* str)
+//{
+//	//glPushMatrix();
+//	// rotate ?
+//
+//	glPushMatrix();
+//	glColor3f(r,gg,b);
+//	glTranslatef(x,y,z);
+//	glScalef(1.0/(20*120.0), 1.0/(20*120.0), 1);
+//	glRotatef(180, 0.0, 0.0, 1.0);
+//	glRotatef(180, 0.0, 1.0, 0.0);
+//	
+//	int i=0;
+//	while(str[i]) 
+//	{
+//		//glutStrokeCharacter(GLUT_STROKE_ROMAN,str[i]);
+//		i++;
+//	}
+//	glPopMatrix();
+//}
+//
+//void MeroB::DrawEdge(unsigned int from, unsigned int to, double weight)
+//{
+//	double x1,y1,z1;
+//	double x2,y2,z2;
+//	char buf[100] = {0};
+//
+//	node* nfrom = g->GetNode(from);
+//	node* nto = g->GetNode(to);
+//
+//	MeroBUtil::graphGenerator::GetLoc(nfrom,x1,y1,z1);
+//	MeroBUtil::graphGenerator::GetLoc(nto,x2,y2,z2);
+//
+//	// draw line segment
+//	glBegin(GL_LINES);
+//	glColor3f(1,1,0); // yellow
+//	glVertex3f(x1,y1,z1);
+//	glVertex3f(x2,y2,z2);
+//	glEnd();
+//
+//	// draw weight info
+//	sprintf(buf,"%ld",(long)weight);
+//	DrawText((x1+x2)/2, (y1+y2)/2, (z1+z2)/2 + 0.05, 1, 0, 0, buf); // in red
+//}
+//

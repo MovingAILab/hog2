@@ -26,7 +26,7 @@
 #include "CanonicalGrid.h"
 #include "MM.h"
 #include "BidirectionalDijkstra.h"
-#include "GLUtil.h"
+//#include "GLUtil.h"
 #include "RoadMap.h"
 #include "WeightedVertexGraph.h"
 #include "NBS.h"
@@ -215,7 +215,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		}
 		if (showSearch)
 		{
-			astar.OpenGLDraw();
+		  //astar.OpenGLDraw();
 		}
 
 		if (runningBidirectional)
@@ -236,11 +236,12 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		}
 		if (showSearchBidirectional)
 		{
-			bidijkstra.OpenGLDraw();
+		  //bidijkstra.OpenGLDraw();
 		}
 
 		if (drawLine)
 		{
+		  /*
 			glLineWidth(5);
 			glColor4f(1, 1, 1, 0.9);
 			glBegin(GL_LINES);
@@ -248,10 +249,11 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 			glVertex3f(lineEnd.x, lineEnd.y, -0.01);
 			glEnd();
 			glLineWidth(1);
+		  */
 		}
 		
 		ge->SetColor(1.0, 1.0, 1.0);
-		ge->OpenGLDraw();
+		//ge->OpenGLDraw();
 	}
 
 	if (recording && viewport == GetNumPorts(windowID)-1)

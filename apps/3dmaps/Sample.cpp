@@ -248,10 +248,10 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 
 void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 {
-	glColor3f(0, 0, 0);
-	DrawSquare(0, 0, 0.01, 1);
-	if (m3d)
-		m3d->OpenGLDraw();
+  //	glColor3f(0, 0, 0);
+  //	DrawSquare(0, 0, 0.01, 1);
+	//	if (m3d)
+	//	m3d->OpenGLDraw();
 }
 
 void buildProblemSet()

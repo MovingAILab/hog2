@@ -92,16 +92,16 @@ public:
 
 	//virtual double GetPathLength(std::vector<NQueenState> &neighbors);
 	
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const NQueenState&) const;
-	/** Draw the transition at some percentage 0...1 between two states */
-	virtual void OpenGLDraw(const NQueenState&, const NQueenState&, float) const;
-	virtual void OpenGLDraw(const NQueenState&, const NQueenAction&) const;
-	void GLLabelState(const NQueenState &s, int x, int y, int number) const;
-
-	void OpenGLDrawBackground(float r, float g, float b);
-	void OpenGLDrawBackground(const NQueenState&, float r, float g, float b, int firstRow, int lastRow);
-	void OpenGLDrawConflicts(const NQueenState&s) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const NQueenState&) const;
+//	/** Draw the transition at some percentage 0...1 between two states */
+//	virtual void OpenGLDraw(const NQueenState&, const NQueenState&, float) const;
+//	virtual void OpenGLDraw(const NQueenState&, const NQueenAction&) const;
+//	void GLLabelState(const NQueenState &s, int x, int y, int number) const;
+//
+//	void OpenGLDrawBackground(float r, float g, float b);
+//	void OpenGLDrawBackground(const NQueenState&, float r, float g, float b, int firstRow, int lastRow);
+//	void OpenGLDrawConflicts(const NQueenState&s) const;
 
 private:
 };

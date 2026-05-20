@@ -20,7 +20,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-
+#include <iomanip>
 #include "SearchEnvironment.h"
 #include "vectorCache.h"
 
@@ -798,17 +798,17 @@ public:
 
     uint64_t GetActionHash(WitnessAction act) const;
 
-    void OpenGLDraw() const {};
-
-    void OpenGLDraw(const WitnessState<width, height> &) const {};
-
-    /** Draw the transition at some percentage 0...1 between two states */
-    void OpenGLDraw(const WitnessState<width, height> &, const WitnessState<width, height> &, float) const {};
-
-    void OpenGLDraw(const WitnessState<width, height> &, const WitnessAction &) const {};
-
-    void GLLabelState(const WitnessState<width, height> &, const char *) const {}; // draw label over state
-    void GLDrawLine(const WitnessState<width, height> &x, const WitnessState<width, height> &y) const {};
+//    void OpenGLDraw() const {};
+//
+//    void OpenGLDraw(const WitnessState<width, height> &) const {};
+//
+//    /** Draw the transition at some percentage 0...1 between two states */
+//    void OpenGLDraw(const WitnessState<width, height> &, const WitnessState<width, height> &, float) const {};
+//
+//    void OpenGLDraw(const WitnessState<width, height> &, const WitnessAction &) const {};
+//
+//    void GLLabelState(const WitnessState<width, height> &, const char *) const {}; // draw label over state
+//    void GLDrawLine(const WitnessState<width, height> &x, const WitnessState<width, height> &y) const {};
 
     void DrawRegionConstraint(
             Graphics::Display &display, const WitnessRegionConstraint &constraint, const Graphics::point &p3, bool isInvalid = false) const;

@@ -148,28 +148,25 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 //		ch->Contract();
 //		return;
 	}
-	unitSims[windowID]->GetEnvironment()->GetMap()->OpenGLDraw();
+	//	unitSims[windowID]->GetEnvironment()->GetMap()->OpenGLDraw();
 	//if (msa) msa->OpenGLDraw();
 	
 	if (mouseTracking)
 	{
-		glBegin(GL_LINES);
-		glColor3f(1.0f, 0.0f, 0.0f);
 		Map *m = unitSims[windowID]->GetEnvironment()->GetMap();
-		GLdouble x, y, z, r;
-		m->GetOpenGLCoord(px1, py1, x, y, z, r);
-		glVertex3f(x, y, z-3*r);
-		m->GetOpenGLCoord(px2, py2, x, y, z, r);
-		glVertex3f(x, y, z-3*r);
-		glEnd();
+		double x, y, z, r;
+		m->GetCoord(px1, py1, x, y, z, r);
+		m->GetCoord(px2, py2, x, y, z, r);
 	}
 
 	if ((gdh) && (gdh2))
 	{
+	  /*
 		if (viewport == 0)
 			gdh->OpenGLDraw();
 		if (viewport == 1)
 			gdh2->OpenGLDraw();
+	  */
 	}
 
 	if ((ma1) && (viewport == 0)) // only do this once...
@@ -189,7 +186,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 				}
 			}
 		}
-		a1.OpenGLDraw();
+		//		a1.OpenGLDraw();
 	}
 	if ((ma2) && (GetNumPorts(windowID) == 1 || (viewport == 1)))
 	{
@@ -208,7 +205,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 				}
 			}
 		}
-		a2.OpenGLDraw();
+		//		a2.OpenGLDraw();
 	}
 
 	if (bSaveAndQuit)

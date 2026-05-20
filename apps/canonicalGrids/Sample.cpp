@@ -768,7 +768,7 @@ std::string DrawRegularGoalArea(tDirection dir, bool drawBound, bool svg = false
 	regAstar.SetStopAfterGoal(false);
 	regAstar.GetPath(ma1, cStart, cStart, path);
 	ma1->SetColor(0.0, 0.0, 1.0);
-	ma1->OpenGLDraw(cStart);
+	//ma1->OpenGLDraw(cStart);
 	
 	std::deque<xyLoc> queue;
 	// draw everything
@@ -791,7 +791,7 @@ std::string DrawRegularGoalArea(tDirection dir, bool drawBound, bool svg = false
 		{
 			ma1->GetSuccessors(data.data, v);
 			CanonicalGrid::xyLoc t(data.data.x, data.data.y);
-			grid->OpenGLDraw(t);
+			//grid->OpenGLDraw(t);
 			if (svg)
 				str += ma1->SVGDraw(data.data);
 			//ma1->OpenGLDraw(data.data);
@@ -816,13 +816,13 @@ std::string DrawRegularGoalArea(tDirection dir, bool drawBound, bool svg = false
 	}
 	if (drawBound)
 	{
-		GLdouble t, l, r, b, z, rad, tmp;
+		double t, l, r, b, z, rad, tmp;
 		printf("Bounds: (%d, %d) to (%d, %d)\n", minx, miny, maxx, maxy);
-		ma1->GetMap()->GetOpenGLCoord(minx, miny, l, t, z, rad);
-		ma1->GetMap()->GetOpenGLCoord(maxx, maxy, r, b, z, rad);
-		glColor3f(1.0, 1.0, 1.0);
-		glLineWidth(4.0);
-		OutlineRect(l-rad, t-rad, r+rad, b+rad, z-2*rad);
+		ma1->GetMap()->GetCoord(minx, miny, l, t, z, rad);
+		ma1->GetMap()->GetCoord(maxx, maxy, r, b, z, rad);
+		//glColor3f(1.0, 1.0, 1.0);
+		//glLineWidth(4.0);
+		//OutlineRect(l-rad, t-rad, r+rad, b+rad, z-2*rad);
 		if (svg)
 		{
 			ma1->SetColor(0.0, 0.0, 0.0);
@@ -865,7 +865,7 @@ std::string DrawJPSGoalArea(CanonicalGrid::tDirection dir, bool drawBound, bool 
 		if (canAstar.GetClosedItem(next, data))
 		{
 			grid->GetSuccessors(data.data, v);
-			grid->OpenGLDraw(data.data);
+			//grid->OpenGLDraw(data.data);
 			if (svg)
 				str += ma1->SVGDraw({data.data.x, data.data.y});
 
@@ -890,13 +890,13 @@ std::string DrawJPSGoalArea(CanonicalGrid::tDirection dir, bool drawBound, bool 
 	}
 	if (drawBound)
 	{
-		GLdouble t, l, r, b, z, rad, tmp;
+		double t, l, r, b, z, rad, tmp;
 		printf("Bounds: (%d, %d) to (%d, %d)\n", minx, miny, maxx, maxy);
-		ma1->GetMap()->GetOpenGLCoord(minx, miny, l, t, z, rad);
-		ma1->GetMap()->GetOpenGLCoord(maxx, maxy, r, b, z, rad);
-		glColor3f(1.0, 1.0, 1.0);
-		glLineWidth(4.0);
-		OutlineRect(l-rad, t-rad, r+rad, b+rad, z-2*rad);
+		ma1->GetMap()->GetCoord(minx, miny, l, t, z, rad);
+		ma1->GetMap()->GetCoord(maxx, maxy, r, b, z, rad);
+		//glColor3f(1.0, 1.0, 1.0);
+		//glLineWidth(4.0);
+		//OutlineRect(l-rad, t-rad, r+rad, b+rad, z-2*rad);
 		if (svg)
 		{
 			ma1->SetColor(0.0, 0.0, 0.0);
@@ -908,8 +908,8 @@ std::string DrawJPSGoalArea(CanonicalGrid::tDirection dir, bool drawBound, bool 
 
 void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 {
-	if (mo)
-		mo->OpenGLDraw();
+  //	if (mo)
+  //		mo->OpenGLDraw();
 	if (viewport == 0)
 	{
 		unitSims[windowID]->StepTime(1.0/30.0);
@@ -946,7 +946,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 	}
 	if (px1 != -1) // canonical open gl
 	{
-		glLineWidth(1);
+	  //glLineWidth(1);
 		CanonicalGrid::xyLoc gLoc(px1, py1);
 		std::deque<CanonicalGrid::xyLoc> queue;
 		queue.push_back(gLoc);
@@ -965,7 +965,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 				else {
 					grid->SetColor(1.0, 0.5, 0.5);
 				}
-				grid->GLDrawLine(queue.front(), s);
+				//grid->GLDrawLine(queue.front(), s);
 				visited[s.x+s.y*grid->GetMap()->GetMapWidth()] = true;
 			}
 			queue.pop_front();
@@ -987,7 +987,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		}
 	}
 	
-	unitSims[windowID]->OpenGLDraw();
+	//unitSims[windowID]->OpenGLDraw();
 	
 	if (screenShot&&0)
 	{
@@ -1030,6 +1030,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 
 	if (mouseTracking)
 	{
+	  /*
 		glBegin(GL_LINES);
 		glColor3f(1.0f, 0.0f, 0.0f);
 		Map *m = unitSims[windowID]->GetEnvironment()->GetMap();
@@ -1039,6 +1040,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		m->GetOpenGLCoord(px2, py2, x, y, z, r);
 		glVertex3f(x, y, z-3*r);
 		glEnd();
+	  */
 	}
 	
 	
@@ -1063,14 +1065,14 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 				}
 			}
 			//if (path.size() == 0)
-			a1.OpenGLDraw();
+			//a1.OpenGLDraw();
 			if (path.size() > 0)
 			{
-				glLineWidth(10);
+			  //glLineWidth(10);
 				ma1->SetColor(0.5, 1.0, 1.0);
-				for (int x = 0; x < path.size()-1; x++)
-					ma1->GLDrawLine(path[x], path[x+1]);
-				glLineWidth(1);
+				//for (int x = 0; x < path.size()-1; x++)
+				//	ma1->GLDrawLine(path[x], path[x+1]);
+				//	glLineWidth(1);
 			}
 		}
 
@@ -1093,14 +1095,14 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 				}
 			}
 			//if (path2.size() == 0)
-			a2.OpenGLDraw();
+			//a2.OpenGLDraw();
 			if (path2.size() > 0)
 			{
-				glLineWidth(10);
+			  //glLineWidth(10);
 				ma1->SetColor(1.0, 0.5, 1.0);
-				for (int x = 0; x < path2.size()-1; x++)
-					ma2->GLDrawLine(path2[x], path2[x+1]);
-				glLineWidth(1);
+				//	for (int x = 0; x < path2.size()-1; x++)
+				//	ma2->GLDrawLine(path2[x], path2[x+1]);
+				//	glLineWidth(1);
 			}
 		}
 		if ((ma1) && viewport == 2)
@@ -1121,14 +1123,14 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 					}
 				}
 			}
-			jps->OpenGLDraw();
+			//			jps->OpenGLDraw();
 			if (path3.size() > 0)
 			{
-				glLineWidth(10);
+			  //glLineWidth(10);
 				ma1->SetColor(1.0, 0.0, 1.0);
-				for (int x = 0; x < path3.size()-1; x++)
-					ma1->GLDrawLine(path3[x], path3[x+1]);
-				glLineWidth(1);
+				//for (int x = 0; x < path3.size()-1; x++)
+				  //		ma1->GLDrawLine(path3[x], path3[x+1]);
+				//	glLineWidth(1);
 			}
 
 		}
@@ -1150,14 +1152,14 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 					}
 				}
 			}
-			bjps->OpenGLDraw();
+			//			bjps->OpenGLDraw();
 			if (path4.size() > 0)
 			{
-				glLineWidth(10);
-				ma1->SetColor(1.0, 0.0, 1.0);
-				for (int x = 0; x < path4.size()-1; x++)
-					ma1->GLDrawLine(path4[x], path4[x+1]);
-				glLineWidth(1);
+			  //glLineWidth(10);
+			  //	ma1->SetColor(1.0, 0.0, 1.0);
+				//				for (int x = 0; x < path4.size()-1; x++)
+				//		ma1->GLDrawLine(path4[x], path4[x+1]);
+				//glLineWidth(1);
 			}
 			
 		}
@@ -1179,15 +1181,15 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 					}
 				}
 			}
-			jps->OpenGLDraw();
+			//jps->OpenGLDraw();
 		}
 		if (path3.size() > 0)
 		{
-			glLineWidth(10);
-			ma1->SetColor(1.0, 0.0, 1.0);
-			for (int x = 0; x < path3.size()-1; x++)
-				ma1->GLDrawLine(path3[x], path3[x+1]);
-			glLineWidth(1);
+		  //			glLineWidth(10);
+		  //	ma1->SetColor(1.0, 0.0, 1.0);
+		  //	for (int x = 0; x < path3.size()-1; x++)
+		  //		ma1->GLDrawLine(path3[x], path3[x+1]);
+		  //	glLineWidth(1);
 		}
 	}
 

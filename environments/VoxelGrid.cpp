@@ -505,96 +505,96 @@ void VoxelGrid::SetUpDrawBuffers()
 	}
 }
 
-void VoxelGrid::EfficientDraw() const
-{
-//	glEnable(GL_NORMALIZE);
-	// enable and specify pointers to vertex arrays
-	glEnable(GL_LIGHTING);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 9 * sizeof(GLfloat), &vertices[0]);
-	glNormalPointer(GL_FLOAT, 9 * sizeof(GLfloat), &vertices[0] + 3);
-	glColorPointer(3, GL_FLOAT, 9 * sizeof(GLfloat), &vertices[0] + 6);
-	
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, &indices[0]);
-	
-	glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisable(GL_LIGHTING);
-//	glDisable(GL_NORMALIZE);
-}
-
-void VoxelGrid::OpenGLDraw() const
-{
-	if (efficient)
-	{
-		EfficientDraw();
-	}
-	else {
-		glEnable(GL_LIGHTING);
-		glColor3f(0.0, 1.0, 0.0);
-		const double range = std::max(xWidth, std::max(yWidth, zWidth));
-		for (uint16_t x = 0; x < xWidth; x++)
-		{
-			for (uint16_t y = 0; y < yWidth; y++)
-			{
-				for (uint16_t z = 0; z < zWidth; z++)
-				{
-					if (voxels[GetIndex(x, y, z)])
-					{
-						GLfloat rr, gg, bb;
-						rr = 1-(2.0*x/range-1.0+(-xWidth+range)/range);
-						gg = 1+(2.0*y/range-1.0+(-yWidth+range)/range);
-						bb = 1-(2.0*z/range-1.0+(-zWidth+range)/range);
-						// 7?
-						rr = Colors::GetColor(rr, 0, 2, 7).r;
-						gg = Colors::GetColor(bb, 0, 2, 9).g*0.9;
-						bb = Colors::GetColor(bb, 0, 2, 9).b;
-						glColor3f(gg, rr, bb);
-						
-						point3d p;
-						GetGLCoordinate({x, y, z}, p);
-						DrawBox(p.x, p.y, p.z, 1/range);
-					}
-				}
-			}
-		}
-		glDisable(GL_LIGHTING);
-	}
-}
-
-void VoxelGrid::OpenGLDraw(const voxelGridState&) const
-{
-	
-}
-
-void VoxelGrid::OpenGLDraw(const voxelGridState&, const voxelGridState&, float) const
-{
-	
-}
-
-void VoxelGrid::OpenGLDraw(const voxelGridState&, const voxelGridAction&) const
-{
-	
-}
-
-void VoxelGrid::GLLabelState(const voxelGridState&, const char *) const
-{
-	
-}
-
-void VoxelGrid::GLDrawLine(const voxelGridState &x, const voxelGridState &y) const
-{
-	point3d p1, p2;
-	GetGLCoordinate(x, p1);
-	GetGLCoordinate(y, p2);
-	glBegin(GL_LINES);
-	glVertex3f(p1.x, p1.y, p1.z);
-	glVertex3f(p2.x, p2.y, p2.z);
-	glEnd();
-}
+//void VoxelGrid::EfficientDraw() const
+//{
+////	glEnable(GL_NORMALIZE);
+//	// enable and specify pointers to vertex arrays
+//	glEnable(GL_LIGHTING);
+//	glEnableClientState(GL_VERTEX_ARRAY);
+//	glEnableClientState(GL_NORMAL_ARRAY);
+//	glEnableClientState(GL_COLOR_ARRAY);
+//	glVertexPointer(3, GL_FLOAT, 9 * sizeof(GLfloat), &vertices[0]);
+//	glNormalPointer(GL_FLOAT, 9 * sizeof(GLfloat), &vertices[0] + 3);
+//	glColorPointer(3, GL_FLOAT, 9 * sizeof(GLfloat), &vertices[0] + 6);
+//	
+//	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, &indices[0]);
+//	
+//	glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
+//	glDisableClientState(GL_COLOR_ARRAY);
+//	glDisableClientState(GL_NORMAL_ARRAY);
+//	glDisable(GL_LIGHTING);
+////	glDisable(GL_NORMALIZE);
+//}
+//
+//void VoxelGrid::OpenGLDraw() const
+//{
+//	if (efficient)
+//	{
+//		EfficientDraw();
+//	}
+//	else {
+//		glEnable(GL_LIGHTING);
+//		glColor3f(0.0, 1.0, 0.0);
+//		const double range = std::max(xWidth, std::max(yWidth, zWidth));
+//		for (uint16_t x = 0; x < xWidth; x++)
+//		{
+//			for (uint16_t y = 0; y < yWidth; y++)
+//			{
+//				for (uint16_t z = 0; z < zWidth; z++)
+//				{
+//					if (voxels[GetIndex(x, y, z)])
+//					{
+//						GLfloat rr, gg, bb;
+//						rr = 1-(2.0*x/range-1.0+(-xWidth+range)/range);
+//						gg = 1+(2.0*y/range-1.0+(-yWidth+range)/range);
+//						bb = 1-(2.0*z/range-1.0+(-zWidth+range)/range);
+//						// 7?
+//						rr = Colors::GetColor(rr, 0, 2, 7).r;
+//						gg = Colors::GetColor(bb, 0, 2, 9).g*0.9;
+//						bb = Colors::GetColor(bb, 0, 2, 9).b;
+//						glColor3f(gg, rr, bb);
+//						
+//						point3d p;
+//						GetGLCoordinate({x, y, z}, p);
+//						DrawBox(p.x, p.y, p.z, 1/range);
+//					}
+//				}
+//			}
+//		}
+//		glDisable(GL_LIGHTING);
+//	}
+//}
+//
+//void VoxelGrid::OpenGLDraw(const voxelGridState&) const
+//{
+//	
+//}
+//
+//void VoxelGrid::OpenGLDraw(const voxelGridState&, const voxelGridState&, float) const
+//{
+//	
+//}
+//
+//void VoxelGrid::OpenGLDraw(const voxelGridState&, const voxelGridAction&) const
+//{
+//	
+//}
+//
+//void VoxelGrid::GLLabelState(const voxelGridState&, const char *) const
+//{
+//	
+//}
+//
+//void VoxelGrid::GLDrawLine(const voxelGridState &x, const voxelGridState &y) const
+//{
+//	point3d p1, p2;
+//	GetGLCoordinate(x, p1);
+//	GetGLCoordinate(y, p2);
+//	glBegin(GL_LINES);
+//	glVertex3f(p1.x, p1.y, p1.z);
+//	glVertex3f(p2.x, p2.y, p2.z);
+//	glEnd();
+//}
 
 void VoxelGrid::Draw(Graphics::Display &display) const
 {

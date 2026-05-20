@@ -62,11 +62,11 @@ public:
 	uint64_t GetMaxHash() const;
 	uint64_t GetStateHash(const canGraphState &state) const;
 	uint64_t GetActionHash(graphMove act) const;
-	void OpenGLDraw() const;
-	void OpenGLDraw(const canGraphState &s) const;
-	void OpenGLDraw(const canGraphState &s, const graphMove &gm) const;
-	void OpenGLDraw(const canGraphState &s, const canGraphState&, float) const { OpenGLDraw(s); }
-	void GLDrawLine(const canGraphState &x, const canGraphState &y) const;
+//	void OpenGLDraw() const;
+//	void OpenGLDraw(const canGraphState &s) const;
+//	void OpenGLDraw(const canGraphState &s, const graphMove &gm) const;
+//	void OpenGLDraw(const canGraphState &s, const canGraphState&, float) const { OpenGLDraw(s); }
+//	void GLDrawLine(const canGraphState &x, const canGraphState &y) const;
 	
 	Graph *GetGraph() { return g; };
 	

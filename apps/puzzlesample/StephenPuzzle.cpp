@@ -246,8 +246,8 @@ namespace SPState {
 		{
 			for (int x = 0; x < map->GetMapWidth(); x++)
 			{
-				GLdouble xx, yy, zz, rr;
-				map->GetOpenGLCoord(x, y, xx, yy, zz, rr);
+				double xx, yy, zz, rr;
+				map->GetCoord(x, y, xx, yy, zz, rr);
 				switch (map->GetTerrainType(x, y))
 				{
 					case kGround:
@@ -280,14 +280,14 @@ namespace SPState {
 	
 	void StephenPuzzle::Draw(Graphics::Display &disp, const puzzleState &l) const
 	{
-		GLdouble xx, yy, zz, rr;
-		map->GetOpenGLCoord(l.x, l.y, xx, yy, zz, rr);
+		double xx, yy, zz, rr;
+		map->GetCoord(l.x, l.y, xx, yy, zz, rr);
 //		disp.FillCircle({static_cast<float>(xx+rr/10.f), static_cast<float>(yy+rr/10.f)}, rr, Colors::darkgray);
 		disp.FillCircle({static_cast<float>(xx), static_cast<float>(yy)}, rr, Colors::white);
 
 		if (l.carry)
 		{
-			map->GetOpenGLCoord(l.object_x, l.object_y, xx, yy, zz, rr);
+			map->GetCoord(l.object_x, l.object_y, xx, yy, zz, rr);
 			rr *= 0.8;
 			disp.FillSquare({static_cast<float>(xx+rr/10.f), static_cast<float>(yy+rr/10.f)}, rr, Colors::darkgray);
 			disp.FillSquare({static_cast<float>(xx), static_cast<float>(yy)}, rr, Colors::orange);

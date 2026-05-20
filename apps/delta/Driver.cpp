@@ -174,16 +174,16 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		std::cout << start << goal << "\n";
 		
 	}
-	m->OpenGLDraw();
+	//m->OpenGLDraw();
 	e.SetColor(1.0, 0.0, 1.0);
 	if (nextMove == kStay)
 	{
-		e.OpenGLDraw(start);
+	  ///e.OpenGLDraw(start);
 	}
 	else {
 		xyLoc next;
 		e.GetNextState(start, nextMove, next);
-		e.OpenGLDraw(start, next, timer);
+		//e.OpenGLDraw(start, next, timer);
 		timer += 0.2;
 		if (timer >= 1)
 		{
@@ -195,7 +195,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 	//m->GetOpenGLCoord(start.x, start.y, x, y, z, r);
 	//DrawSphere(x, y, z, r);
 	e.SetColor(0.0, 1.0, 0.0);
-	e.OpenGLDraw(goal);
+	//e.OpenGLDraw(goal);
 	//	glColor3f(0.0, 1.0, 0.0);
 //	DrawText(0, 0, 0, 1.0, "No visualization");
 }

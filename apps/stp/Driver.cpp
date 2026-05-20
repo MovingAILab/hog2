@@ -232,7 +232,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		v = 1;
 		recording = false;
 	}
-	mnp->OpenGLDraw(s, t, v);
+	//mnp->OpenGLDraw(s, t, v);
 
 	if (recording && viewport == GetNumPorts(windowID)-1)
 	{

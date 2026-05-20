@@ -115,7 +115,7 @@ public:
 	
 	void LogFinalStats(StatCollection *) {}
 	
-	void OpenGLDraw() const;
+//	void OpenGLDraw() const;
 	void Draw(Graphics::Display &d) const;
 
 	void SetWeight(double w) {weight = w;}
@@ -625,10 +625,10 @@ bool ImprovedOptimisticSearch<state, action,environment>::GetOpenListGCost(const
  * @date 03/12/09
  *
  */
-template <class state, class action, class environment>
-void ImprovedOptimisticSearch<state, action,environment>::OpenGLDraw() const
-{
-}
+//template <class state, class action, class environment>
+//void ImprovedOptimisticSearch<state, action,environment>::OpenGLDraw() const
+//{
+//}
 
 template <class state, class action, class environment>
 void ImprovedOptimisticSearch<state, action,environment>::Draw(Graphics::Display &disp) const

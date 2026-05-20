@@ -434,139 +434,139 @@ namespace CanonicalGrid {
 		return (uint32_t) act;
 	}
 	
-	void CanonicalGrid::OpenGLDraw() const
-	{
-		map->OpenGLDraw();
-	}
-	
-	void CanonicalGrid::OpenGLDraw(const xyLoc &l) const
-	{
-		GLdouble xx, yy, zz, rad;
-		map->GetOpenGLCoord(l.x, l.y, xx, yy, zz, rad);
-		GLfloat r, g, b, t;
-		GetColor(r, g, b, t);
-		glColor4f(r, g, b, t);
-		//glColor3f(0.5, 0.5, 0.5);
-		//DrawSphere(xx, yy, zz, rad);
-		//DrawSquare(xx, yy, zz+rad, rad);
-		DrawSquare(xx, yy, zz-rad, rad);
-	}
-	
-	void CanonicalGrid::OpenGLDraw(const xyLoc &l1, const xyLoc &l2, float v) const
-	{
-		GLdouble xx, yy, zz, rad;
-		GLdouble xx2, yy2, zz2;
-		map->GetOpenGLCoord(l1.x, l1.y, xx, yy, zz, rad);
-		map->GetOpenGLCoord(l2.x, l2.y, xx2, yy2, zz2, rad);
-		xx = (1-v)*xx+v*xx2;
-		yy = (1-v)*yy+v*yy2;
-		zz = (1-v)*zz+v*zz2;
-		GLfloat r, g, b, t;
-		GetColor(r, g, b, t);
-		glColor4f(r, g, b, t);
-		DrawSquare(xx, yy, zz+rad, rad);
-		//DrawSphere(xx, yy, zz, rad);
-	}
-	
-	void CanonicalGrid::OpenGLDraw(const xyLoc& initial, const tDirection &dir) const
-	{
-		
-		xyLoc s = initial;
-		GLdouble xx, yy, zz, rad;
-		map->GetOpenGLCoord(s.x, s.y, xx, yy, zz, rad);
-		
-		glColor3f(0.5, 0.5, 0.5);
-		glBegin(GL_LINE_STRIP);
-		glVertex3f(xx, yy, zz-rad/2);
-		
-		switch (dir)
-		{
-			case kN: s.y-=1; break;
-			case kS: s.y+=1; break;
-			case kE: s.x+=1; break;
-			case kW: s.x-=1; break;
-			case kNW: s.y-=1; s.x-=1; break;
-			case kSW: s.y+=1; s.x-=1; break;
-			case kNE: s.y-=1; s.x+=1; break;
-			case kSE: s.y+=1; s.x+=1; break;
-			default: break;
-		}
-		
-		
-		map->GetOpenGLCoord(s.x, s.y, xx, yy, zz, rad);
-		glVertex3f(xx, yy, zz-rad/2);
-		glEnd();
-		
-	}
-	
-	void CanonicalGrid::GLDrawLine(const xyLoc &a, const xyLoc &b) const
-	{
-		GLdouble xx1, yy1, zz1, rad;
-		GLdouble xx2, yy2, zz2;
-		map->GetOpenGLCoord(a.x, a.y, xx1, yy1, zz1, rad);
-		map->GetOpenGLCoord(b.x, b.y, xx2, yy2, zz2, rad);
-		
-		double angle = atan2(yy1-yy2, xx1-xx2);
-		double xoff = sin(2*PI-angle)*rad*0.1;
-		double yoff = cos(2*PI-angle)*rad*0.1;
-		
-		
-		
-		GLfloat rr, gg, bb, t;
-		GetColor(rr, gg, bb, t);
-		glColor4f(rr, gg, bb, t);
-		
-		glBegin(GL_TRIANGLE_STRIP);
-		
-		glVertex3f(xx1+xoff, yy1+yoff, zz1-rad/2);
-		glVertex3f(xx2+xoff, yy2+yoff, zz2-rad/2);
-		glVertex3f(xx1-xoff, yy1-yoff, zz1-rad/2);
-		glVertex3f(xx2-xoff, yy2-yoff, zz2-rad/2);
-		glEnd();
-	}
-	
-	void CanonicalGrid::GLLabelState(const xyLoc &s, const char *str, double scale) const
-	{
-		glPushMatrix();
-		
-		GLdouble xx, yy, zz, rad;
-		map->GetOpenGLCoord(s.x, s.y, xx, yy, zz, rad);
-		GLfloat r, g, b, t;
-		GetColor(r, g, b, t);
-		glColor4f(r, g, b, t);
-		
-		glTranslatef(xx-rad, yy+rad/2, zz-2*rad);
-		glScalef(scale*rad/(300.0), scale*rad/300.0, 1);
-		glRotatef(180, 0.0, 0.0, 1.0);
-		glRotatef(180, 0.0, 1.0, 0.0);
-		glDisable(GL_LIGHTING);
-		auto len = strlen(str);
-		//for (int which = 0; which < len; which++)
-		//	glutStrokeCharacter(GLUT_STROKE_ROMAN, str[which]);
-		glEnable(GL_LIGHTING);
-		glPopMatrix();
-	}
-	
-	void CanonicalGrid::GLLabelState(const xyLoc &s, const char *str) const
-	{
-		glPushMatrix();
-		
-		GLdouble xx, yy, zz, rad;
-		map->GetOpenGLCoord(s.x, s.y, xx, yy, zz, rad);
-		GLfloat r, g, b, t;
-		GetColor(r, g, b, t);
-		glColor4f(r, g, b, t);
-		
-		glTranslatef(xx-rad, yy+rad/2, zz-rad);
-		glScalef(rad/(300.0), rad/300.0, 1);
-		glRotatef(180, 0.0, 0.0, 1.0);
-		glRotatef(180, 0.0, 1.0, 0.0);
-		glDisable(GL_LIGHTING);
-		//for (int which = 0; which < strlen(str); which++)
-		//	glutStrokeCharacter(GLUT_STROKE_ROMAN, str[which]);
-		glEnable(GL_LIGHTING);
-		glPopMatrix();
-	}
+//	void CanonicalGrid::OpenGLDraw() const
+//	{
+//		map->OpenGLDraw();
+//	}
+//	
+//	void CanonicalGrid::OpenGLDraw(const xyLoc &l) const
+//	{
+//		double xx, yy, zz, rad;
+//		map->GetCoord(l.x, l.y, xx, yy, zz, rad);
+//		float r, g, b, t;
+//		GetColor(r, g, b, t);
+//		glColor4f(r, g, b, t);
+//		//glColor3f(0.5, 0.5, 0.5);
+//		//DrawSphere(xx, yy, zz, rad);
+//		//DrawSquare(xx, yy, zz+rad, rad);
+//		DrawSquare(xx, yy, zz-rad, rad);
+//	}
+//	
+//	void CanonicalGrid::OpenGLDraw(const xyLoc &l1, const xyLoc &l2, float v) const
+//	{
+//		double xx, yy, zz, rad;
+//		double xx2, yy2, zz2;
+//		map->GetCoord(l1.x, l1.y, xx, yy, zz, rad);
+//		map->GetCoord(l2.x, l2.y, xx2, yy2, zz2, rad);
+//		xx = (1-v)*xx+v*xx2;
+//		yy = (1-v)*yy+v*yy2;
+//		zz = (1-v)*zz+v*zz2;
+//		float r, g, b, t;
+//		GetColor(r, g, b, t);
+//		glColor4f(r, g, b, t);
+//		DrawSquare(xx, yy, zz+rad, rad);
+//		//DrawSphere(xx, yy, zz, rad);
+//	}
+//	
+//	void CanonicalGrid::OpenGLDraw(const xyLoc& initial, const tDirection &dir) const
+//	{
+//		
+//		xyLoc s = initial;
+//		double xx, yy, zz, rad;
+//		map->GetCoord(s.x, s.y, xx, yy, zz, rad);
+//		
+//		glColor3f(0.5, 0.5, 0.5);
+//		glBegin(GL_LINE_STRIP);
+//		glVertex3f(xx, yy, zz-rad/2);
+//		
+//		switch (dir)
+//		{
+//			case kN: s.y-=1; break;
+//			case kS: s.y+=1; break;
+//			case kE: s.x+=1; break;
+//			case kW: s.x-=1; break;
+//			case kNW: s.y-=1; s.x-=1; break;
+//			case kSW: s.y+=1; s.x-=1; break;
+//			case kNE: s.y-=1; s.x+=1; break;
+//			case kSE: s.y+=1; s.x+=1; break;
+//			default: break;
+//		}
+//		
+//		
+//		map->GetCoord(s.x, s.y, xx, yy, zz, rad);
+//		glVertex3f(xx, yy, zz-rad/2);
+//		glEnd();
+//		
+//	}
+//	
+//	void CanonicalGrid::GLDrawLine(const xyLoc &a, const xyLoc &b) const
+//	{
+//		double xx1, yy1, zz1, rad;
+//		double xx2, yy2, zz2;
+//		map->GetCoord(a.x, a.y, xx1, yy1, zz1, rad);
+//		map->GetCoord(b.x, b.y, xx2, yy2, zz2, rad);
+//		
+//		double angle = atan2(yy1-yy2, xx1-xx2);
+//		double xoff = sin(2*PI-angle)*rad*0.1;
+//		double yoff = cos(2*PI-angle)*rad*0.1;
+//		
+//		
+//		
+//		float rr, gg, bb, t;
+//		GetColor(rr, gg, bb, t);
+//		glColor4f(rr, gg, bb, t);
+//		
+//		glBegin(GL_TRIANGLE_STRIP);
+//		
+//		glVertex3f(xx1+xoff, yy1+yoff, zz1-rad/2);
+//		glVertex3f(xx2+xoff, yy2+yoff, zz2-rad/2);
+//		glVertex3f(xx1-xoff, yy1-yoff, zz1-rad/2);
+//		glVertex3f(xx2-xoff, yy2-yoff, zz2-rad/2);
+//		glEnd();
+//	}
+//	
+//	void CanonicalGrid::GLLabelState(const xyLoc &s, const char *str, double scale) const
+//	{
+//		glPushMatrix();
+//		
+//		double xx, yy, zz, rad;
+//		map->GetCoord(s.x, s.y, xx, yy, zz, rad);
+//		GLfloat r, g, b, t;
+//		GetColor(r, g, b, t);
+//		glColor4f(r, g, b, t);
+//		
+//		glTranslatef(xx-rad, yy+rad/2, zz-2*rad);
+//		glScalef(scale*rad/(300.0), scale*rad/300.0, 1);
+//		glRotatef(180, 0.0, 0.0, 1.0);
+//		glRotatef(180, 0.0, 1.0, 0.0);
+//		glDisable(GL_LIGHTING);
+//		auto len = strlen(str);
+//		//for (int which = 0; which < len; which++)
+//		//	glutStrokeCharacter(GLUT_STROKE_ROMAN, str[which]);
+//		glEnable(GL_LIGHTING);
+//		glPopMatrix();
+//	}
+//	
+//	void CanonicalGrid::GLLabelState(const xyLoc &s, const char *str) const
+//	{
+//		glPushMatrix();
+//		
+//		double xx, yy, zz, rad;
+//		map->GetCoord(s.x, s.y, xx, yy, zz, rad);
+//		GLfloat r, g, b, t;
+//		GetColor(r, g, b, t);
+//		glColor4f(r, g, b, t);
+//		
+//		glTranslatef(xx-rad, yy+rad/2, zz-rad);
+//		glScalef(rad/(300.0), rad/300.0, 1);
+//		glRotatef(180, 0.0, 0.0, 1.0);
+//		glRotatef(180, 0.0, 1.0, 0.0);
+//		glDisable(GL_LIGHTING);
+//		//for (int which = 0; which < strlen(str); which++)
+//		//	glutStrokeCharacter(GLUT_STROKE_ROMAN, str[which]);
+//		glEnable(GL_LIGHTING);
+//		glPopMatrix();
+//	}
 
 	std::string CanonicalGrid::SVGHeader()
 	{
@@ -714,7 +714,7 @@ namespace CanonicalGrid {
 		if (map->GetTerrainType(l.x, l.y) == kGround)
 		{
 			rgbColor c;// = {0.5, 0.5, 0};
-			GLfloat t;
+			float t;
 			GetColor(c.r, c.g, c.b, t);
 			s += SVGDrawCircle(l.x+0.5+1, l.y+0.5+1, 0.5, c);
 			//stroke-width="1" stroke="pink" />
@@ -727,7 +727,7 @@ namespace CanonicalGrid {
 		std::string s;
 		
 		rgbColor c;// = {0.5, 0.5, 0};
-		GLfloat t;
+		float t;
 		GetColor(c.r, c.g, c.b, t);
 		s += ::SVGFrameRect(left+1, top+1, right-left+1, bottom-top+1, width, c);
 		
@@ -738,7 +738,7 @@ namespace CanonicalGrid {
 	{
 		std::string s;
 		rgbColor c;// = {0.5, 0.5, 0};
-		GLfloat t;
+		float t;
 		GetColor(c.r, c.g, c.b, t);
 		s += SVGDrawText(l.x+0.5+1, l.y+0.5+1+1, str, c, scale);
 		return s;
@@ -754,7 +754,7 @@ namespace CanonicalGrid {
 		//<line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,255,255);stroke-width:1" />
 		//std::string s;
 		rgbColor c;// = {0.5, 0.5, 0};
-		GLfloat t;
+		float t;
 		GetColor(c.r, c.g, c.b, t);
 		return ::SVGDrawLine(p1.x+1, p1.y+1, p2.x+1, p2.y+1, width, c);
 		
@@ -770,7 +770,7 @@ namespace CanonicalGrid {
 	{
 		rgbColor c;
 		{
-			GLfloat r,g,b,t;
+			float r,g,b,t;
 			GetColor(r, g, b, t);
 			c = {r, g, b};
 		}
@@ -793,15 +793,15 @@ namespace CanonicalGrid {
 				//				}
 				Graphics::point p1, p2;
 				{
-					GLdouble x, y, z, r;
-					map->GetOpenGLCoord(queue.front().x, queue.front().y, x, y, z, r);
+					double x, y, z, r;
+					map->GetCoord(queue.front().x, queue.front().y, x, y, z, r);
 					p1.x = x;
 					p1.y = y;
 				}
-				GLdouble r;
+				double r;
 				{
-					GLdouble x, y, z;
-					map->GetOpenGLCoord(s.x, s.y, x, y, z, r);
+					double x, y, z;
+					map->GetCoord(s.x, s.y, x, y, z, r);
 					p2.x = x;
 					p2.y = y;
 				}
@@ -815,7 +815,7 @@ namespace CanonicalGrid {
 	{
 		rgbColor c;
 		{
-			GLfloat r,g,b,t;
+			float r,g,b,t;
 			GetColor(r, g, b, t);
 			c = {r, g, b};
 		}
@@ -840,15 +840,15 @@ namespace CanonicalGrid {
 //				}
 				Graphics::point p1, p2;
 				{
-					GLdouble x, y, z, r;
-					map->GetOpenGLCoord(queue.front().x, queue.front().y, x, y, z, r);
+					double x, y, z, r;
+					map->GetCoord(queue.front().x, queue.front().y, x, y, z, r);
 					p1.x = x;
 					p1.y = y;
 				}
-				GLdouble r;
+				double r;
 				{
-					GLdouble x, y, z;
-					map->GetOpenGLCoord(s.x, s.y, x, y, z, r);
+					double x, y, z;
+					map->GetCoord(s.x, s.y, x, y, z, r);
 					p2.x = x;
 					p2.y = y;
 				}
@@ -884,8 +884,8 @@ namespace CanonicalGrid {
 				{
 					bool draw = true;
 					Graphics::rect r;
-					GLdouble px, py, t, rad;
-					map->GetOpenGLCoord(x, y, px, py, t, rad);
+					double px, py, t, rad;
+					map->GetCoord(x, y, px, py, t, rad);
 					r.left = px-rad;
 					r.top = py-rad;
 					r.right = px+rad;
@@ -930,8 +930,8 @@ namespace CanonicalGrid {
 					{
 						rgbColor c = {0.75, 0.75, 0.75};
 						rect r;
-						GLdouble px, py, t, rad;
-						map->GetOpenGLCoord(x, y, px, py, t, rad);
+						double px, py, t, rad;
+						map->GetCoord(x, y, px, py, t, rad);
 						r.left = px-rad;
 						r.top = py-rad;
 						r.right = px+rad;
@@ -949,8 +949,8 @@ namespace CanonicalGrid {
 			{
 				for (int x = 0; x < map->GetMapWidth(); x++)
 				{
-					GLdouble px1, py1, t1, rad1;
-					map->GetOpenGLCoord(x, y, px1, py1, t1, rad1);
+					double px1, py1, t1, rad1;
+					map->GetCoord(x, y, px1, py1, t1, rad1);
 					float px=static_cast<float>(px1);
 					float py=static_cast<float>(py1);
 					float t=static_cast<float>(t1);
@@ -1057,13 +1057,13 @@ namespace CanonicalGrid {
 	
 	void CanonicalGrid::Draw(Graphics::Display &disp, const xyLoc &l) const
 	{
-		GLdouble px, py, pz, rad;
-		map->GetOpenGLCoord(l.x, l.y, px, py, pz, rad);
+		double px, py, pz, rad;
+		map->GetCoord(l.x, l.y, px, py, pz, rad);
 		
 		//if (map->GetTerrainType(l.x, l.y) == kGround)
 		{
 			rgbColor c;// = {0.5, 0.5, 0};
-			GLfloat t;
+			float t;
 			GetColor(c.r, c.g, c.b, t);
 			
 //			rect r;
@@ -1083,12 +1083,12 @@ namespace CanonicalGrid {
 	{
 		rect r1, r2;
 		rgbColor c;// = {0.5, 0.5, 0};
-		GLfloat t;
+		float t;
 		GetColor(c.r, c.g, c.b, t);
 		
 		{
-			GLdouble px, py, t, rad;
-			map->GetOpenGLCoord(l1.x, l1.y, px, py, t, rad);
+			double px, py, t, rad;
+			map->GetCoord(l1.x, l1.y, px, py, t, rad);
 			
 			rect r;
 			r.left = px-rad;
@@ -1098,8 +1098,8 @@ namespace CanonicalGrid {
 			r1 = r;
 		}
 		{
-			GLdouble px, py, t, rad;
-			map->GetOpenGLCoord(l2.x, l2.y, px, py, t, rad);
+			double px, py, t, rad;
+			map->GetCoord(l2.x, l2.y, px, py, t, rad);
 			
 			rect r;
 			r.left = px-rad;
@@ -1120,13 +1120,13 @@ namespace CanonicalGrid {
 	
 	void CanonicalGrid::DrawAlternate(Graphics::Display &disp, const xyLoc &l) const
 	{
-		GLdouble px, py, t, rad;
-		map->GetOpenGLCoord(l.x, l.y, px, py, t, rad);
+		double px, py, t, rad;
+		map->GetCoord(l.x, l.y, px, py, t, rad);
 		
 		//if (map->GetTerrainType(l.x, l.y) == kGround)
 		{
 			rgbColor c;// = {0.5, 0.5, 0};
-			GLfloat t;
+			float t;
 			GetColor(c.r, c.g, c.b, t);
 			
 			rect r;
@@ -1141,12 +1141,12 @@ namespace CanonicalGrid {
 	
 	void CanonicalGrid::DrawStateLabel(Graphics::Display &disp, const xyLoc &l, const char *txt) const
 	{
-		GLdouble px, py, t, rad;
-		map->GetOpenGLCoord(l.x, l.y, px, py, t, rad);
+		double px, py, t, rad;
+		map->GetCoord(l.x, l.y, px, py, t, rad);
 		
 		rgbColor c;
 		{
-			GLfloat t;
+			float t;
 			GetColor(c.r, c.g, c.b, t);
 		}
 		disp.DrawText(txt, {static_cast<float>(px), static_cast<float>(py)}, c, rad);
@@ -1155,22 +1155,22 @@ namespace CanonicalGrid {
 	void CanonicalGrid::DrawStateLabel(Graphics::Display &disp, const xyLoc &l1, const xyLoc &l2, float v, const char *txt) const
 	{
 		Graphics::point p;
-		GLdouble rad;
+		double rad;
 		{
-			GLdouble px, py, t;
-			map->GetOpenGLCoord(l1.x, l1.y, px, py, t, rad);
+			double px, py, t;
+			map->GetCoord(l1.x, l1.y, px, py, t, rad);
 			p.x = px;
 			p.y = py;
 		}
 		{
-			GLdouble px, py, t, rad;
-			map->GetOpenGLCoord(l2.x, l2.y, px, py, t, rad);
+			double px, py, t, rad;
+			map->GetCoord(l2.x, l2.y, px, py, t, rad);
 			p.x = (1-v)*p.x + (v)*px;
 			p.y = (1-v)*p.y + (v)*py;
 		}
 		rgbColor c;
 		{
-			GLfloat t;
+			float t;
 			GetColor(c.r, c.g, c.b, t);
 		}
 		disp.DrawText(txt, p, c, rad);
@@ -1179,13 +1179,13 @@ namespace CanonicalGrid {
 	
 	void CanonicalGrid::DrawLine(Graphics::Display &disp, const xyLoc &a, const xyLoc &b, double width) const
 	{
-		GLdouble xx1, yy1, zz1, rad;
-		GLdouble xx2, yy2, zz2;
-		map->GetOpenGLCoord(a.x, a.y, xx1, yy1, zz1, rad);
-		map->GetOpenGLCoord(b.x, b.y, xx2, yy2, zz2, rad);
+		double xx1, yy1, zz1, rad;
+		double xx2, yy2, zz2;
+		map->GetCoord(a.x, a.y, xx1, yy1, zz1, rad);
+		map->GetCoord(b.x, b.y, xx2, yy2, zz2, rad);
 		
 		rgbColor c;// = {0.5, 0.5, 0};
-		GLfloat t;
+		float t;
 		GetColor(c.r, c.g, c.b, t);
 		
 		disp.DrawLine({static_cast<float>(xx1), static_cast<float>(yy1)},
@@ -1194,13 +1194,13 @@ namespace CanonicalGrid {
 	
 	void CanonicalGrid::DrawArrow(Graphics::Display &disp, const xyLoc &a, const xyLoc &b, double width) const
 	{
-		GLdouble xx1, yy1, zz1, rad;
-		GLdouble xx2, yy2, zz2;
-		map->GetOpenGLCoord(a.x, a.y, xx1, yy1, zz1, rad);
-		map->GetOpenGLCoord(b.x, b.y, xx2, yy2, zz2, rad);
+		double xx1, yy1, zz1, rad;
+		double xx2, yy2, zz2;
+		map->GetCoord(a.x, a.y, xx1, yy1, zz1, rad);
+		map->GetCoord(b.x, b.y, xx2, yy2, zz2, rad);
 		
 		rgbColor c;// = {0.5, 0.5, 0};
-		GLfloat t;
+		float t;
 		GetColor(c.r, c.g, c.b, t);
 		
 		disp.DrawArrow({static_cast<float>(xx1), static_cast<float>(yy1)},

@@ -75,12 +75,12 @@ public:
 	bool CanMove(const voxelGridState &s1, const voxelGridState &s2) const;
 	voxelGridState GetRandomState();
 	
-	void OpenGLDraw() const;
-	void OpenGLDraw(const voxelGridState&) const;
-	void OpenGLDraw(const voxelGridState&, const voxelGridState&, float) const;
-	void OpenGLDraw(const voxelGridState&, const voxelGridAction&) const;
-	void GLLabelState(const voxelGridState&, const char *) const;
-	void GLDrawLine(const voxelGridState &x, const voxelGridState &y) const;
+//	void OpenGLDraw() const;
+//	void OpenGLDraw(const voxelGridState&) const;
+//	void OpenGLDraw(const voxelGridState&, const voxelGridState&, float) const;
+//	void OpenGLDraw(const voxelGridState&, const voxelGridAction&) const;
+//	void GLLabelState(const voxelGridState&, const char *) const;
+//	void GLDrawLine(const voxelGridState &x, const voxelGridState &y) const;
 	void Draw(Graphics::Display &display) const;
 
 	void GetGLCoordinate(const voxelGridState &, point3d &) const;
@@ -106,7 +106,7 @@ private:
 	void GetCoordinates(int index, voxelGridState &s) const;
 	std::vector<bool> voxels;
 	int xWidth, yWidth, zWidth;
-	std::vector<GLfloat> vertices;
+	std::vector<float> vertices;
 	std::vector<uint32_t> indices;
 };
 

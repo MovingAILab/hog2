@@ -581,7 +581,7 @@ void MyKeyHandler(unsigned long wid, tKeyboardModifier mod, char key)
 
 
 bool drag = false;
-recVec s, e;
+Graphics::point s, e;
 
 bool MyClickHandler(unsigned long , int viewport, int x, int y, point3d loc, tButtonType whichButton, tMouseEventType mouseEvent)
 {
@@ -826,7 +826,7 @@ void TestArms()
 		for (unsigned int x = 0; x < starts.size(); x++)
 		{
 			armAngles theGoal;
-			double x1, y1;
+			float x1, y1;
 			goals[x].GetGoal(x1, y1);
 			const std::vector<armAngles> &pos = aa->GetTipPositions(x1, y1);
 			theGoal = pos[0];

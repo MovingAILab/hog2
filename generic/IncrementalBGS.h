@@ -35,7 +35,7 @@ public:
 	}
 	void Reset() { bound = initialBound; nextBound = initialBound; solutionPath.clear();
 		history.clear(); ResetNodeCount(); previousBound = 0; }
-	void OpenGLDraw();
+//	void OpenGLDraw();
 	void Draw(Graphics::Display &display) const;
 	state GetCurrentState() const
 	{
@@ -518,10 +518,10 @@ void IncrementalBGS<state, action>::Draw(Graphics::Display &disp) const
 	env->SetColor(1.0, 0.5, 1.0, 0.5);
 	env->Draw(disp, goal);}
 
-template <class state, class action>
-void IncrementalBGS<state, action>::OpenGLDraw()
-{
-}
+//template <class state, class action>
+//void IncrementalBGS<state, action>::OpenGLDraw()
+//{
+//}
 
 
 #endif /* IncrementalBGS_h */

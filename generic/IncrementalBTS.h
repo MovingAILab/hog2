@@ -41,7 +41,7 @@ public:
 	}
 	void Reset() { bound = initialBound; nextBound = initialBound; solutionPath.clear();
 		history.clear(); search.clear(); ResetNodeCount(); previousBound = 0; }
-	void OpenGLDraw();
+//	void OpenGLDraw();
 	void Draw(Graphics::Display &display) const;
 	state GetCurrentState() const
 	{
@@ -401,16 +401,16 @@ void IncrementalBTS<state, action>::Draw(Graphics::Display &display) const
 	}
 }
 
-template <class state, class action>
-void IncrementalBTS<state, action>::OpenGLDraw()
-{
-	//	for (auto x : history)
-	//		env->OpenGLDraw(x.first);
-	for (size_t x = 1; x < search.size(); x++)
-		env->GLDrawLine(search[x-1].currState, search[x].currState, 10);
-	//	for (int x = 1; x < path.size(); x++)
-	//		env->GLDrawLine(path[x-1], path[x]);
-}
-
+//template <class state, class action>
+//void IncrementalBTS<state, action>::OpenGLDraw()
+//{
+//	//	for (auto x : history)
+//	//		env->OpenGLDraw(x.first);
+//	for (size_t x = 1; x < search.size(); x++)
+//		env->GLDrawLine(search[x-1].currState, search[x].currState, 10);
+//	//	for (int x = 1; x < path.size(); x++)
+//	//		env->GLDrawLine(path[x-1], path[x]);
+//}
+//
 
 #endif /* IncrementalBTS_h */

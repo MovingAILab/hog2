@@ -11,7 +11,7 @@
 
 #include "Graph.h"
 #include "Path.h"
-#include "GLUtil.h"
+#include "Graphics.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -117,7 +117,7 @@ public:
 	double MeasureAverageNodeWidth(int level);
 	
 	virtual void OpenGLDraw() const {}
-	virtual recVec GetNodeLoc(node *) const { recVec v; v.x = v.y = v.z = 0; return v; }
+  virtual Graphics::point GetNodeLoc(node *) const { Graphics::point v; v.x = v.y = v.z = 0; return v; }
 protected:
 	std::vector<Graph *> abstractions;
 private:

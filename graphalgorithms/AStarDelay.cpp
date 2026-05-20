@@ -674,8 +674,8 @@ void AStarDelay::ExtractPathToStart(graphState goalNode, std::vector<graphState>
 //	OpenGLDraw();
 //}
 
-void AStarDelay::OpenGLDraw() const
-{
+//void AStarDelay::OpenGLDraw() const
+//{
 //	//float r,gcost,b;
 //	double x,y,z;
 //	SearchNode sn;
@@ -750,53 +750,53 @@ void AStarDelay::OpenGLDraw() const
 //	{
 //		DrawEdge(e->getFrom(), e->getTo(), e->GetWeight());
 //	}
-}
+//}
 
-void AStarDelay::DrawText(double x, double y, double z, float r, float gg, float b, char* str)
-{
-	//glPushMatrix();
-	// rotate ?
-
-	glPushMatrix();
-	glColor3f(r,gg,b);
-	glTranslatef(x,y,z);
-	glScalef(1.0/(20*120.0), 1.0/(20*120.0), 1);
-	glRotatef(180, 0.0, 0.0, 1.0);
-	glRotatef(180, 0.0, 1.0, 0.0);
-	
-	int i=0;
-	while(str[i]) 
-	{
-//		glutStrokeCharacter(GLUT_STROKE_ROMAN,str[i]);
-		i++;
-	}
-	glPopMatrix();
-}
-
-void AStarDelay::DrawEdge(unsigned int from, unsigned int to, double weight)
-{
-	double x1,y1,z1;
-	double x2,y2,z2;
-	char buf[100] = {0};
-
-	node* nfrom = g->GetNode(from);
-	node* nto = g->GetNode(to);
-
-	x1 = nfrom->GetLabelF(kXCoordinate);
-	y1 = nfrom->GetLabelF(kYCoordinate);
-	z1 = nfrom->GetLabelF(kZCoordinate);
-	x2 = nto->GetLabelF(kXCoordinate);
-	y2 = nto->GetLabelF(kYCoordinate);
-	z2 = nto->GetLabelF(kZCoordinate);
-
-	// draw line segment
-	glBegin(GL_LINES);
-	glColor3f(1,1,0); // yellow
-	glVertex3f(x1,y1,z1);
-	glVertex3f(x2,y2,z2);
-	glEnd();
-
-	// draw weight info
-	sprintf(buf,"%ld",(long)weight);
-	DrawText((x1+x2)/2, (y1+y2)/2, (z1+z2)/2 + 0.05, 1, 0, 0, buf); // in red
-}
+//void AStarDelay::DrawText(double x, double y, double z, float r, float gg, float b, char* str)
+//{
+//	//glPushMatrix();
+//	// rotate ?
+//
+//	glPushMatrix();
+//	glColor3f(r,gg,b);
+//	glTranslatef(x,y,z);
+//	glScalef(1.0/(20*120.0), 1.0/(20*120.0), 1);
+//	glRotatef(180, 0.0, 0.0, 1.0);
+//	glRotatef(180, 0.0, 1.0, 0.0);
+//	
+//	int i=0;
+//	while(str[i]) 
+//	{
+////		glutStrokeCharacter(GLUT_STROKE_ROMAN,str[i]);
+//		i++;
+//	}
+//	glPopMatrix();
+//}
+//
+//void AStarDelay::DrawEdge(unsigned int from, unsigned int to, double weight)
+//{
+//	double x1,y1,z1;
+//	double x2,y2,z2;
+//	char buf[100] = {0};
+//
+//	node* nfrom = g->GetNode(from);
+//	node* nto = g->GetNode(to);
+//
+//	x1 = nfrom->GetLabelF(kXCoordinate);
+//	y1 = nfrom->GetLabelF(kYCoordinate);
+//	z1 = nfrom->GetLabelF(kZCoordinate);
+//	x2 = nto->GetLabelF(kXCoordinate);
+//	y2 = nto->GetLabelF(kYCoordinate);
+//	z2 = nto->GetLabelF(kZCoordinate);
+//
+//	// draw line segment
+//	glBegin(GL_LINES);
+//	glColor3f(1,1,0); // yellow
+//	glVertex3f(x1,y1,z1);
+//	glVertex3f(x2,y2,z2);
+//	glEnd();
+//
+//	// draw weight info
+//	sprintf(buf,"%ld",(long)weight);
+//	DrawText((x1+x2)/2, (y1+y2)/2, (z1+z2)/2 + 0.05, 1, 0, 0, buf); // in red
+//}

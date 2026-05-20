@@ -7,12 +7,14 @@
  *
  */
 
-#include "GLUtil.h"
+#include "Constants.h"
 #include "SearchEnvironment.h"
 #include <stdlib.h>
 #include <stdio.h>
 
-class ConfigEnvironment : public SearchEnvironment<recVec, line2d>
+using Graphics::line2d;
+
+class ConfigEnvironment : public SearchEnvironment<Graphics::point, line2d>
 {
 public:
 	ConfigEnvironment();
@@ -20,37 +22,37 @@ public:
 
 	void AddObstacle(line2d obs) { obstacles.push_back(obs); }
 	void PopObstacle() { obstacles.pop_back(); }
-	void GetSuccessors(const recVec &nodeID, std::vector<recVec> &neighbors) const;
-	void GetActions(const recVec &nodeID, std::vector<line2d> &actions) const;
-	line2d GetAction(const recVec &s1, const recVec &s2) const;
-	virtual void ApplyAction(recVec &s, line2d dir) const;
+	void GetSuccessors(const Graphics::point &nodeID, std::vector<Graphics::point> &neighbors) const;
+	void GetActions(const Graphics::point &nodeID, std::vector<line2d> &actions) const;
+	line2d GetAction(const Graphics::point &s1, const Graphics::point &s2) const;
+	virtual void ApplyAction(Graphics::point &s, line2d dir) const;
 
 	virtual bool InvertAction(line2d &a) const;
 
-	virtual double HCost(const recVec &) const {
+	virtual double HCost(const Graphics::point &) const {
 		printf("Single State HCost Failure: method not implemented for ConfigEnvironment\n");
 		exit(0); return -1.0;}
 
-	virtual double HCost(const recVec &node1, const recVec &node2) const;
-	virtual double GCost(const recVec &node1, const recVec &node2) const;
-	virtual double GCost(const recVec &node1, const line2d &act) const;
-	bool GoalTest(const recVec &node, const recVec &goal) const;
+	virtual double HCost(const Graphics::point &node1, const Graphics::point &node2) const;
+	virtual double GCost(const Graphics::point &node1, const Graphics::point &node2) const;
+	virtual double GCost(const Graphics::point &node1, const line2d &act) const;
+	bool GoalTest(const Graphics::point &node, const Graphics::point &goal) const;
 
-	bool GoalTest(const recVec &) const {
+	bool GoalTest(const Graphics::point &) const {
 		printf("Single State Goal Test Failure: method not implemented for ConfigEnvironment\n");
 		exit(0); return false;}
 
-	uint64_t GetStateHash(const recVec &node) const;
+	uint64_t GetStateHash(const Graphics::point &node) const;
 	uint64_t GetActionHash(line2d act) const;
 
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const recVec &l) const;
-	virtual void OpenGLDraw(const recVec &, const line2d &) const;
-	virtual void OpenGLDraw(const recVec&, const recVec&, float) const {}
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const Graphics::point &l) const;
+//	virtual void OpenGLDraw(const Graphics::point &, const line2d &) const;
+//	virtual void OpenGLDraw(const Graphics::point&, const Graphics::point&, float) const {}
 
-	virtual void GetNextState(const recVec &currents, line2d dir, recVec &news) const;
+	virtual void GetNextState(const Graphics::point &currents, line2d dir, Graphics::point &news) const;
 
-	void StoreGoal(recVec &g) { goal = g; goal_stored = true;} // stores the locations for the given goal state
+	void StoreGoal(Graphics::point &g) { goal = g; goal_stored = true;} // stores the locations for the given goal state
 	void ClearGoal() {goal_stored = false;}
 	bool IsGoalStored() const {return false;}
 
@@ -58,9 +60,9 @@ public:
 //	bool LegalState(line2d &a);
 //	bool LegalArmConfig(line2d &a);
 private:
-	bool Legal(const recVec &a, const recVec &b) const;
-	recVec goal;
-	void DrawLine(line2d l) const;
+	bool Legal(const Graphics::point &a, const Graphics::point &b) const;
+	Graphics::point goal;
+//	void DrawLine(line2d l) const;
 	std::vector<line2d> obstacles;
 
 	bool goal_stored;

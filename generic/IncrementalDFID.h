@@ -23,7 +23,7 @@ public:
 	uint64_t GetNodesTouched() { return nodesTouched; }
 	void ResetNodeCount() { nodesExpanded = nodesTouched = 0; }
 	void Reset() { bound = initialBound; path.clear(); history.clear(); }
-	void OpenGLDraw();
+//	void OpenGLDraw();
 	void Draw(Graphics::Display &display) const;
 	state GetCurrentState() const { return path.back(); }
 private:
@@ -106,14 +106,14 @@ bool IncrementalDFID<state, action>::DoSingleSearchStep(SearchEnvironment<state,
 	return false;
 }
 
-template <class state, class action>
-void IncrementalDFID<state, action>::OpenGLDraw()
-{
-//	for (auto x : history)
-//		env->OpenGLDraw(x.first);
-	for (int x = 1; x < path.size(); x++)
-		env->GLDrawLine(path[x-1], path[x]);
-}
+//template <class state, class action>
+//void IncrementalDFID<state, action>::OpenGLDraw()
+//{
+////	for (auto x : history)
+////		env->OpenGLDraw(x.first);
+//	for (int x = 1; x < path.size(); x++)
+//		env->GLDrawLine(path[x-1], path[x]);
+//}
 
 template <class state, class action>
 void IncrementalDFID<state, action>::Draw(Graphics::Display &display) const

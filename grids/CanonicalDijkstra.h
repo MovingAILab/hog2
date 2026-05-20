@@ -32,9 +32,9 @@ public:
 	double GetClosedGCost(xyLoc s);
 	void LogFinalStats(StatCollection *stats);
 	void SetJumpLimit(int limit) { jumpLimit = limit; }
-	void OpenGLDraw() const;
+//	void OpenGLDraw() const;
 	void Draw(Graphics::Display &disp) const;
-	void OpenGLDraw(const MapEnvironment *env) const;
+//	void OpenGLDraw(const MapEnvironment *env) const;
 	std::string SVGDraw() const;
 	std::string SVGDrawDetailed() const;
 private:

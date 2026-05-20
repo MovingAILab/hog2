@@ -11,7 +11,7 @@
 #define PLOT2D_H
 
 #include <vector>
-#include "GLUtil.h"
+//#include "Constants.h"
 #include "FPUtil.h"
 #include "Graphics.h"
 
@@ -34,7 +34,7 @@ namespace Plotting {
 		void SetColor(double, double, double);
 		void SetColor(const rgbColor &c);
 		void SetWidth(float w) { width = w; }
-		void OpenGLDraw() const;
+//		void OpenGLDraw() const;
 		void Draw(Graphics::Display &display, double xOff, double yOff, double xScale, double yScale) const;
 		void SetHidden( bool val) { hidden = val; }
 		bool IsHidden() { return hidden; }
@@ -87,7 +87,7 @@ namespace Plotting {
 		void SetAxis(double, double, double, double);
 		void Zoom(double);
 		void ResetAxis();
-		void OpenGLDraw() const;
+//		void OpenGLDraw() const;
 		void Draw(Graphics::Display &display) const;
 		void SmoothLines();
 		void NormalizeAxes();

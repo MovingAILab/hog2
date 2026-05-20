@@ -122,8 +122,8 @@ class GreedyDMUnit : public Unit<xyLoc,tDirection,environment>
 		virtual void GetLocation(xyLoc &l)
 		{ l = loc; }
 	
-		virtual void OpenGLDraw(const environment *theEnv, const SimulationInfo<xyLoc,tDirection,environment> *) const
-		{ theEnv->OpenGLDraw(loc); }
+//		virtual void OpenGLDraw(const environment *theEnv, const SimulationInfo<xyLoc,tDirection,environment> *) const
+//		{ theEnv->OpenGLDraw(loc); }
 		
 		virtual void GetGoal(xyLoc &s)
 		{ s = loc; }

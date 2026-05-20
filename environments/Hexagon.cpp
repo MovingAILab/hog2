@@ -7,6 +7,7 @@
 //
 
 #include "Hexagon.h"
+#include <iostream>
 #include <ctype.h>
 #include <string>
 #include <map>
@@ -18,6 +19,7 @@
 #include <climits>
 
 using namespace std;
+using std::cout;
 
 #include "SVGUtil.h"
 

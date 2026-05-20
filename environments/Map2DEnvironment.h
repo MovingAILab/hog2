@@ -186,13 +186,13 @@ void SetTerrainCost(double costs[])
 	uint64_t GetStateHash(const xyLoc &node) const;
 	void GetStateFromHash(uint64_t parent, xyLoc &s) const;
 	uint64_t GetActionHash(tDirection act) const;
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const xyLoc &l) const;
-	virtual void OpenGLDraw(const xyLoc &l1, const xyLoc &l2, float v) const;
-	virtual void OpenGLDraw(const xyLoc &, const tDirection &) const;
-	virtual void GLLabelState(const xyLoc &, const char *) const;
-	virtual void GLLabelState(const xyLoc &s, const char *str, double scale) const;
-	virtual void GLDrawLine(const xyLoc &x, const xyLoc &y) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const xyLoc &l) const;
+//	virtual void OpenGLDraw(const xyLoc &l1, const xyLoc &l2, float v) const;
+//	virtual void OpenGLDraw(const xyLoc &, const tDirection &) const;
+//	virtual void GLLabelState(const xyLoc &, const char *) const;
+//	virtual void GLLabelState(const xyLoc &s, const char *str, double scale) const;
+//	virtual void GLDrawLine(const xyLoc &x, const xyLoc &y) const;
 	
 	std::string SVGHeader();
 	std::string SVGDraw();

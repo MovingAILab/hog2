@@ -563,182 +563,182 @@ uint64_t MapEnvironment::GetActionHash(tDirection act) const
 	return (uint32_t) act;
 }
 
-void MapEnvironment::OpenGLDraw() const
-{
-	//std::cout<<"drawing\n";
-	map->OpenGLDraw();
-	// Draw occupancy interface - occupied = white
-//	for (int i=0; i<map->GetMapWidth(); i++)
-//		for (int j=0; j<map->GetMapHeight(); j++)
-//		{
-//			xyLoc l;
-//			l.x = i;
-//			l.y = j;
-//			if (oi && oi->GetStateOccupied(l))
-//			{
-//				SetColor(1.0, 1.0, 1.0, 1.0);
-//				OpenGLDraw(l);//, 1.0, 1.0, 1.0);
-//			}
-//		}
-}
-	
-void MapEnvironment::OpenGLDraw(const xyLoc &l) const
-{
-	GLdouble xx, yy, zz, rad;
-	map->GetOpenGLCoord(l.x, l.y, xx, yy, zz, rad);
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-	glColor4f(r, g, b, t);
-	//glColor3f(0.5, 0.5, 0.5);
-	DrawSphere(xx, yy, zz, rad);
-}
-
-void MapEnvironment::OpenGLDraw(const xyLoc &l1, const xyLoc &l2, float v) const
-{
-	GLdouble xx, yy, zz, rad;
-	GLdouble xx2, yy2, zz2;
-//	map->GetOpenGLCoord((float)((1-v)*l1.x+v*l2.x),
-//						(float)((1-v)*l1.y+v*l2.y), xx, yy, zz, rad);
-//	printf("%f between (%d, %d) and (%d, %d)\n", v, l1.x, l1.y, l2.x, l2.y);
-	map->GetOpenGLCoord(l1.x, l1.y, xx, yy, zz, rad);
-	map->GetOpenGLCoord(l2.x, l2.y, xx2, yy2, zz2, rad);
-	//	map->GetOpenGLCoord(perc*newState.x + (1-perc)*oldState.x, perc*newState.y + (1-perc)*oldState.y, xx, yy, zz, rad);
-	xx = (1-v)*xx+v*xx2;
-	yy = (1-v)*yy+v*yy2;
-	zz = (1-v)*zz+v*zz2;
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-	glColor4f(r, g, b, t);
-	DrawSphere(xx, yy, zz, rad);
-}
-
-//void MapEnvironment::OpenGLDraw(const xyLoc &l, GLfloat r, GLfloat g, GLfloat b) const
+//void MapEnvironment::OpenGLDraw() const
 //{
-//	GLdouble xx, yy, zz, rad;
-//	map->GetOpenGLCoord(l.x, l.y, xx, yy, zz, rad);
-//	glColor3f(r,g,b);
+//	//std::cout<<"drawing\n";
+//	map->OpenGLDraw();
+//	// Draw occupancy interface - occupied = white
+////	for (int i=0; i<map->GetMapWidth(); i++)
+////		for (int j=0; j<map->GetMapHeight(); j++)
+////		{
+////			xyLoc l;
+////			l.x = i;
+////			l.y = j;
+////			if (oi && oi->GetStateOccupied(l))
+////			{
+////				SetColor(1.0, 1.0, 1.0, 1.0);
+////				OpenGLDraw(l);//, 1.0, 1.0, 1.0);
+////			}
+////		}
+//}
+//	
+//void MapEnvironment::OpenGLDraw(const xyLoc &l) const
+//{
+//	double xx, yy, zz, rad;
+//	map->GetCoord(l.x, l.y, xx, yy, zz, rad);
+//	GLfloat r, g, b, t;
+//	GetColor(r, g, b, t);
+//	glColor4f(r, g, b, t);
+//	//glColor3f(0.5, 0.5, 0.5);
 //	DrawSphere(xx, yy, zz, rad);
 //}
-
-void MapEnvironment::OpenGLDraw(const xyLoc& initial, const tDirection &dir) const
-{
-	
-	xyLoc s = initial;
-	GLdouble xx, yy, zz, rad;
-	map->GetOpenGLCoord(s.x, s.y, xx, yy, zz, rad);
-	
-	glColor3f(0.5, 0.5, 0.5);
-	glBegin(GL_LINE_STRIP);
-	glVertex3f(xx, yy, zz-rad/2);
-		
-	switch (dir)
-	{
-		case kN: s.y-=1; break;
-		case kS: s.y+=1; break;
-		case kE: s.x+=1; break;
-		case kW: s.x-=1; break;
-		case kNW: s.y-=1; s.x-=1; break;
-		case kSW: s.y+=1; s.x-=1; break;
-		case kNE: s.y-=1; s.x+=1; break;
-		case kSE: s.y+=1; s.x+=1; break;
-		default: break;
-	}
-
-	
-	map->GetOpenGLCoord(s.x, s.y, xx, yy, zz, rad);
-	glVertex3f(xx, yy, zz-rad/2);
-	glEnd();
-	
-}
-
-void MapEnvironment::GLDrawLine(const xyLoc &a, const xyLoc &b) const
-{
-	GLdouble xx1, yy1, zz1, rad;
-	GLdouble xx2, yy2, zz2;
-	map->GetOpenGLCoord(a.x, a.y, xx1, yy1, zz1, rad);
-	map->GetOpenGLCoord(b.x, b.y, xx2, yy2, zz2, rad);
-	
-	double angle = atan2(yy1-yy2, xx1-xx2);
-	double xoff = sin(2*PI-angle)*rad*0.1;
-	double yoff = cos(2*PI-angle)*rad*0.1;
-
-	
-	
-	GLfloat rr, gg, bb, t;
-	GetColor(rr, gg, bb, t);
-	glColor4f(rr, gg, bb, t);
-
-	
-	glBegin(GL_LINES);
-	glVertex3f(xx1, yy1, zz1-rad/2);
-	glVertex3f(xx2, yy2, zz2-rad/2);
-	glEnd();
-
-//	glEnable(GL_BLEND);
-//	glBlendFunc(GL_SRC_ALPHA_SATURATE, GL_ONE);
-	//glEnable(GL_POLYGON_SMOOTH);
-//	glBegin(GL_TRIANGLE_STRIP);
-//	//glBegin(GL_QUADS);
-//	glVertex3f(xx1+xoff, yy1+yoff, zz1-rad/2);
-//	glVertex3f(xx2+xoff, yy2+yoff, zz2-rad/2);
-//	glVertex3f(xx1-xoff, yy1-yoff, zz1-rad/2);
-//	glVertex3f(xx2-xoff, yy2-yoff, zz2-rad/2);
+//
+//void MapEnvironment::OpenGLDraw(const xyLoc &l1, const xyLoc &l2, float v) const
+//{
+//	double xx, yy, zz, rad;
+//	double xx2, yy2, zz2;
+////	map->GetCoord((float)((1-v)*l1.x+v*l2.x),
+////						(float)((1-v)*l1.y+v*l2.y), xx, yy, zz, rad);
+////	printf("%f between (%d, %d) and (%d, %d)\n", v, l1.x, l1.y, l2.x, l2.y);
+//	map->GetCoord(l1.x, l1.y, xx, yy, zz, rad);
+//	map->GetCoord(l2.x, l2.y, xx2, yy2, zz2, rad);
+//	//	map->GetCoord(perc*newState.x + (1-perc)*oldState.x, perc*newState.y + (1-perc)*oldState.y, xx, yy, zz, rad);
+//	xx = (1-v)*xx+v*xx2;
+//	yy = (1-v)*yy+v*yy2;
+//	zz = (1-v)*zz+v*zz2;
+//	GLfloat r, g, b, t;
+//	GetColor(r, g, b, t);
+//	glColor4f(r, g, b, t);
+//	DrawSphere(xx, yy, zz, rad);
+//}
+//
+////void MapEnvironment::OpenGLDraw(const xyLoc &l, GLfloat r, GLfloat g, GLfloat b) const
+////{
+////	double xx, yy, zz, rad;
+////	map->GetCoord(l.x, l.y, xx, yy, zz, rad);
+////	glColor3f(r,g,b);
+////	DrawSphere(xx, yy, zz, rad);
+////}
+//
+//void MapEnvironment::OpenGLDraw(const xyLoc& initial, const tDirection &dir) const
+//{
+//	
+//	xyLoc s = initial;
+//	double xx, yy, zz, rad;
+//	map->GetCoord(s.x, s.y, xx, yy, zz, rad);
+//	
+//	glColor3f(0.5, 0.5, 0.5);
+//	glBegin(GL_LINE_STRIP);
+//	glVertex3f(xx, yy, zz-rad/2);
+//		
+//	switch (dir)
+//	{
+//		case kN: s.y-=1; break;
+//		case kS: s.y+=1; break;
+//		case kE: s.x+=1; break;
+//		case kW: s.x-=1; break;
+//		case kNW: s.y-=1; s.x-=1; break;
+//		case kSW: s.y+=1; s.x-=1; break;
+//		case kNE: s.y-=1; s.x+=1; break;
+//		case kSE: s.y+=1; s.x+=1; break;
+//		default: break;
+//	}
+//
+//	
+//	map->GetCoord(s.x, s.y, xx, yy, zz, rad);
+//	glVertex3f(xx, yy, zz-rad/2);
 //	glEnd();
-
-	//	glDisable(GL_POLYGON_SMOOTH);
-	//
+//	
+//}
+//
+//void MapEnvironment::GLDrawLine(const xyLoc &a, const xyLoc &b) const
+//{
+//	double xx1, yy1, zz1, rad;
+//	double xx2, yy2, zz2;
+//	map->GetCoord(a.x, a.y, xx1, yy1, zz1, rad);
+//	map->GetCoord(b.x, b.y, xx2, yy2, zz2, rad);
+//	
+//	double angle = atan2(yy1-yy2, xx1-xx2);
+//	double xoff = sin(2*PI-angle)*rad*0.1;
+//	double yoff = cos(2*PI-angle)*rad*0.1;
+//
+//	
+//	
+//	float rr, gg, bb, t;
+//	GetColor(rr, gg, bb, t);
+//	glColor4f(rr, gg, bb, t);
+//
+//	
 //	glBegin(GL_LINES);
-//	glVertex3f(xx, yy, zz-rad/2);
-//	map->GetOpenGLCoord(b.x, b.y, xx, yy, zz, rad);
-//	glVertex3f(xx, yy, zz-rad/2);
+//	glVertex3f(xx1, yy1, zz1-rad/2);
+//	glVertex3f(xx2, yy2, zz2-rad/2);
 //	glEnd();
-}
-
-void MapEnvironment::GLLabelState(const xyLoc &s, const char *str, double scale) const
-{
-	glPushMatrix();
-	
-	GLdouble xx, yy, zz, rad;
-	map->GetOpenGLCoord(s.x, s.y, xx, yy, zz, rad);
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-	glColor4f(r, g, b, t);
-	
-	glTranslatef(xx-rad, yy+rad/2, zz-2*rad);
-	glScalef(scale*rad/(300.0), scale*rad/300.0, 1);
-	glRotatef(180, 0.0, 0.0, 1.0);
-	glRotatef(180, 0.0, 1.0, 0.0);
-	//glTranslatef((float)x/width-0.5, (float)y/height-0.5, 0);
-	glDisable(GL_LIGHTING);
-	//for (int which = 0; which < strlen(str); which++)
-	//	glutStrokeCharacter(GLUT_STROKE_ROMAN, str[which]);
-	glEnable(GL_LIGHTING);
-	//glTranslatef(-x/width+0.5, -y/height+0.5, 0);
-	glPopMatrix();
-}
-
-void MapEnvironment::GLLabelState(const xyLoc &s, const char *str) const
-{
-	glPushMatrix();
-
-	GLdouble xx, yy, zz, rad;
-	map->GetOpenGLCoord(s.x, s.y, xx, yy, zz, rad);
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-	glColor4f(r, g, b, t);
-	
-	glTranslatef(xx-rad, yy+rad/2, zz-rad);
-	glScalef(rad/(300.0), rad/300.0, 1);
-	glRotatef(180, 0.0, 0.0, 1.0);
-	glRotatef(180, 0.0, 1.0, 0.0);
-	//glTranslatef((float)x/width-0.5, (float)y/height-0.5, 0);
-	glDisable(GL_LIGHTING);
-	//for (int which = 0; which < strlen(str); which++)
-	//	glutStrokeCharacter(GLUT_STROKE_ROMAN, str[which]);
-	glEnable(GL_LIGHTING);
-	//glTranslatef(-x/width+0.5, -y/height+0.5, 0);
-	glPopMatrix();
-}
+//
+////	glEnable(GL_BLEND);
+////	glBlendFunc(GL_SRC_ALPHA_SATURATE, GL_ONE);
+//	//glEnable(GL_POLYGON_SMOOTH);
+////	glBegin(GL_TRIANGLE_STRIP);
+////	//glBegin(GL_QUADS);
+////	glVertex3f(xx1+xoff, yy1+yoff, zz1-rad/2);
+////	glVertex3f(xx2+xoff, yy2+yoff, zz2-rad/2);
+////	glVertex3f(xx1-xoff, yy1-yoff, zz1-rad/2);
+////	glVertex3f(xx2-xoff, yy2-yoff, zz2-rad/2);
+////	glEnd();
+//
+//	//	glDisable(GL_POLYGON_SMOOTH);
+//	//
+////	glBegin(GL_LINES);
+////	glVertex3f(xx, yy, zz-rad/2);
+////	map->GetCoord(b.x, b.y, xx, yy, zz, rad);
+////	glVertex3f(xx, yy, zz-rad/2);
+////	glEnd();
+//}
+//
+//void MapEnvironment::GLLabelState(const xyLoc &s, const char *str, double scale) const
+//{
+//	glPushMatrix();
+//	
+//	double xx, yy, zz, rad;
+//	map->GetCoord(s.x, s.y, xx, yy, zz, rad);
+//	float r, g, b, t;
+//	GetColor(r, g, b, t);
+//	glColor4f(r, g, b, t);
+//	
+//	glTranslatef(xx-rad, yy+rad/2, zz-2*rad);
+//	glScalef(scale*rad/(300.0), scale*rad/300.0, 1);
+//	glRotatef(180, 0.0, 0.0, 1.0);
+//	glRotatef(180, 0.0, 1.0, 0.0);
+//	//glTranslatef((float)x/width-0.5, (float)y/height-0.5, 0);
+//	glDisable(GL_LIGHTING);
+//	//for (int which = 0; which < strlen(str); which++)
+//	//	glutStrokeCharacter(GLUT_STROKE_ROMAN, str[which]);
+//	glEnable(GL_LIGHTING);
+//	//glTranslatef(-x/width+0.5, -y/height+0.5, 0);
+//	glPopMatrix();
+//}
+//
+//void MapEnvironment::GLLabelState(const xyLoc &s, const char *str) const
+//{
+//	glPushMatrix();
+//
+//	double xx, yy, zz, rad;
+//	map->GetCoord(s.x, s.y, xx, yy, zz, rad);
+//	float r, g, b, t;
+//	GetColor(r, g, b, t);
+//	glColor4f(r, g, b, t);
+//	
+//	glTranslatef(xx-rad, yy+rad/2, zz-rad);
+//	glScalef(rad/(300.0), rad/300.0, 1);
+//	glRotatef(180, 0.0, 0.0, 1.0);
+//	glRotatef(180, 0.0, 1.0, 0.0);
+//	//glTranslatef((float)x/width-0.5, (float)y/height-0.5, 0);
+//	glDisable(GL_LIGHTING);
+//	//for (int which = 0; which < strlen(str); which++)
+//	//	glutStrokeCharacter(GLUT_STROKE_ROMAN, str[which]);
+//	glEnable(GL_LIGHTING);
+//	//glTranslatef(-x/width+0.5, -y/height+0.5, 0);
+//	glPopMatrix();
+//}
 
 std::string MapEnvironment::SVGHeader()
 {
@@ -893,7 +893,7 @@ std::string MapEnvironment::SVGDraw(const xyLoc &l)
 	if (map->GetTerrainType(l.x, l.y) == kGround)
 	{
 		rgbColor c;// = {0.5, 0.5, 0};
-		GLfloat t;
+		float t;
 		GetColor(c.r, c.g, c.b, t);
 		s += SVGDrawRect(l.x+1, l.y+1, 1, 1, c);
 		//s += SVGDrawCircle(l.x+0.5+1, l.y+0.5+1, 0.5, c);
@@ -907,7 +907,7 @@ std::string MapEnvironment::SVGFrameRect(int left, int top, int right, int botto
 	std::string s;
 
 	rgbColor c;// = {0.5, 0.5, 0};
-	GLfloat t;
+	float t;
 	GetColor(c.r, c.g, c.b, t);
 	s += ::SVGFrameRect(left+1, top+1, right-left+1, bottom-top+1, width, c);
 
@@ -918,7 +918,7 @@ std::string MapEnvironment::SVGLabelState(const xyLoc &l, const char *str, doubl
 {
 	std::string s;
 	rgbColor c;// = {0.5, 0.5, 0};
-	GLfloat t;
+	float t;
 	GetColor(c.r, c.g, c.b, t);
 	s += SVGDrawText(l.x+1+0.3, l.y+1+1, str, c, scale);
 	return s;
@@ -933,7 +933,7 @@ std::string MapEnvironment::SVGLabelState(const xyLoc &l, const char *str, doubl
 {
 	std::string s;
 	rgbColor c;// = {0.5, 0.5, 0};
-	GLfloat t;
+	float t;
 	GetColor(c.r, c.g, c.b, t);
 	s += SVGDrawText(l.x+0.5+1+xoff, l.y+0.5+1+1+yoff, str, c, scale);
 	return s;
@@ -949,7 +949,7 @@ std::string MapEnvironment::SVGDrawLine(const xyLoc &p1, const xyLoc &p2, int wi
 	//<line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,255,255);stroke-width:1" />
 	//std::string s;
 	rgbColor c;// = {0.5, 0.5, 0};
-	GLfloat t;
+	float t;
 	GetColor(c.r, c.g, c.b, t);
 	return ::SVGDrawLine(p1.x+1, p1.y+1, p2.x+1, p2.y+1, width, c);
 
@@ -998,9 +998,9 @@ void MapEnvironment::GetMaxRect(long terrain, int startx, int starty, int endx, 
 		if (!successx && !successy)
 			break;
 	}
-	GLdouble x1, x2, y1, y2, tmp, rad;
-	map->GetOpenGLCoord(startx, starty, x1, y1, tmp, rad);
-	map->GetOpenGLCoord(endx, endy, x2, y2, tmp, rad);
+	double x1, x2, y1, y2, tmp, rad;
+	map->GetCoord(startx, starty, x1, y1, tmp, rad);
+	map->GetCoord(endx, endy, x2, y2, tmp, rad);
 	r = Graphics::rect(x1-rad, y1-rad, x2+rad, y2+rad);
 	for (int y = starty; y <= endy; y++)
 	{
@@ -1096,9 +1096,9 @@ void MapEnvironment::Draw(Graphics::Display &disp) const
 			}
 		}
 		rect r;
-		GLdouble px, py, px1, py1, tmp, rad;
-		map->GetOpenGLCoord(0, 0, px, py, tmp, rad);
-		map->GetOpenGLCoord((int)map->GetMapWidth()-1, (int)map->GetMapHeight()-1, px1, py1, tmp, rad);
+		double px, py, px1, py1, tmp, rad;
+		map->GetCoord(0, 0, px, py, tmp, rad);
+		map->GetCoord((int)map->GetMapWidth()-1, (int)map->GetMapHeight()-1, px1, py1, tmp, rad);
 		r.left = px-rad;
 		r.top = py-rad;
 		r.right = px1+rad;
@@ -1151,8 +1151,8 @@ void MapEnvironment::Draw(Graphics::Display &disp) const
 			for (int x = 0; x < map->GetMapWidth(); x++)
 			{
 				rect r;
-				GLdouble px, py, t, rad;
-				map->GetOpenGLCoord(x, y, px, py, t, rad);
+				double px, py, t, rad;
+				map->GetCoord(x, y, px, py, t, rad);
 				r.left = px-rad;
 				r.top = py-rad;
 				r.right = px+rad;
@@ -1194,8 +1194,8 @@ void MapEnvironment::Draw(Graphics::Display &disp) const
 //				{
 //					rgbColor c = {0.75, 0.75, 0.75};
 //					rect r;
-//					GLdouble px, py, t, rad;
-//					map->GetOpenGLCoord(x, y, px, py, t, rad);
+//					double px, py, t, rad;
+//					map->GetCoord(x, y, px, py, t, rad);
 //					r.left = px-rad;
 //					r.top = py-rad;
 //					r.right = px+rad;
@@ -1214,8 +1214,8 @@ void MapEnvironment::Draw(Graphics::Display &disp) const
 		{
 			for (int x = 0; x < map->GetMapWidth(); x++)
 			{
-				GLdouble px1, py1, t1, rad1;
-				map->GetOpenGLCoord(x, y, px1, py1, t1, rad1);
+				double px1, py1, t1, rad1;
+				map->GetCoord(x, y, px1, py1, t1, rad1);
 				float px=static_cast<float>(px1);
 				float py=static_cast<float>(py1);
 				float t=static_cast<float>(t1);
@@ -1322,13 +1322,13 @@ void MapEnvironment::Draw(Graphics::Display &disp) const
 
 void MapEnvironment::Draw(Graphics::Display &disp, const xyLoc &l) const
 {
-	GLdouble px, py, t, rad;
-	map->GetOpenGLCoord(l.x, l.y, px, py, t, rad);
+	double px, py, t, rad;
+	map->GetCoord(l.x, l.y, px, py, t, rad);
 
 	//if (map->GetTerrainType(l.x, l.y) == kGround)
 	{
 		rgbColor c;// = {0.5, 0.5, 0};
-		GLfloat t;
+		float t;
 		GetColor(c.r, c.g, c.b, t);
 
 		rect r;
@@ -1347,12 +1347,12 @@ void MapEnvironment::Draw(Graphics::Display &disp, const xyLoc &l1, const xyLoc 
 {
 	rect r1, r2;
 	rgbColor c;// = {0.5, 0.5, 0};
-	GLfloat t;
+	float t;
 	GetColor(c.r, c.g, c.b, t);
-	GLdouble rad;
+	double rad;
 	{
-		GLdouble px, py, t;
-		map->GetOpenGLCoord(l1.x, l1.y, px, py, t, rad);
+		double px, py, t;
+		map->GetCoord(l1.x, l1.y, px, py, t, rad);
 
 		rect r;
 		r.left = px-rad;
@@ -1362,8 +1362,8 @@ void MapEnvironment::Draw(Graphics::Display &disp, const xyLoc &l1, const xyLoc 
 		r1 = r;
 	}
 	{
-		GLdouble px, py, t;
-		map->GetOpenGLCoord(l2.x, l2.y, px, py, t, rad);
+		double px, py, t;
+		map->GetCoord(l2.x, l2.y, px, py, t, rad);
 
 		rect r;
 		r.left = px-rad;
@@ -1383,15 +1383,15 @@ void MapEnvironment::Draw(Graphics::Display &disp, const xyLoc &l1, const xyLoc 
 
 void MapEnvironment::DrawAlternate(Graphics::Display &disp, const xyLoc &l) const
 {
-	GLdouble px, py, t, rad;
-	map->GetOpenGLCoord(l.x, l.y, px, py, t, rad);
+	double px, py, t, rad;
+	map->GetCoord(l.x, l.y, px, py, t, rad);
 	if (l.x < 0 || l.x >= map->GetMapWidth() || l.y < 0 || l.y >= map->GetMapHeight())
 		return;
 	
 //	if (map->GetTerrainType(l.x, l.y) == kGround)
 	{
 		rgbColor c;// = {0.5, 0.5, 0};
-		GLfloat t;
+		float t;
 		GetColor(c.r, c.g, c.b, t);
 		
 		rect r;
@@ -1407,19 +1407,19 @@ void MapEnvironment::DrawAlternate(Graphics::Display &disp, const xyLoc &l) cons
 
 Graphics::point MapEnvironment::GetStateLoc(const xyLoc &l)
 {
-	GLdouble px, py, t, rad;
-	map->GetOpenGLCoord(l.x, l.y, px, py, t, rad);
+	double px, py, t, rad;
+	map->GetCoord(l.x, l.y, px, py, t, rad);
 	return Graphics::point(px, py);
 }
 
 void MapEnvironment::DrawStateLabel(Graphics::Display &disp, const xyLoc &l, const char *txt) const
 {
-	GLdouble px, py, t, rad;
-	map->GetOpenGLCoord(l.x, l.y, px, py, t, rad);
+	double px, py, t, rad;
+	map->GetCoord(l.x, l.y, px, py, t, rad);
 
 	rgbColor c;
 	{
-		GLfloat t;
+		float t;
 		GetColor(c.r, c.g, c.b, t);
 	}
 	disp.DrawText(txt, {static_cast<float>(px), static_cast<float>(py)}, c, rad);
@@ -1428,22 +1428,22 @@ void MapEnvironment::DrawStateLabel(Graphics::Display &disp, const xyLoc &l, con
 void MapEnvironment::DrawStateLabel(Graphics::Display &disp, const xyLoc &l1, const xyLoc &l2, float v, const char *txt) const
 {
 	Graphics::point p;
-	GLdouble rad;
+	double rad;
 	{
-		GLdouble px, py, t;
-		map->GetOpenGLCoord(l1.x, l1.y, px, py, t, rad);
+		double px, py, t;
+		map->GetCoord(l1.x, l1.y, px, py, t, rad);
 		p.x = px;
 		p.y = py;
 	}
 	{
-		GLdouble px, py, t, rad;
-		map->GetOpenGLCoord(l2.x, l2.y, px, py, t, rad);
+		double px, py, t, rad;
+		map->GetCoord(l2.x, l2.y, px, py, t, rad);
 		p.x = (1-v)*p.x + (v)*px;
 		p.y = (1-v)*p.y + (v)*py;
 	}
 	rgbColor c;
 	{
-		GLfloat t;
+		float t;
 		GetColor(c.r, c.g, c.b, t);
 	}
 	disp.DrawText(txt, p, c, rad);
@@ -1451,13 +1451,13 @@ void MapEnvironment::DrawStateLabel(Graphics::Display &disp, const xyLoc &l1, co
 
 void MapEnvironment::DrawLine(Graphics::Display &disp, const xyLoc &a, const xyLoc &b, double width) const
 {
-	GLdouble xx1, yy1, zz1, rad;
-	GLdouble xx2, yy2, zz2;
-	map->GetOpenGLCoord(a.x, a.y, xx1, yy1, zz1, rad);
-	map->GetOpenGLCoord(b.x, b.y, xx2, yy2, zz2, rad);
+	double xx1, yy1, zz1, rad;
+	double xx2, yy2, zz2;
+	map->GetCoord(a.x, a.y, xx1, yy1, zz1, rad);
+	map->GetCoord(b.x, b.y, xx2, yy2, zz2, rad);
 
 	rgbColor c;// = {0.5, 0.5, 0};
-	GLfloat t;
+	float t;
 	GetColor(c.r, c.g, c.b, t);
 	
 	disp.DrawLine({static_cast<float>(xx1), static_cast<float>(yy1)},
@@ -1466,13 +1466,13 @@ void MapEnvironment::DrawLine(Graphics::Display &disp, const xyLoc &a, const xyL
 
 void MapEnvironment::DrawArrow(Graphics::Display &disp, const xyLoc &a, const xyLoc &b, double width) const
 {
-	GLdouble xx1, yy1, zz1, rad;
-	GLdouble xx2, yy2, zz2;
-	map->GetOpenGLCoord(a.x, a.y, xx1, yy1, zz1, rad);
-	map->GetOpenGLCoord(b.x, b.y, xx2, yy2, zz2, rad);
+	double xx1, yy1, zz1, rad;
+	double xx2, yy2, zz2;
+	map->GetCoord(a.x, a.y, xx1, yy1, zz1, rad);
+	map->GetCoord(b.x, b.y, xx2, yy2, zz2, rad);
 	
 	rgbColor c;// = {0.5, 0.5, 0};
-	GLfloat t;
+	float t;
 	GetColor(c.r, c.g, c.b, t);
 	
 	disp.DrawArrow({static_cast<float>(xx1), static_cast<float>(yy1)},
@@ -1482,8 +1482,8 @@ void MapEnvironment::DrawArrow(Graphics::Display &disp, const xyLoc &a, const xy
 //void MapEnvironment::OpenGLDraw(const xyLoc& initial, const tDirection &dir, GLfloat r, GLfloat g, GLfloat b) const
 //{
 //	xyLoc s = initial;
-//	GLdouble xx, yy, zz, rad;
-//	map->GetOpenGLCoord(s.x, s.y, xx, yy, zz, rad);
+//	double xx, yy, zz, rad;
+//	map->GetCoord(s.x, s.y, xx, yy, zz, rad);
 //	
 //	glColor3f(r,g,b);
 //	glBegin(GL_LINE_STRIP);
@@ -1504,7 +1504,7 @@ void MapEnvironment::DrawArrow(Graphics::Display &disp, const xyLoc &a, const xy
 //	}
 //
 //	
-//	map->GetOpenGLCoord(s.x, s.y, xx, yy, zz, rad);
+//	map->GetCoord(s.x, s.y, xx, yy, zz, rad);
 //	glVertex3f(xx, yy, zz-rad/2);
 //	glEnd();
 //}

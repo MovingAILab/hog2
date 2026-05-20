@@ -272,33 +272,33 @@ uint64_t RoadMap::GetActionHash(neighbor act) const
 	return ge->GetActionHash(act);
 }
 
+//
+//void RoadMap::OpenGLDraw() const
+//{
+//	ge->OpenGLDraw();
+//}
+//
+//void RoadMap::OpenGLDraw(const intersection&i) const
+//{
+//	ge->OpenGLDraw(i);
+//}
+//
+//void RoadMap::OpenGLDraw(const intersection&i, const neighbor&n) const
+//{
+//	ge->OpenGLDraw(i, n);
+//}
+//
+//void RoadMap::GLDrawPath(const std::vector<intersection> &x) const
+//{
+//	ge->GLDrawPath(x);
+//}
 
-void RoadMap::OpenGLDraw() const
-{
-	ge->OpenGLDraw();
-}
-
-void RoadMap::OpenGLDraw(const intersection&i) const
-{
-	ge->OpenGLDraw(i);
-}
-
-void RoadMap::OpenGLDraw(const intersection&i, const neighbor&n) const
-{
-	ge->OpenGLDraw(i, n);
-}
-
-void RoadMap::GLDrawPath(const std::vector<intersection> &x) const
-{
-	ge->GLDrawPath(x);
-}
-
-void RoadMap::SetColor(GLfloat rr, GLfloat g, GLfloat b, GLfloat t) const
+void RoadMap::SetColor(float rr, float g, float b, float t) const
 {
 	ge->SetColor(rr, g, b, t);
 }
 
-void RoadMap::GetColor(GLfloat& rr, GLfloat& g, GLfloat& b, GLfloat &t) const
+void RoadMap::GetColor(float& rr, float& g, float& b, float &t) const
 {
 	ge->GetColor(rr, g, b, t);
 }

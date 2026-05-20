@@ -178,10 +178,10 @@ public:
 							 std::vector<int> &dual);
 
 	uint64_t GetActionHash(slideDir act) const;
-	void OpenGLDraw() const;
-	void OpenGLDraw(const MNPuzzleState<width, height> &s) const;
-	void OpenGLDraw(const MNPuzzleState<width, height> &l1, const MNPuzzleState<width, height> &l2, float v) const;
-	void OpenGLDraw(const MNPuzzleState<width, height> &, const slideDir &) const { /* currently not drawing moves */ }
+//	void OpenGLDraw() const;
+//	void OpenGLDraw(const MNPuzzleState<width, height> &s) const;
+//	void OpenGLDraw(const MNPuzzleState<width, height> &l1, const MNPuzzleState<width, height> &l2, float v) const;
+//	void OpenGLDraw(const MNPuzzleState<width, height> &, const slideDir &) const { /* currently not drawing moves */ }
 	void Draw(Graphics::Display &display, const MNPuzzleState<width, height>&) const;
 	void Draw(Graphics::Display &display, const MNPuzzleState<width, height> &l1, const MNPuzzleState<width, height> &l2, float v) const;
 
@@ -1023,13 +1023,13 @@ void MNPuzzle<width, height>::GetStateFromPDBHash(uint64_t hash, MNPuzzleState<w
 }
 
 
-template <int width, int height>
-void MNPuzzle<width, height>::OpenGLDraw() const
-{
-}
+//template <int width, int height>
+//void MNPuzzle<width, height>::OpenGLDraw() const
+//{
+//}
 
-void DrawTile(float x, float y, char c1, char c2, int w, int h);
-void DrawFrame(int w, int h);
+//void DrawTile(float x, float y, char c1, char c2, int w, int h);
+//void DrawFrame(int w, int h);
 
 template <int width, int height>
 void MNPuzzle<width, height>::Draw(Graphics::Display &display, const MNPuzzleState<width, height>&s) const
@@ -1234,61 +1234,61 @@ void MNPuzzle<width, height>::Draw(Graphics::Display &display, const MNPuzzleSta
 }
 
 
-template <int width, int height>
-void MNPuzzle<width, height>::OpenGLDraw(const MNPuzzleState<width, height> &s) const
-{
-	glEnable(GL_LINE_SMOOTH);
-	for (unsigned int y = 0; y < height; y++)
-	{
-		for (unsigned int x = 0; x < width; x++)
-		{
-			char c1=0, c2=0;
-			if (s.puzzle[x+y*width] > 9)
-				c1 = '0'+(((s.puzzle[x+y*width])/10)%10);
-			if (s.puzzle[x+y*width] > 0)
-				c2 = '0'+((s.puzzle[x+y*width])%10);
-			if (s.puzzle[x+y*width] == -1)
-				c1 = ' ';
-			DrawTile(x, y, c1, c2, width, height);
-		}
-	}
-	DrawFrame(width, height);
-}
-
-template <int width, int height>
-void MNPuzzle<width, height>::OpenGLDraw(const MNPuzzleState<width, height> &s1, const MNPuzzleState<width, height> &s2, float v) const
-{
-	glEnable(GL_LINE_SMOOTH);
-	for (unsigned int y = 0; y < height; y++)
-	{
-		for (unsigned int x = 0; x < width; x++)
-		{
-			char c1=0, c2=0;
-			if (s2.puzzle[x+y*width] > 9)
-				c1 = '0'+(((s2.puzzle[x+y*width])/10)%10);
-			if (s2.puzzle[x+y*width] > 0)
-				c2 = '0'+((s2.puzzle[x+y*width])%10);
-			if (s2.puzzle[x+y*width] == -1)
-				c1 = ' ';
-
-			if (s1.puzzle[x+y*width] == s2.puzzle[x+y*width])
-			{
-				DrawTile(x, y, c1, c2, width, height);
-			}
-			else {
-				switch (GetAction(s1, s2))
-				{
-					case kUp: DrawTile(x, (y-1)*v + (y)*(1-v), c1, c2, width, height); break;
-					case kDown: DrawTile(x, (y+1)*v + (y)*(1-v), c1, c2, width, height); break;
-					case kLeft: DrawTile((x)*(1-v)+(x-1)*v, y, c1, c2, width, height); break;
-					case kRight: DrawTile((x+1)*v+(x)*(1-v), y, c1, c2, width, height); break;
-					default: assert(!"action not found");
-				}
-			}
-		}
-	}
-	DrawFrame(width, height);
-}
+//template <int width, int height>
+//void MNPuzzle<width, height>::OpenGLDraw(const MNPuzzleState<width, height> &s) const
+//{
+//	glEnable(GL_LINE_SMOOTH);
+//	for (unsigned int y = 0; y < height; y++)
+//	{
+//		for (unsigned int x = 0; x < width; x++)
+//		{
+//			char c1=0, c2=0;
+//			if (s.puzzle[x+y*width] > 9)
+//				c1 = '0'+(((s.puzzle[x+y*width])/10)%10);
+//			if (s.puzzle[x+y*width] > 0)
+//				c2 = '0'+((s.puzzle[x+y*width])%10);
+//			if (s.puzzle[x+y*width] == -1)
+//				c1 = ' ';
+//			DrawTile(x, y, c1, c2, width, height);
+//		}
+//	}
+//	DrawFrame(width, height);
+//}
+//
+//template <int width, int height>
+//void MNPuzzle<width, height>::OpenGLDraw(const MNPuzzleState<width, height> &s1, const MNPuzzleState<width, height> &s2, float v) const
+//{
+//	glEnable(GL_LINE_SMOOTH);
+//	for (unsigned int y = 0; y < height; y++)
+//	{
+//		for (unsigned int x = 0; x < width; x++)
+//		{
+//			char c1=0, c2=0;
+//			if (s2.puzzle[x+y*width] > 9)
+//				c1 = '0'+(((s2.puzzle[x+y*width])/10)%10);
+//			if (s2.puzzle[x+y*width] > 0)
+//				c2 = '0'+((s2.puzzle[x+y*width])%10);
+//			if (s2.puzzle[x+y*width] == -1)
+//				c1 = ' ';
+//
+//			if (s1.puzzle[x+y*width] == s2.puzzle[x+y*width])
+//			{
+//				DrawTile(x, y, c1, c2, width, height);
+//			}
+//			else {
+//				switch (GetAction(s1, s2))
+//				{
+//					case kUp: DrawTile(x, (y-1)*v + (y)*(1-v), c1, c2, width, height); break;
+//					case kDown: DrawTile(x, (y+1)*v + (y)*(1-v), c1, c2, width, height); break;
+//					case kLeft: DrawTile((x)*(1-v)+(x-1)*v, y, c1, c2, width, height); break;
+//					case kRight: DrawTile((x+1)*v+(x)*(1-v), y, c1, c2, width, height); break;
+//					default: assert(!"action not found");
+//				}
+//			}
+//		}
+//	}
+//	DrawFrame(width, height);
+//}
 
 /**
  Reads in MNPuzzle states from the given filename. Each line of the

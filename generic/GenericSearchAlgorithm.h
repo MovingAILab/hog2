@@ -45,8 +45,8 @@ public:
 	virtual uint64_t GetNodesExpanded() const = 0;
 	virtual uint64_t GetNodesTouched() const = 0;
 	virtual void LogFinalStats(StatCollection *stats) = 0; 
-	virtual void OpenGLDraw() const {}
-	virtual void OpenGLDraw(const environment *env) const {}
+//	virtual void OpenGLDraw() const {}
+//	virtual void OpenGLDraw(const environment *env) const {}
 };
 
 

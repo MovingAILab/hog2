@@ -7,7 +7,7 @@
 //
 
 #include "RubiksCubeEdges.h"
-#include "GLUtil.h"
+#include "Constants.h"
 #include <cassert>
 #include <string>
 #include <thread>
@@ -893,37 +893,37 @@ void RubikEdge::Draw(Graphics::Display &display, const RubikEdgeState &s) const
 
 }
 
-void RubikEdge::OpenGLDraw() const
-{
-	
-}
-
-void RubikEdge::OpenGLDraw(const RubikEdgeState&s) const
-{
-//	glPushMatrix();
-//	glRotatef(45, 0, 1, 0);
-	glBegin(GL_QUADS);
-	for (int x = 1; x <= 7; x+=2)
-		OpenGLDrawCube(s, x);
-//	glEnd();
-//	glPopMatrix();
+//void RubikEdge::OpenGLDraw() const
+//{
 //	
+//}
+//
+//void RubikEdge::OpenGLDraw(const RubikEdgeState&s) const
+//{
+////	glPushMatrix();
+////	glRotatef(45, 0, 1, 0);
 //	glBegin(GL_QUADS);
-	for (int x = 9; x <= 25; x+=2)
-		OpenGLDrawCube(s, x);
-	glEnd();
-}
-/** Draw the transition at some percentage 0...1 between two states */
-
-void RubikEdge::OpenGLDraw(const RubikEdgeState&, const RubikEdgeState&, float) const
-{
-	
-}
-
-void RubikEdge::OpenGLDraw(const RubikEdgeState&, const RubikEdgeAction&) const
-{
-	
-}
+//	for (int x = 1; x <= 7; x+=2)
+//		OpenGLDrawCube(s, x);
+////	glEnd();
+////	glPopMatrix();
+////	
+////	glBegin(GL_QUADS);
+//	for (int x = 9; x <= 25; x+=2)
+//		OpenGLDrawCube(s, x);
+//	glEnd();
+//}
+///** Draw the transition at some percentage 0...1 between two states */
+//
+//void RubikEdge::OpenGLDraw(const RubikEdgeState&, const RubikEdgeState&, float) const
+//{
+//	
+//}
+//
+//void RubikEdge::OpenGLDraw(const RubikEdgeState&, const RubikEdgeAction&) const
+//{
+//	
+//}
 
 void RubikEdge::GetTriangles(const RubikEdgeState &s, int cube) const
 {
@@ -1287,364 +1287,364 @@ void RubikEdge::GetTriangles(const RubikEdgeState &s, int cube) const
 	}
 }
 
-void RubikEdge::OpenGLDrawCube(const RubikEdgeState &s, int cube) const
-{
-	const float scale = 0.3;
-	const float offset = 0.95*2.0*scale/3.0;
-	const float offset2 = 2.0*scale/3.0;
-	const float epsilon = 0.002;
-	switch(cube)
-	{
-		case 1: // cube 1
-		{
-			// Face 0 - cube 1
-			SetCubeColor(3, false, s);
-			glVertex3f(-offset/2.0, -scale, -scale);
-			glVertex3f(-offset/2.0, -scale, -scale+offset);
-			glVertex3f(offset/2.0, -scale, -scale+offset);
-			glVertex3f(offset/2.0, -scale, -scale);
-
-			SetCubeColor(-1, false, s);
-			glVertex3f(-offset2/2.0, -scale+epsilon, -scale);
-			glVertex3f(-offset2/2.0, -scale+epsilon, -scale+offset2);
-			glVertex3f(offset2/2.0, -scale+epsilon, -scale+offset2);
-			glVertex3f(offset2/2.0, -scale+epsilon, -scale);
-
-			
-			// Face 2 - cube 1
-			SetCubeColor(3, true, s);
-			glVertex3f(-offset/2.0, -scale+offset, -scale);
-			glVertex3f(offset/2.0, -scale+offset, -scale);
-			glVertex3f(offset/2.0, -scale, -scale);
-			glVertex3f(-offset/2.0, -scale, -scale);
-
-			SetCubeColor(-1, true, s);
-			glVertex3f(-offset2/2.0, -scale+offset2, -scale+epsilon);
-			glVertex3f(offset2/2.0, -scale+offset2, -scale+epsilon);
-			glVertex3f(offset2/2.0, -scale, -scale+epsilon);
-			glVertex3f(-offset2/2.0, -scale, -scale+epsilon);
-
-		} break;
-		case 3: // cube 3
-		{
-			// Face 0 - cube 3
-			SetCubeColor(1, false, s);
-			glVertex3f(-scale, -scale, offset/2.0);
-			glVertex3f(-scale, -scale, -offset/2.0);
-			glVertex3f(-scale+offset, -scale, -offset/2.0);
-			glVertex3f(-scale+offset, -scale, offset/2.0);
-
-			SetCubeColor(-1, false, s);
-			glVertex3f(-scale, -scale+epsilon, offset2/2.0);
-			glVertex3f(-scale, -scale+epsilon, -offset2/2.0);
-			glVertex3f(-scale+offset2, -scale+epsilon, -offset2/2.0);
-			glVertex3f(-scale+offset2, -scale+epsilon, offset2/2.0);
-
-			// Face 1 - cube 3
-			SetCubeColor(1, true, s);
-			glVertex3f(-scale, -scale+offset, -offset/2.0);
-			glVertex3f(-scale, -scale+offset, offset/2.0);
-			glVertex3f(-scale, -scale, offset/2.0);
-			glVertex3f(-scale, -scale, -offset/2.0);
-
-			SetCubeColor(-1, true, s);
-			glVertex3f(-scale+epsilon, -scale+offset2, -offset2/2.0);
-			glVertex3f(-scale+epsilon, -scale+offset2, offset2/2.0);
-			glVertex3f(-scale+epsilon, -scale, offset2/2.0);
-			glVertex3f(-scale+epsilon, -scale, -offset2/2.0);
-
-		} break;
-		case 5: // cube 5
-		{
-			// Face 0 - cube 5
-			SetCubeColor(5, false, s);
-			glVertex3f(scale, -scale, offset/2.0);
-			glVertex3f(scale, -scale, -offset/2.0);
-			glVertex3f(scale-offset, -scale, -offset/2.0);
-			glVertex3f(scale-offset, -scale, offset/2.0);
-
-			SetCubeColor(-1, false, s);
-			glVertex3f(scale, -scale+epsilon, offset2/2.0);
-			glVertex3f(scale, -scale+epsilon, -offset2/2.0);
-			glVertex3f(scale-offset2, -scale+epsilon, -offset2/2.0);
-			glVertex3f(scale-offset2, -scale+epsilon, offset2/2.0);
-
-			// Face 3 - cube 5
-			SetCubeColor(5, true, s);
-			glVertex3f(scale, -scale+offset, -offset/2.0);
-			glVertex3f(scale, -scale+offset, offset/2.0);
-			glVertex3f(scale, -scale, offset/2.0);
-			glVertex3f(scale, -scale, -offset/2.0);
-			
-			SetCubeColor(-1, true, s);
-			glVertex3f(scale-epsilon, -scale+offset2, -offset2/2.0);
-			glVertex3f(scale-epsilon, -scale+offset2, offset2/2.0);
-			glVertex3f(scale-epsilon, -scale, offset2/2.0);
-			glVertex3f(scale-epsilon, -scale, -offset2/2.0);
-		} break;
-		case 7: // cube 7
-		{
-			// Face 0 - cube 7
-			SetCubeColor(7, false, s);
-			glVertex3f(-offset/2.0, -scale, scale);
-			glVertex3f(-offset/2.0, -scale, scale-offset);
-			glVertex3f(offset/2.0, -scale, scale-offset);
-			glVertex3f(offset/2.0, -scale, scale);
-
-			SetCubeColor(-1, false, s);
-			glVertex3f(-offset2/2.0, -scale+epsilon, scale);
-			glVertex3f(-offset2/2.0, -scale+epsilon, scale-offset2);
-			glVertex3f(offset2/2.0, -scale+epsilon, scale-offset2);
-			glVertex3f(offset2/2.0, -scale+epsilon, scale);
-
-			// Face 4 - cube 7
-			SetCubeColor(7, true, s);
-			glVertex3f(-offset/2.0, -scale+offset, scale);
-			glVertex3f(offset/2.0, -scale+offset, scale);
-			glVertex3f(offset/2.0, -scale, scale);
-			glVertex3f(-offset/2.0, -scale, scale);
-
-			SetCubeColor(-1, true, s);
-			glVertex3f(-offset2/2.0, -scale+offset2, scale-epsilon);
-			glVertex3f(offset2/2.0, -scale+offset2, scale-epsilon);
-			glVertex3f(offset2/2.0, -scale, scale-epsilon);
-			glVertex3f(-offset2/2.0, -scale, scale-epsilon);
-
-		} break;
-		case 9: // cube 9
-		{
-			// Face 1 - cube 9
-			SetCubeColor(2, false, s);
-			glVertex3f(-scale, -offset/2.0, -scale+offset);
-			glVertex3f(-scale, offset/2.0, -scale+offset);
-			glVertex3f(-scale, offset/2.0, -scale);
-			glVertex3f(-scale, -offset/2.0, -scale);
-
-			SetCubeColor(-1, false, s);
-			glVertex3f(-scale+epsilon, -offset2/2.0, -scale+offset2);
-			glVertex3f(-scale+epsilon, offset2/2.0, -scale+offset2);
-			glVertex3f(-scale+epsilon, offset2/2.0, -scale);
-			glVertex3f(-scale+epsilon, -offset2/2.0, -scale);
-
-			
-			// Face 2 - cube 9
-			SetCubeColor(2, true, s);
-			glVertex3f(-scale+offset, -offset/2.0, -scale);
-			glVertex3f(-scale+offset, offset/2.0, -scale);
-			glVertex3f(-scale, offset/2.0, -scale);
-			glVertex3f(-scale, -offset/2.0, -scale);
-
-			SetCubeColor(-1, true, s);
-			glVertex3f(-scale+offset2, -offset2/2.0, -scale+epsilon);
-			glVertex3f(-scale+offset2, offset2/2.0, -scale+epsilon);
-			glVertex3f(-scale, offset2/2.0, -scale+epsilon);
-			glVertex3f(-scale, -offset2/2.0, -scale+epsilon);
-		} break;
-		case 11: // cube 11
-		{
-			// Face 2 - cube 11
-			SetCubeColor(4, false, s);
-			glVertex3f(scale-offset, -offset/2.0, -scale);
-			glVertex3f(scale-offset, offset/2.0, -scale);
-			glVertex3f(scale, offset/2.0, -scale);
-			glVertex3f(scale, -offset/2.0, -scale);
-
-			SetCubeColor(-1, false, s);
-			glVertex3f(scale-offset2, -offset2/2.0, -scale+epsilon);
-			glVertex3f(scale-offset2, offset2/2.0, -scale+epsilon);
-			glVertex3f(scale, offset2/2.0, -scale+epsilon);
-			glVertex3f(scale, -offset2/2.0, -scale+epsilon);
-
-			
-			// Face 3 - cube 11
-			SetCubeColor(4, true, s);
-			glVertex3f(scale, -offset/2.0, -scale+offset);
-			glVertex3f(scale, offset/2.0, -scale+offset);
-			glVertex3f(scale, offset/2.0, -scale);
-			glVertex3f(scale, -offset/2.0, -scale);
-
-			SetCubeColor(-1, true, s);
-			glVertex3f(scale-epsilon, -offset2/2.0, -scale+offset2);
-			glVertex3f(scale-epsilon, offset2/2.0, -scale+offset2);
-			glVertex3f(scale-epsilon, offset2/2.0, -scale);
-			glVertex3f(scale-epsilon, -offset2/2.0, -scale);
-
-		} break;
-		case 15: // cube 15
-		{
-			// Face 1 - cube 15
-			SetCubeColor(8, false, s);
-			glVertex3f(-scale, -offset/2.0, scale-offset);
-			glVertex3f(-scale, offset/2.0, scale-offset);
-			glVertex3f(-scale, offset/2.0, scale);
-			glVertex3f(-scale, -offset/2.0, scale);
-
-			SetCubeColor(-1, false, s);
-			glVertex3f(-scale+epsilon, -offset2/2.0, scale-offset2);
-			glVertex3f(-scale+epsilon, offset2/2.0, scale-offset2);
-			glVertex3f(-scale+epsilon, offset2/2.0, scale);
-			glVertex3f(-scale+epsilon, -offset2/2.0, scale);
-			
-			// Face 4 - cube 17
-			SetCubeColor(8, true, s);
-			glVertex3f(-scale+offset, -offset/2.0, scale);
-			glVertex3f(-scale+offset, offset/2.0, scale);
-			glVertex3f(-scale, offset/2.0, scale);
-			glVertex3f(-scale, -offset/2.0, scale);
-			
-			SetCubeColor(-1, true, s);
-			glVertex3f(-scale+offset2, -offset2/2.0, scale-epsilon);
-			glVertex3f(-scale+offset2, offset2/2.0, scale-epsilon);
-			glVertex3f(-scale, offset2/2.0, scale-epsilon);
-			glVertex3f(-scale, -offset2/2.0, scale-epsilon);
-
-		} break;
-		case 17: // cube 17
-		{
-			// Face 3 - cube 17
-			SetCubeColor(6, false, s);
-			glVertex3f(scale, -offset/2.0, scale-offset);
-			glVertex3f(scale, offset/2.0, scale-offset);
-			glVertex3f(scale, offset/2.0, scale);
-			glVertex3f(scale, -offset/2.0, scale);
-
-			SetCubeColor(-1, false, s);
-			glVertex3f(scale-epsilon, -offset2/2.0, scale-offset2);
-			glVertex3f(scale-epsilon, offset2/2.0, scale-offset2);
-			glVertex3f(scale-epsilon, offset2/2.0, scale);
-			glVertex3f(scale-epsilon, -offset2/2.0, scale);
-
-			// Face 4 - cube 15
-			SetCubeColor(6, true, s);
-			glVertex3f(scale-offset, -offset/2.0, scale);
-			glVertex3f(scale-offset, offset/2.0, scale);
-			glVertex3f(scale, offset/2.0, scale);
-			glVertex3f(scale, -offset/2.0, scale);
-
-			SetCubeColor(-1, true, s);
-			glVertex3f(scale-offset2, -offset2/2.0, scale-epsilon);
-			glVertex3f(scale-offset2, offset2/2.0, scale-epsilon);
-			glVertex3f(scale, offset2/2.0, scale-epsilon);
-			glVertex3f(scale, -offset2/2.0, scale-epsilon);
-		} break;
-		case 19: // cube 19
-		{
-			// Face 2 - cube 19
-			SetCubeColor(10, false, s);
-			glVertex3f(-offset/2.0, scale-offset, -scale);
-			glVertex3f(offset/2.0, scale-offset, -scale);
-			glVertex3f(offset/2.0, scale, -scale);
-			glVertex3f(-offset/2.0, scale, -scale);
-
-			SetCubeColor(-1, false, s);
-			glVertex3f(-offset2/2.0, scale-offset2, -scale+epsilon);
-			glVertex3f(offset2/2.0, scale-offset2, -scale+epsilon);
-			glVertex3f(offset2/2.0, scale, -scale+epsilon);
-			glVertex3f(-offset2/2.0, scale, -scale+epsilon);
-			
-			// Face 5 - cube 19
-			SetCubeColor(10, true, s);
-			glVertex3f(-offset/2.0, scale, -scale);
-			glVertex3f(-offset/2.0, scale, -scale+offset);
-			glVertex3f(offset/2.0, scale, -scale+offset);
-			glVertex3f(offset/2.0, scale, -scale);
-
-			SetCubeColor(-1, true, s);
-			glVertex3f(-offset2/2.0, scale-epsilon, -scale);
-			glVertex3f(-offset2/2.0, scale-epsilon, -scale+offset2);
-			glVertex3f(offset2/2.0, scale-epsilon, -scale+offset2);
-			glVertex3f(offset2/2.0, scale-epsilon, -scale);
-			
-		} break;
-		case 21: // cube 21
-		{
-			// Face 1 - cube 21
-			SetCubeColor(9, false, s);
-			glVertex3f(-scale, scale-offset, -offset/2.0);
-			glVertex3f(-scale, scale-offset, offset/2.0);
-			glVertex3f(-scale, scale, offset/2.0);
-			glVertex3f(-scale, scale, -offset/2.0);
-
-			SetCubeColor(-1, false, s);
-			glVertex3f(-scale+epsilon, scale-offset2, -offset2/2.0);
-			glVertex3f(-scale+epsilon, scale-offset2, offset2/2.0);
-			glVertex3f(-scale+epsilon, scale, offset2/2.0);
-			glVertex3f(-scale+epsilon, scale, -offset2/2.0);
-
-			// Face 5 - cube 21
-			SetCubeColor(9, true, s);
-			glVertex3f(-scale, scale, offset/2.0);
-			glVertex3f(-scale, scale, -offset/2.0);
-			glVertex3f(-scale+offset, scale, -offset/2.0);
-			glVertex3f(-scale+offset, scale, offset/2.0);
-
-			SetCubeColor(-1, true, s);
-			glVertex3f(-scale, scale-epsilon, offset2/2.0);
-			glVertex3f(-scale, scale-epsilon, -offset2/2.0);
-			glVertex3f(-scale+offset2, scale-epsilon, -offset2/2.0);
-			glVertex3f(-scale+offset2, scale-epsilon, offset2/2.0);
-			
-		} break;
-		case 23: // cube 23
-		{
-			// Face 3 - cube 23
-			SetCubeColor(11, false, s);
-			glVertex3f(scale, scale-offset, -offset/2.0);
-			glVertex3f(scale, scale-offset, offset/2.0);
-			glVertex3f(scale, scale, offset/2.0);
-			glVertex3f(scale, scale, -offset/2.0);
-
-			SetCubeColor(-1, false, s);
-			glVertex3f(scale-epsilon, scale-offset2, -offset2/2.0);
-			glVertex3f(scale-epsilon, scale-offset2, offset2/2.0);
-			glVertex3f(scale-epsilon, scale, offset2/2.0);
-			glVertex3f(scale-epsilon, scale, -offset2/2.0);
-
-			// Face 5 - cube 23
-			SetCubeColor(11, true, s);
-			glVertex3f(scale, scale, offset/2.0);
-			glVertex3f(scale, scale, -offset/2.0);
-			glVertex3f(scale-offset, scale, -offset/2.0);
-			glVertex3f(scale-offset, scale, offset/2.0);
-
-			SetCubeColor(-1, true, s);
-			glVertex3f(scale, scale-epsilon, offset2/2.0);
-			glVertex3f(scale, scale-epsilon, -offset2/2.0);
-			glVertex3f(scale-offset2, scale-epsilon, -offset2/2.0);
-			glVertex3f(scale-offset2, scale-epsilon, offset2/2.0);
-			
-		} break;
-		case 25: // cube 25
-		{
-			// Face 4 - cube 25
-			SetCubeColor(12, false, s);
-			glVertex3f(-offset/2.0, scale-offset, scale);
-			glVertex3f(offset/2.0, scale-offset, scale);
-			glVertex3f(offset/2.0, scale, scale);
-			glVertex3f(-offset/2.0, scale, scale);
-
-			SetCubeColor(-1, false, s);
-			glVertex3f(-offset2/2.0, scale-offset2, scale-epsilon);
-			glVertex3f(offset2/2.0, scale-offset2, scale-epsilon);
-			glVertex3f(offset2/2.0, scale, scale-epsilon);
-			glVertex3f(-offset2/2.0, scale, scale-epsilon);
-
-			// Face 5 - cube 25
-			SetCubeColor(12, true, s);
-			glVertex3f(-offset/2.0, scale, scale);
-			glVertex3f(-offset/2.0, scale, scale-offset);
-			glVertex3f(offset/2.0, scale, scale-offset);
-			glVertex3f(offset/2.0, scale, scale);
-
-			SetCubeColor(-1, true, s);
-			glVertex3f(-offset2/2.0, scale-epsilon, scale);
-			glVertex3f(-offset2/2.0, scale-epsilon, scale-offset2);
-			glVertex3f(offset2/2.0, scale-epsilon, scale-offset2);
-			glVertex3f(offset2/2.0, scale-epsilon, scale);
-
-		} break;
-	}
-}
+//void RubikEdge::OpenGLDrawCube(const RubikEdgeState &s, int cube) const
+//{
+//	const float scale = 0.3;
+//	const float offset = 0.95*2.0*scale/3.0;
+//	const float offset2 = 2.0*scale/3.0;
+//	const float epsilon = 0.002;
+//	switch(cube)
+//	{
+//		case 1: // cube 1
+//		{
+//			// Face 0 - cube 1
+//			SetCubeColor(3, false, s);
+//			glVertex3f(-offset/2.0, -scale, -scale);
+//			glVertex3f(-offset/2.0, -scale, -scale+offset);
+//			glVertex3f(offset/2.0, -scale, -scale+offset);
+//			glVertex3f(offset/2.0, -scale, -scale);
+//
+//			SetCubeColor(-1, false, s);
+//			glVertex3f(-offset2/2.0, -scale+epsilon, -scale);
+//			glVertex3f(-offset2/2.0, -scale+epsilon, -scale+offset2);
+//			glVertex3f(offset2/2.0, -scale+epsilon, -scale+offset2);
+//			glVertex3f(offset2/2.0, -scale+epsilon, -scale);
+//
+//			
+//			// Face 2 - cube 1
+//			SetCubeColor(3, true, s);
+//			glVertex3f(-offset/2.0, -scale+offset, -scale);
+//			glVertex3f(offset/2.0, -scale+offset, -scale);
+//			glVertex3f(offset/2.0, -scale, -scale);
+//			glVertex3f(-offset/2.0, -scale, -scale);
+//
+//			SetCubeColor(-1, true, s);
+//			glVertex3f(-offset2/2.0, -scale+offset2, -scale+epsilon);
+//			glVertex3f(offset2/2.0, -scale+offset2, -scale+epsilon);
+//			glVertex3f(offset2/2.0, -scale, -scale+epsilon);
+//			glVertex3f(-offset2/2.0, -scale, -scale+epsilon);
+//
+//		} break;
+//		case 3: // cube 3
+//		{
+//			// Face 0 - cube 3
+//			SetCubeColor(1, false, s);
+//			glVertex3f(-scale, -scale, offset/2.0);
+//			glVertex3f(-scale, -scale, -offset/2.0);
+//			glVertex3f(-scale+offset, -scale, -offset/2.0);
+//			glVertex3f(-scale+offset, -scale, offset/2.0);
+//
+//			SetCubeColor(-1, false, s);
+//			glVertex3f(-scale, -scale+epsilon, offset2/2.0);
+//			glVertex3f(-scale, -scale+epsilon, -offset2/2.0);
+//			glVertex3f(-scale+offset2, -scale+epsilon, -offset2/2.0);
+//			glVertex3f(-scale+offset2, -scale+epsilon, offset2/2.0);
+//
+//			// Face 1 - cube 3
+//			SetCubeColor(1, true, s);
+//			glVertex3f(-scale, -scale+offset, -offset/2.0);
+//			glVertex3f(-scale, -scale+offset, offset/2.0);
+//			glVertex3f(-scale, -scale, offset/2.0);
+//			glVertex3f(-scale, -scale, -offset/2.0);
+//
+//			SetCubeColor(-1, true, s);
+//			glVertex3f(-scale+epsilon, -scale+offset2, -offset2/2.0);
+//			glVertex3f(-scale+epsilon, -scale+offset2, offset2/2.0);
+//			glVertex3f(-scale+epsilon, -scale, offset2/2.0);
+//			glVertex3f(-scale+epsilon, -scale, -offset2/2.0);
+//
+//		} break;
+//		case 5: // cube 5
+//		{
+//			// Face 0 - cube 5
+//			SetCubeColor(5, false, s);
+//			glVertex3f(scale, -scale, offset/2.0);
+//			glVertex3f(scale, -scale, -offset/2.0);
+//			glVertex3f(scale-offset, -scale, -offset/2.0);
+//			glVertex3f(scale-offset, -scale, offset/2.0);
+//
+//			SetCubeColor(-1, false, s);
+//			glVertex3f(scale, -scale+epsilon, offset2/2.0);
+//			glVertex3f(scale, -scale+epsilon, -offset2/2.0);
+//			glVertex3f(scale-offset2, -scale+epsilon, -offset2/2.0);
+//			glVertex3f(scale-offset2, -scale+epsilon, offset2/2.0);
+//
+//			// Face 3 - cube 5
+//			SetCubeColor(5, true, s);
+//			glVertex3f(scale, -scale+offset, -offset/2.0);
+//			glVertex3f(scale, -scale+offset, offset/2.0);
+//			glVertex3f(scale, -scale, offset/2.0);
+//			glVertex3f(scale, -scale, -offset/2.0);
+//			
+//			SetCubeColor(-1, true, s);
+//			glVertex3f(scale-epsilon, -scale+offset2, -offset2/2.0);
+//			glVertex3f(scale-epsilon, -scale+offset2, offset2/2.0);
+//			glVertex3f(scale-epsilon, -scale, offset2/2.0);
+//			glVertex3f(scale-epsilon, -scale, -offset2/2.0);
+//		} break;
+//		case 7: // cube 7
+//		{
+//			// Face 0 - cube 7
+//			SetCubeColor(7, false, s);
+//			glVertex3f(-offset/2.0, -scale, scale);
+//			glVertex3f(-offset/2.0, -scale, scale-offset);
+//			glVertex3f(offset/2.0, -scale, scale-offset);
+//			glVertex3f(offset/2.0, -scale, scale);
+//
+//			SetCubeColor(-1, false, s);
+//			glVertex3f(-offset2/2.0, -scale+epsilon, scale);
+//			glVertex3f(-offset2/2.0, -scale+epsilon, scale-offset2);
+//			glVertex3f(offset2/2.0, -scale+epsilon, scale-offset2);
+//			glVertex3f(offset2/2.0, -scale+epsilon, scale);
+//
+//			// Face 4 - cube 7
+//			SetCubeColor(7, true, s);
+//			glVertex3f(-offset/2.0, -scale+offset, scale);
+//			glVertex3f(offset/2.0, -scale+offset, scale);
+//			glVertex3f(offset/2.0, -scale, scale);
+//			glVertex3f(-offset/2.0, -scale, scale);
+//
+//			SetCubeColor(-1, true, s);
+//			glVertex3f(-offset2/2.0, -scale+offset2, scale-epsilon);
+//			glVertex3f(offset2/2.0, -scale+offset2, scale-epsilon);
+//			glVertex3f(offset2/2.0, -scale, scale-epsilon);
+//			glVertex3f(-offset2/2.0, -scale, scale-epsilon);
+//
+//		} break;
+//		case 9: // cube 9
+//		{
+//			// Face 1 - cube 9
+//			SetCubeColor(2, false, s);
+//			glVertex3f(-scale, -offset/2.0, -scale+offset);
+//			glVertex3f(-scale, offset/2.0, -scale+offset);
+//			glVertex3f(-scale, offset/2.0, -scale);
+//			glVertex3f(-scale, -offset/2.0, -scale);
+//
+//			SetCubeColor(-1, false, s);
+//			glVertex3f(-scale+epsilon, -offset2/2.0, -scale+offset2);
+//			glVertex3f(-scale+epsilon, offset2/2.0, -scale+offset2);
+//			glVertex3f(-scale+epsilon, offset2/2.0, -scale);
+//			glVertex3f(-scale+epsilon, -offset2/2.0, -scale);
+//
+//			
+//			// Face 2 - cube 9
+//			SetCubeColor(2, true, s);
+//			glVertex3f(-scale+offset, -offset/2.0, -scale);
+//			glVertex3f(-scale+offset, offset/2.0, -scale);
+//			glVertex3f(-scale, offset/2.0, -scale);
+//			glVertex3f(-scale, -offset/2.0, -scale);
+//
+//			SetCubeColor(-1, true, s);
+//			glVertex3f(-scale+offset2, -offset2/2.0, -scale+epsilon);
+//			glVertex3f(-scale+offset2, offset2/2.0, -scale+epsilon);
+//			glVertex3f(-scale, offset2/2.0, -scale+epsilon);
+//			glVertex3f(-scale, -offset2/2.0, -scale+epsilon);
+//		} break;
+//		case 11: // cube 11
+//		{
+//			// Face 2 - cube 11
+//			SetCubeColor(4, false, s);
+//			glVertex3f(scale-offset, -offset/2.0, -scale);
+//			glVertex3f(scale-offset, offset/2.0, -scale);
+//			glVertex3f(scale, offset/2.0, -scale);
+//			glVertex3f(scale, -offset/2.0, -scale);
+//
+//			SetCubeColor(-1, false, s);
+//			glVertex3f(scale-offset2, -offset2/2.0, -scale+epsilon);
+//			glVertex3f(scale-offset2, offset2/2.0, -scale+epsilon);
+//			glVertex3f(scale, offset2/2.0, -scale+epsilon);
+//			glVertex3f(scale, -offset2/2.0, -scale+epsilon);
+//
+//			
+//			// Face 3 - cube 11
+//			SetCubeColor(4, true, s);
+//			glVertex3f(scale, -offset/2.0, -scale+offset);
+//			glVertex3f(scale, offset/2.0, -scale+offset);
+//			glVertex3f(scale, offset/2.0, -scale);
+//			glVertex3f(scale, -offset/2.0, -scale);
+//
+//			SetCubeColor(-1, true, s);
+//			glVertex3f(scale-epsilon, -offset2/2.0, -scale+offset2);
+//			glVertex3f(scale-epsilon, offset2/2.0, -scale+offset2);
+//			glVertex3f(scale-epsilon, offset2/2.0, -scale);
+//			glVertex3f(scale-epsilon, -offset2/2.0, -scale);
+//
+//		} break;
+//		case 15: // cube 15
+//		{
+//			// Face 1 - cube 15
+//			SetCubeColor(8, false, s);
+//			glVertex3f(-scale, -offset/2.0, scale-offset);
+//			glVertex3f(-scale, offset/2.0, scale-offset);
+//			glVertex3f(-scale, offset/2.0, scale);
+//			glVertex3f(-scale, -offset/2.0, scale);
+//
+//			SetCubeColor(-1, false, s);
+//			glVertex3f(-scale+epsilon, -offset2/2.0, scale-offset2);
+//			glVertex3f(-scale+epsilon, offset2/2.0, scale-offset2);
+//			glVertex3f(-scale+epsilon, offset2/2.0, scale);
+//			glVertex3f(-scale+epsilon, -offset2/2.0, scale);
+//			
+//			// Face 4 - cube 17
+//			SetCubeColor(8, true, s);
+//			glVertex3f(-scale+offset, -offset/2.0, scale);
+//			glVertex3f(-scale+offset, offset/2.0, scale);
+//			glVertex3f(-scale, offset/2.0, scale);
+//			glVertex3f(-scale, -offset/2.0, scale);
+//			
+//			SetCubeColor(-1, true, s);
+//			glVertex3f(-scale+offset2, -offset2/2.0, scale-epsilon);
+//			glVertex3f(-scale+offset2, offset2/2.0, scale-epsilon);
+//			glVertex3f(-scale, offset2/2.0, scale-epsilon);
+//			glVertex3f(-scale, -offset2/2.0, scale-epsilon);
+//
+//		} break;
+//		case 17: // cube 17
+//		{
+//			// Face 3 - cube 17
+//			SetCubeColor(6, false, s);
+//			glVertex3f(scale, -offset/2.0, scale-offset);
+//			glVertex3f(scale, offset/2.0, scale-offset);
+//			glVertex3f(scale, offset/2.0, scale);
+//			glVertex3f(scale, -offset/2.0, scale);
+//
+//			SetCubeColor(-1, false, s);
+//			glVertex3f(scale-epsilon, -offset2/2.0, scale-offset2);
+//			glVertex3f(scale-epsilon, offset2/2.0, scale-offset2);
+//			glVertex3f(scale-epsilon, offset2/2.0, scale);
+//			glVertex3f(scale-epsilon, -offset2/2.0, scale);
+//
+//			// Face 4 - cube 15
+//			SetCubeColor(6, true, s);
+//			glVertex3f(scale-offset, -offset/2.0, scale);
+//			glVertex3f(scale-offset, offset/2.0, scale);
+//			glVertex3f(scale, offset/2.0, scale);
+//			glVertex3f(scale, -offset/2.0, scale);
+//
+//			SetCubeColor(-1, true, s);
+//			glVertex3f(scale-offset2, -offset2/2.0, scale-epsilon);
+//			glVertex3f(scale-offset2, offset2/2.0, scale-epsilon);
+//			glVertex3f(scale, offset2/2.0, scale-epsilon);
+//			glVertex3f(scale, -offset2/2.0, scale-epsilon);
+//		} break;
+//		case 19: // cube 19
+//		{
+//			// Face 2 - cube 19
+//			SetCubeColor(10, false, s);
+//			glVertex3f(-offset/2.0, scale-offset, -scale);
+//			glVertex3f(offset/2.0, scale-offset, -scale);
+//			glVertex3f(offset/2.0, scale, -scale);
+//			glVertex3f(-offset/2.0, scale, -scale);
+//
+//			SetCubeColor(-1, false, s);
+//			glVertex3f(-offset2/2.0, scale-offset2, -scale+epsilon);
+//			glVertex3f(offset2/2.0, scale-offset2, -scale+epsilon);
+//			glVertex3f(offset2/2.0, scale, -scale+epsilon);
+//			glVertex3f(-offset2/2.0, scale, -scale+epsilon);
+//			
+//			// Face 5 - cube 19
+//			SetCubeColor(10, true, s);
+//			glVertex3f(-offset/2.0, scale, -scale);
+//			glVertex3f(-offset/2.0, scale, -scale+offset);
+//			glVertex3f(offset/2.0, scale, -scale+offset);
+//			glVertex3f(offset/2.0, scale, -scale);
+//
+//			SetCubeColor(-1, true, s);
+//			glVertex3f(-offset2/2.0, scale-epsilon, -scale);
+//			glVertex3f(-offset2/2.0, scale-epsilon, -scale+offset2);
+//			glVertex3f(offset2/2.0, scale-epsilon, -scale+offset2);
+//			glVertex3f(offset2/2.0, scale-epsilon, -scale);
+//			
+//		} break;
+//		case 21: // cube 21
+//		{
+//			// Face 1 - cube 21
+//			SetCubeColor(9, false, s);
+//			glVertex3f(-scale, scale-offset, -offset/2.0);
+//			glVertex3f(-scale, scale-offset, offset/2.0);
+//			glVertex3f(-scale, scale, offset/2.0);
+//			glVertex3f(-scale, scale, -offset/2.0);
+//
+//			SetCubeColor(-1, false, s);
+//			glVertex3f(-scale+epsilon, scale-offset2, -offset2/2.0);
+//			glVertex3f(-scale+epsilon, scale-offset2, offset2/2.0);
+//			glVertex3f(-scale+epsilon, scale, offset2/2.0);
+//			glVertex3f(-scale+epsilon, scale, -offset2/2.0);
+//
+//			// Face 5 - cube 21
+//			SetCubeColor(9, true, s);
+//			glVertex3f(-scale, scale, offset/2.0);
+//			glVertex3f(-scale, scale, -offset/2.0);
+//			glVertex3f(-scale+offset, scale, -offset/2.0);
+//			glVertex3f(-scale+offset, scale, offset/2.0);
+//
+//			SetCubeColor(-1, true, s);
+//			glVertex3f(-scale, scale-epsilon, offset2/2.0);
+//			glVertex3f(-scale, scale-epsilon, -offset2/2.0);
+//			glVertex3f(-scale+offset2, scale-epsilon, -offset2/2.0);
+//			glVertex3f(-scale+offset2, scale-epsilon, offset2/2.0);
+//			
+//		} break;
+//		case 23: // cube 23
+//		{
+//			// Face 3 - cube 23
+//			SetCubeColor(11, false, s);
+//			glVertex3f(scale, scale-offset, -offset/2.0);
+//			glVertex3f(scale, scale-offset, offset/2.0);
+//			glVertex3f(scale, scale, offset/2.0);
+//			glVertex3f(scale, scale, -offset/2.0);
+//
+//			SetCubeColor(-1, false, s);
+//			glVertex3f(scale-epsilon, scale-offset2, -offset2/2.0);
+//			glVertex3f(scale-epsilon, scale-offset2, offset2/2.0);
+//			glVertex3f(scale-epsilon, scale, offset2/2.0);
+//			glVertex3f(scale-epsilon, scale, -offset2/2.0);
+//
+//			// Face 5 - cube 23
+//			SetCubeColor(11, true, s);
+//			glVertex3f(scale, scale, offset/2.0);
+//			glVertex3f(scale, scale, -offset/2.0);
+//			glVertex3f(scale-offset, scale, -offset/2.0);
+//			glVertex3f(scale-offset, scale, offset/2.0);
+//
+//			SetCubeColor(-1, true, s);
+//			glVertex3f(scale, scale-epsilon, offset2/2.0);
+//			glVertex3f(scale, scale-epsilon, -offset2/2.0);
+//			glVertex3f(scale-offset2, scale-epsilon, -offset2/2.0);
+//			glVertex3f(scale-offset2, scale-epsilon, offset2/2.0);
+//			
+//		} break;
+//		case 25: // cube 25
+//		{
+//			// Face 4 - cube 25
+//			SetCubeColor(12, false, s);
+//			glVertex3f(-offset/2.0, scale-offset, scale);
+//			glVertex3f(offset/2.0, scale-offset, scale);
+//			glVertex3f(offset/2.0, scale, scale);
+//			glVertex3f(-offset/2.0, scale, scale);
+//
+//			SetCubeColor(-1, false, s);
+//			glVertex3f(-offset2/2.0, scale-offset2, scale-epsilon);
+//			glVertex3f(offset2/2.0, scale-offset2, scale-epsilon);
+//			glVertex3f(offset2/2.0, scale, scale-epsilon);
+//			glVertex3f(-offset2/2.0, scale, scale-epsilon);
+//
+//			// Face 5 - cube 25
+//			SetCubeColor(12, true, s);
+//			glVertex3f(-offset/2.0, scale, scale);
+//			glVertex3f(-offset/2.0, scale, scale-offset);
+//			glVertex3f(offset/2.0, scale, scale-offset);
+//			glVertex3f(offset/2.0, scale, scale);
+//
+//			SetCubeColor(-1, true, s);
+//			glVertex3f(-offset2/2.0, scale-epsilon, scale);
+//			glVertex3f(-offset2/2.0, scale-epsilon, scale-offset2);
+//			glVertex3f(offset2/2.0, scale-epsilon, scale-offset2);
+//			glVertex3f(offset2/2.0, scale-epsilon, scale);
+//
+//		} break;
+//	}
+//}
 
 int RubikEdge::GetCubeColor(int which, bool face, const RubikEdgeState &s) const
 {
@@ -1653,7 +1653,7 @@ int RubikEdge::GetCubeColor(int which, bool face, const RubikEdgeState &s) const
 	
 	if (which == -1)
 	{
-		glColor3f(0.0, 0.0, 0.0);
+//		glColor3f(0.0, 0.0, 0.0);
 		return -1;
 	}
 	
@@ -1661,7 +1661,7 @@ int RubikEdge::GetCubeColor(int which, bool face, const RubikEdgeState &s) const
 	int cube = s.GetCubeInLoc(which-1);
 	if (cube == 0xF)
 	{
-		glColor3f(0.0, 0.0, 0.0);
+//		glColor3f(0.0, 0.0, 0.0);
 		return -1;
 	}
 	bool flipped = s.GetCubeOrientation(cube);
@@ -1672,42 +1672,42 @@ int RubikEdge::GetCubeColor(int which, bool face, const RubikEdgeState &s) const
 	
 	return theColor;
 }
-
-void RubikEdge::SetCubeColor(int which, bool face, const RubikEdgeState &s) const
-{
-	int cubes_first[12] = { 0, 1, 0, 2, 0, 3, 0, 1, 1, 2, 3, 4};
-	int cubes_second[12] = { 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5, 5};
-
-	if (which == -1)
-	{
-		glColor3f(0.0, 0.0, 0.0);
-		return;
-	}
-	
-	int theColor = -1;
-	int cube = s.GetCubeInLoc(which-1);
-	if (cube == 0xF)
-	{
-		glColor3f(0.0, 0.0, 0.0);
-		return;
-	}
-	bool flipped = s.GetCubeOrientation(cube);
-	if (flipped == face)
-		theColor = cubes_first[cube];
-	else
-		theColor = cubes_second[cube];
-
-	switch (theColor)
-	{
-		case 0: glColor3f(1.0, 0.0, 0.0); break;
-		case 1: glColor3f(0.0, 1.0, 0.0); break;
-		case 2: glColor3f(0.0, 0.0, 1.0); break;
-		case 3: glColor3f(1.0, 1.0, 0.0); break;
-		case 4: glColor3f(1.0, 0.75, 0.0); break;
-		case 5: glColor3f(1.0, 1.0, 1.0); break;
-		default: assert(false);
-	}
-}
+//
+//void RubikEdge::SetCubeColor(int which, bool face, const RubikEdgeState &s) const
+//{
+//	int cubes_first[12] = { 0, 1, 0, 2, 0, 3, 0, 1, 1, 2, 3, 4};
+//	int cubes_second[12] = { 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5, 5};
+//
+//	if (which == -1)
+//	{
+//		glColor3f(0.0, 0.0, 0.0);
+//		return;
+//	}
+//	
+//	int theColor = -1;
+//	int cube = s.GetCubeInLoc(which-1);
+//	if (cube == 0xF)
+//	{
+//		glColor3f(0.0, 0.0, 0.0);
+//		return;
+//	}
+//	bool flipped = s.GetCubeOrientation(cube);
+//	if (flipped == face)
+//		theColor = cubes_first[cube];
+//	else
+//		theColor = cubes_second[cube];
+//
+//	switch (theColor)
+//	{
+//		case 0: glColor3f(1.0, 0.0, 0.0); break;
+//		case 1: glColor3f(0.0, 1.0, 0.0); break;
+//		case 2: glColor3f(0.0, 0.0, 1.0); break;
+//		case 3: glColor3f(1.0, 1.0, 0.0); break;
+//		case 4: glColor3f(1.0, 0.75, 0.0); break;
+//		case 5: glColor3f(1.0, 1.0, 1.0); break;
+//		default: assert(false);
+//	}
+//}
 
 
 RubikEdgePDB::RubikEdgePDB(RubikEdge *e, const RubikEdgeState &s, std::vector<int> &distinctEdges)

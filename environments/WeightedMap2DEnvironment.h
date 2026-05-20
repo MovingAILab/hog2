@@ -128,11 +128,11 @@ public:
 	virtual double GCost(const xyLoc &node1, const tDirection &act) const { return AbsMapEnvironment::GCost(node1, act); }
 	//virtual BaseMapOccupancyInterface* GetOccupancyInterface(){std::cout<<"Returning "<<oi<<std::endl;return oi;}
 	virtual BaseMapOccupancyInterface* GetOccupancyInfo(){return oi;}
-	void OpenGLDraw() const;
-	void OpenGLDraw(const xyLoc &l)  const{ AbsMapEnvironment::OpenGLDraw(l); }
-	void OpenGLDraw(const xyLoc& s, const tDirection &dir) const;
-	void OpenGLDraw(const xyLoc &l1, const xyLoc &l2, float v) const { MapEnvironment::OpenGLDraw(l1, l2, v); }
-	void DrawEdge(const edge* e) const;
+//	void OpenGLDraw() const;
+//	void OpenGLDraw(const xyLoc &l)  const{ AbsMapEnvironment::OpenGLDraw(l); }
+//	void OpenGLDraw(const xyLoc& s, const tDirection &dir) const;
+//	void OpenGLDraw(const xyLoc &l1, const xyLoc &l2, float v) const { MapEnvironment::OpenGLDraw(l1, l2, v); }
+//	void DrawEdge(const edge* e) const;
 	
 	void UpdateAngle(const xyLoc &old, const xyLoc &s, double t);
 	

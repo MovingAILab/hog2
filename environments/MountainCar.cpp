@@ -126,20 +126,20 @@ uint64_t MountainCarEnvironment::GetActionHash(MountainCarAction act) const
 	return act+1;
 }
 
-void MountainCarEnvironment::OpenGLDraw() const
-{
-//	minPosition = -1.2;
-//    maxPosition = 0.6;
-	glBegin(GL_LINE_STRIP);
-	glColor3f(0, 1.0, 0);
-	for (double x = minPosition; x < maxPosition; x += 0.1)
-	{
-		glVertex3f(x, GetHeightAtPosition(x), 0);
-	}	
-	glEnd();
-}
+//void MountainCarEnvironment::OpenGLDraw() const
+//{
+////	minPosition = -1.2;
+////    maxPosition = 0.6;
+//	glBegin(GL_LINE_STRIP);
+//	glColor3f(0, 1.0, 0);
+//	for (double x = minPosition; x < maxPosition; x += 0.1)
+//	{
+//		glVertex3f(x, GetHeightAtPosition(x), 0);
+//	}	
+//	glEnd();
+//}
 
-void MountainCarEnvironment::OpenGLDraw(const MountainCarState&) const { }
-void MountainCarEnvironment::OpenGLDraw(const MountainCarState&, const MountainCarState&, float) const { }
-void MountainCarEnvironment::OpenGLDraw(const MountainCarState&, const MountainCarAction&) const { }
+//void MountainCarEnvironment::OpenGLDraw(const MountainCarState&) const { }
+//void MountainCarEnvironment::OpenGLDraw(const MountainCarState&, const MountainCarState&, float) const { }
+//void MountainCarEnvironment::OpenGLDraw(const MountainCarState&, const MountainCarAction&) const { }
 

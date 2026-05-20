@@ -11,7 +11,9 @@
 
 #include <vector>
 #include <math.h>
-#include "GLUtil.h" // TODO: needs to be renamed, if data structures are to be more widely re-used
+//#include "Constants.h" // TODO: needs to be renamed, if data structures are to be more widely re-used
+#include "Constants.h"
+#include "Colors.h"
 #include "FPUtil.h"
 #include <cstdint>
 #include <functional>
@@ -101,6 +103,70 @@ struct point {
 		return result;
 	}
 };
+
+// TODO: Remove backwards compatibilty
+#define point3d Graphics::point
+
+
+/**
+ * A generic vector (essentially the same as a point, but offers normalization)
+ */
+//class recVec {
+//public:
+//	recVec() { x = y = z = 0; }
+//	recVec(double x_i, double y_i, double z_i) :x(x_i), y(y_i), z(z_i) {}
+//	void normalise();
+//	double length() const;
+//	recVec GetNormal(recVec v)
+//	{
+//		recVec n;
+//		
+//		v.normalise();
+//		this->normalise();
+//		
+//		n.x = this->y * v.z - this->z * v.y;
+//		n.y = this->z * v.x - this->x * v.z;
+//		n.z = this->x * v.y - this->y * v.x;
+//		n.normalise();
+//		
+//		return n;
+//	}
+//	double x,y,z;
+//	recVec &operator+=(const recVec &v)
+//	{ x += v.x; y += v.y; z += v.z; return *this; }
+//	recVec &operator-=(const recVec &v)
+//	{ x -= v.x; y -= v.y; z -= v.z; return *this; }
+//	recVec operator-(const recVec &v)
+//	{ recVec n = *this; n-=v; return n; }
+//	recVec &operator*=(double val)
+//	{ x *= val; y *= val; z *= val; return *this; }
+//	recVec operator*(const recVec &val) const
+//	{
+//		recVec result;
+//		result.x = this->y*val.z - this->z*val.y;
+//		result.y = this->z*val.x - this->x*val.z;
+//		result.z = this->x*val.y - this->y*val.x;
+//		result.normalise();
+//		return result;
+//	}
+//};
+//bool operator==(const recVec &l1, const recVec &l2);
+//std::ostream& operator<<(std::ostream &out, const recVec &loc);
+
+class line2d {
+public:
+	line2d() {}
+	line2d(Graphics::point a, Graphics::point b) :start(a), end(b) {}
+	bool crosses(line2d which) const;
+	Graphics::point start;
+	Graphics::point end;
+};
+
+static bool operator==(const line2d &l1, const line2d &l2)
+{
+	return l1.start == l2.start && l1.end == l2.end;
+}
+
 
 struct triangle {
 	triangle() {}

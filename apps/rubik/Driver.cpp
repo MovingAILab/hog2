@@ -152,7 +152,7 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 //		c.ApplyAction(s, 8);
 		
 
-		glClearColor(0.8, 0.8, 0.8, 1.0);
+		//glClearColor(0.8, 0.8, 0.8, 1.0);
 
 		if (0)
 		{

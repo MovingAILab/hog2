@@ -131,8 +131,8 @@ void Map2DSectorAbstraction::Draw(Graphics::Display &display, const abstractGrid
 //	rgbColor c = GetColor();
 
 
-	GLdouble px, py, t, rad;
-	map->GetOpenGLCoord(l.x, l.y, px, py, t, rad);
+	double px, py, t, rad;
+	map->GetCoord(l.x, l.y, px, py, t, rad);
 	
 	//if (map->GetTerrainType(l.x, l.y) == kGround)
 	{

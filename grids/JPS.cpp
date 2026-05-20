@@ -545,63 +545,63 @@ std::string JPS::SVGDraw()
 /**
  * @brief Draws the search process using OpenGL.
  */
-void JPS::OpenGLDraw() const
-{
-	double transparency = 1.0;
-	if (openClosedList.size() == 0)
-		return;
-	uint64_t top = -1;
-	
-	if (openClosedList.OpenSize() > 0)
-	{
-		top = openClosedList.Peek();
-	}
-	for (unsigned int x = 0; x < openClosedList.size(); x++)
-	{
-		const auto &data = openClosedList.Lookat(x);
-		if (data.round != openClosedList.GetRound())
-			continue;
-		glLineWidth(2);
-		env->SetColor(1.0, 1.0, 1.0);
-		env->GLDrawLine(data.data.loc, openClosedList.Lookat(data.parentID).data.loc);
-		glLineWidth(3);
-		env->SetColor(0.0, 0.0, 0.0);
-		env->GLDrawLine(data.data.loc, openClosedList.Lookat(data.parentID).data.loc);
-		glLineWidth(1);
-
-		if (x == top)
-		{
-			env->SetColor(1.0, 1.0, 0.0, transparency);
-			env->OpenGLDraw(data.data.loc);
-		}
-		if ((data.where == kOpenList) && (data.reopened))
-		{
-			env->SetColor(0.0, 0.5, 0.5, transparency);
-			env->OpenGLDraw(data.data.loc);
-		}
-		else if (data.where == kOpenList)
-		{
-			env->SetColor(0.0, 1.0, 0.0, transparency);
-			env->OpenGLDraw(data.data.loc);
-		}
-		else if ((data.where == kClosedList) && (data.reopened))
-		{
-			env->SetColor(0.5, 0.0, 0.5, transparency);
-			env->OpenGLDraw(data.data.loc);
-		}
-		else if (data.where == kClosedList)
-		{
-			env->SetColor(1.0, 0.0, 0.0, transparency);
-			env->OpenGLDraw(data.data.loc);
-		}
-	}
-}
-
-/**
- * @brief Overload for OpenGLDraw (not implemented).
- * @param env Pointer to the map environment.
- */
-void JPS::OpenGLDraw(const MapEnvironment *env) const {}
+//void JPS::OpenGLDraw() const
+//{
+//	double transparency = 1.0;
+//	if (openClosedList.size() == 0)
+//		return;
+//	uint64_t top = -1;
+//	
+//	if (openClosedList.OpenSize() > 0)
+//	{
+//		top = openClosedList.Peek();
+//	}
+//	for (unsigned int x = 0; x < openClosedList.size(); x++)
+//	{
+//		const auto &data = openClosedList.Lookat(x);
+//		if (data.round != openClosedList.GetRound())
+//			continue;
+//		glLineWidth(2);
+//		env->SetColor(1.0, 1.0, 1.0);
+//		env->GLDrawLine(data.data.loc, openClosedList.Lookat(data.parentID).data.loc);
+//		glLineWidth(3);
+//		env->SetColor(0.0, 0.0, 0.0);
+//		env->GLDrawLine(data.data.loc, openClosedList.Lookat(data.parentID).data.loc);
+//		glLineWidth(1);
+//
+//		if (x == top)
+//		{
+//			env->SetColor(1.0, 1.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data.loc);
+//		}
+//		if ((data.where == kOpenList) && (data.reopened))
+//		{
+//			env->SetColor(0.0, 0.5, 0.5, transparency);
+//			env->OpenGLDraw(data.data.loc);
+//		}
+//		else if (data.where == kOpenList)
+//		{
+//			env->SetColor(0.0, 1.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data.loc);
+//		}
+//		else if ((data.where == kClosedList) && (data.reopened))
+//		{
+//			env->SetColor(0.5, 0.0, 0.5, transparency);
+//			env->OpenGLDraw(data.data.loc);
+//		}
+//		else if (data.where == kClosedList)
+//		{
+//			env->SetColor(1.0, 0.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data.loc);
+//		}
+//	}
+//}
+//
+///**
+// * @brief Overload for OpenGLDraw (not implemented).
+// * @param env Pointer to the map environment.
+// */
+//void JPS::OpenGLDraw(const MapEnvironment *env) const {}
 
 /**
  * @brief Draws the search process using a Graphics::Display object.

@@ -97,7 +97,7 @@ public:
 	
 	void LogFinalStats(StatCollection *) {}
 	
-	void OpenGLDraw() const;
+//	void OpenGLDraw() const;
 	void Draw(Graphics::Display &d) const;
 	
 	void SetOptimalityBound(double w) {bound = w; /*phi_focal = ([=](double h, double g){return g+(2*bound-1)*h;});*/}
@@ -950,16 +950,16 @@ void FocalAdd<state, action,environment>::Add(state &s, double g, double h, size
 	}
 }
 
-/**
- * Draw the open/closed list
- * @author Nathan Sturtevant
- * @date 03/12/09
- *
- */
-template <class state, class action, class environment>
-void FocalAdd<state, action,environment>::OpenGLDraw() const
-{
-}
+///**
+// * Draw the open/closed list
+// * @author Nathan Sturtevant
+// * @date 03/12/09
+// *
+// */
+//template <class state, class action, class environment>
+//void FocalAdd<state, action,environment>::OpenGLDraw() const
+//{
+//}
 
 template <class state, class action, class environment>
 void FocalAdd<state, action,environment>::Draw(Graphics::Display &d) const

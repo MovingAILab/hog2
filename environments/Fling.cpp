@@ -565,83 +565,21 @@ uint64_t Fling::GetActionHash(FlingMove act) const
 	return 0;
 }
 
-void Fling::OpenGLDraw(const FlingBoard&b) const
-{
-	double radius = 1.0/(1+max(b.width, b.height));
-	double diameter = radius*2;
-	double xLoc = -1+radius;
-	double yLoc = -1+radius;
-
-	glColor3f(0.0, 0.0, 0.5); //
-	glBegin(GL_QUADS);
-	glVertex3f(-1+diameter, -1+diameter, 0);
-	glVertex3f(-1+diameter, -1+(diameter*b.height)+diameter, 0);
-	glVertex3f(-1+diameter*(b.width)+diameter, -1+diameter*(b.height)+diameter, 0);
-	glVertex3f(-1+diameter*(b.width)+diameter, -1+diameter, 0);
-	glEnd();
-	
-	glLineWidth(2.0);
-	glColor3f(1.0, 1.0, 1.0); // white
-	glBegin(GL_LINES);
-	for (double x = 0; x <= b.width; x++)
-	{
-		glVertex3f(-1+(x+1)*diameter, -1+diameter, 0);
-		glVertex3f(-1+(x+1)*diameter, -1+diameter*b.height+diameter, -0.01);
-		xLoc += diameter;
-	}
-	for (double y = 0; y <= b.height; y++)
-	{
-		yLoc += diameter;
-		glVertex3f(-1+diameter, -1+(y+1)*diameter, 0);
-		glVertex3f(-1+diameter*b.width+diameter, -1+(y+1)*diameter, -0.01);
-	}
-	glEnd();
-	glLineWidth(1.0);
-	
-	xLoc = -1+radius;
-	for (double x = 0; x < b.width; x++)
-	{
-		xLoc += diameter;
-		yLoc = -1+radius;
-		for (double y = 0; y < b.height; y++)
-		{
-			yLoc += diameter;
-			if (b.HasPiece(x, y))
-			{
-				rgbColor r = Colors::GetColor(b.locs[b.GetIndexInLocs(x, y)].second, 0, b.currId, 9); // 4
-				glColor3f(r.r, r.g, r.b);
-				DrawSphere(xLoc, yLoc, 0, radius*0.8);
-			}
-			else if (b.HasHole(x, y))
-			{
-				glColor3f(0, 0, 0);
-				DrawBox(xLoc, yLoc, 0, radius);
-			}
-			else if (b.HasObstacle(x, y))
-			{
-				glColor3f(1, 1, 1);
-				DrawBox(xLoc, yLoc, 0, radius);
-			}
-		}
-	}
-}
-
-void Fling::OpenGLDrawPlain(const FlingBoard&b) const
-{
-	double radius = 1.0/(1+max(b.width, b.height));
-	double diameter = radius*2;
-	double xLoc;
-	double yLoc;
-	double r = radius*0.85;
-
-	glColor3f(1.0, 1.0, 1.0); //
-	glBegin(GL_QUADS);
-	glVertex3f(-2, -2, 0);
-	glVertex3f(-2, +2, 0);
-	glVertex3f(+2, +2, 0);
-	glVertex3f(+2, -2, 0);
-	glEnd();
-	
+//void Fling::OpenGLDraw(const FlingBoard&b) const
+//{
+//	double radius = 1.0/(1+max(b.width, b.height));
+//	double diameter = radius*2;
+//	double xLoc = -1+radius;
+//	double yLoc = -1+radius;
+//
+//	glColor3f(0.0, 0.0, 0.5); //
+//	glBegin(GL_QUADS);
+//	glVertex3f(-1+diameter, -1+diameter, 0);
+//	glVertex3f(-1+diameter, -1+(diameter*b.height)+diameter, 0);
+//	glVertex3f(-1+diameter*(b.width)+diameter, -1+diameter*(b.height)+diameter, 0);
+//	glVertex3f(-1+diameter*(b.width)+diameter, -1+diameter, 0);
+//	glEnd();
+//	
 //	glLineWidth(2.0);
 //	glColor3f(1.0, 1.0, 1.0); // white
 //	glBegin(GL_LINES);
@@ -658,118 +596,180 @@ void Fling::OpenGLDrawPlain(const FlingBoard&b) const
 //		glVertex3f(-1+diameter*b.width+diameter, -1+(y+1)*diameter, -0.01);
 //	}
 //	glEnd();
-	glLineWidth(1.0);
-	
-	xLoc = -1+radius;
-	glDisable(GL_LIGHTING);
-	glLineWidth(8.0);
-	glColor4f(0.0, 0.0, 0.0, 1.0); // ffd700
-	//	glColor4f(0.0, 1.0, 0.0, 0.5); // ffd700
-	for (double x = 0; x < b.width; x++)
-	{
-		xLoc += diameter;
-		yLoc = -1+radius;
-		for (double y = 0; y < b.height; y++)
-		{
-			yLoc += diameter;
-			//rgbColor r = GetColor(x+y*b.width, 0, b.width*b.height, 4);
-			
-			if (b.HasPiece(x, y))
-			{
-				glBegin(GL_QUADS);
-				glVertex3f(xLoc-r, yLoc-r-r, -0.02);
-				glVertex3f(xLoc-r, yLoc+r-r, -0.02);
-				glVertex3f(xLoc+r, yLoc+r-r, -0.02);
-				glVertex3f(xLoc+r, yLoc-r-r, -0.02);
-				glEnd();
-			}
-			//DrawSphere(xLoc, yLoc, 0, radius);
-		}
-	}
-	glLineWidth(1.0);
-	glEnable(GL_LIGHTING);
-}
+//	glLineWidth(1.0);
+//	
+//	xLoc = -1+radius;
+//	for (double x = 0; x < b.width; x++)
+//	{
+//		xLoc += diameter;
+//		yLoc = -1+radius;
+//		for (double y = 0; y < b.height; y++)
+//		{
+//			yLoc += diameter;
+//			if (b.HasPiece(x, y))
+//			{
+//				rgbColor r = Colors::GetColor(b.locs[b.GetIndexInLocs(x, y)].second, 0, b.currId, 9); // 4
+//				glColor3f(r.r, r.g, r.b);
+//				DrawSphere(xLoc, yLoc, 0, radius*0.8);
+//			}
+//			else if (b.HasHole(x, y))
+//			{
+//				glColor3f(0, 0, 0);
+//				DrawBox(xLoc, yLoc, 0, radius);
+//			}
+//			else if (b.HasObstacle(x, y))
+//			{
+//				glColor3f(1, 1, 1);
+//				DrawBox(xLoc, yLoc, 0, radius);
+//			}
+//		}
+//	}
+//}
+
+//void Fling::OpenGLDrawPlain(const FlingBoard&b) const
+//{
+//	double radius = 1.0/(1+max(b.width, b.height));
+//	double diameter = radius*2;
+//	double xLoc;
+//	double yLoc;
+//	double r = radius*0.85;
+//
+//	glColor3f(1.0, 1.0, 1.0); //
+//	glBegin(GL_QUADS);
+//	glVertex3f(-2, -2, 0);
+//	glVertex3f(-2, +2, 0);
+//	glVertex3f(+2, +2, 0);
+//	glVertex3f(+2, -2, 0);
+//	glEnd();
+//	
+////	glLineWidth(2.0);
+////	glColor3f(1.0, 1.0, 1.0); // white
+////	glBegin(GL_LINES);
+////	for (double x = 0; x <= b.width; x++)
+////	{
+////		glVertex3f(-1+(x+1)*diameter, -1+diameter, 0);
+////		glVertex3f(-1+(x+1)*diameter, -1+diameter*b.height+diameter, -0.01);
+////		xLoc += diameter;
+////	}
+////	for (double y = 0; y <= b.height; y++)
+////	{
+////		yLoc += diameter;
+////		glVertex3f(-1+diameter, -1+(y+1)*diameter, 0);
+////		glVertex3f(-1+diameter*b.width+diameter, -1+(y+1)*diameter, -0.01);
+////	}
+////	glEnd();
+//	glLineWidth(1.0);
+//	
+//	xLoc = -1+radius;
+//	glDisable(GL_LIGHTING);
+//	glLineWidth(8.0);
+//	glColor4f(0.0, 0.0, 0.0, 1.0); // ffd700
+//	//	glColor4f(0.0, 1.0, 0.0, 0.5); // ffd700
+//	for (double x = 0; x < b.width; x++)
+//	{
+//		xLoc += diameter;
+//		yLoc = -1+radius;
+//		for (double y = 0; y < b.height; y++)
+//		{
+//			yLoc += diameter;
+//			//rgbColor r = GetColor(x+y*b.width, 0, b.width*b.height, 4);
+//			
+//			if (b.HasPiece(x, y))
+//			{
+//				glBegin(GL_QUADS);
+//				glVertex3f(xLoc-r, yLoc-r-r, -0.02);
+//				glVertex3f(xLoc-r, yLoc+r-r, -0.02);
+//				glVertex3f(xLoc+r, yLoc+r-r, -0.02);
+//				glVertex3f(xLoc+r, yLoc-r-r, -0.02);
+//				glEnd();
+//			}
+//			//DrawSphere(xLoc, yLoc, 0, radius);
+//		}
+//	}
+//	glLineWidth(1.0);
+//	glEnable(GL_LIGHTING);
+//}
 
 
-void Fling::OpenGLDrawAlternate(const FlingBoard &b) const
-{
-	double radius = 1.0/(1+max(b.width, b.height));
-	double diameter = radius*2;
-	double xLoc = -1+radius;
-	double yLoc;
-	double r = radius*0.80;
+//void Fling::OpenGLDrawAlternate(const FlingBoard &b) const
+//{
+//	double radius = 1.0/(1+max(b.width, b.height));
+//	double diameter = radius*2;
+//	double xLoc = -1+radius;
+//	double yLoc;
+//	double r = radius*0.80;
+//
+//	glDisable(GL_LIGHTING);
+//	glLineWidth(8.0);
+//	glColor4f(0.0, 0.5, 0.0, 1.0); // ffd700
+////	glColor4f(0.0, 1.0, 0.0, 0.5); // ffd700
+//	for (double x = 0; x < b.width; x++)
+//	{
+//		xLoc += diameter;
+//		yLoc = -1+radius;
+//		for (double y = 0; y < b.height; y++)
+//		{
+//			yLoc += diameter;
+//			//rgbColor r = GetColor(x+y*b.width, 0, b.width*b.height, 4);
+//
+//			if (b.HasPiece(x, y))
+//			{
+//				glBegin(GL_QUADS);
+//				glVertex3f(xLoc-r, yLoc-r, -0.02);
+//				glVertex3f(xLoc-r, yLoc+r, -0.02);
+//				glVertex3f(xLoc+r, yLoc+r, -0.02);
+//				glVertex3f(xLoc+r, yLoc-r, -0.02);
+//				glEnd();
+//			}
+//			//DrawSphere(xLoc, yLoc, 0, radius);
+//		}
+//	}
+//	glLineWidth(1.0);
+//	glEnable(GL_LIGHTING);
+//}
 
-	glDisable(GL_LIGHTING);
-	glLineWidth(8.0);
-	glColor4f(0.0, 0.5, 0.0, 1.0); // ffd700
-//	glColor4f(0.0, 1.0, 0.0, 0.5); // ffd700
-	for (double x = 0; x < b.width; x++)
-	{
-		xLoc += diameter;
-		yLoc = -1+radius;
-		for (double y = 0; y < b.height; y++)
-		{
-			yLoc += diameter;
-			//rgbColor r = GetColor(x+y*b.width, 0, b.width*b.height, 4);
 
-			if (b.HasPiece(x, y))
-			{
-				glBegin(GL_QUADS);
-				glVertex3f(xLoc-r, yLoc-r, -0.02);
-				glVertex3f(xLoc-r, yLoc+r, -0.02);
-				glVertex3f(xLoc+r, yLoc+r, -0.02);
-				glVertex3f(xLoc+r, yLoc-r, -0.02);
-				glEnd();
-			}
-			//DrawSphere(xLoc, yLoc, 0, radius);
-		}
-	}
-	glLineWidth(1.0);
-	glEnable(GL_LIGHTING);
-}
-
-
-void Fling::OpenGLDraw(const FlingBoard&b, const FlingMove &m) const
-{
-	double radius = 1.0/(1+max(b.width, b.height));
-	double diameter = radius*2;
-	double xLoc = -1+radius+diameter;
-	double yLoc = -1+radius+diameter;
-	
-	glColor3f(1.0, 1.0, 1.0);
-	glLineWidth(10);
-	glBegin(GL_TRIANGLES);
-
-//	int x = b.locs[m.startLoc]%b.width;
-//	int y = b.locs[m.startLoc]/b.width;
-	int x = m.startLoc%b.width;
-	int y = m.startLoc/b.width;
-	switch (m.dir)
-	{
-		case kLeft:
-			glVertex3f(xLoc+x*diameter, yLoc+y*diameter-radius/2, -radius);
-			glVertex3f(xLoc+x*diameter, yLoc+y*diameter+radius/2, -radius);
-			glVertex3f(xLoc+x*diameter-radius, yLoc+y*diameter, -radius);
-			break;
-		case kRight:
-			glVertex3f(xLoc+x*diameter, yLoc+y*diameter+radius/2, -radius);
-			glVertex3f(xLoc+x*diameter, yLoc+y*diameter-radius/2, -radius);
-			glVertex3f(xLoc+x*diameter+radius, yLoc+y*diameter, -radius);
-			break;
-		case kUp:
-			glVertex3f(xLoc+x*diameter+radius/2, yLoc+y*diameter, -radius);
-			glVertex3f(xLoc+x*diameter-radius/2, yLoc+y*diameter, -radius);
-			glVertex3f(xLoc+x*diameter, yLoc+y*diameter-radius, -radius);
-			break;
-		case kDown:
-			glVertex3f(xLoc+x*diameter-radius/2, yLoc+y*diameter, -radius);
-			glVertex3f(xLoc+x*diameter+radius/2, yLoc+y*diameter, -radius);
-			glVertex3f(xLoc+x*diameter, yLoc+y*diameter+radius, -radius);
-			break;
-	}
-	glEnd();
-	glLineWidth(1.0);
-}
+//void Fling::OpenGLDraw(const FlingBoard&b, const FlingMove &m) const
+//{
+//	double radius = 1.0/(1+max(b.width, b.height));
+//	double diameter = radius*2;
+//	double xLoc = -1+radius+diameter;
+//	double yLoc = -1+radius+diameter;
+//	
+//	glColor3f(1.0, 1.0, 1.0);
+//	glLineWidth(10);
+//	glBegin(GL_TRIANGLES);
+//
+////	int x = b.locs[m.startLoc]%b.width;
+////	int y = b.locs[m.startLoc]/b.width;
+//	int x = m.startLoc%b.width;
+//	int y = m.startLoc/b.width;
+//	switch (m.dir)
+//	{
+//		case kLeft:
+//			glVertex3f(xLoc+x*diameter, yLoc+y*diameter-radius/2, -radius);
+//			glVertex3f(xLoc+x*diameter, yLoc+y*diameter+radius/2, -radius);
+//			glVertex3f(xLoc+x*diameter-radius, yLoc+y*diameter, -radius);
+//			break;
+//		case kRight:
+//			glVertex3f(xLoc+x*diameter, yLoc+y*diameter+radius/2, -radius);
+//			glVertex3f(xLoc+x*diameter, yLoc+y*diameter-radius/2, -radius);
+//			glVertex3f(xLoc+x*diameter+radius, yLoc+y*diameter, -radius);
+//			break;
+//		case kUp:
+//			glVertex3f(xLoc+x*diameter+radius/2, yLoc+y*diameter, -radius);
+//			glVertex3f(xLoc+x*diameter-radius/2, yLoc+y*diameter, -radius);
+//			glVertex3f(xLoc+x*diameter, yLoc+y*diameter-radius, -radius);
+//			break;
+//		case kDown:
+//			glVertex3f(xLoc+x*diameter-radius/2, yLoc+y*diameter, -radius);
+//			glVertex3f(xLoc+x*diameter+radius/2, yLoc+y*diameter, -radius);
+//			glVertex3f(xLoc+x*diameter, yLoc+y*diameter+radius, -radius);
+//			break;
+//	}
+//	glEnd();
+//	glLineWidth(1.0);
+//}
 
 bool Fling::GetXYFromPoint(const FlingBoard &b, point3d loc, int &x, int &y) const
 {
@@ -787,65 +787,65 @@ bool Fling::GetXYFromPoint(const FlingBoard &b, point3d loc, int &x, int &y) con
 		return true;
 	return false;
 }
-
-void Fling::GLLabelState(const FlingBoard&b, const char *text) const
-{
-	glDisable(GL_LIGHTING);
-    glEnable(GL_LINE_SMOOTH);
-    glDisable(GL_DEPTH_TEST);
-	glLineWidth(3.0);
-
-	double radius = 1.0/(1+max(b.width, b.height));
-	double diameter = radius*2;
-	double xLoc = -1+radius;
-	double yLoc;
-	
-	for (double x = 0; x < b.width; x++)
-	{
-		xLoc += diameter;
-		yLoc = -1+radius;
-		for (double y = 0; y < b.height; y++)
-		{
-			yLoc += diameter;
-			glColor3f(1.0, 1.0, 1.0);
-			if (b.HasPiece(x, y))
-			{
-				const char *p;
-				
-				glPushMatrix();
-				glTranslatef(xLoc-radius+1/152.38, yLoc-radius+8/152.38, 0);
-				glScalef(.05/152.38, -.05/152.38, .05/152.38);
-				glTranslatef(0, 0, -2*radius);
-
-				//glScalef(0.09f, -0.08f, 1.0);
-				//glTranslatef(0, 0, -2*radius);
-				for (p = text; *p; p++)
-				{
-					//printf("%c", *p);
-					//glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
-				}
-				glPopMatrix();
-				//printf("\n");
-				// draw text
-//				const char *c;
-////				glPushMatrix();
-//				glScalef(0.09f, -0.08f, 1.0);
-////				glTranslatef(x, y, 2*radius);
-//				for (c=text; *c != '\0'; c++)
+//
+//void Fling::GLLabelState(const FlingBoard&b, const char *text) const
+//{
+//	glDisable(GL_LIGHTING);
+//    glEnable(GL_LINE_SMOOTH);
+//    glDisable(GL_DEPTH_TEST);
+//	glLineWidth(3.0);
+//
+//	double radius = 1.0/(1+max(b.width, b.height));
+//	double diameter = radius*2;
+//	double xLoc = -1+radius;
+//	double yLoc;
+//	
+//	for (double x = 0; x < b.width; x++)
+//	{
+//		xLoc += diameter;
+//		yLoc = -1+radius;
+//		for (double y = 0; y < b.height; y++)
+//		{
+//			yLoc += diameter;
+//			glColor3f(1.0, 1.0, 1.0);
+//			if (b.HasPiece(x, y))
+//			{
+//				const char *p;
+//				
+//				glPushMatrix();
+//				glTranslatef(xLoc-radius+1/152.38, yLoc-radius+8/152.38, 0);
+//				glScalef(.05/152.38, -.05/152.38, .05/152.38);
+//				glTranslatef(0, 0, -2*radius);
+//
+//				//glScalef(0.09f, -0.08f, 1.0);
+//				//glTranslatef(0, 0, -2*radius);
+//				for (p = text; *p; p++)
 //				{
-//					glutStrokeCharacter(GLUT_STROKE_ROMAN , *c);
+//					//printf("%c", *p);
+//					//glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
 //				}
-////				glPopMatrix();
-			}
-		}
-	}
-
-    glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
-    glDisable(GL_LINE_SMOOTH);
-	glLineWidth(1.0);
-
-}
+//				glPopMatrix();
+//				//printf("\n");
+//				// draw text
+////				const char *c;
+//////				glPushMatrix();
+////				glScalef(0.09f, -0.08f, 1.0);
+//////				glTranslatef(x, y, 2*radius);
+////				for (c=text; *c != '\0'; c++)
+////				{
+////					glutStrokeCharacter(GLUT_STROKE_ROMAN , *c);
+////				}
+//////				glPopMatrix();
+//			}
+//		}
+//	}
+//
+//    glEnable(GL_DEPTH_TEST);
+//	glEnable(GL_LIGHTING);
+//    glDisable(GL_LINE_SMOOTH);
+//	glLineWidth(1.0);
+//
+//}
 
 void Fling::IncrementRank(FlingBoard &b) const
 {

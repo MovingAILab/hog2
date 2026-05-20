@@ -88,9 +88,9 @@ public:
 	}
 
 	// Deprecated
-	void OpenGLDraw() const {};
-	void OpenGLDraw(const RacetrackState&) const {};
-	void OpenGLDraw(const RacetrackState&, const RacetrackMove&) const {};
+//	void OpenGLDraw() const {};
+//	void OpenGLDraw(const RacetrackState&) const {};
+//	void OpenGLDraw(const RacetrackState&, const RacetrackMove&) const {};
 
 	void Draw(Graphics::Display &display) const;
 	void Draw(Graphics::Display &display, const RacetrackState &s) const;

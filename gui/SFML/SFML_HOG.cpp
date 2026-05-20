@@ -34,6 +34,7 @@ int main(int argc, char **argv)
 #include <math.h>
 #include <string.h>
 #include <cassert>
+#include "GLUtil.h"
 #include "MonoFont.h"
 
 using namespace std;
@@ -982,7 +983,9 @@ void drawGL (pRecContext pContextInfo, sf::Window &window)
 					  camera.frust.bottom, camera.frust.top,
 					  camera.frust.near, camera.frust.far);
 			// projection matrix already set
-			updateModelView(pContextInfo, x);			
+			updateModelView(pContextInfo, x);
+			glEnable(GL_BLEND); // for text fading
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // ditto
 			HandleFrame(pContextInfo, x);
 			DrawGraphics(pContextInfo->display, x, window);
 		}
@@ -1136,7 +1139,7 @@ void resetCamera(recCamera * pCamera)
 	//pCamera->viewRot.worldRotation = {0,0,0,0};
 }
 
-recVec cameraLookingAt(int port)
+Graphics::point cameraLookingAt(int port)
 {
 	pRecContext pContextInfo = getCurrentContext();
 	if (port == -1)
@@ -1373,14 +1376,14 @@ void SetZoom(int windowID, float amount)
 	}
 }
 
-recVec GetHeading(unsigned long windowID, int which)
+Graphics::point GetHeading(unsigned long windowID, int which)
 {
-	recVec v;
+	Graphics::point v;
 	GetHeading(windowID, which, v.x, v.y, v.z);
 	return v;
 }
 
-void GetHeading(unsigned long windowID, int which, GLdouble &hx, GLdouble &hy, GLdouble &hz)
+void GetHeading(unsigned long windowID, int which, float &hx, float &hy, float &hz)
 {
 	pRecContext pContextInfo = GetContext(windowID);
 

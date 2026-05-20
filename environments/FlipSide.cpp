@@ -131,57 +131,57 @@ uint64_t FlipSide::GetActionHash(flipMove act) const
 	return (act.top<<16)|act.bottom;
 }
 
-void FlipSide::OpenGLDraw() const
-{
-}
-
-
-void FlipSide::OpenGLDraw(const FlipSideState &s) const
-{
-	glLineWidth(1.0);
-	glEnable(GL_LINE_SMOOTH);
-	
-	float w = width;
-	float h = 2;
-	float fscale = 120;
-	
-	for (int y = 0; y < 2; y++)
-	{
-		for (int x = 0; x < width; x++)
-		{
-			glPushMatrix();
-			glColor3f(0.0, 1.0, 0.0);
-			glTranslatef(x*2.0/w-1.0+1/(2*w), (1+y)*2.0/h-1.0-1/(2*h), -0.001);
-			glScalef(1.0/(w*fscale), 1.0/(h*fscale), 1);
-			glRotatef(180, 0.0, 0.0, 1.0);
-			glRotatef(180, 0.0, 1.0, 0.0);
-			//glTranslatef((float)x/width-0.5, (float)y/2-0.5, 0);
-			//if (s.puzzle[x+y*width] > 9)
-			//	glutStrokeCharacter(GLUT_STROKE_ROMAN, '0'+(((s.puzzle[x+y*width])/10)%10));
-			//glutStrokeCharacter(GLUT_STROKE_ROMAN, '0'+((s.puzzle[x+y*width])%10));
-			//glTranslatef(-x/width+0.5, -y/2+0.5, 0);
-			glPopMatrix();
-		}
-	}
-	
-	glBegin(GL_LINES);
-	for (int y = 0; y <= 2; y++)
-	{
-		for (int x = 0; x <= width; x++)
-		{
-			glVertex3f(x*2.0/w-1.0, -1, -0.001);
-			glVertex3f(x*2.0/w-1.0, 1, -0.001);
-			glVertex3f(-1, (y)*2.0/h-1.0, -0.001);
-			glVertex3f(1, (y)*2.0/h-1.0, -0.001);
-		}
-	}
-	glEnd();
-	
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glEnable(GL_BLEND);
-	//glEnable(GL_LINE_SMOOTH);
-	//output(200, 225, "This is antialiased.");
-	
-	//int width, height;
-	//std::vector<int> puzzle;
-}
+//void FlipSide::OpenGLDraw() const
+//{
+//}
+//
+//
+//void FlipSide::OpenGLDraw(const FlipSideState &s) const
+//{
+//	glLineWidth(1.0);
+//	glEnable(GL_LINE_SMOOTH);
+//	
+//	float w = width;
+//	float h = 2;
+//	float fscale = 120;
+//	
+//	for (int y = 0; y < 2; y++)
+//	{
+//		for (int x = 0; x < width; x++)
+//		{
+//			glPushMatrix();
+//			glColor3f(0.0, 1.0, 0.0);
+//			glTranslatef(x*2.0/w-1.0+1/(2*w), (1+y)*2.0/h-1.0-1/(2*h), -0.001);
+//			glScalef(1.0/(w*fscale), 1.0/(h*fscale), 1);
+//			glRotatef(180, 0.0, 0.0, 1.0);
+//			glRotatef(180, 0.0, 1.0, 0.0);
+//			//glTranslatef((float)x/width-0.5, (float)y/2-0.5, 0);
+//			//if (s.puzzle[x+y*width] > 9)
+//			//	glutStrokeCharacter(GLUT_STROKE_ROMAN, '0'+(((s.puzzle[x+y*width])/10)%10));
+//			//glutStrokeCharacter(GLUT_STROKE_ROMAN, '0'+((s.puzzle[x+y*width])%10));
+//			//glTranslatef(-x/width+0.5, -y/2+0.5, 0);
+//			glPopMatrix();
+//		}
+//	}
+//	
+//	glBegin(GL_LINES);
+//	for (int y = 0; y <= 2; y++)
+//	{
+//		for (int x = 0; x <= width; x++)
+//		{
+//			glVertex3f(x*2.0/w-1.0, -1, -0.001);
+//			glVertex3f(x*2.0/w-1.0, 1, -0.001);
+//			glVertex3f(-1, (y)*2.0/h-1.0, -0.001);
+//			glVertex3f(1, (y)*2.0/h-1.0, -0.001);
+//		}
+//	}
+//	glEnd();
+//	
+//	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//	//glEnable(GL_BLEND);
+//	//glEnable(GL_LINE_SMOOTH);
+//	//output(200, 225, "This is antialiased.");
+//	
+//	//int width, height;
+//	//std::vector<int> puzzle;
+//}

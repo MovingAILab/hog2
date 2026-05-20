@@ -370,8 +370,8 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 	}
 	if (viewport == 0 && nodeToDraw != -1)
 	{
-		GLdouble x, y, z, r;
-		me->GetMap()->GetOpenGLCoord(stateToDraw.x, stateToDraw.y, x, y, z, r);
+		double x, y, z, r;
+		me->GetMap()->GetCoord(stateToDraw.x, stateToDraw.y, x, y, z, r);
 		Graphics::point p(x, y);
 		display.FillCircle(p, 0.03, Colors::red);
 	}

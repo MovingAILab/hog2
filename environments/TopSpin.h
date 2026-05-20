@@ -113,10 +113,10 @@ public:
 	//void LoadPDB(char *fname, const std::vector<int> &tiles, bool additive);
 
 	uint64_t GetActionHash(TopSpinAction act) const;
-	void OpenGLDraw() const;
-	void OpenGLDraw(const TopSpinState<N> &s) const;
-	void OpenGLDraw(const TopSpinState<N> &l1, const TopSpinState<N> &l2, float v) const;
-	void OpenGLDraw(const TopSpinState<N> &, const TopSpinAction &) const { /* currently not drawing moves */ }
+//	void OpenGLDraw() const;
+//	void OpenGLDraw(const TopSpinState<N> &s) const;
+//	void OpenGLDraw(const TopSpinState<N> &l1, const TopSpinState<N> &l2, float v) const;
+//	void OpenGLDraw(const TopSpinState<N> &, const TopSpinAction &) const { /* currently not drawing moves */ }
 	void StoreGoal(TopSpinState<N> &); // stores the locations for the given goal state
 
 	/** Returns stored goal state if it is stored.**/
@@ -402,81 +402,81 @@ uint64_t TopSpin<N, k>::GetActionHash(TopSpinAction act) const
 	return act;
 }
 
-template <int N, int k>
-void TopSpin<N, k>::OpenGLDraw() const
-{
-}
+//template <int N, int k>
+//void TopSpin<N, k>::OpenGLDraw() const
+//{
+//}
 
-static void LocalDrawCircle(float x, float y, float r1, float r2, int segments)
-{
-	float angleStep = TWOPI/segments;
-	//	glBegin(GL_LINE_LOOP);
-	glBegin(GL_QUAD_STRIP);
-	for (float angle = 0; angle < TWOPI; angle += angleStep)
-	{
-		glVertex3f(x+cos(angle)*r1, y+sin(angle)*r1, 0);
-		glVertex3f(x+cos(angle)*r2, y+sin(angle)*r2, 0);
-	}
-	glVertex3f(x+r1, y, 0);
-	glVertex3f(x+r2, y, 0);
-	glEnd();
-}
+//static void LocalDrawCircle(float x, float y, float r1, float r2, int segments)
+//{
+//	float angleStep = TWOPI/segments;
+//	//	glBegin(GL_LINE_LOOP);
+//	glBegin(GL_QUAD_STRIP);
+//	for (float angle = 0; angle < TWOPI; angle += angleStep)
+//	{
+//		glVertex3f(x+cos(angle)*r1, y+sin(angle)*r1, 0);
+//		glVertex3f(x+cos(angle)*r2, y+sin(angle)*r2, 0);
+//	}
+//	glVertex3f(x+r1, y, 0);
+//	glVertex3f(x+r2, y, 0);
+//	glEnd();
+//}
 
-static void DrawTSTile(float x, float y, char c1, char c2, int w, int h)
-{
-	glLineWidth(1.0);
-	int textWidth = 0;
-	//int textHeight = 0;
-	//	if (c1 != 0)
-	//	textWidth += glutStrokeWidth(GLUT_STROKE_ROMAN, c1);
-	//if (c2 != 0)
-	//textWidth += glutStrokeWidth(GLUT_STROKE_ROMAN, c2);
-	//printf("%d\n", textWidth);
-	glPushMatrix();
-	glTranslatef(x, y, -0.001);
-	glScalef(1.0/(w*120.0), 1.0/(h*120.0), 1);
-	glRotatef(180, 0.0, 0.0, 1.0);
-	glRotatef(180, 0.0, 1.0, 0.0);
-	glTranslatef(-textWidth/2, -60, 0);
-	//if (c1 != 0)
-	//	glutStrokeCharacter(GLUT_STROKE_ROMAN, c1);
-	//if (c2 != 0)
-	//	glutStrokeCharacter(GLUT_STROKE_ROMAN, c2);
-	glPopMatrix();
-	
-}
+//static void DrawTSTile(float x, float y, char c1, char c2, int w, int h)
+//{
+//	glLineWidth(1.0);
+//	int textWidth = 0;
+//	//int textHeight = 0;
+//	//	if (c1 != 0)
+//	//	textWidth += glutStrokeWidth(GLUT_STROKE_ROMAN, c1);
+//	//if (c2 != 0)
+//	//textWidth += glutStrokeWidth(GLUT_STROKE_ROMAN, c2);
+//	//printf("%d\n", textWidth);
+//	glPushMatrix();
+//	glTranslatef(x, y, -0.001);
+//	glScalef(1.0/(w*120.0), 1.0/(h*120.0), 1);
+//	glRotatef(180, 0.0, 0.0, 1.0);
+//	glRotatef(180, 0.0, 1.0, 0.0);
+//	glTranslatef(-textWidth/2, -60, 0);
+//	//if (c1 != 0)
+//	//	glutStrokeCharacter(GLUT_STROKE_ROMAN, c1);
+//	//if (c2 != 0)
+//	//	glutStrokeCharacter(GLUT_STROKE_ROMAN, c2);
+//	glPopMatrix();
+//	
+//}
 
 template <int N, int k>
 static void DrawFrame(int w, int h)
 {
 }
 
-template <int N, int k>
-void TopSpin<N, k>::OpenGLDraw(const TopSpinState<N> &s) const
-{
-	glEnable(GL_LINE_SMOOTH);
-	char c1=0, c2=0;
-	double diam = 2.0;
-	diam /= N;
-	for (int x = 0; x < N; x++)
-	{
-		if (s.puzzle[x] > 9)
-			c1 = '0'+(((s.puzzle[x])/10)%10);
-		if (s.puzzle[x] >= 0)
-			c2 = '0'+((s.puzzle[x])%10);
-		
-		glColor3f(1.0, 1.0, 1.0);
-		DrawTSTile(-1+x*diam + diam/2, 0.0f, c1, c2, N, N);
-		glLineWidth(2.0);
-		glColor3f(0.0, 0.3, 0.8);
-		LocalDrawCircle(-1+x*diam + diam/2, 0, diam/2-diam/20, diam/2+diam/20, 50);
-	}
-}
+//template <int N, int k>
+//void TopSpin<N, k>::OpenGLDraw(const TopSpinState<N> &s) const
+//{
+//	glEnable(GL_LINE_SMOOTH);
+//	char c1=0, c2=0;
+//	double diam = 2.0;
+//	diam /= N;
+//	for (int x = 0; x < N; x++)
+//	{
+//		if (s.puzzle[x] > 9)
+//			c1 = '0'+(((s.puzzle[x])/10)%10);
+//		if (s.puzzle[x] >= 0)
+//			c2 = '0'+((s.puzzle[x])%10);
+//		
+//		glColor3f(1.0, 1.0, 1.0);
+//		DrawTSTile(-1+x*diam + diam/2, 0.0f, c1, c2, N, N);
+//		glLineWidth(2.0);
+//		glColor3f(0.0, 0.3, 0.8);
+//		LocalDrawCircle(-1+x*diam + diam/2, 0, diam/2-diam/20, diam/2+diam/20, 50);
+//	}
+//}
 
-template <int N, int k>
-void TopSpin<N, k>::OpenGLDraw(const TopSpinState<N> &s1, const TopSpinState<N> &s2, float v) const
-{
-}
+//template <int N, int k>
+//void TopSpin<N, k>::OpenGLDraw(const TopSpinState<N> &s1, const TopSpinState<N> &s2, float v) const
+//{
+//}
 
 
 #endif

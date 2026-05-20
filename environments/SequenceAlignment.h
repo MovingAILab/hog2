@@ -50,10 +50,10 @@ public:
 	virtual uint64_t GetStateHash(const SequenceAlignmentState &node) const;
 	virtual uint64_t GetActionHash(SequenceAlignmentAction act) const;
 	
-	virtual void OpenGLDraw() const { }
-	virtual void OpenGLDraw(const SequenceAlignmentState&) const { }
-	virtual void OpenGLDraw(const SequenceAlignmentState&, const SequenceAlignmentState&, float) const { }
-	virtual void OpenGLDraw(const SequenceAlignmentState&, const SequenceAlignmentAction&) const { }
+//	virtual void OpenGLDraw() const { }
+//	virtual void OpenGLDraw(const SequenceAlignmentState&) const { }
+//	virtual void OpenGLDraw(const SequenceAlignmentState&, const SequenceAlignmentState&, float) const { }
+//	virtual void OpenGLDraw(const SequenceAlignmentState&, const SequenceAlignmentAction&) const { }
 private:
 	int d;
 };

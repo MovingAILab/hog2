@@ -344,60 +344,60 @@ void CanonicalDijkstra::LogFinalStats(StatCollection *stats)
 	
 }
 
-void CanonicalDijkstra::OpenGLDraw() const
-{
-	double transparency = 1.0;
-	if (openClosedList.size() == 0)
-		return;
-	uint64_t top = -1;
-	double maxGCost = 0;
-	
-	for (unsigned int x = 0; x < openClosedList.size(); x++)
-	{
-		const auto &data = openClosedList.Lookat(x);
-		if (data.round == openClosedList.GetRound())
-			maxGCost = std::max(maxGCost, data.g);
-	}
-	
-	if (openClosedList.OpenSize() > 0)
-	{
-		top = openClosedList.Peek();
-	}
-	for (unsigned int x = 0; x < openClosedList.size(); x++)
-	{
-		const auto &data = openClosedList.Lookat(x);
-		if (data.round != openClosedList.GetRound())
-			continue;
-		
-		if (x == top)
-		{
-			env->SetColor(1.0, 1.0, 0.0, transparency);
-			env->OpenGLDraw(data.data.loc);
-		}
-		if ((data.where == kOpenList) && (data.reopened))
-		{
-			env->SetColor(0.0, 0.5, 0.5, transparency);
-			env->OpenGLDraw(data.data.loc);
-		}
-		else if (data.where == kOpenList)
-		{
-			env->SetColor(0.0, 1.0, 0.0, transparency);
-			env->OpenGLDraw(data.data.loc);
-		}
-		else if ((data.where == kClosedList) && (data.reopened))
-		{
-			env->SetColor(data.g/maxGCost, 0.0, 1.0, transparency);
-			env->OpenGLDraw(data.data.loc);
-		}
-		else if (data.where == kClosedList)
-		{
-			env->SetColor(data.g/maxGCost, 0.0, 0.0, transparency);
-			env->OpenGLDraw(data.data.loc);
-		}
-	}
-}
-
-void CanonicalDijkstra::OpenGLDraw(const MapEnvironment *env) const {}
+//void CanonicalDijkstra::OpenGLDraw() const
+//{
+//	double transparency = 1.0;
+//	if (openClosedList.size() == 0)
+//		return;
+//	uint64_t top = -1;
+//	double maxGCost = 0;
+//	
+//	for (unsigned int x = 0; x < openClosedList.size(); x++)
+//	{
+//		const auto &data = openClosedList.Lookat(x);
+//		if (data.round == openClosedList.GetRound())
+//			maxGCost = std::max(maxGCost, data.g);
+//	}
+//	
+//	if (openClosedList.OpenSize() > 0)
+//	{
+//		top = openClosedList.Peek();
+//	}
+//	for (unsigned int x = 0; x < openClosedList.size(); x++)
+//	{
+//		const auto &data = openClosedList.Lookat(x);
+//		if (data.round != openClosedList.GetRound())
+//			continue;
+//		
+//		if (x == top)
+//		{
+//			env->SetColor(1.0, 1.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data.loc);
+//		}
+//		if ((data.where == kOpenList) && (data.reopened))
+//		{
+//			env->SetColor(0.0, 0.5, 0.5, transparency);
+//			env->OpenGLDraw(data.data.loc);
+//		}
+//		else if (data.where == kOpenList)
+//		{
+//			env->SetColor(0.0, 1.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data.loc);
+//		}
+//		else if ((data.where == kClosedList) && (data.reopened))
+//		{
+//			env->SetColor(data.g/maxGCost, 0.0, 1.0, transparency);
+//			env->OpenGLDraw(data.data.loc);
+//		}
+//		else if (data.where == kClosedList)
+//		{
+//			env->SetColor(data.g/maxGCost, 0.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data.loc);
+//		}
+//	}
+//}
+//
+//void CanonicalDijkstra::OpenGLDraw(const MapEnvironment *env) const {}
 
 void CanonicalDijkstra::Draw(Graphics::Display &disp) const
 {

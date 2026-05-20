@@ -88,7 +88,7 @@ point3d CanvasToPoint(int x, int y)
 {
 	x -= canvasXOffset;
 	y -= canvasYOffset;
-	return {static_cast<GLfloat>(2.0*x/canvasScale-1.0), static_cast<GLfloat>(2.0*y/canvasScale-1.0), 0};
+	return {static_cast<float>(2.0*x/canvasScale-1.0), static_cast<float>(2.0*y/canvasScale-1.0), 0};
 }
 
 float WidthToCanvas(float p, int viewport)

@@ -160,53 +160,53 @@ NaryState NaryTree::GetParent(NaryState s) const
 	return (s-1)/b;
 }
 
-void NaryTree::OpenGLDraw() const
-{
-	std::vector<NaryState> succ;
-	float x1, y1, x2, y2;
-	glBegin(GL_LINES);
-	glColor3f(1.0, 1.0, 1.0);
-	for (uint64_t t = 0; t < totalNodesAtDepth.back(); t++)
-	{
-		GetLocation(t, x1, y1);
-		GetSuccessors(t, succ);
-		for (uint64_t s : succ)
-		{
-			GetLocation(s, x2, y2);
-			glVertex3f(x1, y1, 0);
-			glVertex3f(x2, y2, 0);
-		}
-	}
-	glEnd();
-}
-
-void NaryTree::OpenGLDraw(const NaryState &s) const
-{
-	float x1, y1;
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-	glColor4f(r, g, b, t);
-	GetLocation(s, x1, y1);
-	double r1 = 2.0/nodesAtDepth[GetDepth(s)];
-	double r2 = 0.1/d;
-	DrawSphere(x1, y1, 0, std::min(r1, r2));
-}
-
-void NaryTree::GLDrawLine(const NaryState &s1, const NaryState &s2) const
-{
-	float x1, y1, x2, y2;
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-	glLineWidth(6.0);
-	glBegin(GL_LINES);
-	glColor4f(r, g, b, t);
-	GetLocation(s1, x1, y1);
-	GetLocation(s2, x2, y2);
-	glVertex3f(x1, y1, 0);
-	glVertex3f(x2, y2, 0);
-	glEnd();
-	glLineWidth(1.0);
-}
+//void NaryTree::OpenGLDraw() const
+//{
+//	std::vector<NaryState> succ;
+//	float x1, y1, x2, y2;
+//	glBegin(GL_LINES);
+//	glColor3f(1.0, 1.0, 1.0);
+//	for (uint64_t t = 0; t < totalNodesAtDepth.back(); t++)
+//	{
+//		GetLocation(t, x1, y1);
+//		GetSuccessors(t, succ);
+//		for (uint64_t s : succ)
+//		{
+//			GetLocation(s, x2, y2);
+//			glVertex3f(x1, y1, 0);
+//			glVertex3f(x2, y2, 0);
+//		}
+//	}
+//	glEnd();
+//}
+//
+//void NaryTree::OpenGLDraw(const NaryState &s) const
+//{
+//	float x1, y1;
+//	GLfloat r, g, b, t;
+//	GetColor(r, g, b, t);
+//	glColor4f(r, g, b, t);
+//	GetLocation(s, x1, y1);
+//	double r1 = 2.0/nodesAtDepth[GetDepth(s)];
+//	double r2 = 0.1/d;
+//	DrawSphere(x1, y1, 0, std::min(r1, r2));
+//}
+//
+//void NaryTree::GLDrawLine(const NaryState &s1, const NaryState &s2) const
+//{
+//	float x1, y1, x2, y2;
+//	GLfloat r, g, b, t;
+//	GetColor(r, g, b, t);
+//	glLineWidth(6.0);
+//	glBegin(GL_LINES);
+//	glColor4f(r, g, b, t);
+//	GetLocation(s1, x1, y1);
+//	GetLocation(s2, x2, y2);
+//	glVertex3f(x1, y1, 0);
+//	glVertex3f(x2, y2, 0);
+//	glEnd();
+//	glLineWidth(1.0);
+//}
 
 void NaryTree::Draw(Graphics::Display &display) const
 {
@@ -281,5 +281,5 @@ void NaryTree::DrawLine(Graphics::Display &display, const NaryState &f, const Na
 }
 
 
-void NaryTree::OpenGLDraw(const NaryState&, const NaryState&, float) const { }
-void NaryTree::OpenGLDraw(const NaryState&, const NaryAction&) const { }
+//void NaryTree::OpenGLDraw(const NaryState&, const NaryState&, float) const { }
+//void NaryTree::OpenGLDraw(const NaryState&, const NaryAction&) const { }

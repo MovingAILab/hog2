@@ -56,13 +56,13 @@ public:
 	
 	//virtual double GetPathLength(std::vector<NaryState> &neighbors);
 	void SetWidthScale(double v) { scaleWidth = v;}
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const NaryState&) const;
-	/** Draw the transition at some percentage 0...1 between two states */
-	virtual void OpenGLDraw(const NaryState&, const NaryState&, float) const;
-	virtual void OpenGLDraw(const NaryState&, const NaryAction&) const;
-	//virtual void GLLabelState(const state&, const char *) const {} // draw label over state
-	void GLDrawLine(const NaryState &x, const NaryState &y) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const NaryState&) const;
+//	/** Draw the transition at some percentage 0...1 between two states */
+//	virtual void OpenGLDraw(const NaryState&, const NaryState&, float) const;
+//	virtual void OpenGLDraw(const NaryState&, const NaryAction&) const;
+//	//virtual void GLLabelState(const state&, const char *) const {} // draw label over state
+//	void GLDrawLine(const NaryState &x, const NaryState &y) const;
 
 	virtual void Draw(Graphics::Display &display) const;
 	virtual void Draw(Graphics::Display &display, const NaryState &s) const;

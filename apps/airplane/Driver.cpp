@@ -104,7 +104,6 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 	}
 	else if (eType == kWindowCreated)
 	{
-		glClearColor(0.6, 0.8, 1.0, 1.0);
 		printf("Window %ld created\n", windowID);
 		InstallFrameHandler(MyFrameHandler, windowID, 0);
 		CreateSimulation(windowID);
@@ -132,7 +131,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		s2.height = 4;
 	}
 	
-	ae.OpenGLDraw();
+	//ae.OpenGLDraw();
 
 	//s.heading = (s.heading+1)%8;
 
@@ -144,14 +143,14 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 	tmp.y = tmp.y%80;
 	tmp.height = 4;
 	ae.SetColor(0.0, 1.0, 0.0);
-	ae.OpenGLDraw(s2, tmp, simTime);
+	//ae.OpenGLDraw(s2, tmp, simTime);
 	
 	tmp = s;
 	tmp.heading = 2;
 	tmp.x++;
 	tmp.x = tmp.x%80;
 	ae.SetColor(1.0, 0.0, 0.0);
-	ae.OpenGLDraw(s, tmp, simTime);
+	//ae.OpenGLDraw(s, tmp, simTime);
 	
 	s3.x = 40;
 	s3.y = 40;
@@ -159,12 +158,12 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 	s3.heading = 0;
 	ae.GetActions(s3, acts);
 	ae.SetColor(0, 1, 1);
-	ae.OpenGLDraw(s3);
+	//ae.OpenGLDraw(s3);
 	for (const auto &a : acts)
 	{
 		ae.GetNextState(s3, a, s4);
 		ae.SetColor(0, 0, 1);
-		ae.OpenGLDraw(s3, s4, simTime);
+		//	ae.OpenGLDraw(s3, s4, simTime);
 	}
 	
 	if (recording) // deprecated

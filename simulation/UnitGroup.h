@@ -88,7 +88,7 @@ public:
 		}
 	}
 	
-	virtual void OpenGLDraw(const environment *, const SimulationInfo<state,action,environment> *)  const { }
+//	virtual void OpenGLDraw(const environment *, const SimulationInfo<state,action,environment> *)  const { }
 
 	virtual std::vector<Unit<state,action,environment> *> GetMembers() {return members;}
 	unsigned int GetNumMembers() { return members.size(); }

@@ -422,10 +422,10 @@ void DrawRegularGoalArea(Graphics::Display &display, tDirection dir, bool drawBo
 	}
 	if (drawBound)
 	{
-		GLdouble t, l, r, b, z, rad;
+		double t, l, r, b, z, rad;
 		//printf("Bounds: (%d, %d) to (%d, %d)\n", minx, miny, maxx, maxy);
-		me->GetMap()->GetOpenGLCoord(minx, miny, l, t, z, rad);
-		me->GetMap()->GetOpenGLCoord(maxx, maxy, r, b, z, rad);
+		me->GetMap()->GetCoord(minx, miny, l, t, z, rad);
+		me->GetMap()->GetCoord(maxx, maxy, r, b, z, rad);
 		glColor3f(1.0, 1.0, 1.0);
 		display.FrameRect({static_cast<float>(l-rad),
 			static_cast<float>(t-rad),
@@ -496,10 +496,10 @@ void DrawJPSGoalArea(Graphics::Display &display, CanonicalGrid::tDirection dir, 
 	}
 	if (drawBound)
 	{
-		GLdouble t, l, r, b, z, rad;
+		double t, l, r, b, z, rad;
 		//printf("Bounds: (%d, %d) to (%d, %d)\n", minx, miny, maxx, maxy);
-		me->GetMap()->GetOpenGLCoord(minx, miny, l, t, z, rad);
-		me->GetMap()->GetOpenGLCoord(maxx, maxy, r, b, z, rad);
+		me->GetMap()->GetCoord(minx, miny, l, t, z, rad);
+		me->GetMap()->GetCoord(maxx, maxy, r, b, z, rad);
 		glColor3f(1.0, 1.0, 1.0);
 		display.FrameRect({static_cast<float>(l-rad),
 			static_cast<float>(t-rad),

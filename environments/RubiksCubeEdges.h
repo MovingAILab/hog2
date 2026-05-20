@@ -184,12 +184,12 @@ public:
 	virtual void Draw(Graphics::Display &display, const RubikEdgeState &s) const;
 
 	
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const RubikEdgeState&) const;
-	/** Draw the transition at some percentage 0...1 between two states */
-	virtual void OpenGLDraw(const RubikEdgeState&, const RubikEdgeState&, float) const;
-	virtual void OpenGLDraw(const RubikEdgeState&, const RubikEdgeAction&) const;
-	void OpenGLDrawCube(const RubikEdgeState &s, int cube) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const RubikEdgeState&) const;
+//	/** Draw the transition at some percentage 0...1 between two states */
+//	virtual void OpenGLDraw(const RubikEdgeState&, const RubikEdgeState&, float) const;
+//	virtual void OpenGLDraw(const RubikEdgeState&, const RubikEdgeAction&) const;
+//	void OpenGLDrawCube(const RubikEdgeState &s, int cube) const;
 	static void MRUnrank(int n, uint64_t r, uint64_t &perm);
 	static void MRUnrank2(int n, uint64_t r, uint64_t &perm);
 	static uint64_t MRRank(int n, uint64_t perm, uint64_t dual);

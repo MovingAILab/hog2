@@ -470,153 +470,153 @@ double WeightedMap2DEnvironment::GCost(const xyLoc &l1, const xyLoc &l2) const
 
 }
 
-void WeightedMap2DEnvironment::OpenGLDraw() const
-{	
-//	return;
-	// Draw the map
-	//AbsMapEnvironment::OpenGLDraw();
-	
-	// Draw direction for all nodes
-	
-	Graph *g = ma->GetAbstractGraph(0);
-	node_iterator ni = g->getNodeIter();
-	
-	xyLoc s;
-	
-	if (1)
-	for (node *n = g->nodeIterNext(ni); n; n = g->nodeIterNext(ni))
-	{
-			
-		s.x = n->GetLabelL(kFirstData);
-		s.y = n->GetLabelL(kFirstData+1);
-		
-		AngleUtil::AngleSearchNode sn(s,GetStateHash(s));
-
-		if (angleLookup.find(sn) != angleLookup.end())
-		{
-			const Vector2D old = (*angleLookup.find(sn)).second;
-			//const Vector2D old = angleLookup[sn];
-			
-			// Reduce length to 40%
-			GLdouble xx, yy, zz, rad;	
-			//glColor3f(1.0, 0,0);
-			glColor3f(0,0,0);
-			map->GetOpenGLCoord(s.x, s.y, xx, yy, zz, rad);
-			//glLineWidth(2);
-			glBegin(GL_LINE_STRIP);
-			glVertex3f(xx-old.x*rad, yy-old.y*rad, zz-rad/2);
-			
-			//glColor3f(0.0, 0, 0);
-			glVertex3f(xx+old.x*rad, yy+old.y*rad, zz-rad/2);	
-			glEnd();
-			
-			double percOffset=0.5;
-			double lengthOffset=0.5*rad;
-			glBegin(GL_LINE_STRIP);
-			glVertex3f(xx+percOffset*old.x*rad-old.y*lengthOffset,
-							yy+percOffset*old.y*rad+old.x*lengthOffset, zz-rad/2);
-			glVertex3f(xx+old.x*rad, yy+old.y*rad, zz-rad/2);	
-							
-			glVertex3f(xx+percOffset*old.x*rad+old.y*lengthOffset,
-							yy+percOffset*old.y*rad-old.x*lengthOffset, zz-rad/2);
-			glEnd();
-			
-		}
-		
-	}
-	
-	
-	// Draw all edges
-//  	Graph* g = ma->GetAbstractGraph(0);
-//  	
-//  	edge_iterator ei = g->getEdgeIter();
-//  	for (edge *e = g->edgeIterNext(ei); e; e = g->edgeIterNext(ei))
-//  	{
-//  		DrawEdge(window, e);
-//  	}
-// 	
-}
-
-void WeightedMap2DEnvironment::DrawEdge(const edge* e) const
-{
-	Graph* g = ma->GetAbstractGraph(0);
-	node* from = g->GetNode(e->getFrom());
-	node* to = g->GetNode(e->getTo());
-		
-	GLdouble xx, yy, zz, rad;	
-	if (e->GetLabelL(kBackwardCount) == e->GetLabelL(kForwardCount))
-	{
-		// whole edge should be same colour - white
-		
-		glColor3f(1.0, 1.0, 1.0);
-		
-		map->GetOpenGLCoord((int)from->GetLabelL(kFirstData), (int)from->GetLabelL(kFirstData+1), xx, yy, zz, rad);
-		glBegin(GL_LINE_STRIP);
-		glVertex3f(xx, yy, zz-rad/2);	
-	
-		map->GetOpenGLCoord((int)to->GetLabelL(kFirstData), (int)to->GetLabelL(kFirstData+1), xx, yy, zz, rad);
-		glVertex3f(xx, yy, zz-rad/2);
-		glEnd();
-	}
-	else if (e->GetLabelL(kForwardCount) > e->GetLabelL(kBackwardCount))
-	{
-		// white on "from" side, blue on "to" side
-		glColor3f(1.0, 1.0, 1.0);
-		
-				map->GetOpenGLCoord((int)from->GetLabelL(kFirstData), (int)from->GetLabelL(kFirstData+1), xx, yy, zz, rad);
-		glBegin(GL_LINE_STRIP);
-		glVertex3f(xx, yy, zz-rad/2);	
-	
-		glColor3f(0,0,1.0);
-		map->GetOpenGLCoord((int)to->GetLabelL(kFirstData), (int)to->GetLabelL(kFirstData+1), xx, yy, zz, rad);
-		glVertex3f(xx, yy, zz-rad/2);
-		glEnd();
-	}
-	else
-	{
-		// blue on "from" side, white on "to" side
-		glColor3f(0,0,1.0);
-				map->GetOpenGLCoord((int)from->GetLabelL(kFirstData), (int)from->GetLabelL(kFirstData+1), xx, yy, zz, rad);
-		glBegin(GL_LINE_STRIP);
-		glVertex3f(xx, yy, zz-rad/2);	
-		
-		
-		glColor3f(1.0, 1.0, 1.0);
-		map->GetOpenGLCoord((int)to->GetLabelL(kFirstData), (int)to->GetLabelL(kFirstData+1), xx, yy, zz, rad);
-		glVertex3f(xx, yy, zz-rad/2);
-		glEnd();
-	}
-}
-
-void WeightedMap2DEnvironment::OpenGLDraw(const xyLoc& initial, const tDirection &dir) const
-{
-	// Figure out which edge this corresponds to
-	// Figure out which direction is preferred
-	//   if none, then keep one colour
-		
-	xyLoc s = initial;
-	
-	switch (dir)
-	{
-		case kN: s.y-=1; break;
-		case kS: s.y+=1; break;
-		case kE: s.x+=1; break;
-		case kW: s.x-=1; break;
-		case kNW: s.y-=1; s.x-=1; break;
-		case kSW: s.y+=1; s.x-=1; break;
-		case kNE: s.y-=1; s.x+=1; break;
-		case kSE: s.y+=1; s.x+=1; break;
-		default: break;
-	}
-		
-	Graph* g = ma->GetAbstractGraph(0);
-	node* from = ma->GetNodeFromMap(initial.x, initial.y);
-	node* to = ma->GetNodeFromMap(s.x, s.y);
-	edge* e = g->FindEdge(from->GetNum(),to->GetNum());	
-		
-	DrawEdge(e);
-	
-}
+//void WeightedMap2DEnvironment::OpenGLDraw() const
+//{	
+////	return;
+//	// Draw the map
+//	//AbsMapEnvironment::OpenGLDraw();
+//	
+//	// Draw direction for all nodes
+//	
+//	Graph *g = ma->GetAbstractGraph(0);
+//	node_iterator ni = g->getNodeIter();
+//	
+//	xyLoc s;
+//	
+//	if (1)
+//	for (node *n = g->nodeIterNext(ni); n; n = g->nodeIterNext(ni))
+//	{
+//			
+//		s.x = n->GetLabelL(kFirstData);
+//		s.y = n->GetLabelL(kFirstData+1);
+//		
+//		AngleUtil::AngleSearchNode sn(s,GetStateHash(s));
+//
+//		if (angleLookup.find(sn) != angleLookup.end())
+//		{
+//			const Vector2D old = (*angleLookup.find(sn)).second;
+//			//const Vector2D old = angleLookup[sn];
+//			
+//			// Reduce length to 40%
+//			GLdouble xx, yy, zz, rad;	
+//			//glColor3f(1.0, 0,0);
+//			glColor3f(0,0,0);
+//			map->GetCoord(s.x, s.y, xx, yy, zz, rad);
+//			//glLineWidth(2);
+//			glBegin(GL_LINE_STRIP);
+//			glVertex3f(xx-old.x*rad, yy-old.y*rad, zz-rad/2);
+//			
+//			//glColor3f(0.0, 0, 0);
+//			glVertex3f(xx+old.x*rad, yy+old.y*rad, zz-rad/2);	
+//			glEnd();
+//			
+//			double percOffset=0.5;
+//			double lengthOffset=0.5*rad;
+//			glBegin(GL_LINE_STRIP);
+//			glVertex3f(xx+percOffset*old.x*rad-old.y*lengthOffset,
+//							yy+percOffset*old.y*rad+old.x*lengthOffset, zz-rad/2);
+//			glVertex3f(xx+old.x*rad, yy+old.y*rad, zz-rad/2);	
+//							
+//			glVertex3f(xx+percOffset*old.x*rad+old.y*lengthOffset,
+//							yy+percOffset*old.y*rad-old.x*lengthOffset, zz-rad/2);
+//			glEnd();
+//			
+//		}
+//		
+//	}
+//	
+//	
+//	// Draw all edges
+////  	Graph* g = ma->GetAbstractGraph(0);
+////  	
+////  	edge_iterator ei = g->getEdgeIter();
+////  	for (edge *e = g->edgeIterNext(ei); e; e = g->edgeIterNext(ei))
+////  	{
+////  		DrawEdge(window, e);
+////  	}
+//// 	
+//}
+//
+//void WeightedMap2DEnvironment::DrawEdge(const edge* e) const
+//{
+//	Graph* g = ma->GetAbstractGraph(0);
+//	node* from = g->GetNode(e->getFrom());
+//	node* to = g->GetNode(e->getTo());
+//		
+//	GLdouble xx, yy, zz, rad;	
+//	if (e->GetLabelL(kBackwardCount) == e->GetLabelL(kForwardCount))
+//	{
+//		// whole edge should be same colour - white
+//		
+//		glColor3f(1.0, 1.0, 1.0);
+//		
+//		map->GetCoord((int)from->GetLabelL(kFirstData), (int)from->GetLabelL(kFirstData+1), xx, yy, zz, rad);
+//		glBegin(GL_LINE_STRIP);
+//		glVertex3f(xx, yy, zz-rad/2);	
+//	
+//		map->GetCoord((int)to->GetLabelL(kFirstData), (int)to->GetLabelL(kFirstData+1), xx, yy, zz, rad);
+//		glVertex3f(xx, yy, zz-rad/2);
+//		glEnd();
+//	}
+//	else if (e->GetLabelL(kForwardCount) > e->GetLabelL(kBackwardCount))
+//	{
+//		// white on "from" side, blue on "to" side
+//		glColor3f(1.0, 1.0, 1.0);
+//		
+//				map->GetCoord((int)from->GetLabelL(kFirstData), (int)from->GetLabelL(kFirstData+1), xx, yy, zz, rad);
+//		glBegin(GL_LINE_STRIP);
+//		glVertex3f(xx, yy, zz-rad/2);	
+//	
+//		glColor3f(0,0,1.0);
+//		map->GetCoord((int)to->GetLabelL(kFirstData), (int)to->GetLabelL(kFirstData+1), xx, yy, zz, rad);
+//		glVertex3f(xx, yy, zz-rad/2);
+//		glEnd();
+//	}
+//	else
+//	{
+//		// blue on "from" side, white on "to" side
+//		glColor3f(0,0,1.0);
+//				map->GetCoord((int)from->GetLabelL(kFirstData), (int)from->GetLabelL(kFirstData+1), xx, yy, zz, rad);
+//		glBegin(GL_LINE_STRIP);
+//		glVertex3f(xx, yy, zz-rad/2);	
+//		
+//		
+//		glColor3f(1.0, 1.0, 1.0);
+//		map->GetCoord((int)to->GetLabelL(kFirstData), (int)to->GetLabelL(kFirstData+1), xx, yy, zz, rad);
+//		glVertex3f(xx, yy, zz-rad/2);
+//		glEnd();
+//	}
+//}
+//
+//void WeightedMap2DEnvironment::OpenGLDraw(const xyLoc& initial, const tDirection &dir) const
+//{
+//	// Figure out which edge this corresponds to
+//	// Figure out which direction is preferred
+//	//   if none, then keep one colour
+//		
+//	xyLoc s = initial;
+//	
+//	switch (dir)
+//	{
+//		case kN: s.y-=1; break;
+//		case kS: s.y+=1; break;
+//		case kE: s.x+=1; break;
+//		case kW: s.x-=1; break;
+//		case kNW: s.y-=1; s.x-=1; break;
+//		case kSW: s.y+=1; s.x-=1; break;
+//		case kNE: s.y-=1; s.x+=1; break;
+//		case kSE: s.y+=1; s.x+=1; break;
+//		default: break;
+//	}
+//		
+//	Graph* g = ma->GetAbstractGraph(0);
+//	node* from = ma->GetNodeFromMap(initial.x, initial.y);
+//	node* to = ma->GetNodeFromMap(s.x, s.y);
+//	edge* e = g->FindEdge(from->GetNum(),to->GetNum());	
+//		
+//	DrawEdge(e);
+//	
+//}
 
 void WeightedMap2DEnvironment::SetAngle(xyLoc &l, Vector2D angle)
 {

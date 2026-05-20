@@ -93,9 +93,9 @@ void BoundingBox::Draw(Graphics::Display &display, xyLoc start, tDirection dir) 
 	int index = GetIndex(dir);
 	const BB& bb = boundingBoxes[me->GetStateHash(start)*8+index];
 
-	GLdouble t, l, r, b, z, rad, tmp;
-	me->GetMap()->GetOpenGLCoord(bb.minx, bb.miny, l, t, z, rad);
-	me->GetMap()->GetOpenGLCoord(bb.maxx, bb.maxy, r, b, z, rad);
+	double t, l, r, b, z, rad, tmp;
+	me->GetMap()->GetCoord(bb.minx, bb.miny, l, t, z, rad);
+	me->GetMap()->GetCoord(bb.maxx, bb.maxy, r, b, z, rad);
 	display.FrameRect({static_cast<float>(l-rad), static_cast<float>(t-rad), static_cast<float>(r+rad), static_cast<float>(b+rad)}, Colors::orange, 1);
 }
 

@@ -117,8 +117,8 @@ public:
 	/** getPenalty for thinking. Gets the multiplier used to penalize thinking time. */
 	double GetThinkingPenalty() { return penalty; }
 
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(unsigned int whichUnit) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(unsigned int whichUnit) const;
 	
 	void SetLogStats(bool val) { logStats = val; }
 	bool GetLogStats() { return logStats; }
@@ -483,29 +483,29 @@ bool UnitSimulation<state, action, environment>::MakeUnitMove(UnitInfo<state, ac
 /* ATTENTION!!!! This function gives away the current real information,
  * this is a security issue but for performance we still did it!
 */
-template<class state, class action, class environment>
-void UnitSimulation<state, action, environment>::OpenGLDraw() const
-{
-	env->OpenGLDraw();
-	for (unsigned int x = 0; x < units.size(); x++)
-	{
-		currentActor = x;
-		units[x]->agent->OpenGLDraw(env, this);
-	}
-	
-	for (unsigned int x = 0; x <unitGroups.size(); x++)
-		unitGroups[x]->OpenGLDraw(env, this);
-}
-
-template<class state, class action, class environment>
-void UnitSimulation<state, action, environment>::OpenGLDraw(unsigned int whichUnit) const
-{
-	if (whichUnit >= units.size())
-		return;
-
-	currentActor = whichUnit;
-	units[whichUnit]->agent->OpenGLDraw(env, this);
-}
+//template<class state, class action, class environment>
+//void UnitSimulation<state, action, environment>::OpenGLDraw() const
+//{
+//	env->OpenGLDraw();
+//	for (unsigned int x = 0; x < units.size(); x++)
+//	{
+//		currentActor = x;
+//		units[x]->agent->OpenGLDraw(env, this);
+//	}
+//	
+//	for (unsigned int x = 0; x <unitGroups.size(); x++)
+//		unitGroups[x]->OpenGLDraw(env, this);
+//}
+//
+//template<class state, class action, class environment>
+//void UnitSimulation<state, action, environment>::OpenGLDraw(unsigned int whichUnit) const
+//{
+//	if (whichUnit >= units.size())
+//		return;
+//
+//	currentActor = whichUnit;
+//	units[whichUnit]->agent->OpenGLDraw(env, this);
+//}
 
 
 #endif

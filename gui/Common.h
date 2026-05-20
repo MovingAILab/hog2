@@ -313,5 +313,4 @@ pRecContext GetContext(unsigned long windowID);
 
 
 
-
 #endif

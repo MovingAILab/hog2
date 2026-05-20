@@ -88,7 +88,7 @@ public:
 	//void FullBPMX(uint64_t nodeID, int distance);
 	
 	std::string SVGDraw() const;
-	void OpenGLDraw() const;
+//	void OpenGLDraw() const;
 	void Draw(Graphics::Display &display) const;
 	void PrintHDist()
 	{
@@ -151,7 +151,7 @@ private:
 	}
 	
 	void Draw(Graphics::Display &display, const priorityQueue &queue) const;
-	void OpenGLDraw(const priorityQueue &queue) const;
+//	void OpenGLDraw(const priorityQueue &queue) const;
 	std::string SVGDraw(const priorityQueue &queue) const;
 	
 	void Expand(priorityQueue &current,
@@ -568,55 +568,55 @@ uint64_t fMM<state, action, environment, priorityQueue>::GetNecessaryExpansions(
 	return count;
 }
 
-template <class state, class action, class environment, class priorityQueue>
-void fMM<state, action, environment, priorityQueue>::OpenGLDraw() const
-{
-	OpenGLDraw(forwardQueue);
-	OpenGLDraw(backwardQueue);
-}
-
-template <class state, class action, class environment, class priorityQueue>
-void fMM<state, action, environment, priorityQueue>::OpenGLDraw(const priorityQueue &queue) const
-{
-	double transparency = 0.9;
-	if (queue.size() == 0)
-		return;
-	uint64_t top = -1;
-	//	double minf = 1e9, maxf = 0;
-	if (queue.OpenSize() > 0)
-	{
-		top = queue.Peek();
-	}
-	for (unsigned int x = 0; x < queue.size(); x++)
-	{
-		const FMMOpenClosedData<state> &data = queue.Lookat(x);
-		if (x == top)
-		{
-			env->SetColor(1.0, 1.0, 0.0, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		if ((data.where == kOpenList) && (data.reopened))
-		{
-			env->SetColor(0.0, 0.5, 0.5, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		else if (data.where == kOpenList)
-		{
-			env->SetColor(0.0, 1.0, 0.0, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		else if ((data.where == kClosedList) && (data.reopened))
-		{
-			env->SetColor(0.5, 0.0, 0.5, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		else if (data.where == kClosedList)
-		{
-			env->SetColor(1.0, 0.0, 0.0, transparency);
-			env->OpenGLDraw(data.data);
-		}
-	}
-}
+//template <class state, class action, class environment, class priorityQueue>
+//void fMM<state, action, environment, priorityQueue>::OpenGLDraw() const
+//{
+//	OpenGLDraw(forwardQueue);
+//	OpenGLDraw(backwardQueue);
+//}
+//
+//template <class state, class action, class environment, class priorityQueue>
+//void fMM<state, action, environment, priorityQueue>::OpenGLDraw(const priorityQueue &queue) const
+//{
+//	double transparency = 0.9;
+//	if (queue.size() == 0)
+//		return;
+//	uint64_t top = -1;
+//	//	double minf = 1e9, maxf = 0;
+//	if (queue.OpenSize() > 0)
+//	{
+//		top = queue.Peek();
+//	}
+//	for (unsigned int x = 0; x < queue.size(); x++)
+//	{
+//		const FMMOpenClosedData<state> &data = queue.Lookat(x);
+//		if (x == top)
+//		{
+//			env->SetColor(1.0, 1.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		if ((data.where == kOpenList) && (data.reopened))
+//		{
+//			env->SetColor(0.0, 0.5, 0.5, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		else if (data.where == kOpenList)
+//		{
+//			env->SetColor(0.0, 1.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		else if ((data.where == kClosedList) && (data.reopened))
+//		{
+//			env->SetColor(0.5, 0.0, 0.5, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		else if (data.where == kClosedList)
+//		{
+//			env->SetColor(1.0, 0.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//	}
+//}
 
 template <class state, class action, class environment, class priorityQueue>
 std::string fMM<state, action, environment, priorityQueue>::SVGDraw() const

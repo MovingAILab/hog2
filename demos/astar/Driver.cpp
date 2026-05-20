@@ -111,7 +111,7 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 	else if (eType == kWindowCreated)
 	{
 		printf("Window %ld created\n", windowID);
-		glClearColor(0.99, 0.99, 0.99, 1.0);
+		//glClearColor(0.99, 0.99, 0.99, 1.0);
 		InstallFrameHandler(MyFrameHandler, windowID, 0);
 		
 		SetNumPorts(windowID, 2);
@@ -328,11 +328,13 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 		case 'p':
 		{
 			std::fstream svgFile;
+			/*
 			svgFile.open("/Users/nathanst/graph.svg", std::fstream::out | std::fstream::trunc);
 			svgFile << ge->SVGHeader();
 			svgFile << ge->SVGDraw();
 			svgFile << "</svg>";
 			svgFile.close();
+			*/
 		}
 			break;
 		case 'o':
@@ -369,6 +371,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			break;
 		case 'g':
 		{
+		  /*
 			std::fstream svgFile;
 			ge->SetColor(Colors::darkgray.r, Colors::darkgray.g, Colors::darkgray.b);
 			svgFile.open("/Users/nathanst/graph.svg", std::fstream::out | std::fstream::trunc);
@@ -376,6 +379,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			svgFile << ge->SVGDraw();			
 			svgFile << "</svg>";
 			svgFile.close();
+		  */
 		}
 			break;
 		default:

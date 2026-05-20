@@ -137,9 +137,9 @@ public:
 
 	void ExtractPathToStart(graphState goalNode, std::vector<graphState> &thePath);
 	//void OpenGLDraw() const;
-	void OpenGLDraw() const;
-	void DrawText(double x, double y, double z, float r, float g, float b, char* str);
-	void DrawEdge(unsigned int from, unsigned int to, double weight);
+//	void OpenGLDraw() const;
+//	void DrawText(double x, double y, double z, float r, float g, float b, char* str);
+//	void DrawEdge(unsigned int from, unsigned int to, double weight);
 
 	double GetSolutionCost() {return solutionCost;}
 	const char* GetName() {return "AStarDelay";}

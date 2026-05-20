@@ -104,20 +104,20 @@ AirplaneEnvironment::AirplaneEnvironment()
 		{
 			if (x < width)
 			{
-				recVec a = GetCoordinate(x, y, std::max((int)GetGround(x, y), 20));
-				recVec b = GetCoordinate(x, y+1, std::max((int)GetGround(x, y+1), 20));
-				recVec d = GetCoordinate(x+1, y, std::max((int)GetGround(x+1, y), 20));
-				recVec n = (a-b).GetNormal(a-d);
+				Graphics::point a = GetCoordinate(x, y, std::max((int)GetGround(x, y), 20));
+				Graphics::point b = GetCoordinate(x, y+1, std::max((int)GetGround(x, y+1), 20));
+				Graphics::point d = GetCoordinate(x+1, y, std::max((int)GetGround(x+1, y), 20));
+				Graphics::point n = (a-b)*(a-d); // TODO: verify
 				GetNormal(x, y) += n;
 				GetNormal(x, y+1) += n;
 				GetNormal(x+1, y) += n;
 			}
 			if (x > 0)
 			{
-				recVec a = GetCoordinate(x, y, std::max((int)GetGround(x, y), 20));
-				recVec b = GetCoordinate(x-1, y+1, std::max((int)GetGround(x-1, y+1), 20));
-				recVec d = GetCoordinate(x, y+1, std::max((int)GetGround(x, y+1), 20));
-				recVec n = (a-b).GetNormal(a-d);
+				Graphics::point a = GetCoordinate(x, y, std::max((int)GetGround(x, y), 20));
+				Graphics::point b = GetCoordinate(x-1, y+1, std::max((int)GetGround(x-1, y+1), 20));
+				Graphics::point d = GetCoordinate(x, y+1, std::max((int)GetGround(x, y+1), 20));
+				Graphics::point n = (a-b)*(a-d); // TODO: verify
 				GetNormal(x, y) += n;
 				GetNormal(x-1, y+1) += n;
 				GetNormal(x, y+1) += n;
@@ -176,12 +176,12 @@ bool AirplaneEnvironment::Valid(int x, int y)
 }
 
 
-recVec &AirplaneEnvironment::GetNormal(int x, int y)
+Graphics::point &AirplaneEnvironment::GetNormal(int x, int y)
 {
 	return groundNormals[x + y*(length+1)];
 }
 
-recVec AirplaneEnvironment::GetNormal(int x, int y) const
+Graphics::point AirplaneEnvironment::GetNormal(int x, int y) const
 {
 	return groundNormals[x + y*(length+1)];
 }
@@ -325,114 +325,8 @@ uint64_t AirplaneEnvironment::GetActionHash(airplaneAction act) const
 	return 0;
 }
 
-recVec AirplaneEnvironment::GetCoordinate(int x, int y, int z) const
+Graphics::point AirplaneEnvironment::GetCoordinate(int x, int y, int z) const
 {
-	return {(x-width/2.0)/(width/2.0), (y-width/2.0)/(width/2.0), -4.0*z/(255.0*80)};
+	return Graphics::point((x-width/2.0)/(width/2.0), (y-width/2.0)/(width/2.0), -4.0*z/(255.0*80));
 }
 
-void AirplaneEnvironment::OpenGLDraw() const
-{
-	glEnable(GL_LIGHTING);
-	for (int y = 0; y < length; y++)
-	{
-		glBegin(GL_TRIANGLE_STRIP);
-		for (int x = 0; x <= width; x++)
-		{
-			rgbColor c;
-			
-			recVec a = GetCoordinate(x, y, std::max((int)GetGround(x, y), 20));
-			recVec b = GetCoordinate(x, y+1, std::max((int)GetGround(x, y+1), 20));
-			
-			//DoNormal(b-a, d-a);
-
-			if (GetGround(x, y) <= 20)
-			{
-				glColor3f(0, 0, 1);
-			}
-			else {
-				c = Colors::GetColor(GetGround(x, y), 0, 255, 5);
-				glColor3f(c.r, c.g, c.b);
-			}
-			recVec tmp = GetNormal(x, y);
-			glNormal3f(tmp.x, tmp.y, tmp.z);
-			glVertex3f(a.x, a.y, a.z);
-
-			if (GetGround(x, y+1) < 20)
-			{
-				glColor3f(0, 0, 1);
-			}
-			else {
-				c = Colors::GetColor(GetGround(x, y+1), 0, 255, 5);
-				glColor3f(c.r, c.g, c.b);
-			}
-			tmp = GetNormal(x, y+1);
-			glNormal3f(tmp.x, tmp.y, tmp.z);
-			glVertex3f(b.x, b.y, b.z);
-		}
-		glEnd(); // ground up to 5k feet (1 mile = 4 out of 20)
-	}
-	glDisable(GL_LIGHTING);
-	glColor3f(1.0, 1.0, 1.0);
-	DrawBoxFrame(0, 0, 0.75, 1.0);
-}
-
-void AirplaneEnvironment::OpenGLDraw(const airplaneState &l) const
-{
-	{
-		GLfloat r, g, b, t;
-		GetColor(r, g, b, t);
-		glColor3f(r, g, b);
-	}
-	// x & y range from 20*4 = 0 to 80 = -1 to +1
-	// z ranges from 0 to 20 which is 0...
-	GLfloat x = (l.x-40.0)/40.0;
-	GLfloat y = (l.y-40.0)/40.0;
-	GLfloat z = -l.height/80.0;
-	glEnable(GL_LIGHTING);
-	glPushMatrix();
-	glTranslatef(x, y, z);
-	glRotatef(360*l.heading/8.0, 0, 0, 1);
-	DrawCylinder(0, 0, 0, 0, 0.01/5.0, 0.01);
-	glPopMatrix();
-	
-	//DrawCylinder(l.x, l.y, l.height, 0, 0.001, 0.01);
-}
-
-void AirplaneEnvironment::OpenGLDraw(const airplaneState& o, const airplaneState &n, float perc) const
-{
-	{
-		GLfloat r, g, b, t;
-		GetColor(r, g, b, t);
-		glColor3f(r, g, b);
-	}
-	
-	GLfloat x1 = (o.x-40.0)/40.0;
-	GLfloat y1 = (o.y-40.0)/40.0;
-	GLfloat z1 = -o.height/80.0;
-	GLfloat h1 = 360*o.heading/8.0;
-
-	GLfloat x2 = (n.x-40.0)/40.0;
-	GLfloat y2 = (n.y-40.0)/40.0;
-	GLfloat z2 = -n.height/80.0;
-	GLfloat h2 = 360*n.heading/8.0;
-	if (o.heading < 2 && n.heading >= 6)
-		h2 -= 360;
-	if (o.heading >= 6 && n.heading < 2)
-		h1 -= 360;
-	glEnable(GL_LIGHTING);
-	glPushMatrix();
-	glTranslatef((1-perc)*x1+perc*x2, (1-perc)*y1+perc*y2, (1-perc)*z1+perc*z2);
-	glRotatef((1-perc)*h1+perc*h2, 0, 0, 1);
-	DrawCylinder(0, 0, 0, 0, 0.01/5.0, 0.01);
-	glPopMatrix();
-}
-
-void AirplaneEnvironment::OpenGLDraw(const airplaneState &, const airplaneAction &) const
-{
-	
-}
-
-void AirplaneEnvironment::GLDrawLine(const airplaneState &a, const airplaneState &b) const
-{
-	
-}

@@ -231,10 +231,10 @@ public:
 	
 	int FindNearState(int x, int y, int z, state3d &s) const;
 	
-	void OpenGLDraw() const;
-	void OpenGLDraw(const state3d&) const;
-	void OpenGLDraw(const state3d&, const action3d&) const { }
-	void GLDrawLine(const state3d &x, const state3d &y) const;
+//	void OpenGLDraw() const;
+//	void OpenGLDraw(const state3d&) const;
+//	void OpenGLDraw(const state3d&, const action3d&) const { }
+//	void GLDrawLine(const state3d &x, const state3d &y) const;
 
 	
 	bool AddPoint(int x, int y, int z);
@@ -261,9 +261,9 @@ private:
 	void GetXYFromState(const state3d &s, int &x, int &y) const;
 	void GetXYZFromState(const state3d &s, int &x, int &y, int &z) const;
 	void GetStateFromXYZ(state3d &s, int x, int y, int z) const;
-	void GetOpenGLCoord(int xLoc, int yLoc, int zLoc,
-						GLdouble &x, GLdouble &y, GLdouble &z,
-						GLdouble &r, GLdouble &h) const;
+//	void GetCoord(int xLoc, int yLoc, int zLoc,
+//						GLdouble &x, GLdouble &y, GLdouble &z,
+//						GLdouble &r, GLdouble &h) const;
 	int mWidth, mHeight;
 	int mXSectors, mYSectors;
 	std::vector<SectorData> sectors;

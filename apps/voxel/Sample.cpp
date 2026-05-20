@@ -26,7 +26,7 @@
 #include "NBS.h"
 #include <deque>
 
-recVec velocity;
+Graphics::point velocity;
 std::string map;
 void Maze3D(int d);
 void CustomMaze();
@@ -123,7 +123,7 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 		InstallFrameHandler(MyFrameHandler, windowID, 0);
 		CreateSimulation(windowID);
 		SetNumPorts(windowID, 1);
-		SetLighting(0.65, 1.0, 0.2);
+		//SetLighting(0.65, 1.0, 0.2);
 	}
 }
 
@@ -282,8 +282,8 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 	if (capture)
 	{
 		static int currentFrame = 0;
-		glRotatef(currentFrame*360.0/frames, 0, 1, 0);
-		vg->OpenGLDraw();
+		//glRotatef(currentFrame*360.0/frames, 0, 1, 0);
+		//vg->OpenGLDraw();
 
 		char fname[255];
 		sprintf(fname, "%s-%d%d%d%d",
@@ -305,20 +305,20 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 	{
 	  //cameraOffset(velocity.x, velocity.y, velocity.z);
 		
-//		v->OpenGLDraw();
+	  //		v->OpenGLDraw();
 	}
 //	if (viewport == 1)
 	{
-		vg->OpenGLDraw();
+	  //	vg->OpenGLDraw();
 
 		if (path.size() > 0)
 		{
-			vg->SetColor(1.0, 1.0, 1.0);
-			glColor3f(1, 1, 1);
-			glLineWidth(8.0);
-			for (int x = 0; x < path.size()-1; x++)
-				vg->GLDrawLine(path[x], path[x+1]);
-			glLineWidth(1.0);
+		  //vg->SetColor(1.0, 1.0, 1.0);
+		  //	glColor3f(1, 1, 1);
+		  //	glLineWidth(8.0);
+		  //	for (int x = 0; x < path.size()-1; x++)
+		  //		vg->GLDrawLine(path[x], path[x+1]);
+		  //	glLineWidth(1.0);
 		}
 	}
 	//LoadData();
@@ -956,15 +956,15 @@ void ExportMazes(Map *m1, Map *m2, Map *m3, int mapSize)
 
 	
 	{
-		GLdouble px1, py1, t1, rad1;
-		m1->GetOpenGLCoord(0, 0, px1, py1, t1, rad1);
+		double px1, py1, t1, rad1;
+		m1->GetCoord(0, 0, px1, py1, t1, rad1);
 		printf("Test: (0, 0) is (%f, %f)\n", px1-rad1, py1-rad1);
-		m1->GetOpenGLCoord((int)m1->GetMapWidth()-1, (int)m1->GetMapHeight()-1, px1, py1, t1, rad1);
+		m1->GetCoord((int)m1->GetMapWidth()-1, (int)m1->GetMapHeight()-1, px1, py1, t1, rad1);
 		printf("Test: (%d, %d) is (%f, %f)\n",
-			   m1->GetMapWidth()-1,
-			   m1->GetMapHeight()-1,
-			   px1+rad1, py1+rad1);
-
+		       m1->GetMapWidth()-1,
+		       m1->GetMapHeight()-1,
+		       px1+rad1, py1+rad1);
+		
 	}
 	
 }

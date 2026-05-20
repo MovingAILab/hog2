@@ -40,12 +40,12 @@ public:
 	
 	virtual uint64_t GetActionHash(neighbor act) const;
 	std::string GetName() { return std::string("RoadMap"); }
-	virtual void SetColor(GLfloat rr, GLfloat g, GLfloat b, GLfloat t = 1.0) const;
-	virtual void GetColor(GLfloat& rr, GLfloat& g, GLfloat& b, GLfloat &t) const;
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const intersection&) const;
-	virtual void OpenGLDraw(const intersection&, const neighbor&) const;
-	virtual void GLDrawPath(const std::vector<intersection> &x) const;
+	virtual void SetColor(float rr, float g, float b, float t = 1.0) const;
+	virtual void GetColor(float& rr, float& g, float& b, float &t) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const intersection&) const;
+//	virtual void OpenGLDraw(const intersection&, const neighbor&) const;
+//	virtual void GLDrawPath(const std::vector<intersection> &x) const;
 protected:
 	GraphEnvironment *ge;
 	Graph *g;

@@ -123,11 +123,11 @@ public:
 	
 	//virtual double GetPathLength(std::vector<MNAgentPuzzleState> &neighbors);
 		
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const MNAgentPuzzleState&) const;
-	/** Draw the transition at some percentage 0...1 between two states */
-	virtual void OpenGLDraw(const MNAgentPuzzleState&, const MNAgentPuzzleState&, float) const;
-	virtual void OpenGLDraw(const MNAgentPuzzleState&, const tAgentAction&) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const MNAgentPuzzleState&) const;
+//	/** Draw the transition at some percentage 0...1 between two states */
+//	virtual void OpenGLDraw(const MNAgentPuzzleState&, const MNAgentPuzzleState&, float) const;
+//	virtual void OpenGLDraw(const MNAgentPuzzleState&, const tAgentAction&) const;
 private:
 	void FindLegalMoves(MNAgentPuzzleState &s,
 						tAgentAction &curr,

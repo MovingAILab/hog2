@@ -9,7 +9,7 @@
 
 #include "RoboticArm.h"
 #include "TemplateAStar.h"
-#include "GLUtil.h"
+#include "Constants.h"
 #include <string.h>
 
 tRotation armRotations::GetRotation(int which) const
@@ -63,7 +63,7 @@ void armAngles::SetNumArms(int count)
 	angles = newCnt|(angles&mask);
 }
 
-void armAngles::SetGoal(double x, double y)
+void armAngles::SetGoal(float x, float y)
 {
 	uint64_t fixedDecx, fixedFracx;
 	uint64_t fixedDecy, fixedFracy;
@@ -76,12 +76,12 @@ void armAngles::SetGoal(double x, double y)
 	angles = (0xFll<<60)|(fixedDecx<<50)|(fixedFracx<<30)|(fixedDecy<<20)|fixedFracy;
 }
 
-void armAngles::GetGoal(double &x, double &y) const
+void armAngles::GetGoal(float &x, float &y) const
 {
 	assert(IsGoalState());
 	
-	x = ((angles>>50)&0x3FF) + (double)((angles>>30)&0xFFFFF)/(1024.0*1024.0);
-	y = ((angles>>20)&0x3FF) + (double)((angles)&0xFFFFF)/(1024.0*1024.0);
+	x = ((angles>>50)&0x3FF) + ((angles>>30)&0xFFFFF)/(1024.0*1024.0);
+	y = ((angles>>20)&0x3FF) + ((angles)&0xFFFFF)/(1024.0*1024.0);
 	x-= 512;
 	y-= 512;
 }
@@ -109,7 +109,7 @@ void RoboticArm::GetTipPosition(const armAngles &s, double &x, double &y ) const
 {
 	static std::vector<line2d> armSegs;
 	GenerateLineSegments( s, armSegs );
-	recVec a = armSegs.back().end;
+	Graphics::point a = armSegs.back().end;
 	x = a.x;
 	y = a.y;
 }
@@ -296,14 +296,14 @@ double RoboticArm::HCost(const armAngles &node1, const armAngles &node2) const
 
 	std::vector<line2d> armSegments1;
 	GenerateLineSegments(node1, armSegments1);
-	recVec a = armSegments1.back().end;
-	double x, y;
+	Graphics::point a = armSegments1.back().end;
+	float x, y;
 	node2.GetGoal(x, y);
 	double actDistance = sqrt((x-a.x)*(x-a.x)+(y-a.y)*(y-a.y));
 	double movementAmount = (node1.GetNumArms()*armLength*sin(TWOPI*4.0/1024.0));
 
 	{
-		recVec g(x, y, 0);
+		Graphics::point g(x, y, 0);
 		ce->StoreGoal(g);
 		localAStar.GetPath(ce, a, g, states);
 		actDistance = max(actDistance, ce->GetPathLength(states));
@@ -314,7 +314,7 @@ double RoboticArm::HCost(const armAngles &node1, const armAngles &node2) const
 	return h;
 
 #if 0
-	recVec a, b;
+	Graphics::point a, b;
 	if (node1.IsGoalState())
 		node1.GetGoal(a.x, a.y);
 	else {
@@ -335,7 +335,7 @@ double RoboticArm::HCost(const armAngles &node1, const armAngles &node2) const
 #if 0
 double RoboticArm::GCost(const armAngles &node1, const armAngles &node2)
 {
-	recVec a, b;
+	Graphics::point a, b;
 	if (node1.IsGoalState())
 		node1.GetGoal(a.x, a.y);
 	else {
@@ -371,9 +371,9 @@ bool RoboticArm::GoalTest(const armAngles &node, const armAngles &goal) const
 	assert(goal.IsGoalState());
 	GenerateLineSegments(node, armSegments);
 
-	recVec a;
+	Graphics::point a;
 	a = armSegments.back().end;
-	double x, y;
+	float x, y;
 	goal.GetGoal(x, y);
 	return x-a.x <= tolerance && a.x-x < tolerance
 	  && y-a.y <= tolerance && a.y-y < tolerance;
@@ -419,7 +419,7 @@ void RoboticArm::Draw(Graphics::Display &display) const
 
 void RoboticArm::Draw(Graphics::Display &display, const armAngles &a, int which, rgbColor c) const
 {
-	recVec e;
+	Graphics::point e;
 	if (a.IsGoalState())
 	{
 		e.z = 0;
@@ -442,7 +442,7 @@ void RoboticArm::Draw(Graphics::Display &display, const armAngles &a, int which,
 
 void RoboticArm::Draw(Graphics::Display &display, const armAngles &a) const
 {
-	recVec e;
+	Graphics::point e;
 	if (a.IsGoalState())
 	{
 		e.z = 0;
@@ -468,90 +468,90 @@ void RoboticArm::Draw(Graphics::Display &display, const armAngles &, const armRo
 	
 }
 
-void RoboticArm::OpenGLDraw() const
-{
-//	if (window == 1)
+//void RoboticArm::OpenGLDraw() const
+//{
+////	if (window == 1)
+////	{
+////		ce->OpenGLDraw(1);
+////		return;
+////	}
+//	glBegin(GL_QUADS);
+//	glColor3f(0, 0, 0.1);
+//	glVertex3f(-1, -1, 0.1);
+//	glVertex3f(1, -1, 0.1);
+//	glVertex3f(1, 1, 0.1);
+//	glVertex3f(-1, 1, 0.1);
+//	glEnd();
+//	
+//	glColor3f(1, 0, 0);
+//	for (unsigned int x = 0; x < obstacles.size(); x++)
 //	{
-//		ce->OpenGLDraw(1);
-//		return;
+//		DrawLine(obstacles[x]);
 //	}
-	glBegin(GL_QUADS);
-	glColor3f(0, 0, 0.1);
-	glVertex3f(-1, -1, 0.1);
-	glVertex3f(1, -1, 0.1);
-	glVertex3f(1, 1, 0.1);
-	glVertex3f(-1, 1, 0.1);
-	glEnd();
-	
-	glColor3f(1, 0, 0);
-	for (unsigned int x = 0; x < obstacles.size(); x++)
-	{
-		DrawLine(obstacles[x]);
-	}
-}
-
-void RoboticArm::OpenGLDraw(const armAngles &a) const
-{
-//	if (window == 1)
+//}
+//
+//void RoboticArm::OpenGLDraw(const armAngles &a) const
+//{
+////	if (window == 1)
+////	{
+////		glColor3f(1, 1, 0);
+////		for (unsigned int x = 1; x < states.size(); x++)
+////		{
+////			DrawLine(line2d(states[x-1], states[x]));
+////		}
+////		ce->OpenGLDraw(1);
+////		return;
+////	}
+//
+//	Graphics::point e;
+//	if (a.IsGoalState())
 //	{
-//		glColor3f(1, 1, 0);
-//		for (unsigned int x = 1; x < states.size(); x++)
+//		e.z = 0;
+//		a.GetGoal(e.x, e.y);
+//	}
+//	else {
+//		GenerateLineSegments(a, armSegments);
+//		
+//		for (unsigned int x = 0; x < armSegments.size(); x++)
 //		{
-//			DrawLine(line2d(states[x-1], states[x]));
+//			glColor3f(1, 1, 1);
+//			//printf("Drawing line segment %d of %d\n", x, armSegments.size());
+//			DrawLine(armSegments[x]);
 //		}
-//		ce->OpenGLDraw(1);
-//		return;
+//		e = armSegments.back().end;
 //	}
-
-	recVec e;
-	if (a.IsGoalState())
-	{
-		e.z = 0;
-		a.GetGoal(e.x, e.y);
-	}
-	else {
-		GenerateLineSegments(a, armSegments);
-		
-		for (unsigned int x = 0; x < armSegments.size(); x++)
-		{
-			glColor3f(1, 1, 1);
-			//printf("Drawing line segment %d of %d\n", x, armSegments.size());
-			DrawLine(armSegments[x]);
-		}
-		e = armSegments.back().end;
-	}
-	
-	glBegin(GL_LINE_LOOP);
-	glColor3f(0, 1.0, 0);
-	glVertex3f(e.x+tolerance, e.y+tolerance, 0);
-	glVertex3f(e.x-tolerance, e.y+tolerance, 0);
-	glVertex3f(e.x-tolerance, e.y-tolerance, 0);
-	glVertex3f(e.x+tolerance, e.y-tolerance, 0);
-	glEnd();
-	
-}
-
-void RoboticArm::OpenGLDraw(const armAngles &, const armRotations &) const
-{
-}
-
-//void RoboticArm::OpenGLDraw(const armAngles &, const armRotations &, GLfloat, GLfloat, GLfloat) const
+//	
+//	glBegin(GL_LINE_LOOP);
+//	glColor3f(0, 1.0, 0);
+//	glVertex3f(e.x+tolerance, e.y+tolerance, 0);
+//	glVertex3f(e.x-tolerance, e.y+tolerance, 0);
+//	glVertex3f(e.x-tolerance, e.y-tolerance, 0);
+//	glVertex3f(e.x+tolerance, e.y-tolerance, 0);
+//	glEnd();
+//	
+//}
+//
+//void RoboticArm::OpenGLDraw(const armAngles &, const armRotations &) const
 //{
 //}
 //
-//void RoboticArm::OpenGLDraw(const armAngles &, GLfloat, GLfloat, GLfloat) const
+////void RoboticArm::OpenGLDraw(const armAngles &, const armRotations &, GLfloat, GLfloat, GLfloat) const
+////{
+////}
+////
+////void RoboticArm::OpenGLDraw(const armAngles &, GLfloat, GLfloat, GLfloat) const
+////{
+////}
+//
+//void RoboticArm::DrawLine(line2d l) const
 //{
+//	glLineWidth(5);
+//	glBegin(GL_LINES);
+//	glVertex3f(l.start.x, l.start.y, 0);
+//	glVertex3f(l.end.x, l.end.y, 0);
+//	glEnd();
+//	glLineWidth(1);
 //}
-
-void RoboticArm::DrawLine(line2d l) const
-{
-	glLineWidth(5);
-	glBegin(GL_LINES);
-	glVertex3f(l.start.x, l.start.y, 0);
-	glVertex3f(l.end.x, l.end.y, 0);
-	glEnd();
-	glLineWidth(1);
-}
 
 void RoboticArm::GetNextState(const armAngles &currents, armRotations dir, armAngles &news) const
 {
@@ -637,9 +637,9 @@ void RoboticArm::GenerateLineSegments(const armAngles &a, std::vector<line2d> &a
 	armSegments1.resize(0);
 	for (int x = 0; x < a.GetNumArms(); x++)
 	{
-		recVec prev;
-		recVec start;
-		recVec end;
+		Graphics::point prev;
+		Graphics::point start;
+		Graphics::point end;
 
 		//double angle = TWOPI*a.GetAngle(x)/1024.0;
 		int angle = a.GetAngle(x);
@@ -702,7 +702,7 @@ ArmToTipHeuristic::ArmToTipHeuristic(RoboticArm *r)
 
 double ArmToTipHeuristic::HCost(const armAngles &node1, const armAngles &node2) const
 {
-	double x, y;
+	float x, y;
 	node2.GetGoal(x, y);
 
 	double h = 0;

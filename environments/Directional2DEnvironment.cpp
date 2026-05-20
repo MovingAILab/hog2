@@ -636,127 +636,127 @@ uint64_t Directional2DEnvironment::GetActionHash(deltaSpeedHeading act) const
 	return ((act.turn+4)<<8)+(act.speed+4);
 }
 
-void Directional2DEnvironment::OpenGLDraw() const
-{
-//	std::cout<<"drawing\n";
-	map->OpenGLDraw();
-}
-
-
-void Directional2DEnvironment::OpenGLDraw(const xySpeedHeading& oldState, const xySpeedHeading &newState, float perc) const
-{
-	int DEG = 16;
-	if ((motionModel == kTank) || (motionModel == kBetterTank))
-		DEG = 24;
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-
-	GLdouble xx, yy, zz, rad;
-	map->GetOpenGLCoord(perc*newState.x + (1-perc)*oldState.x, perc*newState.y + (1-perc)*oldState.y, xx, yy, zz, rad);
-	
-	float rot = (1-perc)*oldState.rotation+perc*newState.rotation;
-	if ((oldState.rotation >= DEG-4) && (newState.rotation <= 5))
-	{
-		rot = (1-perc)*oldState.rotation+perc*(newState.rotation+DEG);
-		if (rot >= DEG)
-			rot -= DEG;
-	}
-	else if ((newState.rotation >= DEG-4) && (oldState.rotation <= 5))
-	{
-		rot = (1-perc)*(oldState.rotation+DEG)+perc*(newState.rotation);
-		if (rot >= DEG)
-			rot -= DEG;
-	}
-	GLdouble yoffset = sin(TWOPI*rot/DEG)*rad;
-	GLdouble xoffset = cos(TWOPI*rot/DEG)*rad;
-
-	glBegin(GL_TRIANGLES);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
-	
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
-	glEnd();
-}
-
-
-void Directional2DEnvironment::OpenGLDraw(const xySpeedHeading &l) const
-{
-	GLdouble xx, yy, zz, rad;
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-	map->GetOpenGLCoord(l.x, l.y, xx, yy, zz, rad);
-
-	GLdouble yoffset = mySin(l.rotation)*rad;//sin(TWOPI*rot/16)*rad;
-	GLdouble xoffset = myCos(l.rotation)*rad;//cos(TWOPI*rot/16)*rad;
-
-//	glColor3f(0, 0, 1.0);
-//	glBegin(GL_LINE_STRIP);
-//	glVertex3f(xx-rad, yy-rad, zz-rad);
-//	glVertex3f(xx-rad, yy-rad, zz);
+//void Directional2DEnvironment::OpenGLDraw() const
+//{
+////	std::cout<<"drawing\n";
+//	map->OpenGLDraw();
+//}
+//
+//
+//void Directional2DEnvironment::OpenGLDraw(const xySpeedHeading& oldState, const xySpeedHeading &newState, float perc) const
+//{
+//	int DEG = 16;
+//	if ((motionModel == kTank) || (motionModel == kBetterTank))
+//		DEG = 24;
+//	GLfloat r, g, b, t;
+//	GetColor(r, g, b, t);
+//
+//	GLdouble xx, yy, zz, rad;
+//	map->GetCoord(perc*newState.x + (1-perc)*oldState.x, perc*newState.y + (1-perc)*oldState.y, xx, yy, zz, rad);
+//	
+//	float rot = (1-perc)*oldState.rotation+perc*newState.rotation;
+//	if ((oldState.rotation >= DEG-4) && (newState.rotation <= 5))
+//	{
+//		rot = (1-perc)*oldState.rotation+perc*(newState.rotation+DEG);
+//		if (rot >= DEG)
+//			rot -= DEG;
+//	}
+//	else if ((newState.rotation >= DEG-4) && (oldState.rotation <= 5))
+//	{
+//		rot = (1-perc)*(oldState.rotation+DEG)+perc*(newState.rotation);
+//		if (rot >= DEG)
+//			rot -= DEG;
+//	}
+//	GLdouble yoffset = sin(TWOPI*rot/DEG)*rad;
+//	GLdouble xoffset = cos(TWOPI*rot/DEG)*rad;
+//
+//	glBegin(GL_TRIANGLES);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
+//	
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
 //	glEnd();
-	
-	glBegin(GL_TRIANGLES);
-	recVec surfaceNormal;
-	surfaceNormal.x = (((-0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
-	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((0.5*yoffset) - (rad)));
-	surfaceNormal.z = (((0.5*yoffset) * (-2*yoffset)) - ((-0.5*xoffset) - (-2*xoffset)));
-	surfaceNormal.normalise();
-	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
-	
-	surfaceNormal.x = (((+0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
-	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((-0.5*yoffset) - (rad)));
-	surfaceNormal.z = (((-0.5*yoffset) * (-2*yoffset)) - ((+0.5*xoffset) - (-2*xoffset)));
-	surfaceNormal.normalise();
-	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
-	glEnd();	
-}
-
-
-void Directional2DEnvironment::OpenGLDraw(const xySpeedHeading& l, const deltaSpeedHeading &) const
-{
-	GLdouble xx, yy, zz, rad;
-	map->GetOpenGLCoord(l.x, l.y, xx, yy, zz, rad);
-	glColor3f(0.5f, 0.5f, 0.5);
-	DrawSphere(xx-rad+l.x, yy-rad+l.y, zz, rad);
-}
-
-
-void Directional2DEnvironment::GLDrawLine(const xySpeedHeading &a, const xySpeedHeading &b) const
-{
-	GLdouble xx, yy, zz, rad;
-	map->GetOpenGLCoord(a.x, a.y, xx, yy, zz, rad);
-	
-	GLfloat rr, gg, bb, t;
-	GetColor(rr, gg, bb, t);
-	glColor4f(rr, gg, bb, t);
-	
-	glBegin(GL_LINES);
-	glVertex3f(xx, yy, zz-rad/2);
-	map->GetOpenGLCoord(b.x, b.y, xx, yy, zz, rad);
-	glVertex3f(xx, yy, zz-rad/2);
-	glEnd();
-}
+//}
+//
+//
+//void Directional2DEnvironment::OpenGLDraw(const xySpeedHeading &l) const
+//{
+//	GLdouble xx, yy, zz, rad;
+//	GLfloat r, g, b, t;
+//	GetColor(r, g, b, t);
+//	map->GetCoord(l.x, l.y, xx, yy, zz, rad);
+//
+//	GLdouble yoffset = mySin(l.rotation)*rad;//sin(TWOPI*rot/16)*rad;
+//	GLdouble xoffset = myCos(l.rotation)*rad;//cos(TWOPI*rot/16)*rad;
+//
+////	glColor3f(0, 0, 1.0);
+////	glBegin(GL_LINE_STRIP);
+////	glVertex3f(xx-rad, yy-rad, zz-rad);
+////	glVertex3f(xx-rad, yy-rad, zz);
+////	glEnd();
+//	
+//	glBegin(GL_TRIANGLES);
+//	Graphics::point surfaceNormal;
+//	surfaceNormal.x = (((-0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
+//	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((0.5*yoffset) - (rad)));
+//	surfaceNormal.z = (((0.5*yoffset) * (-2*yoffset)) - ((-0.5*xoffset) - (-2*xoffset)));
+//	surfaceNormal.normalise();
+//	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
+//	
+//	surfaceNormal.x = (((+0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
+//	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((-0.5*yoffset) - (rad)));
+//	surfaceNormal.z = (((-0.5*yoffset) * (-2*yoffset)) - ((+0.5*xoffset) - (-2*xoffset)));
+//	surfaceNormal.normalise();
+//	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
+//	glEnd();	
+//}
+//
+//
+//void Directional2DEnvironment::OpenGLDraw(const xySpeedHeading& l, const deltaSpeedHeading &) const
+//{
+//	GLdouble xx, yy, zz, rad;
+//	map->GetCoord(l.x, l.y, xx, yy, zz, rad);
+//	glColor3f(0.5f, 0.5f, 0.5);
+//	DrawSphere(xx-rad+l.x, yy-rad+l.y, zz, rad);
+//}
+//
+//
+//void Directional2DEnvironment::GLDrawLine(const xySpeedHeading &a, const xySpeedHeading &b) const
+//{
+//	GLdouble xx, yy, zz, rad;
+//	map->GetCoord(a.x, a.y, xx, yy, zz, rad);
+//	
+//	GLfloat rr, gg, bb, t;
+//	GetColor(rr, gg, bb, t);
+//	glColor4f(rr, gg, bb, t);
+//	
+//	glBegin(GL_LINES);
+//	glVertex3f(xx, yy, zz-rad/2);
+//	map->GetCoord(b.x, b.y, xx, yy, zz, rad);
+//	glVertex3f(xx, yy, zz-rad/2);
+//	glEnd();
+//}
 
 void Directional2DEnvironment::GetNextState(const xySpeedHeading &, deltaSpeedHeading , xySpeedHeading &) const
 {

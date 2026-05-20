@@ -29,7 +29,7 @@ public:
 	virtual bool MakeMove(environment *, OccupancyInterface<state,action> *, SimulationInfo<state,action,environment> *, action& a) = 0;
 	virtual void UpdateLocation(environment *, state &, bool success, SimulationInfo<state,action,environment> *) = 0;
 	virtual void GetLocation(state &) = 0;
-	virtual void OpenGLDraw(const environment *, const SimulationInfo<state,action,environment> *) const = 0;
+//	virtual void OpenGLDraw(const environment *, const SimulationInfo<state,action,environment> *) const = 0;
 	virtual void GetGoal(state &s) {};
 	virtual bool Done() { return true;} 
 
@@ -41,8 +41,8 @@ public:
 	/** log any final one-time stats before a simulation is ended */
 	virtual void LogFinalStats(StatCollection *) {}
 	
-	virtual void SetColor(GLfloat _r, GLfloat _g, GLfloat _b) { r=_r; g=_g; b=_b; }
-	virtual void GetColor(GLfloat& _r, GLfloat& _g, GLfloat& _b) const { _r=r; _g=g; _b=b; }
+	virtual void SetColor(float _r, float _g, float _b) { r=_r; g=_g; b=_b; }
+	virtual void GetColor(float& _r, float& _g, float& _b) const { _r=r; _g=g; _b=b; }
 	
 	UnitGroup<state, action, environment> *GetUnitGroup() { return group; }
 	void SetUnitGroup(UnitGroup<state, action, environment> *_group)
@@ -83,7 +83,7 @@ private:
 	double speed;
 	int priority;
 	UnitGroup<state, action, environment> *group;
-	GLfloat r, g, b;
+	float r, g, b;
 	unsigned int unitid;
 };
 

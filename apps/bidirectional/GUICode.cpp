@@ -354,7 +354,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 			for (int x = 1; x < 10; x++)
 			{
 				rgbColor r = mo->GetValueColor(x);
-				glColor3f(r.r, r.g, r.b);
+				//glColor3f(r.r, r.g, r.b);
 				char num[16];
 				sprintf(num, "%d", counts[x]);
 				
@@ -377,12 +377,13 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		svgFile.close();
 	}
 
-	map->OpenGLDraw();
+	//map->OpenGLDraw();
 	if (mo)
 	{
-		mo->OpenGLDraw();
+	  //mo->OpenGLDraw();
 		for (int x = 1; x < 10; x++)
 		{
+		  /*
 			rgbColor r = mo->GetValueColor(x);
 			glColor3f(r.r, r.g, r.b);
 			DrawBox(-1+0.2*x-1.0/40.0, -1-1.0/40.0, 0, 1.0/40.0);
@@ -391,24 +392,29 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 			char num[16];
 			sprintf(num, "%d", counts[x]);
 			DrawText(-1+0.2*x+1.0/40.0, -1+1.0/40.0, -0.01, 1.0/10.0, num);
+		  */
 		}
 	}
 	if (mouseTracking)
 	{
+	  /*
 		me->SetColor(1.0, 0, 0);
 		glLineWidth(3.0);
 		me->GLDrawLine(start, goal);
 		glLineWidth(1.0);
 		me->SetColor(1.0, 1.0, 1.0);
 		me->GLDrawLine(start, goal);
+	  */
 	}
 	if (mouseTracked && 0)
 	{
+	  /*
 		me->SetColor(1.0, 1.0, 1.0);
 		glLineWidth(1.0);
 		me->GLLabelState(start, "start", map->GetMapHeight()/8.0);
 		me->GLLabelState(goal, "goal", map->GetMapHeight()/8.0);
 		glLineWidth(1.0);
+	  */
 	}
 
 	if (drawSearch)
@@ -419,7 +425,8 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		}
 		if (searchRan)
 		{
-			if (viewport == 0)
+		  /*
+		  if (viewport == 0)
 				nbs.OpenGLDraw();
 			else if (viewport == 1)
 				dvcbs.OpenGLDraw();
@@ -427,6 +434,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 				compare.OpenGLDraw();//bs.OpenGLDraw();
 //			else if (viewport == 3)
 //				mm.OpenGLDraw();
+*/
 		}
 	}
 

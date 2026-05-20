@@ -9,9 +9,11 @@
  *
  */
 
-#include "GLUtil.h"
+//#include "Constants.h"
 #include <ctype.h>
 #include <stdint.h>
+#include "Graphics.h"
+#include "GLUtil.h"
 
 #ifndef TEXTBOX_H
 #define TEXTBOX_H

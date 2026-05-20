@@ -46,7 +46,7 @@ public:
 	virtual bool MakeMove(environment *, OccupancyInterface<state,action> *, SimulationInfo<state,action,environment> *, action& a);
 	//  virtual void printRoundStats(FILE *f) { fprintf(f,"%8.2f",amountLearned); }
 	
-	virtual void OpenGLDraw(const environment *e, const SimulationInfo<state,action,environment> *) const;
+//	virtual void OpenGLDraw(const environment *e, const SimulationInfo<state,action,environment> *) const;
 	virtual void UpdateLocation(environment *, state &s, bool success, SimulationInfo<state,action,environment> *)
 	{
 		if (success) 
@@ -96,37 +96,37 @@ bool LearningUnit<state, action, environment>::MakeMove(environment *e, Occupanc
 	return true;
 }
 
-template <class state, class action, class environment>
-void LearningUnit<state, action, environment>::OpenGLDraw(const environment *e, const SimulationInfo<state,action,environment> *si) const
-{
-	PublicUnitInfo<state, action, environment> i;
-	si->GetPublicUnitInfo(si->GetCurrentUnit(), i);
-	e->SetColor(0.5, 0.25, 0.0, 1.0);
-	if (fgreater(si->GetSimulationTime(), i.nextTime))
-		e->OpenGLDraw(i.currentState);
-	else
-		e->OpenGLDraw(i.lastState, i.currentState,
-					  (si->GetSimulationTime()-i.lastTime)/(i.nextTime-i.lastTime));
-	//e->OpenGLDraw(currentLoc);
-	
-	e->SetColor(0.0, 1.0, 0.0, 1.0);
-	e->OpenGLDraw(goalLoc);
-	e->SetColor(1.0, 1.0, 0.0, 1.0);
-	e->OpenGLDraw(currentLoc);
-
-	algorithm->OpenGLDraw(e);
-
-	
-	//	e->SetColor(0.0, 0.0, 0.5, 0.25);
-	//	for (typename LSStateStorage::const_iterator it = hashTable.begin(); it != hashTable.end(); it++)
-	//	{
-	//		if ((*it).second.theState == currentLoc)
-	//		{
-	//		}
-	//		else {
-	//			e->OpenGLDraw((*it).second.theState);
-	//		}
-	//	}
-}
+//template <class state, class action, class environment>
+//void LearningUnit<state, action, environment>::OpenGLDraw(const environment *e, const SimulationInfo<state,action,environment> *si) const
+//{
+//	PublicUnitInfo<state, action, environment> i;
+//	si->GetPublicUnitInfo(si->GetCurrentUnit(), i);
+//	e->SetColor(0.5, 0.25, 0.0, 1.0);
+//	if (fgreater(si->GetSimulationTime(), i.nextTime))
+//		e->OpenGLDraw(i.currentState);
+//	else
+//		e->OpenGLDraw(i.lastState, i.currentState,
+//					  (si->GetSimulationTime()-i.lastTime)/(i.nextTime-i.lastTime));
+//	//e->OpenGLDraw(currentLoc);
+//	
+//	e->SetColor(0.0, 1.0, 0.0, 1.0);
+//	e->OpenGLDraw(goalLoc);
+//	e->SetColor(1.0, 1.0, 0.0, 1.0);
+//	e->OpenGLDraw(currentLoc);
+//
+//	algorithm->OpenGLDraw(e);
+//
+//	
+//	//	e->SetColor(0.0, 0.0, 0.5, 0.25);
+//	//	for (typename LSStateStorage::const_iterator it = hashTable.begin(); it != hashTable.end(); it++)
+//	//	{
+//	//		if ((*it).second.theState == currentLoc)
+//	//		{
+//	//		}
+//	//		else {
+//	//			e->OpenGLDraw((*it).second.theState);
+//	//		}
+//	//	}
+//}
 
 #endif

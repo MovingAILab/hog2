@@ -16,7 +16,7 @@
 #include <assert.h>
 #include "Heuristic.h"
 #include "OccupancyInterface.h"
-#include "GLUtil.h"
+#include "Constants.h"
 #include "Graphics.h"
 
 
@@ -93,17 +93,17 @@ public:
 	virtual void SetOccupancyInfo(OccupancyInterface<state,action> *)
 	{ }
 
-	virtual void OpenGLDraw() const {};
-	virtual void OpenGLDraw(const state&) const {};
-	/** Draw the transition at some percentage 0...1 between two states */
-	virtual void OpenGLDraw(const state&, const state&, float) const {}
-	virtual void OpenGLDraw(const state&, const action&) const {};
-	virtual void GLLabelState(const state&, const char *) const {} // draw label over state
-	virtual void GLDrawLine(const state &x, const state &y) const {}
-	virtual void GLDrawPath(const std::vector<state> &x) const;
+//	virtual void OpenGLDraw() const {};
+//	virtual void OpenGLDraw(const state&) const {};
+//	/** Draw the transition at some percentage 0...1 between two states */
+//	virtual void OpenGLDraw(const state&, const state&, float) const {}
+//	virtual void OpenGLDraw(const state&, const action&) const {};
+//	virtual void GLLabelState(const state&, const char *) const {} // draw label over state
+//	virtual void GLDrawLine(const state &x, const state &y) const {}
+//	virtual void GLDrawPath(const std::vector<state> &x) const;
 	virtual void SetColor(const rgbColor &r) const { color = r; }
-	virtual void SetColor(GLfloat rr, GLfloat g, GLfloat b, GLfloat t = 1.0) const { color.r = rr; color.g = g; color.b = b; transparency = t; }
-	virtual void GetColor(GLfloat& rr, GLfloat& g, GLfloat& b, GLfloat &t) const { rr=color.r; g=color.g; b=color.b; t = transparency;}
+	virtual void SetColor(float rr, float g, float b, float t = 1.0) const { color.r = rr; color.g = g; color.b = b; transparency = t; }
+	virtual void GetColor(float& rr, float& g, float& b, float &t) const { rr=color.r; g=color.g; b=color.b; t = transparency;}
 	virtual rgbColor GetColor() const { return color; }
 
 	virtual void Draw(Graphics::Display &display) const {}
@@ -114,7 +114,7 @@ protected:
 	bool bValidSearchGoal;
 	state searchGoal;
 	mutable rgbColor color;
-	mutable GLfloat transparency;
+	mutable float transparency;
 };
 
 
@@ -168,14 +168,14 @@ double SearchEnvironment<state,action>::GetPathLength(const state &start, std::v
 
 
 
-template <class state, class action>
-void SearchEnvironment<state,action>::GLDrawPath(const std::vector<state> &path) const
-{
-	for (unsigned int x = 0; x+1 < path.size(); x++)
-	{
-		GLDrawLine(path[x], path[x+1]);
-	}
-}
+//template <class state, class action>
+//void SearchEnvironment<state,action>::GLDrawPath(const std::vector<state> &path) const
+//{
+//	for (unsigned int x = 0; x+1 < path.size(); x++)
+//	{
+//		GLDrawLine(path[x], path[x+1]);
+//	}
+//}
 
 template <class state, class action>
 void SearchEnvironment<state,action>::GetSuccessors(const state &nodeID, std::vector<state> &neighbors, const state &parent) const

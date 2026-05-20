@@ -489,7 +489,7 @@ public:
 	void RelaxDelayNode(double f, double g, graphState neighbor, PropUtil::SearchNode &neighborNode, graphState topNodeID);
 
 	//void OpenGLDraw() const;
-	void OpenGLDraw() const;
+	//void OpenGLDraw() const;
 	void DrawText(double x, double y, double z, float r, float g, float b, char* str);
 	void DrawEdge(unsigned int from, unsigned int to, double weight);
 

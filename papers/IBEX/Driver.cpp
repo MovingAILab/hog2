@@ -160,7 +160,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		v = 1;
 		recording = false;
 	}
-	p.OpenGLDraw(s, t, v);
+	//p.OpenGLDraw(s, t, v);
 
 	if (recording && viewport == GetNumPorts(windowID)-1)
 	{

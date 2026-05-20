@@ -99,10 +99,10 @@ static bool operator==(const edge &s1, const edge &s2)
 		
 		void Draw(Graphics::Display &display) const;
 		void Draw(Graphics::Display &display, const abstractState &) const;
-		void OpenGLDraw() const {}
-		void OpenGLDraw(const abstractState&) const {}
-		void OpenGLDraw(const abstractState&, const edge&) const { }
-		void GLDrawLine(const abstractState &x, const abstractState &y) const {}
+//		void OpenGLDraw() const {}
+//		void OpenGLDraw(const abstractState&) const {}
+//		void OpenGLDraw(const abstractState&, const edge&) const { }
+//		void GLDrawLine(const abstractState &x, const abstractState &y) const {}
 		
 		void GetPointFromCoordinate(point3d loc, int &px, int &py) const;
 		void SetCosts(std::vector<double> &c)
@@ -235,10 +235,10 @@ static bool operator==(const edge &s1, const edge &s2)
 		
 		void Draw(Graphics::Display &display) const;
 		void Draw(Graphics::Display &display, const xyLoc &) const;
-		void OpenGLDraw() const {}
-		void OpenGLDraw(const xyLoc&) const {}
-		void OpenGLDraw(const xyLoc&, const tDirection&) const {}
-		void GLDrawLine(const xyLoc &x, const xyLoc &y) const {}
+//		void OpenGLDraw() const {}
+//		void OpenGLDraw(const xyLoc&) const {}
+//		void OpenGLDraw(const xyLoc&, const tDirection&) const {}
+//		void GLDrawLine(const xyLoc &x, const xyLoc &y) const {}
 		void SetCosts(std::vector<double> &c)
 		{
 			costs = c;

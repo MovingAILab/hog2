@@ -411,20 +411,20 @@ public:
 	uint64_t GetActionHash(RCAction act) const { return act; }
 	void GetStateFromHash(uint64_t hash, RCState &node) const;
 	
-	void OpenGLDraw() const;
-	void OpenGLDraw(const RCState&) const;
-	void OpenGLDrawCorners(const RCState&) const;
-	void OpenGLDrawEdges(const RCState&) const;
-	void OpenGLDrawEdgeDual(const RCState&) const;
-	void OpenGLDrawCenters() const;
-	void OpenGLDrawCubeBackground() const;
-	/** Draw the transition at some percentage 0...1 between two states */
-	void OpenGLDraw(const RCState&, const RCState&, float) const;
-	void OpenGLDraw(const RCState&, const RCAction&) const;
+//	void OpenGLDraw() const;
+//	void OpenGLDraw(const RCState&) const;
+//	void OpenGLDrawCorners(const RCState&) const;
+//	void OpenGLDrawEdges(const RCState&) const;
+//	void OpenGLDrawEdgeDual(const RCState&) const;
+//	void OpenGLDrawCenters() const;
+//	void OpenGLDrawCubeBackground() const;
+//	/** Draw the transition at some percentage 0...1 between two states */
+//	void OpenGLDraw(const RCState&, const RCState&, float) const;
+//	void OpenGLDraw(const RCState&, const RCAction&) const;
 	
 	void Draw(Graphics::Display &display, const RCState&) const;
 	
-	void OpenGLDrawCube(int cube) const;
+//	void OpenGLDrawCube(int cube) const;
 	void SetFaceColor(int face) const;
 	mutable std::vector<RCAction> history;
 	
@@ -459,8 +459,8 @@ public:
 	void GetStateFromPDBHash(uint64_t hash, RCState &s, int threadID = 0) const;
 	RCState GetStateFromAbstractState(RCState &s) const { return s; }
 
-	void OpenGLDraw() const
-	{}
+//	void OpenGLDraw() const
+//	{}
 	
 	//	const char *GetName();
 	bool Load(const char *prefix) { return false; }

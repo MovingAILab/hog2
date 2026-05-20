@@ -248,78 +248,78 @@ void Voxels::AddVoxelCubeToOctree(uint64_t values, point3d p)
 	mLayer0VoxelGrids.push_back(values);
 }
 
-void Voxels::OpenGLDraw() const
-{
-	double xRange = max(w.maxbounds[0],-w.minbounds[0]);
-	double yRange = max(w.maxbounds[1],-w.minbounds[1]);
-	double zRange = max(w.maxbounds[2],-w.minbounds[2]);
-	double range = std::max(xRange, std::max(yRange, zRange));
-	for (size_t x = 0; x < w.numVoxelsGrids; x++)
-	{
-		point3d p = GetVoxelCoordinate(w.morton[x], w.voxelSize, w.minbounds);
-		bool drawFrame = false;
-		for (int i = 0; i < 64; i++)
-		{
-			size_t a, b, c;
-			if ((w.grid[x]>>i)&1) // blocked
-			{
-				GetCoordsForIndex(i, a, b, c);
-				drawFrame = true;
-				GLfloat rr, gg, bb;
-				rr = (1.+(p.x+a*w.voxelSize)/range)/2.0;
-				gg = (1.+(p.y+b*w.voxelSize)/range)/2.0;
-				bb = (1.+(p.z+c*w.voxelSize)/range)/2.0;
-				// 7?
-				rr = Colors::GetColor(rr, 0, 1, 7).r;
-				gg = Colors::GetColor(bb, 0, 1, 9).g*0.9;
-				bb = Colors::GetColor(bb, 0, 1, 9).b;
-				glColor3f(gg, rr, bb);
-				glEnable(GL_LIGHTING);
-				DrawBox((p.x+a*w.voxelSize+0.5*w.voxelSize)/range,
-						-(p.y+b*w.voxelSize+0.5*w.voxelSize)/range,
-						(p.z+c*w.voxelSize+0.5*w.voxelSize)/range,
-						1*(w.voxelSize/2.)/range);
-			}
-		}
-		//if (drawFrame)
-		if (0)
-		{
-			//DrawBoxFrame(p.x+w.voxelSize*2, p.y+w.voxelSize*2, p.z+w.voxelSize*2, w.voxelSize*2);
-			glDisable(GL_LIGHTING);
-			glColor4f(1, 1, 1, 1);
-			DrawBoxFrame((p.x+2*w.voxelSize)/range,
-						 (p.y+2*w.voxelSize)/range,
-						 (p.z+2*w.voxelSize)/range,
-						 2*w.voxelSize/range);
-		}
-	}
-
-}
-
-void Voxels::OpenGLDraw(const voxelState&) const
-{
-	
-}
-
-void Voxels::OpenGLDraw(const voxelState&, const voxelState&, float) const
-{
-	
-}
-
-void Voxels::OpenGLDraw(const voxelState&, const voxelAction&) const
-{
-	
-}
-
-void Voxels::GLLabelState(const voxelState&, const char *) const
-{
-	
-}
-
-void Voxels::GLDrawLine(const voxelState &x, const voxelState &y) const
-{
-	
-}
+//void Voxels::OpenGLDraw() const
+//{
+//	double xRange = max(w.maxbounds[0],-w.minbounds[0]);
+//	double yRange = max(w.maxbounds[1],-w.minbounds[1]);
+//	double zRange = max(w.maxbounds[2],-w.minbounds[2]);
+//	double range = std::max(xRange, std::max(yRange, zRange));
+//	for (size_t x = 0; x < w.numVoxelsGrids; x++)
+//	{
+//		point3d p = GetVoxelCoordinate(w.morton[x], w.voxelSize, w.minbounds);
+//		bool drawFrame = false;
+//		for (int i = 0; i < 64; i++)
+//		{
+//			size_t a, b, c;
+//			if ((w.grid[x]>>i)&1) // blocked
+//			{
+//				GetCoordsForIndex(i, a, b, c);
+//				drawFrame = true;
+//				GLfloat rr, gg, bb;
+//				rr = (1.+(p.x+a*w.voxelSize)/range)/2.0;
+//				gg = (1.+(p.y+b*w.voxelSize)/range)/2.0;
+//				bb = (1.+(p.z+c*w.voxelSize)/range)/2.0;
+//				// 7?
+//				rr = Colors::GetColor(rr, 0, 1, 7).r;
+//				gg = Colors::GetColor(bb, 0, 1, 9).g*0.9;
+//				bb = Colors::GetColor(bb, 0, 1, 9).b;
+//				glColor3f(gg, rr, bb);
+//				glEnable(GL_LIGHTING);
+//				DrawBox((p.x+a*w.voxelSize+0.5*w.voxelSize)/range,
+//						-(p.y+b*w.voxelSize+0.5*w.voxelSize)/range,
+//						(p.z+c*w.voxelSize+0.5*w.voxelSize)/range,
+//						1*(w.voxelSize/2.)/range);
+//			}
+//		}
+//		//if (drawFrame)
+//		if (0)
+//		{
+//			//DrawBoxFrame(p.x+w.voxelSize*2, p.y+w.voxelSize*2, p.z+w.voxelSize*2, w.voxelSize*2);
+//			glDisable(GL_LIGHTING);
+//			glColor4f(1, 1, 1, 1);
+//			DrawBoxFrame((p.x+2*w.voxelSize)/range,
+//						 (p.y+2*w.voxelSize)/range,
+//						 (p.z+2*w.voxelSize)/range,
+//						 2*w.voxelSize/range);
+//		}
+//	}
+//
+//}
+//
+//void Voxels::OpenGLDraw(const voxelState&) const
+//{
+//	
+//}
+//
+//void Voxels::OpenGLDraw(const voxelState&, const voxelState&, float) const
+//{
+//	
+//}
+//
+//void Voxels::OpenGLDraw(const voxelState&, const voxelAction&) const
+//{
+//	
+//}
+//
+//void Voxels::GLLabelState(const voxelState&, const char *) const
+//{
+//	
+//}
+//
+//void Voxels::GLDrawLine(const voxelState &x, const voxelState &y) const
+//{
+//	
+//}
 
 void Voxels::Draw(Graphics::Display &display) const
 {

@@ -2459,8 +2459,8 @@ void Prop::ExtractPathToStart(graphState goalNode, std::vector<graphState> &theP
 	pathSize = thePath.size();
 }
 
-void Prop::OpenGLDraw() const
-{
+//void Prop::OpenGLDraw() const
+//{
 //	// node to expand: blue
 //	// in open: green
 //	// in closed: red
@@ -2555,13 +2555,13 @@ void Prop::OpenGLDraw() const
 //	{
 //		DrawEdge(e->getFrom(), e->getTo(), e->GetWeight());
 //	}
-}
+//}
 
 void Prop::DrawText(double x, double y, double z, float r, float gg, float b, char* str)
 {
 	//glPushMatrix();
 	// rotate ?
-
+  /*
 	glPushMatrix();
 	glColor3f(r,gg,b);
 	glTranslatef(x,y,z);
@@ -2576,6 +2576,7 @@ void Prop::DrawText(double x, double y, double z, float r, float gg, float b, ch
 		i++;
 	}
 	glPopMatrix();
+  */
 }
 
 void Prop::DrawEdge(unsigned int from, unsigned int to, double weight)
@@ -2589,7 +2590,7 @@ void Prop::DrawEdge(unsigned int from, unsigned int to, double weight)
 
 	graphGenerator::GetLoc(nfrom,x1,y1,z1);
 	graphGenerator::GetLoc(nto,x2,y2,z2);
-
+	/*
 	// draw line segment
 	glBegin(GL_LINES);
 	glColor3f(1,0,0); // red
@@ -2602,5 +2603,6 @@ void Prop::DrawEdge(unsigned int from, unsigned int to, double weight)
 		sprintf(buf,"%ld",(long)weight);
 		DrawText((x1+x2)/2, (y1+y2)/2, (z1+z2)/2 - 0.15, 1, 0, 0, buf); // in red
 	}
+	*/
 }
 

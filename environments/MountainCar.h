@@ -60,10 +60,10 @@ public:
 	virtual uint64_t GetStateHash(const MountainCarState &node) const;
 	virtual uint64_t GetActionHash(MountainCarAction act) const;
 	
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const MountainCarState&) const;
-	virtual void OpenGLDraw(const MountainCarState&, const MountainCarState&, float) const;
-	virtual void OpenGLDraw(const MountainCarState&, const MountainCarAction&) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const MountainCarState&) const;
+//	virtual void OpenGLDraw(const MountainCarState&, const MountainCarState&, float) const;
+//	virtual void OpenGLDraw(const MountainCarState&, const MountainCarAction&) const;
 private:
 	double GetHeightAtPosition(double queryPosition) const;
 	double GetSlope(double queryPosition) const;

@@ -68,10 +68,10 @@ public:
 	virtual bool GoalTest(const pancakeStatePair &state, const pancakeStatePair &goal) const;
 	virtual uint64_t GetStateHash(const pancakeStatePair &state) const;
 	virtual uint64_t GetActionHash(pancakeMovePair act) const;
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const pancakeStatePair &s) const;
-	virtual void OpenGLDraw(const pancakeStatePair &s, const pancakeMovePair &gm) const;
-	virtual void OpenGLDraw(const pancakeStatePair &s, const pancakeStatePair&, float) const { OpenGLDraw(s); }
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const pancakeStatePair &s) const;
+//	virtual void OpenGLDraw(const pancakeStatePair &s, const pancakeMovePair &gm) const;
+//	virtual void OpenGLDraw(const pancakeStatePair &s, const pancakeStatePair&, float) const { OpenGLDraw(s); }
 	
 	virtual void StoreGoal(pancakeStatePair &) {}
 	virtual void ClearGoal() {}

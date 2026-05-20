@@ -25,7 +25,7 @@ public:
 	
 	void SetOverlayValue(int x, int y, double value);
 	double GetOverlayValue(int x, int y);
-	void OpenGLDraw() const;
+//	void OpenGLDraw() const;
 	std::string SVGDraw() const;
 	void Draw(Graphics::Display &display) const;
 	
@@ -49,7 +49,7 @@ private:
 	double ignoreVal;
 	int colorMap;
 	bool drawBorders;
-	mutable GLuint displayList;
+//	mutable GLuint displayList;
 };
 
 #endif

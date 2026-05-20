@@ -9,6 +9,78 @@
 #include "Graphics.h"
 
 namespace Graphics {
+
+bool fastCrossTest(float p0_x, float p0_y, float p1_x, float p1_y,
+				   float p2_x, float p2_y, float p3_x, float p3_y, float *i_x, float *i_y);
+
+bool line2d::crosses(line2d which) const
+{
+	if ((which.start == start) || (which.end == end) ||
+		(which.start == end) || (which.end == start))
+		return false;
+	
+	//	//input x1,y1 input x2,y2
+	//input u1,v1 input u2,v2
+	line2d here(start, end);
+	double maxx1, maxx2, maxy1, maxy2;
+	double minx1, minx2, miny1, miny2;
+	if (here.start.x > here.end.x)
+	{ maxx1 = here.start.x; minx1 = here.end.x; }
+	else
+	{ maxx1 = here.end.x; minx1 = here.start.x; }
+	
+	if (here.start.y > here.end.y)
+	{ maxy1 = here.start.y; miny1 = here.end.y; }
+	else
+	{ maxy1 = here.end.y; miny1 = here.start.y; }
+	
+	if (which.start.x > which.end.x)
+	{ maxx2 = which.start.x; minx2 = which.end.x; }
+	else
+	{ maxx2 = which.end.x; minx2 = which.start.x; }
+	
+	if (which.start.y > which.end.y)
+	{ maxy2 = which.start.y; miny2 = which.end.y; }
+	else
+	{ maxy2 = which.end.y; miny2 = which.start.y; }
+	
+	if (fless(maxx1,minx2) || fless(maxx2, minx1) || fless(maxy1, miny2) || fless(maxy2, miny1))
+		return false;
+	
+	return fastCrossTest(start.x, start.y, end.x, end.y,
+						 which.start.x, which.start.y, which.end.x, which.end.y,
+						 0, 0);
+}
+
+// Returns 1 if the lines intersect, otherwise 0. In addition, if the lines
+// intersect the intersection point may be stored in the floats i_x and i_y.
+// taken from: http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+//
+bool fastCrossTest(float p0_x, float p0_y, float p1_x, float p1_y,
+				   float p2_x, float p2_y, float p3_x, float p3_y, float *i_x, float *i_y)
+{
+	float s1_x, s1_y, s2_x, s2_y;
+	s1_x = p1_x - p0_x;     s1_y = p1_y - p0_y;
+	s2_x = p3_x - p2_x;     s2_y = p3_y - p2_y;
+	
+	float s, t;
+	s = (-s1_y * (p0_x - p2_x) + s1_x * (p0_y - p2_y)) / (-s2_x * s1_y + s1_x * s2_y);
+	t = ( s2_x * (p0_y - p2_y) - s2_y * (p0_x - p2_x)) / (-s2_x * s1_y + s1_x * s2_y);
+	
+	if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+	{
+		// Collision detected
+		//        if (i_x != NULL)
+		//            *i_x = p0_x + (t * s1_x);
+		//        if (i_y != NULL)
+		//            *i_y = p0_y + (t * s1_y);
+		return 1;
+	}
+	
+	return 0; // No collision
+}
+
+
 //bool PointInRect(const point3d &p, const rect &r)
 //{
 //	return p.y >= r.top && p.x >= r.left && p.y <= r.bottom && p.x <= r.right;

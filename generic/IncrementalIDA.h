@@ -34,7 +34,7 @@ public:
 	}
 	void Reset() { bound = initialBound; nextBound = initialBound; path.clear();
 		history.clear(); search.clear(); ResetNodeCount(); previousBound = 0; }
-	void OpenGLDraw();
+//	void OpenGLDraw();
 	void Draw(Graphics::Display &display) const;
 	state GetCurrentState() const { if (search.size() > 0) return search.back().currState; return start; }
 	void GetCurrentPath(std::vector<state> &p) const
@@ -225,16 +225,16 @@ void IncrementalIDA<state, action>::Draw(Graphics::Display &display) const
 	}
 }
 
-template <class state, class action>
-void IncrementalIDA<state, action>::OpenGLDraw()
-{
-//	for (auto x : history)
-//		env->OpenGLDraw(x.first);
-	for (int x = 1; x < search.size(); x++)
-		env->GLDrawLine(search[x-1].currState, search[x].currState, 10);
-//	for (int x = 1; x < path.size(); x++)
-//		env->GLDrawLine(path[x-1], path[x]);
-}
+//template <class state, class action>
+//void IncrementalIDA<state, action>::OpenGLDraw()
+//{
+////	for (auto x : history)
+////		env->OpenGLDraw(x.first);
+//	for (int x = 1; x < search.size(); x++)
+//		env->GLDrawLine(search[x-1].currState, search[x].currState, 10);
+////	for (int x = 1; x < path.size(); x++)
+////		env->GLDrawLine(path[x-1], path[x]);
+//}
 
 
 #endif /* IncrementalDFID_h */

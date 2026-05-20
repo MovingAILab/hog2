@@ -17,7 +17,7 @@ public:
 	virtual void GetLocation(state& s) { s=loc;}
 	virtual bool MakeMove(environment *env, OccupancyInterface<state,action> *, SimulationInfo<state,action,environment> *si, action &dir);
 	
-	virtual void OpenGLDraw(const environment *, const SimulationInfo<state,action,environment> *) const;
+//	virtual void OpenGLDraw(const environment *, const SimulationInfo<state,action,environment> *) const;
 	void AddPatrolLocation(state &s); 
 	state& GetGoal(); // get CURRENT goal? 
 	void GetGoal(state &s) { GenericSearchUnit<state, action, environment>::GetGoal(s); } 
@@ -281,52 +281,52 @@ void GenericPatrolUnit<state,action,environment>::AddPathToCache(environment* th
 	}
 }
 
-template <class state, class action, class environment>
-void GenericPatrolUnit<state,action, environment>::OpenGLDraw(const environment *theEnv, const SimulationInfo<state,action,environment> *si) const
-{
-	if (drawUnit)
-	{
-		//printf("Drawing %p at \n", this);
-		PublicUnitInfo<state, action, environment> i;
-		si->GetPublicUnitInfo(si->GetCurrentUnit(), i);
-//		printf("(%f-%f)/(%f-%f)\n", 
-//			   si->GetSimulationTime(), i.lastTime, i.nextTime, i.lastTime);
-		theEnv->SetColor(1.0, 0.25, 0.25, 1.0);
-//		std::cout << si->GetCurrentUnit() << " is at " << i.currentState << std::endl;
-		if (fgreater(si->GetSimulationTime(), i.nextTime))
-			theEnv->OpenGLDraw(i.currentState);
-		else
-			theEnv->OpenGLDraw(i.lastState, i.currentState,
-							(si->GetSimulationTime()-i.lastTime)/(i.nextTime-i.lastTime));
-//		theEnv->SetColor(1.0, 0.25, 0.25, 0.25);
-//		algorithm->OpenGLDraw();
-
-		// draw path
-		state curr = i.lastState;
-		state next = i.currentState;
-		glLineWidth(4.0);
-		theEnv->GLDrawLine(curr, next);
-		for (unsigned int x = 0; x+1 < moves.size(); x++)
-		{
-			curr = next;
-			theEnv->ApplyAction(next, moves[x]);
-			theEnv->GLDrawLine(curr, next);
-		}
-		glLineWidth(1.0);
-	}
-// 	if ((0)&&(drawUnit))
+//template <class state, class action, class environment>
+//void GenericPatrolUnit<state,action, environment>::OpenGLDraw(const environment *theEnv, const SimulationInfo<state,action,environment> *si) const
+//{
+//	if (drawUnit)
 //	{
+//		//printf("Drawing %p at \n", this);
+//		PublicUnitInfo<state, action, environment> i;
+//		si->GetPublicUnitInfo(si->GetCurrentUnit(), i);
+////		printf("(%f-%f)/(%f-%f)\n", 
+////			   si->GetSimulationTime(), i.lastTime, i.nextTime, i.lastTime);
+//		theEnv->SetColor(1.0, 0.25, 0.25, 1.0);
+////		std::cout << si->GetCurrentUnit() << " is at " << i.currentState << std::endl;
+//		if (fgreater(si->GetSimulationTime(), i.nextTime))
+//			theEnv->OpenGLDraw(i.currentState);
+//		else
+//			theEnv->OpenGLDraw(i.lastState, i.currentState,
+//							(si->GetSimulationTime()-i.lastTime)/(i.nextTime-i.lastTime));
+////		theEnv->SetColor(1.0, 0.25, 0.25, 0.25);
+////		algorithm->OpenGLDraw();
 //
-//   		state current = loc; 
-//   		state next;
-//			for (unsigned int i=0; i<moves.size(); i++)
-//			{
-//				env->OpenGLDraw(current, moves[i]/*,1.0,0,0*/); // draw in red
-//				env->GetNextState(current, moves[i], next);
-//				current = next;
-//			}	
+//		// draw path
+//		state curr = i.lastState;
+//		state next = i.currentState;
+//		glLineWidth(4.0);
+//		theEnv->GLDrawLine(curr, next);
+//		for (unsigned int x = 0; x+1 < moves.size(); x++)
+//		{
+//			curr = next;
+//			theEnv->ApplyAction(next, moves[x]);
+//			theEnv->GLDrawLine(curr, next);
+//		}
+//		glLineWidth(1.0);
 //	}
-}
+//// 	if ((0)&&(drawUnit))
+////	{
+////
+////   		state current = loc; 
+////   		state next;
+////			for (unsigned int i=0; i<moves.size(); i++)
+////			{
+////				env->OpenGLDraw(current, moves[i]/*,1.0,0,0*/); // draw in red
+////				env->GetNextState(current, moves[i], next);
+////				current = next;
+////			}	
+////	}
+//}
 
 template <class state, class action, class environment>
 void GenericPatrolUnit<state,action,environment>::UpdateLocation(environment *theEnv, state &l, bool success, SimulationInfo<state,action,environment> *si)

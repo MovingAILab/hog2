@@ -136,10 +136,10 @@ public:
 	bool GoalTest(const xySpeedHeading &) const { assert(false); return false; }
 	uint64_t GetStateHash(const xySpeedHeading &node) const;
 	uint64_t GetActionHash(deltaSpeedHeading act) const;
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const xySpeedHeading &l) const;
-	virtual void OpenGLDraw(const xySpeedHeading& oldState, const xySpeedHeading &newState, float perc) const;
-	virtual void OpenGLDraw(const xySpeedHeading &, const deltaSpeedHeading &) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const xySpeedHeading &l) const;
+//	virtual void OpenGLDraw(const xySpeedHeading& oldState, const xySpeedHeading &newState, float perc) const;
+//	virtual void OpenGLDraw(const xySpeedHeading &, const deltaSpeedHeading &) const;
 	void GLDrawLine(const xySpeedHeading &a, const xySpeedHeading &b) const;
 
 	Map* GetMap() { return map; }

@@ -458,8 +458,8 @@ void GridEmbedding::Draw(Graphics::Display &disp, float tween) const
 
 		xyLoc l;
 		env->GetStateFromHash(i, l);
-		GLdouble px, py, tmp, rad2;
-		env->GetMap()->GetOpenGLCoord(l.x, l.y, px, py, tmp, rad2);
+		double px, py, tmp, rad2;
+		env->GetMap()->GetCoord(l.x, l.y, px, py, tmp, rad2);
 		disp.FillRect(Graphics::rect({lerp(px, xDim, tween), lerp(py, yDim, tween)}, rad), Colors::white);
 	}
 }

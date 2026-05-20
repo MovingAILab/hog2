@@ -76,10 +76,10 @@ class BIdijkstra{
     double GetPathCost() const { return optimalPathCost; } // path cost is the sum of all edges; path length is the number of edges
     uint64_t GetPathLength() const { return optimalPathLength; }
 	state GetMeetingPoint() const { return forwardQueue.Lookat(middleNode).data; }
-    void OpenGLDraw() const;
+//    void OpenGLDraw() const;
 
 private:
-    void OpenGLDraw(const priorityQueue &queue) const;
+//    void OpenGLDraw(const priorityQueue &queue) const;
     
     void Expand(priorityQueue &current,priorityQueue &opposite,const state &target);
     
@@ -431,56 +431,56 @@ void BIdijkstra<state,action,environment,priorityQueue>::Expand(priorityQueue &c
 }
     
 
-template<class state,class action,class environment,class priorityQueue>
-void BIdijkstra<state,action,environment,priorityQueue>::OpenGLDraw() const
-{
-    OpenGLDraw(forwardQueue);
-    OpenGLDraw(backwardQueue);
-}
-
-    template<class state,class action,class environment,class priorityQueue>
-    void BIdijkstra<state,action,environment,priorityQueue>::OpenGLDraw(const priorityQueue &queue) const
-    {
-        double transparency=0.9;
-        if(queue.size()==0)
-            return;
-        uint64_t top=-1;
-        
-        if (queue.OpenSize() > 0)
-        {
-            top = queue.Peek();
-        }
-        for (unsigned int x = 0; x < queue.size(); x++)
-        {
-            const AStarOpenClosedData<state> &data = queue.Lookat(x);
-            if (x == top)
-            {
-                env->SetColor(1.0, 1.0, 0.0, transparency);
-                env->OpenGLDraw(data.data);
-            }
-            if ((data.where == kOpenList) && (data.reopened))
-            {
-                env->SetColor(0.0, 0.5, 0.5, transparency);
-                env->OpenGLDraw(data.data);
-            }
-            else if (data.where == kOpenList)
-            {
-                env->SetColor(0.0, 1.0, 0.0, transparency);
-                env->OpenGLDraw(data.data);
-            }
-            else if ((data.where == kClosedList) && (data.reopened))
-            {
-                env->SetColor(0.5, 0.0, 0.5, transparency);
-                env->OpenGLDraw(data.data);
-            }
-            else if (data.where == kClosedList)
-            {
-                env->SetColor(1.0, 0.0, 0.0, transparency);
-                env->OpenGLDraw(data.data);
-            }
-        }
-
-    }
+//template<class state,class action,class environment,class priorityQueue>
+//void BIdijkstra<state,action,environment,priorityQueue>::OpenGLDraw() const
+//{
+//    OpenGLDraw(forwardQueue);
+//    OpenGLDraw(backwardQueue);
+//}
+//
+//    template<class state,class action,class environment,class priorityQueue>
+//    void BIdijkstra<state,action,environment,priorityQueue>::OpenGLDraw(const priorityQueue &queue) const
+//    {
+//        double transparency=0.9;
+//        if(queue.size()==0)
+//            return;
+//        uint64_t top=-1;
+//        
+//        if (queue.OpenSize() > 0)
+//        {
+//            top = queue.Peek();
+//        }
+//        for (unsigned int x = 0; x < queue.size(); x++)
+//        {
+//            const AStarOpenClosedData<state> &data = queue.Lookat(x);
+//            if (x == top)
+//            {
+//                env->SetColor(1.0, 1.0, 0.0, transparency);
+//                env->OpenGLDraw(data.data);
+//            }
+//            if ((data.where == kOpenList) && (data.reopened))
+//            {
+//                env->SetColor(0.0, 0.5, 0.5, transparency);
+//                env->OpenGLDraw(data.data);
+//            }
+//            else if (data.where == kOpenList)
+//            {
+//                env->SetColor(0.0, 1.0, 0.0, transparency);
+//                env->OpenGLDraw(data.data);
+//            }
+//            else if ((data.where == kClosedList) && (data.reopened))
+//            {
+//                env->SetColor(0.5, 0.0, 0.5, transparency);
+//                env->OpenGLDraw(data.data);
+//            }
+//            else if (data.where == kClosedList)
+//            {
+//                env->SetColor(1.0, 0.0, 0.0, transparency);
+//                env->OpenGLDraw(data.data);
+//            }
+//        }
+//
+//    }
 
 template<class state, class action, class environment, class priorityQueue>
 void BIdijkstra<state, action, environment, priorityQueue>::DoRegionAnalysis(environment* env, const state& from, const state& to, double optimalPathCost, uint64_t optimalPathLength)

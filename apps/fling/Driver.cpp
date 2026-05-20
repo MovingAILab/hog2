@@ -200,16 +200,16 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 {
 	if (screenShot)
 	{
-		f.OpenGLDrawPlain(b);
+	  //		f.OpenGLDrawPlain(b);
 		//SaveScreenshot(windowID, screenShotFile);
 		exit(0);
 	}
-	f.OpenGLDraw(b);
-	for (int x = 0; x < wins.size(); x++)
-		f.OpenGLDraw(win, wins[x]);
+	//f.OpenGLDraw(b);
+	//	for (int x = 0; x < wins.size(); x++)
+	//	f.OpenGLDraw(win, wins[x]);
 	//if (wins.size() > 0)
 	{
-		f.OpenGLDrawAlternate(valid);
+	  //		f.OpenGLDrawAlternate(valid);
 	}
 	for (int x = 0; x < counts.size(); x++)
 	{
@@ -218,10 +218,10 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		tmp.AddFling(x);
 		val[0] = '0'+counts[x]/10;
 		val[1] = '0'+counts[x]%10;
-		f.GLLabelState(tmp, val);
+		//f.GLLabelState(tmp, val);
 	}
 	
-	text.OpenGLDraw(windowID);
+	//	text.OpenGLDraw(windowID);
 }
 
 int BitCount(uint64_t value)

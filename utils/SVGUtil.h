@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 #include <string>
-#include "GLUtil.h"
+#include "Constants.h"
 #include "Graphics.h"
 
 namespace SVG {

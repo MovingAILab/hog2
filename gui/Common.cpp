@@ -16,7 +16,7 @@
 #include <math.h>
 #include <cassert>
 
-#include "GLUtil.h"
+#include "Constants.h"
 #include "Trackball.h"
 #include "Common.h"
 
@@ -27,7 +27,7 @@
 
 static unsigned long gNextWindowID = 0;
 char gDefaultMap[1024] = "";
-const recVec gOrigin(0.0, 0.0, 0.0);
+//const Graphics::point gOrigin(0.0, 0.0, 0.0);
 
 using namespace std;
 
@@ -267,8 +267,6 @@ void RemoveFrameHandler(FrameCallback glCall, unsigned long windowID, void *user
 
 void HandleFrame(pRecContext pContextInfo, int viewport)
 {
-	glEnable(GL_BLEND); // for text fading
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // ditto
 	for (unsigned int x = 0; x < glDrawCallbacks.size(); x++)
 	{
 		if (glDrawCallbacks[x]->windowID == pContextInfo->windowID)

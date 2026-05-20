@@ -24,7 +24,7 @@ public:
 	uint64_t GetNodesTouched() { return nodesTouched; }
 	void ResetNodeCount() { nodesExpanded = nodesTouched = 0; }
 	void Reset() { history.clear(); }
-	void OpenGLDraw();
+//	void OpenGLDraw();
 	void Draw(Graphics::Display &display) const;
 private:
 	unsigned long nodesExpanded, nodesTouched;
@@ -82,12 +82,12 @@ bool IncrementalBFS<state, action>::DoSingleSearchStep(SearchEnvironment<state, 
 	return false;
 }
 
-template <class state, class action>
-void IncrementalBFS<state, action>::OpenGLDraw()
-{
-	for (auto x : history)
-		env->OpenGLDraw(x.first);
-}
+//template <class state, class action>
+//void IncrementalBFS<state, action>::OpenGLDraw()
+//{
+//	for (auto x : history)
+//		env->OpenGLDraw(x.first);
+//}
 
 template <class state, class action>
 void IncrementalBFS<state, action>::Draw(Graphics::Display &display) const

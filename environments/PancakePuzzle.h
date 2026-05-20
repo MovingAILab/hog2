@@ -115,10 +115,10 @@ public:
 	void Change_Op_Order(const std::vector<PancakePuzzleAction> op_order);
 
 	// currently not drawing anything
-	void OpenGLDraw() const{}
-	void OpenGLDraw(const PancakePuzzleState<N> &) const;
-	void OpenGLDraw(const PancakePuzzleState<N> &, const PancakePuzzleAction &) const {}
-	void OpenGLDraw(const PancakePuzzleState<N>&, const PancakePuzzleState<N>&, float) const {}
+//	void OpenGLDraw() const{}
+//	void OpenGLDraw(const PancakePuzzleState<N> &) const;
+//	void OpenGLDraw(const PancakePuzzleState<N> &, const PancakePuzzleAction &) const {}
+//	void OpenGLDraw(const PancakePuzzleState<N>&, const PancakePuzzleState<N>&, float) const {}
 
 	void Draw(Graphics::Display &display) const;
 	void Draw(Graphics::Display &display, const PancakePuzzleState<N>&) const;
@@ -713,23 +713,23 @@ void PancakePuzzle<N>::GetStateFromHash(uint64_t parent, PancakePuzzleState<N> &
 	return c.Unrank(parent, s.puzzle);
 }
 
-template <int N>
-void PancakePuzzle<N>::OpenGLDraw(const PancakePuzzleState<N> &pps) const
-{
-	double count = pps.size();
-	double widthUnit = 1.5/count;
-	
-	for (size_t y = 0; y < pps.size(); y++)
-	{
-		for (int x = 0; x <= pps.puzzle[y]; x++)
-		{
-			glColor3f(pps.puzzle[y]/count, 0, 1-pps.puzzle[y]/count);
-			DrawBox(-pps.puzzle[y]*widthUnit/4+x*widthUnit/2,
-					-1+widthUnit*y+widthUnit/2, 0,
-					widthUnit/2);
-		}
-	}
-}
+//template <int N>
+//void PancakePuzzle<N>::OpenGLDraw(const PancakePuzzleState<N> &pps) const
+//{
+//	double count = pps.size();
+//	double widthUnit = 1.5/count;
+//	
+//	for (size_t y = 0; y < pps.size(); y++)
+//	{
+//		for (int x = 0; x <= pps.puzzle[y]; x++)
+//		{
+//			glColor3f(pps.puzzle[y]/count, 0, 1-pps.puzzle[y]/count);
+//			DrawBox(-pps.puzzle[y]*widthUnit/4+x*widthUnit/2,
+//					-1+widthUnit*y+widthUnit/2, 0,
+//					widthUnit/2);
+//		}
+//	}
+//}
 
 template <int N>
 PancakePuzzleAction PancakePuzzle<N>::GetAction(const PancakePuzzleState<N> &s, point3d p) const

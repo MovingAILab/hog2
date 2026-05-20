@@ -14,7 +14,6 @@
 #ifndef MAP_H
 #define MAP_H
 
-
 #include <cassert>
 #include <cmath>
 #include <cstdarg>
@@ -22,8 +21,9 @@
 #include <unistd.h>
 #include <iostream>
 #include <stdint.h>
+#include "Graphics.h"
 
-#include "GLUtil.h"
+#include "Constants.h"
 //#include "Graph.h"
 
 enum tTileset {
@@ -206,15 +206,15 @@ public:
 	// returns whether we can step between two locations or not
 	bool CanStep(long x1, long y1, long x2, long y2) const;
 	
-	void OpenGLDraw(tDisplay how = kPolygons) const;
-	bool GetOpenGLCoord(int _x, int _y, GLdouble &x, GLdouble &y, GLdouble &z, GLdouble &radius) const;
-	bool GetOpenGLCoord(float _x, float _y, GLdouble &x, GLdouble &y, GLdouble &z, GLdouble &radius) const;
-	void GetPointFromCoordinate(point3d loc, int &px, int &py) const;
+//	void OpenGLDraw(tDisplay how = kPolygons) const;
+	bool GetCoord(int _x, int _y, double &x, double &y, double &z, double &radius) const;
+	bool GetCoord(float _x, float _y, double &x, double &y, double &z, double &radius) const;
+	void GetPointFromCoordinate(Graphics::point loc, int &px, int &py) const;
 	double GetCoordinateScale();
 	
 	void SetDrawLand(bool land);
 	bool GetDrawLand() { return drawLand; }
-	void DrawTile(Tile *t, int x, int y, tDisplay how) const;
+	//void DrawTile(Tile *t, int x, int y, tDisplay how) const;
 	void DoVertexColor(tTerrain type, int height, bool darken = false) const;
 	void DoNormal(tSplit split, halfTile *t, int x, int y) const;
 	
@@ -234,11 +234,11 @@ private:
 	bool tryDragonAge(FILE *f);
 	bool isLegalStone(char c);
 	void paintRoomInside(int x, int y);
-	void drawLandQuickly() const;
+	//void drawLandQuickly() const;
 	int width, height;
 	Tile **land;
 	bool drawLand;
-	mutable GLuint dList;
+//	mutable GLuint dList;
 	mutable bool updated;
 	int sizeMultiplier;
 	int revision;

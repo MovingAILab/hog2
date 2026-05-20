@@ -110,112 +110,112 @@ uint64_t SteeringEnvironment::GetActionHash(steeringAction act) const
 { assert(false); return 3; }
 
 
-void SteeringEnvironment::OpenGLDraw() const
-{
-	glLineWidth(10);
-	glColor4f(0.0, 0.0, 1.0, 1.0);
-	glBegin(GL_LINE_LOOP);
-	glVertex3f(-1.0, -1.0, 0);
-	glVertex3f(+1.0, -1.0, 0);
-	glVertex3f(+1.0, +1.0, 0);
-	glVertex3f(-1.0, +1.0, 0);
-	glEnd();
-	glLineWidth(1);
-}
-
-void SteeringEnvironment::OpenGLDraw(const steeringState&s) const
-{
-	GLdouble xx, yy, zz, rad;
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-	xx = s.x/(worldRadius);
-	yy = s.y/(worldRadius);
-	zz = 0;
-	rad = 2.0f/worldRadius;
-	//map->GetOpenGLCoord(l.x, l.y, xx, yy, zz, rad);
-	
-	GLdouble yoffset = sin(TWOPI*s.heading/360.0)*rad;//sin(TWOPI*rot/16)*rad;
-	GLdouble xoffset = cos(TWOPI*s.heading/360.0)*rad;//cos(TWOPI*rot/16)*rad;
-	
-	//	glColor3f(0, 0, 1.0);
-	//	glBegin(GL_LINE_STRIP);
-	//	glVertex3f(xx-rad, yy-rad, zz-rad);
-	//	glVertex3f(xx-rad, yy-rad, zz);
-	//	glEnd();
-	
-	glBegin(GL_TRIANGLES);
-	recVec surfaceNormal;
-	surfaceNormal.x = (((-0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
-	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((0.5*yoffset) - (rad)));
-	surfaceNormal.z = (((0.5*yoffset) * (-2*yoffset)) - ((-0.5*xoffset) - (-2*xoffset)));
-	surfaceNormal.normalise();
-	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
-	
-	surfaceNormal.x = (((+0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
-	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((-0.5*yoffset) - (rad)));
-	surfaceNormal.z = (((-0.5*yoffset) * (-2*yoffset)) - ((+0.5*xoffset) - (-2*xoffset)));
-	surfaceNormal.normalise();
-	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
-	glEnd();	
-}
-
-void SteeringEnvironment::OpenGLDraw(const steeringState&s1, const steeringState&s2, float mix) const
-{
-	GLdouble xx, yy, zz, rad;
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-	xx = (s1.x+s2.x)/(2*worldRadius);
-	yy = (s1.y+s2.y)/(2*worldRadius);
-	zz = 0;
-	rad = 2.0f/worldRadius;
-	//map->GetOpenGLCoord(l.x, l.y, xx, yy, zz, rad);
-	
-	GLdouble yoffset = sin(TWOPI*(s1.heading+s2.heading)/(2*360.0))*rad;//sin(TWOPI*rot/16)*rad;
-	GLdouble xoffset = cos(TWOPI*(s1.heading+s2.heading)/(2*360.0))*rad;//cos(TWOPI*rot/16)*rad;
-	
-	//	glColor3f(0, 0, 1.0);
-	//	glBegin(GL_LINE_STRIP);
-	//	glVertex3f(xx-rad, yy-rad, zz-rad);
-	//	glVertex3f(xx-rad, yy-rad, zz);
-	//	glEnd();
-	
-	glBegin(GL_TRIANGLES);
-	recVec surfaceNormal;
-	surfaceNormal.x = (((-0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
-	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((0.5*yoffset) - (rad)));
-	surfaceNormal.z = (((0.5*yoffset) * (-2*yoffset)) - ((-0.5*xoffset) - (-2*xoffset)));
-	surfaceNormal.normalise();
-	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
-	
-	surfaceNormal.x = (((+0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
-	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((-0.5*yoffset) - (rad)));
-	surfaceNormal.z = (((-0.5*yoffset) * (-2*yoffset)) - ((+0.5*xoffset) - (-2*xoffset)));
-	surfaceNormal.normalise();
-	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
-	glEnd();	
-}
-void SteeringEnvironment::OpenGLDraw(const steeringState&, const steeringAction&) const { }
+//void SteeringEnvironment::OpenGLDraw() const
+//{
+//	glLineWidth(10);
+//	glColor4f(0.0, 0.0, 1.0, 1.0);
+//	glBegin(GL_LINE_LOOP);
+//	glVertex3f(-1.0, -1.0, 0);
+//	glVertex3f(+1.0, -1.0, 0);
+//	glVertex3f(+1.0, +1.0, 0);
+//	glVertex3f(-1.0, +1.0, 0);
+//	glEnd();
+//	glLineWidth(1);
+//}
+//
+//void SteeringEnvironment::OpenGLDraw(const steeringState&s) const
+//{
+//	GLdouble xx, yy, zz, rad;
+//	GLfloat r, g, b, t;
+//	GetColor(r, g, b, t);
+//	xx = s.x/(worldRadius);
+//	yy = s.y/(worldRadius);
+//	zz = 0;
+//	rad = 2.0f/worldRadius;
+//	//map->GetCoord(l.x, l.y, xx, yy, zz, rad);
+//	
+//	GLdouble yoffset = sin(TWOPI*s.heading/360.0)*rad;//sin(TWOPI*rot/16)*rad;
+//	GLdouble xoffset = cos(TWOPI*s.heading/360.0)*rad;//cos(TWOPI*rot/16)*rad;
+//	
+//	//	glColor3f(0, 0, 1.0);
+//	//	glBegin(GL_LINE_STRIP);
+//	//	glVertex3f(xx-rad, yy-rad, zz-rad);
+//	//	glVertex3f(xx-rad, yy-rad, zz);
+//	//	glEnd();
+//	
+//	glBegin(GL_TRIANGLES);
+//	Graphics::point surfaceNormal;
+//	surfaceNormal.x = (((-0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
+//	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((0.5*yoffset) - (rad)));
+//	surfaceNormal.z = (((0.5*yoffset) * (-2*yoffset)) - ((-0.5*xoffset) - (-2*xoffset)));
+//	surfaceNormal.normalise();
+//	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
+//	
+//	surfaceNormal.x = (((+0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
+//	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((-0.5*yoffset) - (rad)));
+//	surfaceNormal.z = (((-0.5*yoffset) * (-2*yoffset)) - ((+0.5*xoffset) - (-2*xoffset)));
+//	surfaceNormal.normalise();
+//	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
+//	glEnd();	
+//}
+//
+//void SteeringEnvironment::OpenGLDraw(const steeringState&s1, const steeringState&s2, float mix) const
+//{
+//	GLdouble xx, yy, zz, rad;
+//	GLfloat r, g, b, t;
+//	GetColor(r, g, b, t);
+//	xx = (s1.x+s2.x)/(2*worldRadius);
+//	yy = (s1.y+s2.y)/(2*worldRadius);
+//	zz = 0;
+//	rad = 2.0f/worldRadius;
+//	//map->GetCoord(l.x, l.y, xx, yy, zz, rad);
+//	
+//	GLdouble yoffset = sin(TWOPI*(s1.heading+s2.heading)/(2*360.0))*rad;//sin(TWOPI*rot/16)*rad;
+//	GLdouble xoffset = cos(TWOPI*(s1.heading+s2.heading)/(2*360.0))*rad;//cos(TWOPI*rot/16)*rad;
+//	
+//	//	glColor3f(0, 0, 1.0);
+//	//	glBegin(GL_LINE_STRIP);
+//	//	glVertex3f(xx-rad, yy-rad, zz-rad);
+//	//	glVertex3f(xx-rad, yy-rad, zz);
+//	//	glEnd();
+//	
+//	glBegin(GL_TRIANGLES);
+//	Graphics::point surfaceNormal;
+//	surfaceNormal.x = (((-0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
+//	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((0.5*yoffset) - (rad)));
+//	surfaceNormal.z = (((0.5*yoffset) * (-2*yoffset)) - ((-0.5*xoffset) - (-2*xoffset)));
+//	surfaceNormal.normalise();
+//	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
+//	
+//	surfaceNormal.x = (((+0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
+//	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((-0.5*yoffset) - (rad)));
+//	surfaceNormal.z = (((-0.5*yoffset) * (-2*yoffset)) - ((+0.5*xoffset) - (-2*xoffset)));
+//	surfaceNormal.normalise();
+//	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
+//	glEnd();	
+//}
+//void SteeringEnvironment::OpenGLDraw(const steeringState&, const steeringAction&) const { }

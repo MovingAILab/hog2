@@ -101,8 +101,8 @@ public:
 	}
 
 	double GetAmountLearned() { return fAmountLearned; }
-	void OpenGLDraw() const {}
-	void OpenGLDraw(const environment *env) const;
+//	void OpenGLDraw() const {}
+//	void OpenGLDraw(const environment *env) const;
 private:
 	typedef std::unordered_map<uint64_t, learnedData<state>, Hash64 > LearnedHeuristic;
 
@@ -185,26 +185,26 @@ void HLRTAStar<state, action, environment>::GetPath(environment *env, const stat
 	return;
 }
 
-template <class state, class action, class environment>
-void HLRTAStar<state, action, environment>::OpenGLDraw(const environment *e) const
-{
-	double learned = 0;
-	for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
-	{
-		double thisState = (*it).second.h1;
-		if (learned < thisState)
-			learned = thisState;
-	}
-	for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
-	{
-		double r = (*it).second.h1;
-		if (r > 0)
-		{
-			e->SetColor(0.5+0.5*r/learned, 0, 0.5, 0.1+0.8*r/learned);
-			e->OpenGLDraw((*it).second.theState);
-		}
-	}
-}
+//template <class state, class action, class environment>
+//void HLRTAStar<state, action, environment>::OpenGLDraw(const environment *e) const
+//{
+//	double learned = 0;
+//	for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
+//	{
+//		double thisState = (*it).second.h1;
+//		if (learned < thisState)
+//			learned = thisState;
+//	}
+//	for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
+//	{
+//		double r = (*it).second.h1;
+//		if (r > 0)
+//		{
+//			e->SetColor(0.5+0.5*r/learned, 0, 0.5, 0.1+0.8*r/learned);
+//			e->OpenGLDraw((*it).second.theState);
+//		}
+//	}
+//}
 
 }	//HLRTA namespace
 #endif

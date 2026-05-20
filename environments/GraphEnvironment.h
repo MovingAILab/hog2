@@ -15,7 +15,7 @@
 #include "UnitSimulation.h"
 #include "Graph.h"
 //#include "GraphAbstraction.h"
-#include "GLUtil.h"
+#include "Constants.h"
 
 #include <iostream>
 #include <stdint.h>
@@ -81,7 +81,7 @@ public:
 	virtual double HCost(const graphState &state1, const graphState &state2) const = 0;
 	// if one is better as the start or goal state, this can swap for you.
 	virtual void ChooseStartGoal(graphState &/*start*/, graphState &/*goal*/) {}
-	virtual void OpenGLDraw() const {}
+//	virtual void OpenGLDraw() const {}
 private:
 };
 
@@ -229,7 +229,7 @@ public:
 	void SetPlacement(placementScheme s) { placement = s; }
 	Graph *GetGraph() { return g; }
 	void ChooseStartGoal(graphState &start, graphState &goal);
-	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw() const;
 protected:
 	void GetOptimalDistances(node *n, std::vector<double> &values);
 	void AddHeuristic(std::vector<double> &values, graphState location);
@@ -273,7 +273,7 @@ public:
 	int GetNumUsedHeuristics()
 	{ return numHeuristics; }	
 	void Compress();
-	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw() const;
 	
 	void IncreaseDisplayHeuristic()
 	{ displayHeuristic = (displayHeuristic+1)%(heuristics.size()+1); }
@@ -311,17 +311,12 @@ public:
 	virtual uint64_t GetStateHash(const graphState &state) const;
 	virtual void GetStateFromHash(uint64_t parent, graphState &s) const;
 	virtual uint64_t GetActionHash(graphMove act) const;
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const graphState &s) const;
-	virtual void OpenGLDraw(const graphState &s, const graphMove &gm) const;
-	virtual void OpenGLDraw(const graphState &s, const graphState&, float) const { OpenGLDraw(s); }
-	virtual void GLDrawLine(const graphState &x, const graphState &y) const;
-	virtual void GLLabelState(const graphState&, const char *) const;
-
-	std::string SVGHeader() const;
-	std::string SVGDraw() const;
-	std::string SVGDraw(const graphState &s) const;
-	std::string SVGLabelState(const graphState &s, const char *) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const graphState &s) const;
+//	virtual void OpenGLDraw(const graphState &s, const graphMove &gm) const;
+//	virtual void OpenGLDraw(const graphState &s, const graphState&, float) const { OpenGLDraw(s); }
+//	virtual void GLDrawLine(const graphState &x, const graphState &y) const;
+//	virtual void GLLabelState(const graphState&, const char *) const;
 
 	virtual void Draw(Graphics::Display &disp) const;
 	void DrawLERP(Graphics::Display &disp, Graph *a, Graph *b, float mix) const;

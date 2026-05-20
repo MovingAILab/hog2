@@ -128,7 +128,7 @@ public:
 	
 	void FullBPMX(uint64_t nodeID, int distance);
 	
-	void OpenGLDraw() const;
+//	void OpenGLDraw() const;
 	void Draw(Graphics::Display &disp) const;
 	std::string SVGDraw() const;
 	std::string SVGDrawDetailed() const;
@@ -643,68 +643,68 @@ bool DelayedHeuristicAStar<state,action,environment,batchHeuristic,openList>::Ge
  * @date 03/12/09
  * 
  */
-template <class state, class action, class environment, class batchHeuristic, class openList>
-void DelayedHeuristicAStar<state,action,environment,batchHeuristic,openList>::OpenGLDraw() const
-{
-	double transparency = 1.0;
-	if (openClosedList.size() == 0)
-		return;
-	uint64_t top = -1;
-//	double minf = 1e9, maxf = 0;
-	if (openClosedList.OpenSize() > 0)
-	{
-		top = openClosedList.Peek();
-	}
+//template <class state, class action, class environment, class batchHeuristic, class openList>
+//void DelayedHeuristicAStar<state,action,environment,batchHeuristic,openList>::OpenGLDraw() const
+//{
+//	double transparency = 1.0;
+//	if (openClosedList.size() == 0)
+//		return;
+//	uint64_t top = -1;
+////	double minf = 1e9, maxf = 0;
+//	if (openClosedList.OpenSize() > 0)
+//	{
+//		top = openClosedList.Peek();
+//	}
+////	for (unsigned int x = 0; x < openClosedList.size(); x++)
+////	{
+////		const AStarOpenClosedData<state> &data = openClosedList.Lookat(x);
+////		double f = data.g+data.h;
+////		if (f > maxf)
+////			maxf = f;
+////		if (f < minf)
+////			minf = f;
+////	}
 //	for (unsigned int x = 0; x < openClosedList.size(); x++)
 //	{
-//		const AStarOpenClosedData<state> &data = openClosedList.Lookat(x);
-//		double f = data.g+data.h;
-//		if (f > maxf)
-//			maxf = f;
-//		if (f < minf)
-//			minf = f;
+//		const auto &data = openClosedList.Lookat(x);
+//		if (x == top)
+//		{
+//			env->SetColor(1.0, 1.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		if ((data.where == kOpenList) && (data.reopened))
+//		{
+//			env->SetColor(0.0, 0.5, 0.5, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		else if (data.where == kOpenList) 
+//		{
+//			env->SetColor(0.0, 1.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		else if ((data.where == kClosedList) && (data.reopened))
+//		{
+//			env->SetColor(0.5, 0.0, 0.5, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		else if (data.where == kClosedList)
+//		{
+////			if (top != -1)
+////			{
+////				env->SetColor((data.g+data.h-minf)/(maxf-minf), 0.0, 0.0, transparency);
+////			}
+////			else {
+//			if (data.parentID == x)
+//				env->SetColor(1.0, 0.5, 0.5, transparency);
+//			else
+//				env->SetColor(1.0, 0.0, 0.0, transparency);
+////			}
+//			env->OpenGLDraw(data.data);
+//		}
 //	}
-	for (unsigned int x = 0; x < openClosedList.size(); x++)
-	{
-		const auto &data = openClosedList.Lookat(x);
-		if (x == top)
-		{
-			env->SetColor(1.0, 1.0, 0.0, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		if ((data.where == kOpenList) && (data.reopened))
-		{
-			env->SetColor(0.0, 0.5, 0.5, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		else if (data.where == kOpenList) 
-		{
-			env->SetColor(0.0, 1.0, 0.0, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		else if ((data.where == kClosedList) && (data.reopened))
-		{
-			env->SetColor(0.5, 0.0, 0.5, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		else if (data.where == kClosedList)
-		{
-//			if (top != -1)
-//			{
-//				env->SetColor((data.g+data.h-minf)/(maxf-minf), 0.0, 0.0, transparency);
-//			}
-//			else {
-			if (data.parentID == x)
-				env->SetColor(1.0, 0.5, 0.5, transparency);
-			else
-				env->SetColor(1.0, 0.0, 0.0, transparency);
-//			}
-			env->OpenGLDraw(data.data);
-		}
-	}
-	env->SetColor(1.0, 0.5, 1.0, 0.5);
-	env->OpenGLDraw(goal);
-}
+//	env->SetColor(1.0, 0.5, 1.0, 0.5);
+//	env->OpenGLDraw(goal);
+//}
 
 /**
  * Draw the open/closed list
