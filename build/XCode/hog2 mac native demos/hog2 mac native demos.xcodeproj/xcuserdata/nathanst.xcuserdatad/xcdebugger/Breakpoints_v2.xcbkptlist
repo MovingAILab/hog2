@@ -491,7 +491,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "469"
             endingLineNumber = "469"
-            landmarkName = "GetNext(g, h)"
+            landmarkName = "ResetIterator()"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -508,7 +508,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "470"
             endingLineNumber = "470"
-            landmarkName = "GetNext(g, h)"
+            landmarkName = "ResetIterator()"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -659,8 +659,8 @@
             timestampString = "592332118.220446"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "687"
-            endingLineNumber = "687"
+            startingLineNumber = "703"
+            endingLineNumber = "703"
             landmarkName = "MyFrameHandler(windowID, viewport)"
             landmarkType = "9">
          </BreakpointContent>
@@ -972,8 +972,8 @@
             filePath = "../../../demos/suboptimal-map/Driver.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1119"
-            endingLineNumber = "1119"
+            startingLineNumber = "1135"
+            endingLineNumber = "1135"
             landmarkName = "unknown"
             landmarkType = "0">
          </BreakpointContent>
@@ -1595,9 +1595,9 @@
             filePath = "../../../utils/Graphics.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "228"
-            endingLineNumber = "228"
-            landmarkName = "Display::FillNGon(p, radius, sides, rotation, c)"
+            startingLineNumber = "300"
+            endingLineNumber = "300"
+            landmarkName = "Display::FillTriangle(t, c)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1645,8 +1645,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "401"
             endingLineNumber = "401"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            landmarkName = "Racetrack::GetCarCoordinates(s, center, t1, t2, t3)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1851,8 +1851,8 @@
             filePath = "../../../environments/GraphEnvironment.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "605"
-            endingLineNumber = "605"
+            startingLineNumber = "493"
+            endingLineNumber = "493"
             landmarkName = "GraphEnvironment::DrawLERP(disp, a, b, mix, l1, l2)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1947,9 +1947,9 @@
             filePath = "../../../utils/Graphics.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "181"
-            endingLineNumber = "181"
-            landmarkName = "Display::FillCircle(p, radius, c)"
+            startingLineNumber = "253"
+            endingLineNumber = "253"
+            landmarkName = "Display::FillRect(r, c)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -2061,8 +2061,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "351"
             endingLineNumber = "351"
-            landmarkName = "DoSingleSearchStep(thePath)"
-            landmarkType = "9">
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -2254,6 +2254,22 @@
             startingLineNumber = "646"
             endingLineNumber = "646"
             landmarkName = "HandlePhiClick(loc, button, mType)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "AA05415E-2190-4B0A-A78A-A26A2B6CB795"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../demos/suboptimal-map/Driver.cpp"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "601"
+            endingLineNumber = "601"
+            landmarkName = "GetPlotPoints()"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
