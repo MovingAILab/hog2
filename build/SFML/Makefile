@@ -50,6 +50,7 @@ PROJECTS = \
   demos/DFID \
   demos/dijkstra \
   demos/astar \
+  demos/astar-map \
   demos/idastar \
   demos/fastmap \
   demos/pancake \
