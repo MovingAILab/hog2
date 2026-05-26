@@ -436,6 +436,7 @@ struct WitnessRegionConstraint {
 
     bool operator==(const WitnessRegionConstraint &a) const
     {
+        if (type == kUnknownRegionConstraint && a.type == this->type) return true;
         return a.type == this->type && a.parameter == this->parameter && a.color == this->color;
     }
     bool operator!=(const WitnessRegionConstraint &a) const
@@ -546,7 +547,7 @@ struct WitnessRegionConstraint {
                         break;
                 }
                 if (type == kNegativeTetris)
-                    ss << std::quoted("negate") << ": true";
+                    ss << ", " << std::quoted("negate") << ": true";
                 ss << "}";
                 break;
             }
@@ -1417,7 +1418,7 @@ public:
         ss << "{" << std::quoted("width") << ": " << width * 2 + 1 << ", "
             << std::quoted("symmetry") << ": 0" << ", "
             << std::quoted("entity") << ": [";
-        std::array<std::pair<unsigned, unsigned>, (GetNumPathConstraints() + width * height)> locationMap;
+        std::array<std::pair<unsigned, unsigned>, GetNumPathConstraints() + width * height> locationMap;
         BuildLocationMap(locationMap);
         for (auto i = 0; i < locationMap.size(); ++i)
         {
@@ -1469,15 +1470,21 @@ public:
 
     std::istream& Deserialize(std::istream &is)
     {
-        std::string input((std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
-        std::regex w_r(R"("width":\s*(\d+))");
-        std::regex e_r(R"("entity":\s*\[(.*)\])");
-        std::regex s_r(R"("symmetry":\s*(\d+))");
-        std::smatch w_match, e_match, s_match;
+        std::string input((std::istreambuf_iterator(is)),
+                          std::istreambuf_iterator<char>());
+
+        std::smatch w_match, s_match, e_match;
+
+        std::regex w_r(R"("width"\s*:\s*(\d+))");
+        std::regex s_r(R"("symmetry"\s*:\s*(\d+))");
+        std::regex e_r(R"("entity"\s*:\s*\[(.*)\]\s*\})");
+
         if (!(std::regex_search(input, w_match, w_r) &&
               std::regex_search(input, s_match, s_r) &&
               std::regex_search(input, e_match, e_r)))
+        {
             throw std::invalid_argument("incorrect string");
+        }
 
         if (std::stoi(w_match[1].str()) != (width * 2 + 1))
             throw std::invalid_argument("unsupported size");
@@ -1485,97 +1492,199 @@ public:
         if (std::stoi(s_match[1].str()) != 0)
             throw std::invalid_argument("unsupported symmetry");
 
-        std::array<std::pair<unsigned, unsigned>, (GetNumPathConstraints() + width * height)> locationMap;
+        std::array<std::pair<unsigned, unsigned>, GetNumPathConstraints() + width * height> locationMap;
         BuildLocationMap(locationMap);
-        auto es = std::string(R"(\{"type":\s*(\d+),\s*"color":\s*(\d+),\s*)") +
-                  std::string(R"("orientation":\s*(?:null|\{"horizontal":\s*\d,\s*"vertical":\s*\d\}),\s*)") +
-                  std::string(R"("shape":\s*(null|\{"width":\s*(\d),\s*)") +
-                  std::string(R"("grid":\s*(\[(?:(?:true|false)\s*,\s*)*(?:true|false)?\]),\s*"free":\s*(true|false),\s*)") +
-                  std::string(R"("negative":\s*(true|false)\}),\s*"count":\s*(\d+),\s*"triangle_count":\s*(\d+)\})");
-        std::regex es_r(es);
-        auto entities = e_match[1].str();
-        unsigned count = 0;
-        for (auto i = std::sregex_iterator(entities.begin(), entities.end(), es_r); i != std::sregex_iterator(); ++i)
-        {
-            const auto& match = *i;
-            switch (const int type = std::stoi(match[1].str()); type)
+
+        auto trim = [](const std::string& s) -> std::string {
+            const auto first = s.find_first_not_of(" \t\n\r");
+            if (first == std::string::npos)
+                return "";
+            const auto last = s.find_last_not_of(" \t\n\r");
+            return s.substr(first, last - first + 1);
+        };
+
+        auto splitTopLevelEntities = [&](const std::string& entities) {
+            std::vector<std::string> result;
+            std::string current;
+            int braceDepth = 0;
+            int bracketDepth = 0;
+
+            for (const char c : entities)
             {
-                case 3:
-                case 4: // only support single start and goal currently
+                if (c == '{') ++braceDepth;
+                else if (c == '}') --braceDepth;
+                else if (c == '[') ++bracketDepth;
+                else if (c == ']') --bracketDepth;
+
+                if (c == ',' && braceDepth == 0 && bracketDepth == 0)
                 {
-                    auto loc = locationMap[count++].second;
-                    for (auto y = height; y >= 0; --y)
+                    result.push_back(trim(current));
+                    current.clear();
+                }
+                else
+                {
+                    current.push_back(c);
+                }
+            }
+
+            if (!trim(current).empty())
+                result.push_back(trim(current));
+
+            return result;
+        };
+
+        auto pointFromP = [&](const unsigned p) -> std::pair<int, int> {
+            const unsigned base = width * (height + 1) + (width + 1) * height;
+            if (p < base)
+                throw std::invalid_argument("location is not a point");
+
+            const unsigned q = p - base;
+            int y = static_cast<int>(q / (width + 1));
+            int x = static_cast<int>(q % (width + 1));
+            return {x, y};
+        };
+
+        auto entities = splitTopLevelEntities(e_match[1].str());
+
+        if (entities.size() != locationMap.size())
+            throw std::invalid_argument("entity count does not match puzzle layout");
+
+        std::regex type_r(R"("type"\s*:\s*(\d+))");
+        std::regex color_r(R"("color"\s*:\s*(\d+))");
+        std::regex tri_r(R"("triangle_count"\s*:\s*(\d+))");
+        std::regex tetris_width_r(R"("width"\s*:\s*(\d+))");
+        std::regex tetris_grid_r(R"("grid"\s*:\s*(\[[^\]]*\]))");
+        std::regex negate_r(R"("negate"\s*:\s*true)");
+
+        for (size_t idx = 0; idx < entities.size(); ++idx)
+        {
+            const std::string entity = trim(entities[idx]);
+            const auto [slotType, loc] = locationMap[idx];
+
+            if (entity.empty() || entity == "{}")
+                continue;
+
+            std::smatch type_match;
+            if (!std::regex_search(entity, type_match, type_r))
+                throw std::invalid_argument("entity missing type");
+
+            const int type = std::stoi(type_match[1].str());
+            switch (type)
+            {
+                case 3: // start
+                {
+                    if (slotType != 2 && slotType != 0)
                     {
-                        for (auto x = 0; x <= width; ++x)
-                        {
-                           if (loc == width * (height + 1) + (width + 1) * height + (width + 1) * y + x)
-                           {
-                               if (type == 3)
-                                   SetStart(x, y);
-                               else
-                               {
-                                   if (x == 0)
-                                       SetGoal(x - 1, y);
-                                   else if (x == width)
-                                       SetGoal(x + 1, y);
-                                   else if (y == 0)
-                                       SetGoal(x, y - 1);
-                                   else if (y == height)
-                                       SetGoal(x, y + 1);
-                               }
-                           }
-                        }
+                        // Serialized start should live on a point slot.
+                        // Depending on initial state, BuildLocationMap may still mark it as 0 before SetStart().
                     }
+
+                    auto [x, y] = pointFromP(loc);
+                    SetStart(x, y);
                     break;
                 }
-                case 5:
-                case 6:
+                case 4: // goal
                 {
-                    auto loc = locationMap[count++].second;
-                    (type == 5) ? SetCannotCrossConstraint(loc) : SetMustCrossConstraint(loc);
+                    if (slotType != 3 && slotType != 0)
+                    {
+                        // Serialized goal should live on a point slot.
+                    }
+
+                    auto [x, y] = pointFromP(loc);
+
+                    if (x == 0)
+                        SetGoal(x - 1, y);
+                    else if (x == static_cast<int>(width))
+                        SetGoal(x + 1, y);
+                    else if (y == 0)
+                        SetGoal(x, y - 1);
+                    else if (y == static_cast<int>(height))
+                        SetGoal(x, y + 1);
+                    else
+                        throw std::invalid_argument("goal is not on boundary");
+
                     break;
                 }
-                case 7:
+                case 5: // cannot cross
                 {
-                    auto loc = locationMap[count++].second;
-                    auto color = GetColorFromEnum(std::stoi(match[2].str()));
+                    if (slotType != 0)
+                        throw std::invalid_argument("cannot-cross on invalid slot");
+                    SetCannotCrossConstraint(loc);
+                    break;
+                }
+                case 6: // must cross
+                {
+                    if (slotType != 0)
+                        throw std::invalid_argument("must-cross on invalid slot");
+                    SetMustCrossConstraint(loc);
+                    break;
+                }
+                case 7: // separation
+                {
+                    if (slotType != 1)
+                        throw std::invalid_argument("separation on invalid slot");
+
+                    std::smatch color_match;
+                    if (!std::regex_search(entity, color_match, color_r))
+                        throw std::invalid_argument("separation entity missing color");
+
+                    auto color = GetColorFromEnum(std::stoi(color_match[1].str()));
                     AddSeparationConstraint(loc, (color == Colors::white) ? Colors::lightgray : color);
                     break;
                 }
-                case 8:
+                case 8: // star
                 {
-                    auto loc = locationMap[count++].second;
-                    auto color = GetColorFromEnum(std::stoi(match[2].str()));
+                    if (slotType != 1)
+                        throw std::invalid_argument("star on invalid slot");
+
+                    std::smatch color_match;
+                    if (!std::regex_search(entity, color_match, color_r))
+                        throw std::invalid_argument("star entity missing color");
+
+                    auto color = GetColorFromEnum(std::stoi(color_match[1].str()));
                     AddStarConstraint(loc, (color == Colors::white) ? Colors::lightgray : color);
                     break;
                 }
-                case 9:
+                case 9: // tetris / negative tetris
                 {
-                    auto loc = locationMap[count++].second;
-                    int param = GetTetrisParameterFromString(std::stoi(match[4].str()), match[5].str());
-                    if (param >= 1)
-                        (match[7].str() == "false") ? AddTetrisConstraint(loc, param) :
-                            AddNegativeTetrisConstraint(loc, param);
+                    if (slotType != 1)
+                        throw std::invalid_argument("tetris on invalid slot");
+
+                    std::smatch width_match, grid_match;
+                    if (!std::regex_search(entity, width_match, tetris_width_r) ||
+                        !std::regex_search(entity, grid_match, tetris_grid_r))
+                    {
+                        throw std::invalid_argument("tetris entity missing width/grid");
+                    }
+
+                    const int shapeWidth = std::stoi(width_match[1].str());
+                    const std::string grid = grid_match[1].str();
+                    const bool negate = std::regex_search(entity, negate_r);
+
+                    const int param = GetTetrisParameterFromString(shapeWidth, grid);
+                    if (param < 1)
+                        throw std::invalid_argument("unsupported tetris shape");
+
+                    if (negate)
+                        AddNegativeTetrisConstraint(loc, param);
+                    else
+                        AddTetrisConstraint(loc, param);
                     break;
                 }
-                case 11:
+                case 11: // triangle
                 {
-                    auto loc = locationMap[count++].second;
-                    AddTriangleConstraint(loc, std::stoi(match[9].str()));
+                    if (slotType != 1)
+                        throw std::invalid_argument("triangle on invalid slot");
+
+                    std::smatch tri_match;
+                    if (!std::regex_search(entity, tri_match, tri_r))
+                        throw std::invalid_argument("triangle entity missing triangle_count");
+
+                    AddTriangleConstraint(loc, std::stoi(tri_match[1].str()));
                     break;
                 }
-                case 0:
-                case 1:
-                case 2:
-                case 10:
-                default: // empty
-                {
-                    int c = std::stoi(match[8].str());
-                    if (c == 0)
-                        c = 1;
-                    count += c;
-                    break;
-                }
+                default:
+                    throw std::invalid_argument("unsupported entity type");
             }
         }
         return is;
