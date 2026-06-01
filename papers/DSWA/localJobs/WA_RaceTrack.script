@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./WA_RaceTrackJob0.script
+./WA_RaceTrackJob1.script
+./WA_RaceTrackJob2.script
+./WA_RaceTrackJob3.script
+./WA_RaceTrackJob4.script
+./WA_RaceTrackJob5.script
+./WA_RaceTrackJob6.script
+./WA_RaceTrackJob7.script
+./WA_RaceTrackJob8.script
+./WA_RaceTrackJob9.script

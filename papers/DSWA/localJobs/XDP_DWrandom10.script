@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./XDP_DWrandom10Job0.script
+./XDP_DWrandom10Job1.script
+./XDP_DWrandom10Job2.script
+./XDP_DWrandom10Job3.script
+./XDP_DWrandom10Job4.script
+./XDP_DWrandom10Job5.script
+./XDP_DWrandom10Job6.script
+./XDP_DWrandom10Job7.script
+./XDP_DWrandom10Job8.script
+./XDP_DWrandom10Job9.script

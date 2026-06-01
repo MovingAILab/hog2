@@ -8,6 +8,8 @@
 
 #include "MapGenerators.h"
 #include <vector>
+#include <algorithm>
+#include <random>
 
 /**
  * MakeMaze(map, pathsize)
@@ -91,11 +93,19 @@ void MakePseudoMaze(Map *map, int pathSize)
 /**
  * MakeMaze(map)
  */
-void MakeMaze(Map *map, int corridorWidth)
+void MakeMaze(Map *map, int corridorWidth, int startx, int starty)
 {
 	int width = map->GetMapWidth();
 	int height = map->GetMapHeight();
 	int boxSize = corridorWidth+1;
+	if (startx == -1)
+		startx = width/(2*boxSize);
+	else
+		startx = startx-startx%boxSize;
+	if (starty == -1)
+		starty = height/(2*boxSize);
+	else
+		starty = starty-starty%boxSize;
 	// fill the whole map empty
 	map->SetRectHeight(0, 0, width-1, height-1, 0, kGround);
 	// block all the walls
@@ -110,8 +120,8 @@ void MakeMaze(Map *map, int corridorWidth)
 	std::vector<int> x;
 	std::vector<int> y;
 	
-	x.push_back(width/(2*boxSize));
-	y.push_back(height/(2*boxSize));
+	x.push_back(startx);
+	y.push_back(starty);
 	//	x.push_back(0);
 	//	y.push_back(0);
 	//	map->SetHeight(0, 0, 1);
@@ -225,7 +235,8 @@ void BuildRandomRoomMap(Map *map, int roomSize, int openingProbability)
     int width = map->GetMapWidth();
     int height = map->GetMapHeight();
 	
-	map->SetTerrainType(0, 0, width-1, height-1, kGround);
+	map->SetRectHeight(0, 0, width-1, height-1, 0, kGround);
+	//map->SetTerrainType(0, 0, width-1, height-1, kGround);
     for (int x = 0; x < height; x += roomSize)
     {
         // draw a horizontal line
@@ -235,7 +246,10 @@ void BuildRandomRoomMap(Map *map, int roomSize, int openingProbability)
 		{
 			if ((random()%100) < openingProbability) // chance of creating hole
 			{
-				for (int z = 0; z < roomSize/8; z++)
+				int val = roomSize/8;
+				if (val == 0)
+					val = 1;
+				for (int z = 0; z < val; z++)
 				{
 					map->SetTerrainType(y+1+random()%(roomSize-1), x, kGround);
 				}
@@ -251,7 +265,10 @@ void BuildRandomRoomMap(Map *map, int roomSize, int openingProbability)
 		{
 			if ((random()%100) < openingProbability) // chance of creating hole
 			{
-				for (int z = 0; z < roomSize/8; z++)
+				int val = roomSize/8;
+				if (val == 0)
+					val = 1;
+				for (int z = 0; z < val; z++)
 				{
 					map->SetTerrainType(x, y+1+random()%(roomSize-1), kGround);
 				}
@@ -275,4 +292,192 @@ void MakeRandomMap(Map *map, int obstacles)
 		}
 		map->SetTerrainType(xloc, yloc, kOutOfBounds);
 	}
+}
+
+void MakeDesignedMap(Map *map, int obstacleSize, int type)
+{
+    int xloc, yloc, tmp;
+    xloc = map->GetMapWidth()/2;
+    yloc = map->GetMapHeight()/2;
+    switch (type)
+    {
+    case 0:
+        /* Only cosists a square of obstacles in the center of empty map */
+        for(int i=xloc-obstacleSize; i<=xloc+obstacleSize; i++)
+            for(int j=yloc-obstacleSize; j<=yloc+obstacleSize; j++)
+                map->SetTerrainType(i, j, kOutOfBounds);
+        break;
+    
+    case 1:
+        /* Only cosists a square of swamp states in the center of empty map */
+        for(int i=xloc-obstacleSize; i<=xloc+obstacleSize; i++)
+            for(int j=yloc-obstacleSize; j<=yloc+obstacleSize; j++)
+                map->SetTerrainType(i, j, kSwamp);
+        break;
+
+    case 2:
+        /* Only cosists a diamond of obstacles in the center of empty map */
+        tmp = obstacleSize;
+        for(int i=yloc-obstacleSize; i<=yloc+obstacleSize; i++)
+        {    for(int k=xloc-abs(obstacleSize-tmp)/2; k<=xloc+abs(obstacleSize-tmp)/2; k++)
+                map->SetTerrainType(k, i, kOutOfBounds);
+            if(i>=yloc)
+                tmp -=2;
+            else
+                tmp +=2;
+        }
+        break;
+    
+    case 3:
+        /* Only cosists a diamond of swamp states in the center of empty map */
+        tmp = obstacleSize;
+        for(int i=yloc-obstacleSize; i<=yloc+obstacleSize; i++)
+        {    for(int k=xloc-abs(obstacleSize-tmp)/2; k<=xloc+abs(obstacleSize-tmp)/2; k++)
+                map->SetTerrainType(k, i, kSwamp);
+            if(i>=yloc)
+                tmp -=2;
+            else
+                tmp +=2;
+        }
+        break;
+    
+    case 4:
+        /* Only cosists a circle of obstacles in the center of empty map */
+        for(int i=xloc-obstacleSize; i<=xloc+obstacleSize; i++)
+            for(int j=yloc-obstacleSize; j<=yloc+obstacleSize; j++)
+                if(sqrt(pow(i-xloc,2) + pow(j-yloc,2)) <= obstacleSize)
+                    map->SetTerrainType(i, j, kOutOfBounds);
+        break;
+    
+    case 5:
+        /* Only cosists a circle of swamp states in the center of empty map */
+        for(int i=xloc-obstacleSize; i<=xloc+obstacleSize; i++)
+            for(int j=yloc-obstacleSize; j<=yloc+obstacleSize; j++)
+                if(sqrt(pow(i-xloc,2) + pow(j-yloc,2)) <= obstacleSize)
+                    map->SetTerrainType(i, j, kSwamp);
+        break;
+
+    case 6:
+        /* Some columns of swamp states in the center of empty map */
+        for(int i=xloc-obstacleSize; i<=xloc+obstacleSize; i++)
+            for(int j=0; j<map->GetMapHeight(); j++)
+                map->SetTerrainType(i, j, kSwamp);
+        break;
+    default:
+        break;
+    }
+}
+
+
+struct loc { int x; int y; };
+
+void StraightDir(Map *m, loc l, std::vector<loc> &dirs)
+{
+	dirs.resize(0);
+	if ((m->GetTerrainType(l.x+1, l.y) == kGround) && (m->GetTerrainType(l.x-2, l.y) == kTrees))
+		dirs.push_back({l.x-2, l.y});
+	if ((m->GetTerrainType(l.x-1, l.y) == kGround) && (m->GetTerrainType(l.x+2, l.y) == kTrees))
+		dirs.push_back({l.x+2, l.y});
+	if ((m->GetTerrainType(l.x, l.y+1) == kGround) && (m->GetTerrainType(l.x, l.y-2) == kTrees))
+		dirs.push_back({l.x, l.y-2});
+	if ((m->GetTerrainType(l.x, l.y-1) == kGround) && (m->GetTerrainType(l.x, l.y+2) == kTrees))
+		dirs.push_back({l.x, l.y+2});
+
+	if (dirs.size() != 1)
+		dirs.resize(0);
+}
+
+void PossibileDirs(Map *m, loc l, std::vector<loc> &dirs)
+{
+	dirs.resize(0);
+	if ((m->GetTerrainType(l.x+1, l.y) == kTrees) && (m->GetTerrainType(l.x+2, l.y) == kTrees))
+		dirs.push_back({l.x+2, l.y});
+	if ((m->GetTerrainType(l.x-1, l.y) == kTrees) && (m->GetTerrainType(l.x-2, l.y) == kTrees))
+		dirs.push_back({l.x-2, l.y});
+	if ((m->GetTerrainType(l.x, l.y+1) == kTrees) && (m->GetTerrainType(l.x, l.y+2) == kTrees))
+		dirs.push_back({l.x, l.y+2});
+	if ((m->GetTerrainType(l.x, l.y-1) == kTrees) && (m->GetTerrainType(l.x, l.y-2) == kTrees))
+		dirs.push_back({l.x, l.y-2});
+}
+
+void Burrow(Map *m, loc l1, loc l2)
+{
+	m->SetTerrainType(l1.x, l1.y, kGround);
+	m->SetTerrainType(l2.x, l2.y, kGround);
+	m->SetTerrainType((l1.x+l2.x)/2, (l1.y+l2.y)/2, kGround);
+}
+void MakeMaze(Map *m, float straightPercent, float branchPercent)
+{
+	assert(branchPercent >= 0 && branchPercent <= 1 && straightPercent >= 0 && straightPercent <= 1);
+	for (int y = 0; y < m->GetMapHeight(); y++)
+		for (int x = 0; x < m->GetMapWidth(); x++)
+			m->SetTerrainType(x, y, kTrees);
+	std::vector<loc> places;
+	int startx = ((int)random()%m->GetMapWidth())|1;
+	int starty = ((int)random()%m->GetMapHeight())|1;
+	places.push_back({startx, starty});
+	
+	std::vector<loc> straight;
+	std::vector<loc> all;
+	while (places.size() > 0)
+	{
+		// Get random location from eligible locations
+		int which = (int)random()%places.size();
+		//if (74 > random()%100)
+		which = places.size()-1; // continue last direction
+		
+		loc currLoc = places[which];
+		places.erase(places.begin()+which);
+		
+		StraightDir(m, currLoc, straight);
+		PossibileDirs(m, currLoc, all);
+		// with straightPercent, continue straight when possible
+		if (straight.size() > 0 && (random()%10000) < 10000*straightPercent)
+		{
+			Burrow(m, currLoc, straight[0]);
+			places.push_back(straight[0]);
+		}
+		else {
+			// with probabiliy branchPercent, go in 2 directions
+			if ((random()%10000) < 10000*branchPercent)
+			{
+				while (all.size() > 2)
+					all.erase(all.begin()+random()%all.size());
+			}
+			else {
+				while (all.size() > 1)
+					all.erase(all.begin()+random()%all.size());
+			}
+			for (loc next : all)
+			{
+				Burrow(m, currLoc, next);
+				places.push_back(next);
+			}
+            std::random_device rd;
+            std::mt19937 g(rd());
+			// std::random_shuffle ( places.begin(), places.end() );
+            std::shuffle(places.begin(), places.end(), g);
+		}
+	}
+}
+
+Map *MakeWarehouseMap(int columns, int rows, int corridor, int shelfWidth, int shelfHeight, int leftMargin, int rightMargin)
+{
+	int mapWidth = leftMargin+rightMargin+columns*shelfWidth+(columns-1)*corridor+2;
+	int mapHeight = rows*shelfHeight+(rows+1)*corridor+2;
+	Map *map = new Map(mapWidth, mapHeight);
+	// put a 1-width border on the whole map
+	map->SetTerrainType(0, 0, 0, mapHeight-1, kTrees);
+	map->SetTerrainType(mapWidth-1, 0, mapWidth-1, mapHeight-1, kTrees);
+	map->SetTerrainType(0, mapHeight-1, mapWidth-1, mapHeight-1, kTrees);
+	map->SetTerrainType(0, 0, mapWidth-1, 0, kTrees);
+
+	for (int x = 1+leftMargin; x+shelfWidth+rightMargin < mapWidth; x += shelfWidth+corridor)
+	{
+		for (int y = 1+corridor; y+shelfHeight+corridor < mapHeight; y += shelfHeight+corridor)
+		{
+			map->SetRectHeight(x, y, x+shelfWidth-1, y+shelfHeight-1, 0, kTrees);
+		}
+	}
+	return map;
 }

@@ -9,12 +9,12 @@
 #ifndef __hog2_glut__Map2DHeading__
 #define __hog2_glut__Map2DHeading__
 
-#include <iostream>
 #include "SearchEnvironment.h"
 #include "Map.h"
-#include <ext/hash_map>
 
 #include <cassert>
+#include <iostream>
+#include <unordered_map>
 
 //#include "BaseMapOccupancyInterface.h"
 
@@ -42,7 +42,12 @@ struct xyhAct {
 	uint8_t oldHeading;
 	uint8_t newHeading;
 };
-	
+
+static bool operator==(const xyhAct &l1, const xyhAct &l2)
+{
+	return (l1.oldHeading == l2.oldHeading) && (l1.newHeading == l2.newHeading);
+}
+
 class Map2DHeading : public SearchEnvironment<xyhLoc, xyhAct>
 {
 public:
@@ -58,27 +63,27 @@ public:
 	
 	//	bool Contractable(const xyhLoc &where);
 	
-	virtual double HCost(const xyhLoc &) {
+	virtual double HCost(const xyhLoc &) const {
 		fprintf(stderr, "ERROR: Single State HCost not implemented\n");
 		exit(1); return -1.0;}
-	virtual double HCost(const xyhLoc &node1, const xyhLoc &node2);
-	virtual double GCost(const xyhLoc &node1, const xyhLoc &node2);
-	virtual double GCost(const xyhLoc &node1, const xyhAct &act);
-	bool GoalTest(const xyhLoc &node, const xyhLoc &goal);
+	virtual double HCost(const xyhLoc &node1, const xyhLoc &node2) const;
+	virtual double GCost(const xyhLoc &node1, const xyhLoc &node2) const;
+	virtual double GCost(const xyhLoc &node1, const xyhAct &act) const;
+	bool GoalTest(const xyhLoc &node, const xyhLoc &goal) const;
 	
-	bool GoalTest(const xyhLoc &){
+	bool GoalTest(const xyhLoc &) const {
 		fprintf(stderr, "ERROR: Single State Goal Test not implemented \n");
 		exit(1); return false;}
 	
 	uint64_t GetStateHash(const xyhLoc &node) const;
 	void GetStateFromHash(uint64_t hash, xyhLoc &node) const;
 	uint64_t GetActionHash(xyhAct act) const;
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const xyhLoc &l) const;
-	virtual void OpenGLDraw(const xyhLoc &l1, const xyhLoc &l2, float v) const;
-	virtual void OpenGLDraw(const xyhLoc &, const xyhAct &) const;
-	virtual void GLLabelState(const xyhLoc &, const char *) const;
-	virtual void GLDrawLine(const xyhLoc &x, const xyhLoc &y) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const xyhLoc &l) const;
+//	virtual void OpenGLDraw(const xyhLoc &l1, const xyhLoc &l2, float v) const;
+//	virtual void OpenGLDraw(const xyhLoc &, const xyhAct &) const;
+//	virtual void GLLabelState(const xyhLoc &, const char *) const;
+//	virtual void GLDrawLine(const xyhLoc &x, const xyhLoc &y) const;
 	//virtual void OpenGLDraw(const xyhLoc &, const xyhAct &, GLfloat r, GLfloat g, GLfloat b) const;
 	//virtual void OpenGLDraw(const xyhLoc &l, GLfloat r, GLfloat g, GLfloat b) const;
 	Map* GetMap() const { return map; }
@@ -87,7 +92,7 @@ public:
 	
 	void StoreGoal(xyhLoc &) {} // stores the locations for the given goal state
 	void ClearGoal() {}
-	bool IsGoalStored() {return false;}
+	bool IsGoalStored() const {return false;}
 	void SetDiagonalCost(double val) { DIAGONAL_COST = val; }
 	double GetDiagonalCost() { return DIAGONAL_COST; }
 	bool FourConnected() { return fourConnected; }
@@ -107,10 +112,10 @@ protected:
 	std::vector<float> sinTable;
 
 	// P is visibility setting
-	double GetCost(const xyhLoc &a, const xyhLoc &b, double P, double d);
+	double GetCost(const xyhLoc &a, const xyhLoc &b, double P, double d) const;
 
 	struct hdData { double seen; double dist; };
-	typedef __gnu_cxx::hash_map<uint64_t, hdData, Hash64> CostTable;
+	typedef std::unordered_map<uint64_t, hdData, Hash64> CostTable;
 	CostTable costs;
 	bool LegalState(const xyhLoc &s);
 	void BuildAngleTables();

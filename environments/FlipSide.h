@@ -63,6 +63,11 @@ static bool operator==(const FlipSideState &l1, const FlipSideState &l2)
 	return true;
 }
 
+static bool operator==(const flipMove &l1, const flipMove &l2)
+{
+	return l1.top == l2.top && l1.bottom == l2.bottom;
+}
+
 class FlipSide : public SearchEnvironment<FlipSideState, flipMove> {
 public:
 	FlipSide(int width = 5);
@@ -75,28 +80,28 @@ public:
 
 	//OccupancyInterface<FlipSideState, flipMove> *GetOccupancyInfo() { return 0; }
 
-	double HCost(const FlipSideState &){
+	double HCost(const FlipSideState &) const {
 		fprintf(stderr, "ERROR: Single State HCost not implemented for FlipSide\n");
 		exit(1); return -1.0;}
-	double HCost(const FlipSideState &state1, const FlipSideState &state2);
-	double GCost(const FlipSideState &state1, const FlipSideState &state2);
-	double GCost(const FlipSideState &, const flipMove &) { return 1.0; }
-	bool GoalTest(const FlipSideState &state, const FlipSideState &goal);
+	double HCost(const FlipSideState &state1, const FlipSideState &state2) const;
+	double GCost(const FlipSideState &state1, const FlipSideState &state2) const;
+	double GCost(const FlipSideState &, const flipMove &) const { return 1.0; }
+	bool GoalTest(const FlipSideState &state, const FlipSideState &goal) const;
 
-	bool GoalTest(const FlipSideState &){
+	bool GoalTest(const FlipSideState &) const{
 		fprintf(stderr, "ERROR: Single State Goal Test not implemented for FlipSide\n");
 		exit(1); return false;}
 
 	uint64_t GetStateHash(const FlipSideState &state) const;
 	uint64_t GetActionHash(flipMove act) const;
-	void OpenGLDraw() const;
-	void OpenGLDraw(const FlipSideState &s) const;
-	void OpenGLDraw(const FlipSideState &, const flipMove &)  const{ /* currently not drawing moves */ }
-	void OpenGLDraw(const FlipSideState&, const FlipSideState&, float) const { /* currently not drawing moves */ }
+//	void OpenGLDraw() const;
+//	void OpenGLDraw(const FlipSideState &s) const;
+//	void OpenGLDraw(const FlipSideState &, const flipMove &)  const{ /* currently not drawing moves */ }
+//	void OpenGLDraw(const FlipSideState&, const FlipSideState&, float) const { /* currently not drawing moves */ }
 
 	void StoreGoal(FlipSideState &){}
 	void ClearGoal(){}
-	bool IsGoalStored(){return false;}
+	bool IsGoalStored() const {return false;}
 private:
 		int width;
 };

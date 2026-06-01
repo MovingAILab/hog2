@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "NBitArray&lt;4&gt;::Clear():NBitArray.h">
+      </ContextState>
+      <ContextState
+         contextName = "NBitArray&lt;64&gt;::Clear():NBitArray.h">
+      </ContextState>
+      <ContextState
+         contextName = "NBitArray&lt;3&gt;::FillMax():NBitArray.h">
+      </ContextState>
+      <ContextState
+         contextName = "NBitArray&lt;64&gt;::NBitArray(unsigned long long):NBitArray.h">
+      </ContextState>
+      <ContextState
+         contextName = "void CorrectnessTest&lt;64&gt;():NBitVectorTest.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "NBitArray&lt;4&gt;::NBitArray(unsigned long long):NBitArray.h">
+      </ContextState>
+      <ContextState
+         contextName = "void CorrectnessTest&lt;4&gt;():NBitVectorTest.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "NBitArray&lt;3&gt;::Set(unsigned long long, unsigned long long):NBitArray.h">
+         <PersistentStrings>
+            <PersistentString
+               value = "mem[1]">
+            </PersistentString>
+            <PersistentString
+               value = "mem[0]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

@@ -12,7 +12,7 @@
 
 #include <iostream>
 #include "SearchEnvironment.h"
-#include <ext/hash_map>
+#include <unordered_map>
 #include "FPUtil.h"
 
 template <class state, class action>
@@ -28,7 +28,7 @@ public:
 	uint64_t GetNodesExpanded() { return nodesExpanded; }
 	uint64_t GetNodesTouched() { return nodesTouched; }
 private:
-	typedef __gnu_cxx::hash_map<uint64_t, bool, Hash64> DFSClosedList;
+	typedef std::unordered_map<uint64_t, bool, Hash64> DFSClosedList;
 	
 	void DoIteration(SearchEnvironment<state, action> *env,
 					 state parent, state currState,

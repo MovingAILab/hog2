@@ -1,0 +1,7 @@
+#!/bin/tcsh
+
+./DWP_DWstpJob0.script
+./DWP_DWstpJob1.script
+./DWP_DWstpJob2.script
+./DWP_DWstpJob3.script
+./DWP_DWstpJob4.script

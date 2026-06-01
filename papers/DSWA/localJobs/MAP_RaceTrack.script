@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./MAP_RaceTrackJob0.script
+./MAP_RaceTrackJob1.script
+./MAP_RaceTrackJob2.script
+./MAP_RaceTrackJob3.script
+./MAP_RaceTrackJob4.script
+./MAP_RaceTrackJob5.script
+./MAP_RaceTrackJob6.script
+./MAP_RaceTrackJob7.script
+./MAP_RaceTrackJob8.script
+./MAP_RaceTrackJob9.script

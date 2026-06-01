@@ -41,7 +41,10 @@ public:
 	// these functions are for training with a list of binary features that are on
 	virtual double train(std::vector<unsigned int> &input, std::vector<double> &output2) = 0;
 	virtual double *test(const std::vector<unsigned int> &input) = 0;
-	
+	// Given a target output (fixed internal weights), return the intput that would
+	// lead to the output. (May require more than one call to converge.)
+	virtual double GetInput(std::vector<double> &input, const std::vector<double> &target) = 0;
+
 	virtual void setLearnRate(double);
 	virtual double getLearnRate();
 	

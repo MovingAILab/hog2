@@ -14,7 +14,7 @@
 #include "FPUtil.h"
 #include <deque>
 #include <vector>
-#include <ext/hash_map>
+#include <unordered_map>
 #include "TemplateAStar.h"
 #include "Timer.h"
 #include <queue>
@@ -82,16 +82,22 @@ public:
 			return heur[m_pEnv->GetStateHash(from)].theHeuristic;
 		return 0;
 	}
-	double HCost(environment *env, const state &from, const state &to)
+	double HCost(environment *env, const state &from, const state &to) const
 	{
-		if (heur.find(env->GetStateHash(from)) != heur.end())
-			return heur[env->GetStateHash(from)].theHeuristic+BaseHCost(env, from, to);
-		return BaseHCost(env, from, to);
+		auto val = heur.find(env->GetStateHash(from));
+		if (val != heur.end())
+		{
+			return val->second.theHeuristic+env->HCost(from, to);
+		}
+		return BaseHCost(env, from, to);//env->HCost(from, to);
+//		if (heur.find(env->GetStateHash(from)) != heur.end())
+//			return heur[env->GetStateHash(from)].theHeuristic+BaseHCost(env, from, to);
+//		return BaseHCost(env, from, to);
 	}
 	double BaseHCost(environment *env, const state &from, const state &to) const
 	{ return initialHeuristicWeight*env->HCost(from, to);
 	}
-	double HCost(const state &from, const state &to)
+	double HCost(const state &from, const state &to) const
 	{ return HCost(m_pEnv, from, to); }
 	
 	double GetMaxStateLearning()
@@ -119,11 +125,11 @@ public:
 	}
 	
 	double GetAmountLearned() { return fAmountLearned; }
-	void OpenGLDraw() const {}
-	void OpenGLDraw(const environment *env) const;
+//	void OpenGLDraw() const {}
+//	void OpenGLDraw(const environment *env) const;
 private:
-	typedef __gnu_cxx::hash_map<uint64_t, lssLearnedData<state>, Hash64 > LearnedHeuristic;
-	typedef __gnu_cxx::hash_map<uint64_t, bool, Hash64 > ClosedList;
+	typedef std::unordered_map<uint64_t, lssLearnedData<state>, Hash64 > LearnedHeuristic;
+	typedef std::unordered_map<uint64_t, bool, Hash64 > ClosedList;
 	
 	environment *m_pEnv;
 	LearnedHeuristic heur;
@@ -144,7 +150,7 @@ private:
 template <class state, class action, class environment>
 void LSSLRTAStar<state, action, environment>::GetPath(environment *env, const state& from, const state& to, std::vector<state> &thePath)
 {
-	// This code measures the size of the first heuristic minima that the agent passes over
+	// This code measures the size of the first heuristic minima that the agent passes over (not well)
 	if (initialHeuristic)
 	{
 		double tmp;
@@ -203,7 +209,7 @@ void LSSLRTAStar<state, action, environment>::GetPath(environment *env, const st
 	int randCount = 1;
 	for (unsigned int x = 0; x < openSize; x++)
 	{
-		const AStarOpenClosedData<state> data = astar.GetOpenItem(x);
+		const auto data = astar.GetOpenItem(x);
 		double currLearning = HCostLearned(data.data);
 		if (avoidLearning)
 		{
@@ -303,27 +309,27 @@ void LSSLRTAStar<state, action, environment>::GetPath(environment *env, const st
 	//std::cout << GetName() << "\t" << nodesExpanded << "\t" << t.GetElapsedTime() << "\t" << nodesExpanded/t.GetElapsedTime() << std::endl;
 }
 
-template <class state, class action, class environment>
-void LSSLRTAStar<state, action, environment>::OpenGLDraw(const environment *e) const
-{
-	astar.OpenGLDraw();
-	
-	double learned = 0;
-	for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
-	{
-		double thisState = (*it).second.theHeuristic;
-		if (learned < thisState)
-			learned = thisState;
-	}
-	for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
-	{
-		double r = (*it).second.theHeuristic;
-		if (r > 0)
-		{
-			e->SetColor(0.5+0.5*r/learned, 0, 0, 0.1+0.8*r/learned);
-			e->OpenGLDraw((*it).second.theState);
-		}
-	}
-}
+//template <class state, class action, class environment>
+//void LSSLRTAStar<state, action, environment>::OpenGLDraw(const environment *e) const
+//{
+//	astar.OpenGLDraw();
+//	
+//	double learned = 0;
+//	for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
+//	{
+//		double thisState = (*it).second.theHeuristic;
+//		if (learned < thisState)
+//			learned = thisState;
+//	}
+//	for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
+//	{
+//		double r = (*it).second.theHeuristic;
+//		if (r > 0)
+//		{
+//			e->SetColor(0.5+0.5*r/learned, 0, 0, 0.1+0.8*r/learned);
+//			e->OpenGLDraw((*it).second.theState);
+//		}
+//	}
+//}
 
 #endif

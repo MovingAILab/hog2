@@ -39,7 +39,7 @@
 #endif
 
 #include "FPUtil.h"
-#include <ext/hash_map>
+#include <unordered_map>
 #include "OpenClosedList.h"
 //#include "SearchEnvironment.h" // for the SearchEnvironment class
 #include "float.h"
@@ -114,7 +114,7 @@ public:
 	typedef OpenClosedList<OldOldTemplateAStarUtil::SearchNode<state>, OldOldTemplateAStarUtil::SearchNodeHash<state>,
 		OldOldTemplateAStarUtil::SearchNodeEqual<state>, OldOldTemplateAStarUtil::SearchNodeCompare<state> > PQueue;
 	
-	typedef __gnu_cxx::hash_map<uint64_t, OldOldTemplateAStarUtil::SearchNode<state>, Hash64 > NodeLookupTable;
+	typedef std::unordered_map<uint64_t, OldOldTemplateAStarUtil::SearchNode<state>, Hash64 > NodeLookupTable;
 	
 	PQueue openQueue;
 	NodeLookupTable closedList; //openList
@@ -159,7 +159,7 @@ public:
 	void SetStopAfterGoal(bool val) { stopAfterGoal = val; }
 	bool GetStopAfterGoal() { return stopAfterGoal; }
 	
-	void OpenGLDraw() const;
+//	void OpenGLDraw() const;
 	
 	/** Use weighted A* and set the weight
 	 *
@@ -245,11 +245,11 @@ template <class state, class action, class environment>
 bool OldTemplateAStar<state,action,environment>::InitializeSearch(environment *_env, state& from, state& to, std::vector<state> &thePath)
 {
 	thePath.resize(0);
-	//if(useRadius)
+	//if (useRadius)
 	//std::cout<<"Using radius\n";
 	firstRound = true;
 	env = _env;
-	if(!radEnv)
+	if (!radEnv)
 		radEnv = _env;
 	closedList.clear();
 	openQueue.reset();
@@ -405,10 +405,10 @@ template <class state, class action, class environment>
 bool OldTemplateAStar<state,action,environment>::GetNextNode(state &next)
 {
 	nodesExpanded++;
-	if(openQueue.Empty())
+	if (openQueue.Empty())
 		return false;
 	SearchNode<state> it = openQueue.Remove();
-	//if(it == openQueue.end())
+	//if (it == openQueue.end())
 	//	return false;
 	next = it.currNode;
 	//printf("h-cost\t%f\n", it.fCost-it.gCost);
@@ -587,7 +587,7 @@ int OldTemplateAStar<state, action,environment>::GetMemoryUsage()
  * @return An iterator pointing to the first node in the closed list
  */
 template <class state, class action,class environment>
-//__gnu_cxx::hash_map<state, OldOldTemplateAStarUtil::SearchNode<state> >::const_iterator
+//std::unordered_map<state, OldOldTemplateAStarUtil::SearchNode<state> >::const_iterator
 void OldTemplateAStar<state, action,environment>::GetClosedListIter(closedList_iterator) //const
 {
 	return closedList.begin();
@@ -640,17 +640,17 @@ bool OldTemplateAStar<state, action,environment>::GetClosedListGCost(state &val,
  * @date 03/12/09
  * 
  */
-template <class state, class action, class environment>
-void OldTemplateAStar<state, action,environment>::OpenGLDraw() const
-{
-	int x = 0;
-	if (env == 0)
-		return;
-	//env->SetColor(0.0, 0.0, 0.0, 0.15);
-	for (closedList_iterator it = closedList.begin(); it != closedList.end(); it++)
-	{
-		env->OpenGLDraw((*it).second.currNode);
-	}
-}
+//template <class state, class action, class environment>
+//void OldTemplateAStar<state, action,environment>::OpenGLDraw() const
+//{
+//	int x = 0;
+//	if (env == 0)
+//		return;
+//	//env->SetColor(0.0, 0.0, 0.0, 0.15);
+//	for (closedList_iterator it = closedList.begin(); it != closedList.end(); it++)
+//	{
+//		env->OpenGLDraw((*it).second.currNode);
+//	}
+//}
 
 #endif

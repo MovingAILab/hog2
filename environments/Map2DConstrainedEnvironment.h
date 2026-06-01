@@ -52,18 +52,18 @@ public:
 	virtual bool InvertAction(tDirection &a) const;
 	
 	/** Heuristic value between two arbitrary nodes. **/
-	virtual double HCost(const xytLoc &node1, const xytLoc &node2);
-	virtual double GCost(const xytLoc &node1, const xytLoc &node2) { return 1; }
-	virtual double GCost(const xytLoc &node, const tDirection &act) { return 1; }
-	virtual bool GoalTest(const xytLoc &node, const xytLoc &goal);
+	virtual double HCost(const xytLoc &node1, const xytLoc &node2) const;
+	virtual double GCost(const xytLoc &node1, const xytLoc &node2) const { return 1; }
+	virtual double GCost(const xytLoc &node, const tDirection &act) const { return 1; }
+	virtual bool GoalTest(const xytLoc &node, const xytLoc &goal) const;
 	
 	virtual uint64_t GetStateHash(const xytLoc &node) const;
 	virtual uint64_t GetActionHash(tDirection act) const;
 
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const xytLoc&) const;
-	virtual void OpenGLDraw(const xytLoc&, const tDirection&) const;
-	virtual void GLDrawLine(const xytLoc &x, const xytLoc &y) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const xytLoc&) const;
+//	virtual void OpenGLDraw(const xytLoc&, const tDirection&) const;
+//	virtual void GLDrawLine(const xytLoc &x, const xytLoc &y) const;
 private:
 	bool ViolatesConstraint(const xyLoc &from, const xyLoc &to, int time) const;
 

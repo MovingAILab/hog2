@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./PWXD_DWmazesJob0.script
+./PWXD_DWmazesJob1.script
+./PWXD_DWmazesJob2.script
+./PWXD_DWmazesJob3.script
+./PWXD_DWmazesJob4.script
+./PWXD_DWmazesJob5.script
+./PWXD_DWmazesJob6.script
+./PWXD_DWmazesJob7.script
+./PWXD_DWmazesJob8.script
+./PWXD_DWmazesJob9.script

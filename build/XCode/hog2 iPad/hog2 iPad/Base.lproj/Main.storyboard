@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="ipad11_0rounded" orientation="landscape">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" placeholder="HOG2: " textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="jap-2z-Ik3">
+                                <rect key="frame" x="30" y="30" width="1130" height="30"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" notEnabled="YES"/>
+                                </accessibility>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="Jex-wn-101"/>
+                                </constraints>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dXH-cK-ULv" customClass="OverlayView">
+                                <rect key="frame" x="0.0" y="68" width="1194" height="746"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DQB-li-VuE" customClass="OverlayView">
+                                <rect key="frame" x="0.0" y="68" width="1194" height="766"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="DQB-li-VuE" firstAttribute="top" secondItem="jap-2z-Ik3" secondAttribute="bottom" constant="8" symbolic="YES" id="2mt-wq-nZO"/>
+                            <constraint firstItem="DQB-li-VuE" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="3ri-L9-7gZ"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="jap-2z-Ik3" secondAttribute="trailing" constant="34" id="4v3-bA-Oi5"/>
+                            <constraint firstItem="dXH-cK-ULv" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="H4A-TX-QPk"/>
+                            <constraint firstItem="dXH-cK-ULv" firstAttribute="trailing" secondItem="DQB-li-VuE" secondAttribute="trailing" id="ZgE-FH-elw"/>
+                            <constraint firstItem="DQB-li-VuE" firstAttribute="top" secondItem="dXH-cK-ULv" secondAttribute="top" id="agy-WA-PFg"/>
+                            <constraint firstAttribute="trailing" secondItem="DQB-li-VuE" secondAttribute="trailing" id="b5a-Xb-b87"/>
+                            <constraint firstItem="DQB-li-VuE" firstAttribute="leading" secondItem="dXH-cK-ULv" secondAttribute="leading" id="ifw-om-gRt"/>
+                            <constraint firstAttribute="bottom" secondItem="DQB-li-VuE" secondAttribute="bottom" id="jbp-5I-08F"/>
+                            <constraint firstItem="jap-2z-Ik3" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="30" id="le6-HF-UfY"/>
+                            <constraint firstItem="DQB-li-VuE" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" constant="68" id="raV-Gt-f5h"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                    </view>
+                    <connections>
+                        <outlet property="backView" destination="dXH-cK-ULv" id="QmU-Tt-yV0"/>
+                        <outlet property="frontView" destination="DQB-li-VuE" id="oNw-Zu-GUw"/>
+                        <outlet property="textField" destination="jap-2z-Ik3" id="xoq-ob-7Gw"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="131.65829145728642" y="137.41007194244605"/>
+        </scene>
+    </scenes>
+</document>

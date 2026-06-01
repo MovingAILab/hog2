@@ -155,22 +155,22 @@ bool SFBDPancakeEnvironment::InvertAction(pancakeMovePair &) const
 	return true;
 }
 
-double SFBDPancakeEnvironment::HCost(const pancakeStatePair &state1, const pancakeStatePair &)
+double SFBDPancakeEnvironment::HCost(const pancakeStatePair &state1, const pancakeStatePair &) const
 {
 	return pan->HCost(state1.start, state1.goal);
 }
 
-double SFBDPancakeEnvironment::GCost(const pancakeStatePair &, const pancakeMovePair &)
+double SFBDPancakeEnvironment::GCost(const pancakeStatePair &, const pancakeMovePair &) const
 {
 	return 1;
 }
 
-double SFBDPancakeEnvironment::GCost(const pancakeStatePair &, const pancakeStatePair &)
+double SFBDPancakeEnvironment::GCost(const pancakeStatePair &, const pancakeStatePair &) const
 {
 	return 1;
 }
 
-bool SFBDPancakeEnvironment::GoalTest(const pancakeStatePair &state, const pancakeStatePair &)
+bool SFBDPancakeEnvironment::GoalTest(const pancakeStatePair &state, const pancakeStatePair &) const
 {
 	return (state.start == state.goal);	
 }
@@ -185,16 +185,16 @@ uint64_t SFBDPancakeEnvironment::GetActionHash(pancakeMovePair act) const
 	return (act.theAction<<1)|(act.applyToStart?1:0);
 }
 
-void SFBDPancakeEnvironment::OpenGLDraw() const
-{
-}
-
-void SFBDPancakeEnvironment::OpenGLDraw(const pancakeStatePair &) const
-{
-}
-
-void SFBDPancakeEnvironment::OpenGLDraw(const pancakeStatePair &, const pancakeMovePair &) const
-{
-	// if we want to draw a set of moves we use this to do so
-}
-
+//void SFBDPancakeEnvironment::OpenGLDraw() const
+//{
+//}
+//
+//void SFBDPancakeEnvironment::OpenGLDraw(const pancakeStatePair &) const
+//{
+//}
+//
+//void SFBDPancakeEnvironment::OpenGLDraw(const pancakeStatePair &, const pancakeMovePair &) const
+//{
+//	// if we want to draw a set of moves we use this to do so
+//}
+//

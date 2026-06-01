@@ -63,7 +63,7 @@ void GraphRefinementEnvironment::GetActions(const graphState &stateID, std::vect
 	assert(false);
 }
 
-bool GraphRefinementEnvironment::GoalTest(const graphState &state, const graphState &goal)
+bool GraphRefinementEnvironment::GoalTest(const graphState &state, const graphState &goal) const
 {
 	if (useAbstractGoal)
 	{
@@ -80,7 +80,7 @@ void GraphRefinementEnvironment::SetPlanningCorridor(std::vector<graphState> &co
 		corridorTable[corridor[x]] = true;
 }
 
-double GraphRefinementEnvironment::HCost(const graphState &state1, const graphState &state2)
+double GraphRefinementEnvironment::HCost(const graphState &state1, const graphState &state2) const
 {
 	if (useAbstractGoal)
 	{

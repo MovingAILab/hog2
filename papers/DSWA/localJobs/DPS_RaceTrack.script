@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./DPS_RaceTrackJob0.script
+./DPS_RaceTrackJob1.script
+./DPS_RaceTrackJob2.script
+./DPS_RaceTrackJob3.script
+./DPS_RaceTrackJob4.script
+./DPS_RaceTrackJob5.script
+./DPS_RaceTrackJob6.script
+./DPS_RaceTrackJob7.script
+./DPS_RaceTrackJob8.script
+./DPS_RaceTrackJob9.script

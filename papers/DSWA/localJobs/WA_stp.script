@@ -1,0 +1,7 @@
+#!/bin/tcsh
+
+./WA_stpJob0.script
+./WA_stpJob1.script
+./WA_stpJob2.script
+./WA_stpJob3.script
+./WA_stpJob4.script

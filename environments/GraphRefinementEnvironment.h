@@ -11,9 +11,10 @@
 #define GRAPHREFINEMENTENVIRONMENT_H
 
 #include <stdint.h>
-#include <ext/hash_map>
+#include <unordered_map>
 #include <iostream>
 #include "GraphEnvironment.h"
+#include "GraphAbstraction.h"
 
 class GraphRefinementEnvironment : public GraphEnvironment
 {
@@ -26,16 +27,16 @@ public:
 	
 	virtual void GetSuccessors(const graphState &stateID, std::vector<graphState> &neighbors) const;
 	virtual void GetActions(const graphState &stateID, std::vector<graphMove> &actions) const;
-	virtual bool GoalTest(const graphState &state, const graphState &goal);
-	virtual bool GoalTest(const graphState &) { assert(false); return false; }
+	virtual bool GoalTest(const graphState &state, const graphState &goal) const;
+	virtual bool GoalTest(const graphState &) const { assert(false); return false; }
 	virtual void SetUseAbstractGoal(bool use, int level) { useAbstractGoal = use; abstractGoalLevel = level; }
 	//void SetPlanningCorridor(std::vector<graphState> &corridor, int level);
 	void SetPlanningCorridor(std::vector<graphState> &corridor, int level, int start = 0);
-	double HCost(const graphState &state1, const graphState &state2);
-	double HCost(const graphState &) { assert(false); return false; }
+	double HCost(const graphState &state1, const graphState &state2) const;
+	double HCost(const graphState &) const { assert(false); return false; }
 private:
 	GraphAbstraction *ga;
-	typedef __gnu_cxx::hash_map<graphState, bool> CorridorCheck;
+	typedef std::unordered_map<graphState, bool> CorridorCheck;
 	int planLevel, corridorLevel, abstractGoalLevel;
 	bool useAbstractGoal;
 	CorridorCheck corridorTable;

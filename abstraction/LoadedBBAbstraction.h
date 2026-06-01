@@ -15,12 +15,6 @@
 #ifndef LOADEDBBABSTRACTION_H
 #define LOADEDBBABSTRACTION_H
 
-class BoundingBox {
-public:
-	bool pointInBox(double x, double y, double z);
-	void OpenGLDraw() const;
-	double x1, x2, y1, y2, z1, z2;
-};
 
 class LoadedBBAbstraction : public GraphAbstraction {
 public:
@@ -56,6 +50,13 @@ public:
   node *findNodeParent(node *n);
   edge *findEdgeParent(edge *e, unsigned int absLevel);
 private:
+	class BoundingBox {
+	public:
+		bool pointInBox(double x, double y, double z);
+		void OpenGLDraw() const;
+		double x1, x2, y1, y2, z1, z2;
+	};
+
 		std::vector<BoundingBox> boxes;
 	Graph *abstractGraph(Graph *g);
 	void cleanMemory();

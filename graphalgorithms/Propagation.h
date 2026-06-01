@@ -16,7 +16,7 @@
 #include "SearchEnvironment.h"
 #include "GraphEnvironment.h"
 #include <deque>
-#include <ext/hash_map>
+#include <unordered_map>
 #include "FPUtil.h"
 #include "OpenListB.h"
 
@@ -102,9 +102,9 @@ namespace PropUtil
 		{
 			if (fequal(i1.fCost, i2.fCost))
 			{
-				if(i2.isGoal) // always prefer a goal node in tie
+				if (i2.isGoal) // always prefer a goal node in tie
 					return true;
-				if(i1.isGoal)
+				if (i1.isGoal)
 					return false;
 				return fless(i1.gCost, i2.gCost); // favor larger g
 			}
@@ -115,10 +115,10 @@ namespace PropUtil
 	struct GGreater {
 		bool operator()(const SearchNode &i1, const SearchNode &i2) const
 		{
-			if(fequal(i1.gCost,i2.gCost)) {
-				//if(i2.isGoal) // always prefer a goal node in tie
+			if (fequal(i1.gCost,i2.gCost)) {
+				//if (i2.isGoal) // always prefer a goal node in tie
 				//	return true;
-				//if(i1.isGoal)
+				//if (i1.isGoal)
 				//	return false;
 
 				return fgreater(i1.fCost,i2.fCost);
@@ -132,7 +132,7 @@ namespace PropUtil
 		bool operator()(const SearchNode &, const SearchNode &) const
 		{
 			assert(false); // parameters ignored, this code must be wrong
-			//if(i1.threshold == i2.threshold) // threshold is integer
+			//if (i1.threshold == i2.threshold) // threshold is integer
 			//	return fgreater(i1.gCost,i2.gCost);
 			//return i1.threshold > i2.threshold;
 			return true;
@@ -180,7 +180,7 @@ namespace PropUtil
 
 			// add nodes
 			
-			for(unsigned int nodeID = 0; nodeID <= N; nodeID++)
+			for (unsigned int nodeID = 0; nodeID <= N; nodeID++)
 			{
 				node *n = new node("");
 				if (nodeID == 0 || nodeID == 1)
@@ -193,7 +193,7 @@ namespace PropUtil
 				}
 				g->AddNode(n); // the real nodeID is assigned here
 
-				if(nodeID == 0)
+				if (nodeID == 0)
 				{
 					SetLoc(n,-1,-1,0);
 				}
@@ -235,7 +235,7 @@ namespace PropUtil
 
 			// add nodes
 			
-			for(unsigned int nodeID = 0; nodeID <= N; nodeID++)
+			for (unsigned int nodeID = 0; nodeID <= N; nodeID++)
 			{
 				node *n = new node("");
 				if (nodeID == 0 || nodeID == 1 || nodeID==N)
@@ -248,7 +248,7 @@ namespace PropUtil
 				}
 				g->AddNode(n); // the real nodeID is assigned here
 
-				if(nodeID == 0)
+				if (nodeID == 0)
 				{
 					SetLoc(n,-1,-1,0);
 				}
@@ -420,7 +420,7 @@ namespace PropUtil
 	typedef OpenListB<PropUtil::SearchNode, PropUtil::SearchNodeHash,
 		PropUtil::SearchNodeEqual, PropUtil::SearchNodeCompare, PropUtil::GGreater, PropUtil::FExtract> PQueue;
 
-	typedef __gnu_cxx::hash_map<graphState, PropUtil::SearchNode > NodeLookupTable;
+	typedef std::unordered_map<graphState, PropUtil::SearchNode > NodeLookupTable;
 
 	typedef OpenListB<PropUtil::SearchNode, PropUtil::SearchNodeHash,
 		PropUtil::SearchNodeEqual, PropUtil::GGreater, PropUtil::GGreater, PropUtil::FExtract> GQueue;
@@ -435,14 +435,14 @@ public:
 	Prop() { verID = PROP_BP; delta=0; bpmxLevel=1;}  // bpmxLevel is not used if not explicitely calling bpmx root prop
 	Prop(unsigned int v) { 
 		verID = v; delta=0;  
-		if(verID == PROP_BPMX || verID == PROP_DPMX || verID == PROP_BPMXE || verID == PROP_DPDLMX)
+		if (verID == PROP_BPMX || verID == PROP_DPMX || verID == PROP_BPMXE || verID == PROP_DPDLMX)
 			bpmxLevel=1;
 		else
 			bpmxLevel=0;
 	} // [changed needed, regarding bpmxLevel]
 	Prop(unsigned int v, double del) {
 		verID=v; delta=del;  
-		if(verID == PROP_BPMX || verID == PROP_DPMX || verID == PROP_BPMXE || verID == PROP_DPDLMX)
+		if (verID == PROP_BPMX || verID == PROP_DPMX || verID == PROP_BPMXE || verID == PROP_DPDLMX)
 			bpmxLevel=1;
 		else
 			bpmxLevel=0;
@@ -489,7 +489,7 @@ public:
 	void RelaxDelayNode(double f, double g, graphState neighbor, PropUtil::SearchNode &neighborNode, graphState topNodeID);
 
 	//void OpenGLDraw() const;
-	void OpenGLDraw() const;
+	//void OpenGLDraw() const;
 	void DrawText(double x, double y, double z, float r, float g, float b, char* str);
 	void DrawEdge(unsigned int from, unsigned int to, double weight);
 

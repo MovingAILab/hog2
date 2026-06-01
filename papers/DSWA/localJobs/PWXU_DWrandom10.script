@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./PWXU_DWrandom10Job0.script
+./PWXU_DWrandom10Job1.script
+./PWXU_DWrandom10Job2.script
+./PWXU_DWrandom10Job3.script
+./PWXU_DWrandom10Job4.script
+./PWXU_DWrandom10Job5.script
+./PWXU_DWrandom10Job6.script
+./PWXU_DWrandom10Job7.script
+./PWXU_DWrandom10Job8.script
+./PWXU_DWrandom10Job9.script

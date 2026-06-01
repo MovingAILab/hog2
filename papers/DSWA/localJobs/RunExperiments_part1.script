@@ -1,0 +1,166 @@
+#!/bin/tcsh
+
+cd ./../build/SFML
+make
+cd ../../localJobs
+echo "============================================================================================"
+####### To generate the DWMazes+DH plot, run the RunExperiments_part2.script #######
+
+echo "STP domain.."
+./WA_stp.script
+./PWXD_stp.script
+./PWXU_stp.script
+./XDP_stp.script
+./XUP_stp.script
+./DWP_stp.script
+./MAP_stp.script
+./DPS_stp.script
+
+# cd ./../
+# mv *-results.txt ./localJobs/OutputData
+# cd ./localJobs/OutputData
+mv *-results.txt ./OutputData
+cd ./OutputData
+
+cat *stp_*-results.txt > Total_STP.txt
+cd ./../
+
+echo "====================================="
+echo "STP Squared domain.."
+./WA_SDstp.script
+./PWXD_SDstp.script
+./PWXU_SDstp.script
+./XDP_SDstp.script
+./XUP_SDstp.script
+./DWP_SDstp.script
+./MAP_SDstp.script
+./DPS_SDstp.script
+
+# cd ./../
+# mv *-results.txt ./localJobs/OutputData
+# cd ./localJobs/OutputData
+mv *-results.txt ./OutputData
+cd ./OutputData
+
+cat *SDstp_*-results.txt > Total_SquaredSTP.txt
+cd ./../
+
+echo "====================================="
+echo "DWSTP domain.."
+./WA_DWstp.script
+./PWXD_DWstp.script
+./PWXU_DWstp.script
+./XDP_DWstp.script
+./XUP_DWstp.script
+./DWP_DWstp.script
+./MAP_DWstp.script
+
+# cd ./../
+# mv *-results.txt ./localJobs/OutputData
+# cd ./localJobs/OutputData
+mv *-results.txt ./OutputData
+cd ./OutputData
+
+cat *DWstp_*-results.txt > Total_DWSTP.txt
+cd ./../
+
+echo "====================================="
+echo "STP SquareRoot domain.."
+./WA_SRstp.script
+./PWXD_SRstp.script
+./PWXU_SRstp.script
+./XDP_SRstp.script
+./XUP_SRstp.script
+./DWP_SRstp.script
+./MAP_SRstp.script
+./DPS_SRstp.script
+
+# cd ./../
+# mv *-results.txt ./localJobs/OutputData
+# cd ./localJobs/OutputData
+mv *-results.txt ./OutputData
+cd ./OutputData
+
+cat *SRstp_*-results.txt > Total_SquareRootSTP.txt
+cd ./../
+
+echo "====================================="
+echo "DWrandom10 domain.."
+./WA_DWrandom10.script
+./PWXD_DWrandom10.script
+./PWXU_DWrandom10.script
+./XDP_DWrandom10.script
+./XUP_DWrandom10.script
+./DWP_DWrandom10.script
+./MAP_DWrandom10.script
+./DPS_DWrandom10.script
+
+# cd ./../
+# mv *-results.txt ./localJobs/OutputData
+# cd ./localJobs/OutputData
+mv *-results.txt ./OutputData
+cd ./OutputData
+
+cat *DWrandom10_*-results.txt > Total_DWrandom10.txt
+cd ./../
+
+echo "====================================="
+echo "DWmazes domain.."
+./WA_DWmazes.script
+./PWXD_DWmazes.script
+./PWXU_DWmazes.script
+./XDP_DWmazes.script
+./XUP_DWmazes.script
+./DWP_DWmazes.script
+./MAP_DWmazes.script
+
+# cd ./../
+# mv *-results.txt ./localJobs/OutputData
+# cd ./localJobs/OutputData
+mv *-results.txt ./OutputData
+cd ./OutputData
+
+cat *DWmazes_*-results.txt > Total_DWmazes.txt
+cd ./../
+
+echo "====================================="
+echo "Mazes domain.."
+./WA_mazes.script
+./PWXD_mazes.script
+./PWXU_mazes.script
+./XDP_mazes.script
+./XUP_mazes.script
+./DWP_mazes.script
+./MAP_mazes.script
+
+# cd ./../
+# mv *-results.txt ./localJobs/OutputData
+# cd ./localJobs/OutputData
+mv *-results.txt ./OutputData
+cd ./OutputData
+
+cat *mazes_*-results.txt > Total_Mazes.txt
+cd ./../
+
+echo "====================================="
+echo "RaceTrack domain.."
+./WA_RaceTrack.script
+./PWXD_RaceTrack.script
+./PWXU_RaceTrack.script
+./XDP_RaceTrack.script
+./XUP_RaceTrack.script
+./DWP_RaceTrack.script
+./MAP_RaceTrack.script
+./DPS_RaceTrack.script
+
+# cd ./../
+# mv *-results.txt ./localJobs/OutputData
+# cd ./localJobs/OutputData
+mv *-results.txt ./OutputData
+cd ./OutputData
+
+cat *RaceTrack_*-results.txt > Total_RaceTrack.txt
+cd ./../
+
+echo "=========================================================================="
+

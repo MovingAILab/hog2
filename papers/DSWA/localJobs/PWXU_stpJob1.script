@@ -1,0 +1,16 @@
+#!/bin/tcsh
+
+foreach problem (`seq 20 39`)
+
+set alg = `echo 2`
+set puzzleW = `echo 0`
+
+foreach weight (1.50 2.00 3.00 4.00 5.00 6.00 7.00 8.00 9.00 10.00)
+
+echo "ALG " $alg " weight " $weight " problem " $problem
+
+./../bin/release/DSDWA -stpBaseLines $problem $alg $weight $puzzleW >> PWXU_stp_1-results.txt
+
+end
+#end
+end

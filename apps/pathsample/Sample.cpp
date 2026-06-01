@@ -1,27 +1,11 @@
 /*
- * $Id: sample.cpp,v 1.23 2006/11/01 23:33:56 nathanst Exp $
- *
- *  sample.cpp
- *  hog
+ *  $Id: sample.cpp
+ *  hog2
  *
  *  Created by Nathan Sturtevant on 5/31/05.
- *  Copyright 2005 Nathan Sturtevant, University of Alberta. All rights reserved.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * This file is part of HOG.
- *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
  *
  */
 
@@ -31,10 +15,9 @@
 #include "EpisodicSimulation.h"
 #include "Map2DEnvironment.h"
 #include "RandomUnits.h"
-#include "AStar.h"
 #include "TemplateAStar.h"
 #include "GraphEnvironment.h"
-#include "MapSectorAbstraction.h"
+//#include "MapSectorAbstraction.h"
 //#include "ContractionHierarchy.h"
 #include "MapGenerators.h"
 
@@ -55,7 +38,7 @@ MapEnvironment *ma2 = 0;
 GraphDistanceHeuristic *gdh = 0;
 GraphDistanceHeuristic *gdh2 = 0;
 
-MapSectorAbstraction *msa;
+//MapSectorAbstraction *msa;
 
 std::vector<xyLoc> path;
 
@@ -165,28 +148,25 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 //		ch->Contract();
 //		return;
 	}
-	unitSims[windowID]->GetEnvironment()->GetMap()->OpenGLDraw();
-	if (msa) msa->OpenGLDraw();
+	//	unitSims[windowID]->GetEnvironment()->GetMap()->OpenGLDraw();
+	//if (msa) msa->OpenGLDraw();
 	
 	if (mouseTracking)
 	{
-		glBegin(GL_LINES);
-		glColor3f(1.0f, 0.0f, 0.0f);
 		Map *m = unitSims[windowID]->GetEnvironment()->GetMap();
-		GLdouble x, y, z, r;
-		m->GetOpenGLCoord(px1, py1, x, y, z, r);
-		glVertex3f(x, y, z-3*r);
-		m->GetOpenGLCoord(px2, py2, x, y, z, r);
-		glVertex3f(x, y, z-3*r);
-		glEnd();
+		double x, y, z, r;
+		m->GetCoord(px1, py1, x, y, z, r);
+		m->GetCoord(px2, py2, x, y, z, r);
 	}
 
 	if ((gdh) && (gdh2))
 	{
+	  /*
 		if (viewport == 0)
 			gdh->OpenGLDraw();
 		if (viewport == 1)
 			gdh2->OpenGLDraw();
+	  */
 	}
 
 	if ((ma1) && (viewport == 0)) // only do this once...
@@ -206,7 +186,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 				}
 			}
 		}
-		a1.OpenGLDraw();
+		//		a1.OpenGLDraw();
 	}
 	if ((ma2) && (GetNumPorts(windowID) == 1 || (viewport == 1)))
 	{
@@ -225,36 +205,18 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 				}
 			}
 		}
-		a2.OpenGLDraw();
+		//		a2.OpenGLDraw();
 	}
 
 	if (bSaveAndQuit)
 	{
-		SaveScreenshot(windowID, gDefaultMap);
-		exit(0);
+	  //SaveScreenshot(windowID, gDefaultMap);
+	  exit(0);
 	}
 }
 
 void doExport()
 {
-	Map *map = new Map(gDefaultMap);
-	map->Scale(512, 512);
-	msa = new MapSectorAbstraction(map, 8);
-	msa->ToggleDrawAbstraction(1);
-	Graph *g = msa->GetAbstractGraph(1);
-	printf("g\n%d %d\n", g->GetNumNodes(), g->GetNumEdges());
-	for (int x = 0; x < g->GetNumNodes(); x++)
-	{
-		node *n = g->GetNode(x);
-		int x1, y1;
-		msa->GetTileFromNode(n, x1, y1);
-		printf("%d %d %d\n", x, x1, y1);
-	}
-	for (int x = 0; x < g->GetNumEdges(); x++)
-	{
-		edge *e = g->GetEdge(x);
-		printf("%d %d\n", e->getFrom(), e->getTo());//, (int)(100.0*e->GetWeight())); // %d 0
-	}
 	exit(0);
 }
 
@@ -296,16 +258,11 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 	{
 		case '0': case '1': case '2': case '3': case '4': case '5':
 			case '6': case '7': case '8': case '9':
-			msa->ToggleDrawAbstraction(key); break;
+				//msa->ToggleDrawAbstraction(key); 
+				break;
 		case '[': if (gStepsPerFrame > 2) gStepsPerFrame /= 2; break;
 		case ']': gStepsPerFrame *= 2; break;
 		case '\t':
-			if (mod != kShiftDown)
-				SetActivePort(windowID, (GetActivePort(windowID)+1)%GetNumPorts(windowID));
-			else
-			{
-				SetNumPorts(windowID, 1+(GetNumPorts(windowID)%MAXPORTS));
-			}
 			break;
 		case 'p': unitSims[windowID]->SetPaused(!unitSims[windowID]->GetPaused()); break;
 		case 'o':

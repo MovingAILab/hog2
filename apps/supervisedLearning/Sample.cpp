@@ -1,27 +1,11 @@
 /*
- * $Id: sample.cpp,v 1.23 2006/11/01 23:33:56 nathanst Exp $
- *
- *  sample.cpp
- *  hog
+ *  $Id: sample.cpp
+ *  hog2
  *
  *  Created by Nathan Sturtevant on 5/31/05.
- *  Copyright 2005 Nathan Sturtevant, University of Alberta. All rights reserved.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * This file is part of HOG.
- *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
  *
  */
 
@@ -35,7 +19,8 @@ bool CLASSIFIER = 0;
 bool NN = true;
 //#define KERNEL
 const double scale = 2.0;
-
+bool runTraining = false;
+int numInputs = 1;
 struct data
 {
 	point3d loc;
@@ -44,14 +29,8 @@ struct data
 
 std::vector<data> points;
 
-FunctionApproximator *cl = new LinearRegression(3, 1, 0.01);
-FunctionApproximator *l = new LinearRegression(2, 1, 0.01);
-
-//LinearRegression l(1, 1, 0.01);
-//NN l(1, 10, 1, 0.1);
-
-//NN cl(2, 10, 1, 0.01);
-//LinearRegression cl(3, 1, 0.01);
+FunctionApproximator *cl = new LinearRegression(11, 1, 0.01);
+FunctionApproximator *l = new LinearRegression(10, 1, 0.01);
 
 bool threshold = false;
 
@@ -72,9 +51,11 @@ void InstallHandlers()
 	InstallKeyboardHandler(MyDisplayHandler, "Toggle classifier", "toggle classifier", kAnyModifier, 'c');
 	InstallKeyboardHandler(MyDisplayHandler, "Toggle Neural Network", "toggle Neural Network", kAnyModifier, 'n');
 	InstallKeyboardHandler(MyDisplayHandler, "Pause Simulation", "Pause simulation execution.", kNoModifier, 'p');
-	InstallKeyboardHandler(MyDisplayHandler, "Step Simulation", "If the simulation is paused, step forward .1 sec.", kNoModifier, 'o');
+	InstallKeyboardHandler(MyDisplayHandler, "Step Simulation", "If the simulation is paused, step forward .1 sec.", kAnyModifier, 'o');
 	InstallKeyboardHandler(MyDisplayHandler, "Toggle threshold", "Toggle whether output is thresholded for display.", kAnyModifier, ']');
 	InstallKeyboardHandler(MyDisplayHandler, "Toggle threshold", "Toggle whether output is thresholded for display.", kAnyModifier, '[');
+	InstallKeyboardHandler(MyDisplayHandler, "Run training", "Runtraining continuously.", kAnyModifier, 'r');
+	InstallKeyboardHandler(MyDisplayHandler, "Logistic", "Logistic regression.", kAnyModifier, 'l');
 	
 	InstallKeyboardHandler(MyPathfindingKeyHandler, "Mapbuilding Unit", "Deploy unit that paths to a target, building a map as it travels", kNoModifier, 'd');
 	InstallKeyboardHandler(MyRandomUnitKeyHandler, "Add A* Unit", "Deploys a simple a* unit", kNoModifier, 'a');
@@ -108,6 +89,21 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 
 void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 {
+	if (runTraining)
+	{
+		if (CLASSIFIER)
+			MyDisplayHandler(windowID, kNoModifier, 't');
+		else
+			MyDisplayHandler(windowID, kNoModifier, 'o');
+	}
+	
+	glColor3f(0.0, 0.0, 0.0);
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(-1, -1, 0.01);
+	glVertex3f(-1,  1, 0.01);
+	glVertex3f( 1, -1, 0.01);
+	glVertex3f( 1,  1, 0.01);
+	glEnd();
 	glLineWidth(8.0);
 	glColor3f(1, 1, 1);
 	glBegin(GL_LINES);
@@ -135,9 +131,10 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		for (double x = -1; x <= 1; x += 1.0/64.0)
 		{
 			glColor3f(1, 1, 0);
-			std::vector<double> in(2);
+			std::vector<double> in(11);
 			in[0] = x;
-			in[1] = x*x;
+			for (int x = 1; x < numInputs; x++)
+				in[x] = in[0]*in[x-1];
 			double res = *l->test(in);
 			res = (res-0.5)*scale;
 			glVertex3f(x, res, 0);
@@ -147,14 +144,15 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 	else {
 		glPointSize(4.0);
 		glBegin(GL_POINTS);
-		std::vector<double> in(3);
+		std::vector<double> in(11);
 		for (double x = -1; x <= 1; x += 0.03125*0.5)
 		{
 			for (double y = -1; y <= 1; y += 0.03125*0.5)
 			{
 				in[0] = x;
 				in[1] = y;
-				in[2] = x*y;//sqrt(x*x+y*y);//x*y;
+				for (int t = 2; t < numInputs; t++)
+					in[t] = in[t-1]*in[t%2];
 				double res = *cl->test(in);
 				if (threshold)
 				{
@@ -208,66 +206,119 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			delete l;
 			if (!NN)
 			{
-				cl = new LinearRegression(3, 1, 0.01);
-				l = new LinearRegression(2, 1, 0.01);
+				cl = new LinearRegression(11, 1, 0.01);
+				l = new LinearRegression(10, 1, 0.01);
 			}
 			else {
-				cl = new class NN(2, 10, 1, 0.01);
-				l = new class NN(1, 10, 1, 0.01);
+				cl = new class NN(11, 20, 1, 0.01);
+				l = new class NN(10, 20, 1, 0.01);
 //				cl = new LogisticRegression(3, 1, 0.01);
 //				l = new LogisticRegression(2, 1, 0.01);
 			}
+//			l->setLearnRate(0.01/numInputs);
+//			cl->setLearnRate(0.01/numInputs);
+
+			break;
+		}
+		case 'l':
+		{
+			delete cl;
+			delete l;
+			cl = new LogisticRegression(11, 1, 0.01);
+			l = new LogisticRegression(10, 1, 0.01);
+			submitTextToBuffer("Logistic regression");
 			break;
 		}
 		case 'c': CLASSIFIER = !CLASSIFIER;
 			printf("Classifier = %s\n", CLASSIFIER?"true":"false");
 		case '[':
 		case ']': threshold = !threshold; break;
-		case '0':
+		case 'r':
+		{
+			runTraining = !runTraining;
+			std::string s = "Continual training ";
+			s += runTraining?"on":"off";
+			submitTextToBuffer(s.c_str());
+		}
+			break;
+		case '0': numInputs = 1; break;
+		case '1': numInputs = 2; break;
+		case '2': numInputs = 3; break;
+		case '3': numInputs = 4; break;
+		case '4': numInputs = 5; break;
+		case '5': numInputs = 6; break;
+		case '6': numInputs = 7; break;
+		case '7': numInputs = 8; break;
+		case '8': numInputs = 9; break;
+		case '9': numInputs = 10; break;
+		case 't':
+		{
+//			l->setLearnRate(0.01/numInputs);
+//			cl->setLearnRate(0.01/numInputs);
 			//cl.setOutputActivation(kStep);
-			for (int z = 0; z < 1000; z++)
+			int maxVal = 1;
+			if (kShiftDown == mod)
+			{
+				maxVal = 10000;
+				printf("10000!\n");
+			}
+			for (int z = 0; z < maxVal; z++)
 			{
 				for (unsigned int x = 0; x < points.size(); x++)
 				{
 					int which = random()%points.size();
-					std::vector<double> in(3);
+					std::vector<double> in(11);
 					std::vector<double> out(1);
 					in[0] = points[which].loc.x;
 					in[1] = points[which].loc.y;
-					in[2] = in[0]*in[1];//sqrt(in[0]*in[0]+in[1]*in[1]); //
+					for (int x = 2; x < numInputs; x++)
+						in[x] = in[x-1]*in[x%2];
+					//in[2] = in[0]*in[1];//sqrt(in[0]*in[0]+in[1]*in[1]); //
 					out[0] = points[which].val?1:0;
 					//out[0] = points[x].val?1:-1;
 					cl->train(in, out);
 				}
 			}
-		case 't':
-			//cl->setOutputActivation(kStep);
-			for (unsigned int x = 0; x < points.size(); x++)
-			{
-				int which = random()%points.size();
-				std::vector<double> in(3);
-				std::vector<double> out(1);
-				in[0] = points[which].loc.x;
-				in[1] = points[which].loc.y;
-				in[2] = in[0]*in[1];//sqrt(in[0]*in[0]+in[1]*in[1]);
-				out[0] = points[which].val?1:0;
-				//out[0] = points[x].val?1:-1;
-				cl->train(in, out);
-			}
-			
 			break;
+		}
+////		case 't':
+////			//cl->setOutputActivation(kStep);
+////			for (unsigned int x = 0; x < points.size(); x++)
+////			{
+////				int which = random()%points.size();
+////				std::vector<double> in(3);
+////				std::vector<double> out(1);
+////				in[0] = points[which].loc.x;
+////				in[1] = points[which].loc.y;
+////				in[2] = in[0]*in[1];//sqrt(in[0]*in[0]+in[1]*in[1]);
+////				out[0] = points[which].val?1:0;
+////				//out[0] = points[x].val?1:-1;
+////				cl->train(in, out);
+////			}
+//			
+//			break;
 		case 'p':
 			points.resize(0);
 			break;
 		case 'o':
 		{
-			for (int z = 0; z < 1000; z++)
+//			l->setLearnRate(0.01/numInputs);
+//			cl->setLearnRate(0.01/numInputs);
+			int maxVal = 1;
+			if (kShiftDown == mod)
+			{
+				maxVal = 100000;
+				printf("100000!\n");
+			}
+
+			for (int z = 0; z < maxVal; z++)
 			for (unsigned int x = 0; x < points.size(); x++)
 			{
-				std::vector<double> in(2);
+				std::vector<double> in(11);
 				std::vector<double> out(1);
 				in[0] = points[x].loc.x;
-				in[1] = in[0]*in[0];
+				for (int x = 1; x < numInputs; x++)
+					in[x] = in[0]*in[x-1];
 				out[0] = points[x].loc.y/scale+0.5;
 				//out[0] = points[x].val?1:-1;
 				l->train(in, out);
@@ -290,6 +341,9 @@ void MyPathfindingKeyHandler(unsigned long windowID, tKeyboardModifier , char)
 
 bool MyClickHandler(unsigned long windowID, int, int, point3d loc, tButtonType button, tMouseEventType mType)
 {
+//	loc.x/=scale;
+//	loc.y/=scale;
+
 	printf("Hit (%f, %f, %f)\n", loc.x, loc.y, loc.z);
 	//	mouseTracking = false;
 	if (button == kLeftButton && mType == kMouseDown)

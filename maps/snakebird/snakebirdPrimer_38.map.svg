@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width = "403" height = "403" viewBox = "-1 -1 402 402"  preserveAspectRatio = "none" shape-rendering="crispEdges">
+<rect x="0.000000" y="0.000000" width="400.00000000" height="400.00000000" style="fill:rgb(63,191,255);" /><rect x="0.000000" y="280.000000" width="400.00000000" height="120.00000000" style="fill:rgb(63,0,63);" /><rect x="79.999992" y="100.000000" width="20.00000763" height="20.00000763" style="fill:rgb(51,89,0);" /><rect x="79.999992" y="120.000008" width="20.00000763" height="20.00000763" style="fill:rgb(127,63,0);" /><rect x="79.999992" y="200.000000" width="20.00000763" height="20.00000000" style="fill:rgb(127,95,63);" /><g style="fill:rgb(51,89,0);">
+ <rect x="79.999992" y="220.000000" width="20.000008" height="20.000015"/>
+ <rect x="100.000000" y="100.000000" width="20.000008" height="20.000008"/>
+</g><rect x="100.000000" y="120.000008" width="20.00000763" height="20.00000763" style="fill:rgb(127,63,0);" /><g style="fill:rgb(51,89,0);">
+ <rect x="100.000000" y="200.000000" width="20.000008" height="20.000000"/>
+ <rect x="100.000000" y="220.000000" width="20.000008" height="20.000015"/>
+</g><g style="fill:rgb(127,63,0);">
+ <rect x="100.000000" y="240.000015" width="20.000008" height="19.999985"/>
+ <rect x="120.000008" y="100.000000" width="20.000008" height="20.000008"/>
+ <rect x="120.000008" y="120.000008" width="20.000008" height="20.000008"/>
+ <rect x="120.000008" y="200.000000" width="20.000008" height="20.000000"/>
+ <rect x="120.000008" y="220.000000" width="20.000008" height="20.000015"/>
+</g><rect x="140.000000" y="200.000000" width="20.00000000" height="20.00000000" style="fill:rgb(127,95,63);" /><rect x="140.000000" y="220.000000" width="20.00000000" height="20.00001526" style="fill:rgb(127,63,0);" /><rect x="160.000000" y="200.000000" width="20.00000000" height="20.00000000" style="fill:rgb(51,89,0);" /><rect x="160.000000" y="220.000000" width="20.00000000" height="20.00001526" style="fill:rgb(127,95,63);" /><g style="fill:rgb(127,63,0);">
+ <rect x="160.000000" y="240.000015" width="20.000000" height="19.999985"/>
+ <rect x="180.000000" y="200.000000" width="20.000000" height="20.000000"/>
+</g><g style="fill:rgb(127,95,63);">
+ <rect x="180.000000" y="220.000000" width="20.000000" height="20.000015"/>
+ <rect x="200.000000" y="200.000000" width="20.000000" height="20.000000"/>
+</g><g style="fill:rgb(51,89,0);">
+ <rect x="220.000000" y="200.000000" width="20.000015" height="20.000000"/>
+ <rect x="220.000000" y="220.000000" width="20.000015" height="20.000015"/>
+</g><g style="fill:rgb(127,63,0);">
+ <rect x="220.000000" y="240.000015" width="20.000015" height="19.999985"/>
+ <rect x="240.000015" y="220.000000" width="19.999985" height="20.000015"/>
+ <rect x="240.000015" y="240.000015" width="19.999985" height="19.999985"/>
+ <rect x="260.000000" y="220.000000" width="20.000031" height="20.000015"/>
+ <rect x="260.000000" y="240.000015" width="20.000031" height="19.999985"/>
+</g><rect x="280.000000" y="220.000000" width="20.00000000" height="20.00001526" style="fill:rgb(127,95,63);" /><rect x="280.000000" y="240.000015" width="20.00000000" height="19.99998474" style="fill:rgb(127,63,0);" /><rect x="300.000000" y="220.000000" width="20.00000000" height="20.00001526" style="fill:rgb(127,95,63);" /><g style="fill:rgb(127,63,0);">
+ <rect x="300.000000" y="240.000015" width="20.000000" height="19.999985"/>
+ <rect x="320.000000" y="240.000015" width="20.000000" height="19.999985"/>
+</g><g style="fill:rgb(204,0,0);">
+ <rect x="300.000000" y="207.500000" width="20.000000" height="5.000000"/>
+ <rect x="307.500000" y="200.000000" width="5.000000" height="20.000000"/>
+ <rect x="300.000000" y="200.000000" width="15.000000" height="15.000015"/>
+ <rect x="300.000000" y="205.000000" width="15.000000" height="15.000000"/>
+ <rect x="305.000000" y="200.000000" width="15.000000" height="15.000015"/>
+ <rect x="305.000000" y="205.000000" width="15.000000" height="15.000000"/>
+</g><g style="fill:rgb(255,0,0);">
+ <rect x="320.000000" y="207.500000" width="20.000000" height="5.000000"/>
+ <rect x="327.500000" y="200.000000" width="5.000000" height="20.000000"/>
+ <rect x="320.000000" y="200.000000" width="15.000000" height="15.000015"/>
+ <rect x="320.000000" y="205.000000" width="15.000000" height="15.000000"/>
+</g><circle cx="332.500005" cy="207.500000" r="7.500005" style="fill:rgb(255,0,0);stroke-width:1" /><circle cx="332.500005" cy="212.500000" r="7.500005" style="fill:rgb(255,0,0);stroke-width:1" /><g style="fill:rgb(255,0,0);">
+ <rect x="280.000000" y="207.500000" width="20.000000" height="5.000000"/>
+ <rect x="287.500000" y="200.000000" width="5.000000" height="20.000000"/>
+</g><circle cx="287.500000" cy="207.500000" r="7.499999" style="fill:rgb(255,0,0);stroke-width:1" /><circle cx="287.500000" cy="212.500000" r="7.499999" style="fill:rgb(255,0,0);stroke-width:1" /><g style="fill:rgb(255,0,0);">
+ <rect x="285.000000" y="200.000000" width="15.000000" height="15.000015"/>
+ <rect x="285.000000" y="205.000000" width="15.000000" height="15.000000"/>
+</g><circle cx="291.999996" cy="210.000000" r="1.999998" style="fill:rgb(255,255,255);stroke-width:1" /><circle cx="287.999994" cy="210.000000" r="1.999998" style="fill:rgb(255,255,255);stroke-width:1" /><circle cx="291.999996" cy="210.000000" r="0.999999" style="fill:rgb(0,0,0);stroke-width:1" /><circle cx="287.999994" cy="210.000000" r="0.999999" style="fill:rgb(0,0,0);stroke-width:1" /><polygon points="287.401924,213.500015 290.000000,218.000015 292.598076,213.500015 287.401924,213.500015 " style="fill:rgb(255,127,0)" /><polygon points="110.000000,79.500008 119.035037,72.935669 115.583960,62.314346 104.416040,62.314346 100.964963,72.935669 110.000000,79.500008 " style="fill:rgb(255,255,0)" /><polygon points="113.685414,75.072545 115.963125,68.062471 110.000000,63.730007 104.036875,68.062471 106.314586,75.072545 113.685414,75.072545 " style="fill:rgb(255,127,0)" /><polygon points="111.921415,71.395998 111.921415,68.604018 109.266085,67.741248 107.625000,70.000008 109.266085,72.258767 111.921415,71.395998 " style="fill:rgb(255,0,0)" /><rect x="143.000000" y="163.000000" width="14.000000" height="14.000000" style="fill:none;stroke:rgb(127,0,0);stroke-width:5.999994" /><rect x="163.000000" y="163.000000" width="14.000000" height="14.000000" style="fill:none;stroke:rgb(127,0,0);stroke-width:5.999994" /><rect x="183.000000" y="163.000000" width="14.000000" height="14.000000" style="fill:none;stroke:rgb(127,0,0);stroke-width:5.999994" /><rect x="203.000000" y="163.000000" width="14.000000" height="14.000000" style="fill:none;stroke:rgb(127,0,0);stroke-width:5.999994" /><rect x="223.000000" y="163.000000" width="14.000015" height="14.000000" style="fill:none;stroke:rgb(127,0,0);stroke-width:5.999994" /><rect x="143.000000" y="183.000000" width="14.000000" height="14.000000" style="fill:none;stroke:rgb(127,0,0);stroke-width:5.999994" /><rect x="223.000000" y="183.000000" width="14.000015" height="14.000000" style="fill:none;stroke:rgb(127,0,0);stroke-width:5.999994" /><circle cx="187.000006" cy="183.500008" r="1.650000" style="fill:rgb(0,0,0);stroke-width:1" /><circle cx="190.099840" cy="183.495012" r="1.650000" style="fill:rgb(107,0,214);stroke-width:1" /><circle cx="193.198676" cy="183.480075" r="1.650000" style="fill:rgb(115,0,231);stroke-width:1" /><circle cx="185.599841" cy="186.495012" r="1.650000" style="fill:rgb(107,0,214);stroke-width:1" /><circle cx="188.698677" cy="186.480075" r="1.650000" style="fill:rgb(115,0,231);stroke-width:1" /><circle cx="191.795529" cy="186.455344" r="1.650000" style="fill:rgb(17,0,35);stroke-width:1" /><circle cx="194.889427" cy="186.421070" r="1.650000" style="fill:rgb(-96,0,-192);stroke-width:1" /><circle cx="187.198676" cy="189.480074" r="1.650000" style="fill:rgb(115,0,231);stroke-width:1" /><circle cx="190.295527" cy="189.455345" r="1.650000" style="fill:rgb(17,0,35);stroke-width:1" /><circle cx="193.389425" cy="189.421069" r="1.650000" style="fill:rgb(-96,0,-192);stroke-width:1" /><circle cx="188.795528" cy="192.455345" r="1.650000" style="fill:rgb(17,0,35);stroke-width:1" /><circle cx="191.889425" cy="192.421069" r="1.650000" style="fill:rgb(-96,0,-192);stroke-width:1" /><circle cx="190.389425" cy="195.421069" r="1.650000" style="fill:rgb(-96,0,-192);stroke-width:1" />
+</svg>

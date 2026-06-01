@@ -17,4 +17,6 @@ std::string double_to_string(double i);
  **/
 std::vector<std::string> split(const std::string &s, char delim);
 
+std::string to_string_separator(int i);
+
 #endif

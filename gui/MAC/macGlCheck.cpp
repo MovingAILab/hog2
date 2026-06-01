@@ -1,11 +1,10 @@
 /*
- * $Id: macGlCheck.cpp,v 1.2 2006/10/18 23:53:10 nathanst Exp $
+ *  $Id: macGlCheck.cpp
+ *  hog2
  *
- *  glCheck.c
- *  Carbon OpenGL
+ *  Created by Geoff Stahl on 01/24/03.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- *  Created by Geoff Stahl on Fri Jan 24 2003.
-
 	Copyright:	Copyright � 2003 Apple Computer, Inc., All Rights Reserved
 
 	Disclaimer:	IMPORTANT:  This Apple software is supplied to you by Apple Computer, Inc.
@@ -42,8 +41,7 @@
 			OF THE APPLE SOFTWARE, HOWEVER CAUSED AND WHETHER UNDER THEORY OF CONTRACT, TORT
 			(INCLUDING NEGLIGENCE), STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN
 			ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
+*/
  
  // see glcheck.h for more explanation on the use of CheckOpenGLCaps and it's associated data
 

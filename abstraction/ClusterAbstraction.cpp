@@ -1,27 +1,12 @@
-/* 
- * $Id: ClusterAbstraction.cpp,v 1.12 2007/03/06 22:29:40 nathanst Exp $
+/*
+ *  $Id: ClusterAbstraction.cpp
+ *  hog2
  *
- * ClusterAbstraction.cpp
- * hog 
+ *  Created by Renee Jansen on 06/06/06.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * Created by Renee Jansen on 06/06/06
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
  *
- * This file is part of HOG.
- *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- * 
  */
 
 #include "ClusterAbstraction.h"

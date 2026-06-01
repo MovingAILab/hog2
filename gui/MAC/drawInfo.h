@@ -1,11 +1,12 @@
 /*
- * $Id: drawInfo.h,v 1.2 2006/10/18 23:53:10 nathanst Exp $
+ *  $Id: drawInfo.h
+ *  hog2
  *
- *  drawInfo.h
- 
-	This file is a source include that contains a pile of capability printing code
+ *  Created by Geoff Stahl on 03/12/03.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- *  Created by Geoff Stahl on Wed Mar 12 2003.
+ *	This file is a source include that contains a pile of capability printing code
+ *
  *  Copyright (c) 2003 Apple Computer Inc. All rights reserved.
 
 	Disclaimer:	IMPORTANT:  This Apple software is supplied to you by Apple Computer, Inc.
@@ -15,7 +16,7 @@
 			please do not use, install, modify or redistribute this Apple software.
 
 			In consideration of your agreement to abide by the following terms, and subject
-			to these terms, Apple grants you a personal, non-exclusive license, under Apple’s
+			to these terms, Apple grants you a personal, non-exclusive license, under Apple√ïs
 			copyrights in this original Apple software (the "Apple Software"), to use,
 			reproduce, modify and redistribute the Apple Software, with or without
 			modifications, in source and/or binary forms; provided that if you redistribute

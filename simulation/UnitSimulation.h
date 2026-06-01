@@ -1,26 +1,11 @@
 /*
- * $Id: unitSimulation.h,v 1.26 2006/11/01 23:28:21 nathanst Exp $
- *
- *  Hierarchical Open Graph File
+ *  $Id: unitSimulation.h
+ *  hog2
  *
  *  Created by Nathan Sturtevant on 9/30/04.
- *  Copyright 2004 Nathan Sturtevant. All rights reserved.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * This file is part of HOG.
- *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
  *
  */
 
@@ -132,8 +117,8 @@ public:
 	/** getPenalty for thinking. Gets the multiplier used to penalize thinking time. */
 	double GetThinkingPenalty() { return penalty; }
 
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(unsigned int whichUnit) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(unsigned int whichUnit) const;
 	
 	void SetLogStats(bool val) { logStats = val; }
 	bool GetLogStats() { return logStats; }
@@ -285,9 +270,9 @@ template<class state, class action, class environment>
 bool UnitSimulation<state,action,environment>::Done()
 {
 	// assumes that all units belong to a unit group
-	for(unsigned int i=0; i<unitGroups.size(); i++)
+	for (unsigned int i=0; i<unitGroups.size(); i++)
 	{
-		if(!unitGroups[i]->Done())
+		if (!unitGroups[i]->Done())
 			return false;
 	}
 	return true;
@@ -320,11 +305,11 @@ template<class state, class action, class environment>
 double UnitSimulation<state,action,environment>::GetTimeToNextStep() const {
 	double minimum = DBL_MAX;
 
-	for( unsigned int i = 0; i < units.size(); i++ ) {
-		if( minimum > units[i]->nextTime - currTime )
+	for ( unsigned int i = 0; i < units.size(); i++ ) {
+		if ( minimum > units[i]->nextTime - currTime )
 			minimum = units[i]->nextTime - currTime;
 	}
-	if( minimum < 1./30. )
+	if ( minimum < 1./30. )
 		fprintf( stderr, "Warning: GetTimeToNextStep sank under 1./30. (%g).\n", minimum );
 	return minimum;
 }
@@ -346,7 +331,7 @@ void UnitSimulation<state, action, environment>::StepTime(double timeStep)
 	DoPostTimestepCalc();
 	
 	//std::cout<<"currTime "<<currTime<<std::endl;
-	//if(Done()) std::cout<<"DONE!!!\n";
+	//if (Done()) std::cout<<"DONE!!!\n";
 }
 
 template<class state, class action, class environment>
@@ -438,7 +423,7 @@ void UnitSimulation<state, action, environment>::StepUnitTime(UnitInfo<state, ac
 		theUnit->lastTime = theUnit->nextTime;
 		theUnit->lastState = theUnit->currentState;
 		
-		if( stepType == kUniTime )
+		if ( stepType == kUniTime )
 			theUnit->nextTime = currTime + 1.;
 		else
 			theUnit->nextTime += theUnit->agent->GetSpeed();
@@ -458,17 +443,18 @@ bool UnitSimulation<state, action, environment>::MakeUnitMove(UnitInfo<state, ac
 	
 	// TODO: Perhaps we need a legal action test here to handle the
 	//       cases where we can't generate all possible actions.
-	bool legal = true;
-//	std::vector<action> succ;
-//	env->GetActions(oldState, succ);
-//	for (unsigned int x = 0; x < succ.size(); x++)
-//	{
-//		if (succ[x] == where)
-//		{
-//			legal = true;
-//			break;
-//		}
-//	}
+	bool legal = false;
+
+	std::vector<action> succ;
+	env->GetActions(oldState, succ);
+	for (unsigned int x = 0; x < succ.size(); x++)
+	{
+		if (succ[x] == where)
+		{
+			legal = true;
+			break;
+		}
+	}
 	
 	if (legal && 
 		(!envInfo || (envInfo && envInfo->CanMove(oldState, theUnit->currentState))))
@@ -497,29 +483,29 @@ bool UnitSimulation<state, action, environment>::MakeUnitMove(UnitInfo<state, ac
 /* ATTENTION!!!! This function gives away the current real information,
  * this is a security issue but for performance we still did it!
 */
-template<class state, class action, class environment>
-void UnitSimulation<state, action, environment>::OpenGLDraw() const
-{
-	env->OpenGLDraw();
-	for (unsigned int x = 0; x < units.size(); x++)
-	{
-		currentActor = x;
-		units[x]->agent->OpenGLDraw(env, this);
-	}
-	
-	for (unsigned int x = 0; x <unitGroups.size(); x++)
-		unitGroups[x]->OpenGLDraw(env, this);
-}
-
-template<class state, class action, class environment>
-void UnitSimulation<state, action, environment>::OpenGLDraw(unsigned int whichUnit) const
-{
-	if (whichUnit >= units.size())
-		return;
-
-	currentActor = whichUnit;
-	units[whichUnit]->agent->OpenGLDraw(env, this);
-}
+//template<class state, class action, class environment>
+//void UnitSimulation<state, action, environment>::OpenGLDraw() const
+//{
+//	env->OpenGLDraw();
+//	for (unsigned int x = 0; x < units.size(); x++)
+//	{
+//		currentActor = x;
+//		units[x]->agent->OpenGLDraw(env, this);
+//	}
+//	
+//	for (unsigned int x = 0; x <unitGroups.size(); x++)
+//		unitGroups[x]->OpenGLDraw(env, this);
+//}
+//
+//template<class state, class action, class environment>
+//void UnitSimulation<state, action, environment>::OpenGLDraw(unsigned int whichUnit) const
+//{
+//	if (whichUnit >= units.size())
+//		return;
+//
+//	currentActor = whichUnit;
+//	units[whichUnit]->agent->OpenGLDraw(env, this);
+//}
 
 
 #endif

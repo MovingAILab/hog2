@@ -1,0 +1,23 @@
+#!/bin/tcsh
+
+#foreach mapset ( dao sc1 random rooms mazes )
+
+#DH10 FM_e10 FMDH_e10 FMDH10 DH+FM10 DH+FMDH10 DH+FMDH_e10
+foreach method ( FM2DH ) #(FM) # ( FMDH_e+DH FM FM2DH FM DH+FMDH ) #(DH FM_e FMDH_e FMDH DH+FM DH+FMDH FMDH_e+DH DH+FMDH_e FM2DH FM )
+#foreach method (DH FM_e FMDH_e FMDH DH+FM DH+FMDH FMDH_e+DH DH+FMDH_e FM2DH FM )
+
+foreach pivot ( 24 ) #10
+
+rm -f ${1}-nodes-${method}-${pivot}.txt
+
+echo $1 " " $method " " $pivot
+
+./map-nodes2.script ${pivot} ${method} ${1}
+
+#end #scen
+
+end #pivot
+
+end #method
+
+#end #mapset

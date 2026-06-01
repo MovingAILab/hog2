@@ -10,12 +10,13 @@
 #ifndef CFOPTIMALREFINEMENT_H
 #define CFOPTIMALREFINEMENT_H
 
-#include <ext/hash_map>
 #include "SearchAlgorithm.h"
 #include "OpenClosedList.h"
 #include "FPUtil.h"
 #include "Graph.h"
 #include "GraphAbstraction.h"
+
+#include <unordered_map>
 
 namespace CFOptimalRefinementConstants {
 
@@ -80,7 +81,7 @@ namespace CFOptimalRefinementConstants {
 typedef OpenClosedList<CFOptimalRefinementConstants::GNode, CFOptimalRefinementConstants::NodeHash,
 CFOptimalRefinementConstants::NodeEqual, CFOptimalRefinementConstants::NodeCompare> PQueue;
 
-typedef __gnu_cxx::hash_map<uint32_t, CFOptimalRefinementConstants::GNode> NodeLookupTable;
+typedef std::unordered_map<uint32_t, CFOptimalRefinementConstants::GNode> NodeLookupTable;
 
 // variables starting with "a" are in the abstraction
 // variables starting with "g" are in the defined search graph

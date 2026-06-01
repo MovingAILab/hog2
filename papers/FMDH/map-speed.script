@@ -1,0 +1,15 @@
+#!/bin/tcsh
+
+rm -f ${1}.txt
+
+foreach scen ( ../../scenarios/$1/*.scen )
+
+set x = `echo $scen | sed 's/.*\///g'`
+set map = `echo $x | sed 's/\.scen//'`
+echo $map
+
+../../bin/release/FMDH -heuristicSpeed FM ../../maps/$1/$map $scen >> ${1}.txt
+../../bin/release/FMDH -heuristicSpeed FMDH ../../maps/$1/$map $scen >> ${1}.txt
+../../bin/release/FMDH -heuristicSpeed DH ../../maps/$1/$map $scen >> ${1}.txt
+
+end

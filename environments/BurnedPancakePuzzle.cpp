@@ -147,7 +147,7 @@ bool BurnedPancakePuzzle::InvertAction(unsigned &a) const
 	return true;
 }
 
-double BurnedPancakePuzzle::HCost(const BurnedPancakePuzzleState &state)
+double BurnedPancakePuzzle::HCost(const BurnedPancakePuzzleState &state) const
 {
 	if (!goal_stored)
 	{
@@ -189,7 +189,7 @@ double BurnedPancakePuzzle::HCost(const BurnedPancakePuzzleState &state)
 	return h_cost;
 }
 
-double BurnedPancakePuzzle::HCost(const BurnedPancakePuzzleState &state, const BurnedPancakePuzzleState &goal_state)
+double BurnedPancakePuzzle::HCost(const BurnedPancakePuzzleState &state, const BurnedPancakePuzzleState &goal_state) const
 {
 	if (state.puzzle.size() != size)
 	{
@@ -223,14 +223,14 @@ double BurnedPancakePuzzle::HCost(const BurnedPancakePuzzleState &state, const B
 }
 //#define GetDualEntry(s, r, i) (r[abs(s.puzzle[i])-1])
 //#define GetDualEntry(s, r, i) (s.puzzle[r[i]-1])
-int GetDualEntryLoc(const BurnedPancakePuzzleState &state, std::vector<int> &goal_locs, int index)
+int GetDualEntryLoc(const BurnedPancakePuzzleState &state, const std::vector<int> &goal_locs, int index)
 {
 	int theSign = abs(state.puzzle[index])/state.puzzle[index];
 	int loc = goal_locs[abs(state.puzzle[index])-1];
 	return loc*theSign;
 }
 
-double BurnedPancakePuzzle::Memory_Free_HCost(const BurnedPancakePuzzleState &state, std::vector<int> &goal_locs)
+double BurnedPancakePuzzle::Memory_Free_HCost(const BurnedPancakePuzzleState &state, const std::vector<int> &goal_locs) const
 {
 	if (state.puzzle.size() != size)
 	{
@@ -272,12 +272,12 @@ double BurnedPancakePuzzle::Memory_Free_HCost(const BurnedPancakePuzzleState &st
 	return h_count;
 }
 
-bool BurnedPancakePuzzle::GoalTest(const BurnedPancakePuzzleState &state, const BurnedPancakePuzzleState &theGoal)
+bool BurnedPancakePuzzle::GoalTest(const BurnedPancakePuzzleState &state, const BurnedPancakePuzzleState &theGoal) const
 {
 	return (state == theGoal);
 }
 
-bool BurnedPancakePuzzle::GoalTest(const BurnedPancakePuzzleState &s)
+bool BurnedPancakePuzzle::GoalTest(const BurnedPancakePuzzleState &s) const
 {
 	if (!goal_stored)
 	{
@@ -474,7 +474,7 @@ uint64_t BurnedPancakePuzzle::GetStateHash(const BurnedPancakePuzzleState &s) co
 {
 	std::vector<int> puzzle = s.puzzle;
 	uint64_t hashVal = 0;
-	int numEntriesLeft = s.puzzle.size();
+	int numEntriesLeft = (int)s.puzzle.size();
 	for (unsigned int x = 0; x < s.puzzle.size(); x++)
 	{
 		hashVal += puzzle[x]*Factorial(numEntriesLeft-1);

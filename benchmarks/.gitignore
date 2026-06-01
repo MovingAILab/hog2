@@ -1,0 +1,7 @@
+# Ignore all maps that are downloaded into this directory
+*
+
+# But don't ignore this file, the install script, and the readme
+!.gitignore
+!install.sh
+!Readme.md

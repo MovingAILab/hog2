@@ -9,7 +9,7 @@
 
 
 #include "Unit.h"
-#include <ext/hash_map>
+#include <unordered_map>
 #include <math.h>
 
 namespace LocalSensing {
@@ -91,7 +91,7 @@ namespace LocalSensing {
 		void RemoveChildrenPointers(environment *e, state &currentLoc);
 		bool AddOptimalParent(stateInfo<state, action> &info, action a);
 
-		typedef __gnu_cxx::hash_map<uint64_t, stateInfo<state, action>, Hash64 > LSStateStorage;
+		typedef std::unordered_map<uint64_t, stateInfo<state, action>, Hash64 > LSStateStorage;
 		LSStateStorage hashTable;
 		
 		char name[255];

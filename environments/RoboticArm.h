@@ -13,13 +13,14 @@
 #include <stdint.h>
 #include <iostream>
 #include <string.h>
+#include <cinttypes>
 #include "Map.h"
-#include "MapAbstraction.h"
 #include "SearchEnvironment.h"
 #include "UnitSimulation.h"
 #include "ReservationProvider.h"
 #include "ConfigEnvironment.h"
 #include "FrontierBFS.h"
+#include "TemplateAStar.h"
 #include <cassert>
 
 //#include "BaseMapOccupancyInterface.h"
@@ -33,8 +34,8 @@ public:
 	void SetAngle(int which, int value);
 	int GetNumArms() const;
 	void SetNumArms(int count);
-	void SetGoal(double x, double y);
-	void GetGoal(double &x, double &y) const;
+	void SetGoal(float x, float y);
+	void GetGoal(float &x, float &y) const;
 	bool IsGoalState() const;
 	uint64_t angles;
 };
@@ -43,7 +44,7 @@ static std::ostream& operator <<(std::ostream & out, const armAngles &loc)
 {
 	if (loc.IsGoalState())
 	{
-		double x, y;
+		float x, y;
 		loc.GetGoal(x, y);
 		out << "(" << x << ", " << y << ")" << std::endl;
 	}
@@ -82,7 +83,7 @@ static bool operator==(const armRotations &l1, const armRotations &l2) {
 class RoboticArmHeuristic {
 public:
 	virtual ~RoboticArmHeuristic() {}
-	virtual double HCost(const armAngles &node1, const armAngles &node2) = 0;
+	virtual double HCost(const armAngles &node1, const armAngles &node2) const = 0;
 };
 
 class RoboticArm : public SearchEnvironment<armAngles, armRotations>
@@ -92,7 +93,7 @@ public:
 	virtual ~RoboticArm();
 
 	double GetTolerance() const { return tolerance; }
-	void GetTipPosition( armAngles &s, double &x, double &y );
+	void GetTipPosition(const armAngles &s, double &x, double &y ) const;
 	int TipPositionIndex(armAngles &s,
 						 const double minX=-1, const double minY=-1,
 						 const double width=2 );
@@ -109,26 +110,32 @@ public:
 
 	void AddHeuristic(RoboticArmHeuristic *h) { heuristics.push_back(h); }
 
-	virtual double HCost(const armAngles &){
+	virtual double HCost(const armAngles &) const {
 		printf("Single State HCost Failure: method not implemented for RoboticArm\n");
 		exit(0); return -1.0;}
 
-	virtual double HCost(const armAngles &node1, const armAngles &node2);
+	virtual double HCost(const armAngles &node1, const armAngles &node2) const;
 
-	virtual double GCost(const armAngles &, const armAngles &) { return 1; }
-	virtual double GCost(const armAngles &, const armRotations &) { return 1; }
-	bool GoalTest(const armAngles &node, const armAngles &goal);
+	virtual double GCost(const armAngles &, const armAngles &) const { return 1; }
+	virtual double GCost(const armAngles &, const armRotations &) const { return 1; }
+	bool GoalTest(const armAngles &node, const armAngles &goal) const;
 	void GetStateFromHash(uint64_t hash, armAngles &) const;
 	uint64_t GetStateHash(const armAngles &node) const;
 	uint64_t GetActionHash(armRotations act) const;
 
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const armAngles &l) const;
-	virtual void OpenGLDraw(const armAngles &, const armRotations &) const;
-	virtual void OpenGLDraw(const armAngles&, const armAngles&, float) const {}
+private:
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const armAngles &l) const;
+//	virtual void OpenGLDraw(const armAngles &, const armRotations &) const;
+//	virtual void OpenGLDraw(const armAngles&, const armAngles&, float) const {}
+public:
 //	virtual void OpenGLDraw(const armAngles &, const armRotations &, GLfloat r, GLfloat g, GLfloat b) const;
 //	virtual void OpenGLDraw(const armAngles &l, GLfloat r, GLfloat g, GLfloat b) const;
-
+	virtual void Draw(Graphics::Display &display) const;
+	virtual void Draw(Graphics::Display &display, const armAngles&) const;
+	virtual void Draw(Graphics::Display &display, const armAngles&, int which, rgbColor c) const;
+	virtual void Draw(Graphics::Display &display, const armAngles &, const armRotations &) const;
+	
 	virtual void GetNextState(const armAngles &currents, armRotations dir, armAngles &news) const;
 
 	bool LegalState(armAngles &a) const;
@@ -136,12 +143,13 @@ public:
 
 	void StoreGoal(armAngles &) {}
 	void ClearGoal(){}
-	bool IsGoalStored(){return false;}
-	virtual bool GoalTest(const armAngles &){
+	bool IsGoalStored()const {return false;}
+	virtual bool GoalTest(const armAngles &) const {
 		printf("Single State Goal Test Failure: method not implemented for RoboticArm\n");
 		exit(0); return false;}
 
 private:
+	bool LegalAction(const armAngles &a, double tipx, double tipy) const;
 	void DrawLine(line2d l) const;
 	void GenerateLineSegments(const armAngles &a, std::vector<line2d> &armSegments) const;
 
@@ -157,17 +165,18 @@ private:
 	std::vector<line2d> obstacles;
 	mutable std::vector<line2d> armSegments;
 
-	std::vector<recVec> states;
+	mutable std::vector<Graphics::point> states;
 
 	std::vector<RoboticArmHeuristic *> heuristics;
 	ConfigEnvironment *ce;
+	mutable TemplateAStar<Graphics::point, line2d, ConfigEnvironment> localAStar;
 };
 
 class ArmToArmHeuristic : public RoboticArmHeuristic {
 public:
 	ArmToArmHeuristic(RoboticArm *r, armAngles &initial, bool optimize = false);
 	virtual ~ArmToArmHeuristic() {}
-	double HCost(const armAngles &node1, const armAngles &node2);
+	double HCost(const armAngles &node1, const armAngles &node2) const;
 	void AddDiffTable();
 	bool IsLegalState(armAngles &arm);
 	const std::vector<armAngles> &GetTipPositions(double x, double y)
@@ -211,7 +220,7 @@ public:
 		//theSize = (uint32_t)pow(512/reductionPower, numArms);
 		printf("Using mask 0x%llX\n", theMask);
 		printf("Using result 0x%llX\n", theResult);
-		printf("%llu entries in table\n", theSize);
+		printf("%" PRId64 " entries in table\n", theSize);
 		distances = new uint16_t[theSize];
 		memset ( distances, 0xFFFF, theSize*sizeof(uint16_t) );
 	}
@@ -232,7 +241,7 @@ public:
 		theSize = (uint32_t)pow(512/reductionPower, numArms);
 		printf("Using mask 0x%llX\n", theMask);
 		printf("Using result 0x%llX\n", theResult);
-		printf("%d entries in table\n", theSize);
+		printf("%" PRId64 " entries in table\n", theSize);
 		distances = new uint16_t[theSize];
 	}
 	~ArmToArmCompressedHeuristic()
@@ -318,7 +327,7 @@ public:
 		//std::cout << a << " goes in the table with index " << index << " : " << (a.angles&0xFFFFFFFF) << std::endl;
 		distances[index] = dist;
 	}
-	uint64_t GetIndex(const armAngles &a)
+	uint64_t GetIndex(const armAngles &a) const
 	{
 		//std::cout << "Index of " << a << " : " << (a.angles&0xFFFFFFFF) << " is ";
 		uint64_t index = 0;
@@ -331,7 +340,8 @@ public:
 		assert(index < theSize);
 		return index;
 	}
-	double HCost(const armAngles &from, const armAngles &to)
+	
+	double HCost(const armAngles &from, const armAngles &to) const
 	{
 		if ((from.angles&theMask) != theResult)
 			return 0;
@@ -342,11 +352,12 @@ public:
 		double baseDist = distances[GetIndex(from)];
 		for (unsigned int x = 0; x < values.size(); x++)
 		{
-			heuristic = max(heuristic, abs(baseDist-values[x])-errors[x]);
+			heuristic = max(heuristic, std::abs(baseDist-values[x])-errors[x]);
 		}
 		return heuristic;
 	}
-	void SetupGoal(const armAngles &referenceState)
+	
+	void SetupGoal(const armAngles &referenceState) const
 	{
 		values.resize(0);
 		errors.resize(0);
@@ -373,11 +384,12 @@ public:
 			depth++;
 		}
 	}
+	
 	void Save(const char *file)
 	{
 		FILE *f = fopen(file, "w+");
 		if (f == 0) assert(!"file could not be opened");
-		fprintf(f, "%llu %llu %llu %d\n", theSize, theMask, theResult, (int)reduction.size());
+		fprintf(f, "%" PRId64 " %" PRId64 " %" PRId64 " %d\n", theSize, theMask, theResult, (int)reduction.size());
 		fwrite(&reduction[0], sizeof(int), reduction.size(), f);
 		fwrite(distances, sizeof(uint16_t), theSize, f);
 		fclose(f);
@@ -387,7 +399,7 @@ public:
 		int numArms;
 		FILE *f = fopen(file, "r");
 		if (f == 0) assert(!"file could not be opened");
-		fscanf(f, "%llu %llu %llu %d\n", &theSize, &theMask, &theResult, &numArms);
+		fscanf(f, "%" PRId64 " %" PRId64 " %" PRId64 " %d\n", &theSize, &theMask, &theResult, &numArms);
 		reduction.resize(numArms);
 		fread(&reduction[0], sizeof(int), reduction.size(), f);
 		distances = new uint16_t[theSize];
@@ -397,10 +409,12 @@ public:
 private:
 	uint64_t theSize;
 	std::vector<int> reduction;
-	std::vector<int> values;
-	std::vector<int> errors;
+
+	// caching for each goal state
+	mutable std::vector<int> values;
+	mutable std::vector<int> errors;
+	mutable armAngles goal;
 	RoboticArm *r;
-	armAngles goal;
 	uint16_t *distances;
 	uint64_t theMask;
 	uint64_t theResult;
@@ -410,7 +424,7 @@ class ArmToTipHeuristic : public RoboticArmHeuristic {
 public:
 	ArmToTipHeuristic(RoboticArm *r);
 	virtual ~ArmToTipHeuristic() {}
-	double HCost(const armAngles &node1, const armAngles &node2);
+	double HCost(const armAngles &node1, const armAngles &node2) const;
 
 	void GenerateLegalStateTable( armAngles &legalArm );
 	void GenerateTipPositionTables( armAngles &sampleArm );
@@ -442,7 +456,7 @@ private:
 
 
 	// convert an arm configuration into an index
-	uint64_t ArmAnglesIndex( const armAngles &arm );
+	uint64_t ArmAnglesIndex( const armAngles &arm ) const;
 	uint64_t NumArmAnglesIndices( const armAngles &arm ) const {
 		return 1 << ( 9 * arm.GetNumArms() );
 	}
@@ -450,7 +464,7 @@ private:
 	// convert a tip position into an index
 	int TipPositionIndex( const double x, const double y,
 						 const double minX, const double minY,
-						 const double width );
+						 const double width ) const;
 	int NumTipPositionIndices() const {
 		int count = (int)ceil( 2.0 / ra->GetTolerance() );
 		return count * count;
@@ -488,10 +502,10 @@ private:
 
 	// use a heuristic table
 	uint16_t UseHeuristic(const armAngles &s, armAngles &g,
-						  uint16_t *distances );
+						  uint16_t *distances ) const;
 	uint16_t UseHeuristic(const armAngles &arm, double goalX, double goalY,
 						  uint16_t *distances, uint16_t *minTipDistances,
-						  uint16_t *maxTipDistances );
+						  uint16_t *maxTipDistances ) const;
 };
 
 //typedef UnitSimulation<armAngles, armRotations, MapEnvironment> UnitMapSimulation;

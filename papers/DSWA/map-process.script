@@ -1,0 +1,13 @@
+#!/bin/tcsh
+
+foreach alg (0 1 3 4 ) #( `seq 5 0` )
+echo "" | awk '{ printf("'${alg}'\t&\t") }'
+foreach weight ( 1.25 1.5 2 3 5 9 )
+
+grep "ALG $alg" ${1}-map-results.txt | grep "weight $weight" | awk 'BEGIN {} { sum += $10; cnt++ } END { printf("%'"'"'d\t&\t", sum/cnt) }'
+
+end
+
+echo ""
+
+end

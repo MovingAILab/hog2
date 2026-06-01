@@ -10,12 +10,13 @@
 #ifndef IRAStar_H
 #define IRAStar_H
 
-#include <ext/hash_map>
 #include "SearchAlgorithm.h"
 #include "OpenClosedList.h"
 #include "FPUtil.h"
 #include "Graph.h"
 #include "GraphAbstraction.h"
+
+#include <unordered_map>
 
 namespace IRAStarConstants {
 	
@@ -68,7 +69,7 @@ namespace IRAStarConstants {
 	typedef OpenClosedList<GNode, NodeHash,
 		NodeEqual, NodeCompare> PQueue;
 	
-	typedef __gnu_cxx::hash_map<uint32_t, GNode> NodeLookupTable;
+	typedef std::unordered_map<uint32_t, GNode> NodeLookupTable;
 }
 
 

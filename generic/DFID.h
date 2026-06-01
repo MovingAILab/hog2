@@ -12,10 +12,10 @@
 
 #include <iostream>
 #include "SearchEnvironment.h"
-#include <ext/hash_map>
+#include <unordered_map>
 #include "FPUtil.h"
 
-typedef __gnu_cxx::hash_map<uint64_t, double> NodeHashTable;
+typedef std::unordered_map<uint64_t, double> NodeHashTable;
 
 template <class state, class action>
 class DFID {

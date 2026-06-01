@@ -1,26 +1,11 @@
 /*
- * $Id: unit.h,v 1.21 2007/02/22 01:50:51 bulitko Exp $
- *
- *  Hierarchical Open Graph File
+ *  $Id: unit.h
+ *  hog2
  *
  *  Created by Nathan Sturtevant on 9/28/04.
- *  Copyright 2004 Nathan Sturtevant. All rights reserved.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * This file is part of HOG.
- *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
  *
  */
 
@@ -44,8 +29,8 @@ public:
 	virtual bool MakeMove(environment *, OccupancyInterface<state,action> *, SimulationInfo<state,action,environment> *, action& a) = 0;
 	virtual void UpdateLocation(environment *, state &, bool success, SimulationInfo<state,action,environment> *) = 0;
 	virtual void GetLocation(state &) = 0;
-	virtual void OpenGLDraw(const environment *, const SimulationInfo<state,action,environment> *) const = 0;
-	virtual void GetGoal(state &s) = 0;
+//	virtual void OpenGLDraw(const environment *, const SimulationInfo<state,action,environment> *) const = 0;
+	virtual void GetGoal(state &s) {};
 	virtual bool Done() { return true;} 
 
 	virtual double GetSpeed() { return speed; }
@@ -56,8 +41,8 @@ public:
 	/** log any final one-time stats before a simulation is ended */
 	virtual void LogFinalStats(StatCollection *) {}
 	
-	virtual void SetColor(GLfloat _r, GLfloat _g, GLfloat _b) { r=_r; g=_g; b=_b; }
-	virtual void GetColor(GLfloat& _r, GLfloat& _g, GLfloat& _b) const { _r=r; _g=g; _b=b; }
+	virtual void SetColor(float _r, float _g, float _b) { r=_r; g=_g; b=_b; }
+	virtual void GetColor(float& _r, float& _g, float& _b) const { _r=r; _g=g; _b=b; }
 	
 	UnitGroup<state, action, environment> *GetUnitGroup() { return group; }
 	void SetUnitGroup(UnitGroup<state, action, environment> *_group)
@@ -69,13 +54,13 @@ public:
 			UnitGroup<state, action, environment> *tmp = group;
 			
 			group = 0; 
-			if(tmp)
+			if (tmp)
 				tmp->RemoveUnit(this);
 			
 			// Set the back pointer
 			group = _group;
 			
-			if(_group != 0)
+			if (_group != 0)
 				_group->AddUnit(this);
 			
 			// OLD CODE
@@ -98,7 +83,7 @@ private:
 	double speed;
 	int priority;
 	UnitGroup<state, action, environment> *group;
-	GLfloat r, g, b;
+	float r, g, b;
 	unsigned int unitid;
 };
 

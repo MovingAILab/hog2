@@ -1,0 +1,45 @@
+name: C/C++ SFML Build
+
+on:
+  push:
+    branches: [ "PDB-refactor" ]
+  pull_request:
+    branches: [ "PDB-refactor" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+    - name: Install SFML 3.0
+      run: |
+           sudo apt-get update
+           sudo apt-get install -y \
+             cmake \
+             ninja-build \
+             libxrandr-dev \
+             libxcursor-dev \
+             libxi-dev \
+             libudev-dev \
+             libfreetype-dev \
+             libgl1-mesa-dev \
+             libegl1-mesa-dev \
+             libdrm-dev \
+             libgbm-dev \
+             libvorbis-dev \
+             libflac-dev \
+             libopenal-dev \
+             libjpeg-dev \
+             libogg-dev \
+             libx11-dev
+           git clone --branch 3.0.0 --depth 1 https://github.com/SFML/SFML.git /tmp/SFML
+           cmake -S /tmp/SFML -B /tmp/SFML/build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_SHARED_LIBS=ON
+           cmake --build /tmp/SFML/build
+           sudo cmake --install /tmp/SFML/build
+           sudo ldconfig
+    - name: make
+      working-directory: ./build/SFML/
+      run: |
+           make

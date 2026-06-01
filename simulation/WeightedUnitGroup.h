@@ -29,7 +29,7 @@ class WeightedUnitGroup : public UnitGroup<state,action,environment>
 		virtual ~WeightedUnitGroup() 
 		{	
 			delete wme; 
-			for(unsigned int i=0; i<unitWme.size(); i++) 
+			for (unsigned int i=0; i<unitWme.size(); i++) 
 			delete unitWme[i];
 		}
 			
@@ -37,38 +37,38 @@ class WeightedUnitGroup : public UnitGroup<state,action,environment>
 	
 		virtual bool MakeMove(Unit<state, action, environment> *u, environment *e, SimulationInfo<state,action,environment> *si, action& a)
 		{
-			if(myE != e)
+			if (myE != e)
 			{
 				wme = new WeightedMap2DEnvironment(e);
 				
-				if(localWeights)
+				if (localWeights)
 				{	
 					for (unsigned int x = 0; x < this->GetMembers().size(); x++)
 					{
 						unitWme.push_back(new WeightedMap2DEnvironment(e));
-						if(wt != -1)
+						if (wt != -1)
 							unitWme[unitWme.size()-1]->SetWeight(wt);
-						if(prop != -1)
+						if (prop != -1)
 							unitWme[unitWme.size()-1]->SetProportionOld(prop);
-						if((useWindow)&&(windowSize >= 0))
+						if ((useWindow)&&(windowSize >= 0))
 						{
 							unitWme[unitWme.size()-1]->UseWindow(true);
 							unitWme[unitWme.size()-1]->SetWindowSize(windowSize);
 						}
-						if(noweighting)
+						if (noweighting)
 							unitWme[unitWme.size()-1]->SetNoWeighting(true);
 							
-						if(updateOnQuery)
+						if (updateOnQuery)
 						{
 							unitWme[unitWme.size()-1]->SetUpdateOnQuery(true);
 							unitWme[unitWme.size()-1]->SetQueryProportionOld(queryProp);
 						}
-						if(updateSurrounding)
+						if (updateSurrounding)
 						{
 							unitWme[unitWme.size()-1]->SetUpdateSurrounding(true);
 							unitWme[unitWme.size()-1]->SetSurroundingProportion(surrProp);		
 						}	
-						if(usePerceptron)
+						if (usePerceptron)
 						{
 							unitWme[unitWme.size()-1]->UsePerceptron(learningRate);
 						}		
@@ -79,42 +79,42 @@ class WeightedUnitGroup : public UnitGroup<state,action,environment>
 					currDrawEnv = unitWme.size();
 				}
 				
-				if(wt != -1)
+				if (wt != -1)
 					wme->SetWeight(wt);
-				if(prop != -1)
+				if (prop != -1)
 					wme->SetProportionOld(prop);
-				if((useWindow)&&(windowSize >= 0))
+				if ((useWindow)&&(windowSize >= 0))
 				{
 					wme->UseWindow(true);
 					wme->SetWindowSize(windowSize);
 				}
-				if(noweighting)
+				if (noweighting)
 					wme->SetNoWeighting(true);
 					
-				if(updateOnQuery)
+				if (updateOnQuery)
 				{
 					wme->SetUpdateOnQuery(true);
 					wme->SetQueryProportionOld(queryProp);
 				}
-				if(updateSurrounding)
+				if (updateSurrounding)
 				{
 					wme->SetUpdateSurrounding(true);
 					wme->SetSurroundingProportion(surrProp);		
 				}		
-				if(usePerceptron)
+				if (usePerceptron)
 				{
 					wme->UsePerceptron(learningRate);
 				}	
 				env = wme;
 				myE = e;
 			}
-			if(useWindow) // Set the unit's current location as center for the window 
+			if (useWindow) // Set the unit's current location as center for the window 
 			{
 				xyLoc x;
 				u->GetLocation(x);
 				wme->SetWindowCenter(x);
 			}
-			if(localWeights)
+			if (localWeights)
 			{
 				while(unitWme.size() < this->GetMembers().size())
 				{
@@ -143,13 +143,13 @@ class WeightedUnitGroup : public UnitGroup<state,action,environment>
 			u->GetLocation(currLoc);
 			
 			//std::cout<<std::endl<<"I'm at "<<currLoc<<std::endl;
-			for(int x = currLoc.x - (int)localRadius; x<=currLoc.x + (int)localRadius; x++)
+			for (int x = currLoc.x - (int)localRadius; x<=currLoc.x + (int)localRadius; x++)
 			{
-			 	if((x<0)||(x>=uwme->GetMap()->GetMapWidth()))
+			 	if ((x<0)||(x>=uwme->GetMap()->GetMapWidth()))
 			 		continue;
-				for(int y = currLoc.y - (int)localRadius; y<=currLoc.y + (int)localRadius; y++)
+				for (int y = currLoc.y - (int)localRadius; y<=currLoc.y + (int)localRadius; y++)
 			 	{
-			 		if((y<0)||(y>=uwme->GetMap()->GetMapHeight()))
+			 		if ((y<0)||(y>=uwme->GetMap()->GetMapHeight()))
 			 			continue;
 			 			
 			 		// if this location is within localRadius, update angle
@@ -157,7 +157,7 @@ class WeightedUnitGroup : public UnitGroup<state,action,environment>
 			 		thisloc.x = x;
 			 		thisloc.y = y;
 			 		
-			 		if(uwme->HCost(currLoc, thisloc) <= localRadius)
+			 		if (uwme->HCost(currLoc, thisloc) <= localRadius)
 			 		{
 			 			//std::cout<<"updating "<<thisloc<<std::endl;
 			 			Vector2D angle = wme->GetAngle(thisloc);
@@ -180,36 +180,36 @@ class WeightedUnitGroup : public UnitGroup<state,action,environment>
 
 		virtual void UpdateLocation(Unit<state, action, environment> *u, environment *e, state &loc, bool success, SimulationInfo<state,action,environment> *si)
 		{
-			if(myE != e)
+			if (myE != e)
 			{
-				if(localWeights)
+				if (localWeights)
 				{	
 					for (unsigned int x = 0; x < this->GetMembers().size(); x++)
 					{
 						unitWme.push_back(new WeightedMap2DEnvironment(e));
-						if(wt != -1)
+						if (wt != -1)
 							unitWme[unitWme.size()-1]->SetWeight(wt);
-						if(prop != -1)
+						if (prop != -1)
 							unitWme[unitWme.size()-1]->SetProportionOld(prop);
-						if((useWindow)&&(windowSize >= 0))
+						if ((useWindow)&&(windowSize >= 0))
 						{
 							unitWme[unitWme.size()-1]->UseWindow(true);
 							unitWme[unitWme.size()-1]->SetWindowSize(windowSize);
 						}
-						if(noweighting)
+						if (noweighting)
 							unitWme[unitWme.size()-1]->SetNoWeighting(true);
 							
-						if(updateOnQuery)
+						if (updateOnQuery)
 						{
 							unitWme[unitWme.size()-1]->SetUpdateOnQuery(true);
 							unitWme[unitWme.size()-1]->SetQueryProportionOld(queryProp);
 						}
-						if(updateSurrounding)
+						if (updateSurrounding)
 						{
 							unitWme[unitWme.size()-1]->SetUpdateSurrounding(true);
 							unitWme[unitWme.size()-1]->SetSurroundingProportion(surrProp);		
 						}	
-						if(usePerceptron)
+						if (usePerceptron)
 						{
 							unitWme[unitWme.size()-1]->UsePerceptron(learningRate);
 						}	
@@ -220,29 +220,29 @@ class WeightedUnitGroup : public UnitGroup<state,action,environment>
 				}
 				
 				wme = new WeightedMap2DEnvironment(e);
-				if(wt != -1)
+				if (wt != -1)
 					wme->SetWeight(wt);
-				if(prop != -1)
+				if (prop != -1)
 					wme->SetProportionOld(prop);
-				if((useWindow)&&(windowSize >= 0))
+				if ((useWindow)&&(windowSize >= 0))
 				{
 					wme->UseWindow(true);
 					wme->SetWindowSize(windowSize);
 				}	
-				if(noweighting)
+				if (noweighting)
 					wme->SetNoWeighting(true);
 					
-				if(updateOnQuery)
+				if (updateOnQuery)
 				{
 					wme->SetUpdateOnQuery(true);
 					wme->SetQueryProportionOld(queryProp);
 				}
-				if(updateSurrounding)
+				if (updateSurrounding)
 				{
 					wme->SetUpdateSurrounding(true);
 					wme->SetSurroundingProportion(surrProp);		
 				}				
-				if(usePerceptron)
+				if (usePerceptron)
 				{
 					wme->UsePerceptron(learningRate);
 				}				
@@ -257,21 +257,21 @@ class WeightedUnitGroup : public UnitGroup<state,action,environment>
 		
 		void DrawNextEnvironment()
 		{
-			if(currDrawEnv != unitWme.size())
+			if (currDrawEnv != unitWme.size())
 				this->GetMembers()[currDrawEnv]->SetColor(1,0,0);
 			currDrawEnv = (currDrawEnv + 1)%(unitWme.size()+1);
 		}
 		
-		virtual void OpenGLDraw(const environment *, const SimulationInfo<state,action,environment> *)  const
-		{ 
-			if(currDrawEnv == unitWme.size())
-				wme->OpenGLDraw();
-			else
-			{
-				//this->GetMembers()[currDrawEnv]->SetColor(0,0,1);
-				unitWme[currDrawEnv]->OpenGLDraw();
-			}
-		}
+//		virtual void OpenGLDraw(const environment *, const SimulationInfo<state,action,environment> *)  const
+//		{ 
+//			if (currDrawEnv == unitWme.size())
+//				wme->OpenGLDraw();
+//			else
+//			{
+//				//this->GetMembers()[currDrawEnv]->SetColor(0,0,1);
+//				unitWme[currDrawEnv]->OpenGLDraw();
+//			}
+//		}
 		
 		double ComputeArrowMetric(bool b, double t,bool b2, double mt)
 		{

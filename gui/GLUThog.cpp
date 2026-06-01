@@ -1,22 +1,20 @@
 /*
- * $Id: main.cpp,v 1.28 2006/11/02 21:50:34 nathanst Exp $
+ *  $Id: main.cpp
+ *  hog2
  *
- * This file is part of HOG.
+ *  Created by Nathan Sturtevant on 11/02/06.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
+ *
  */
+
+
+int hog_main(int argc, char **argv);
+int main(int argc, char **argv)
+{
+	return hog_main(argc, argv);
+}
 
 
 #include "Trackball.h"
@@ -43,7 +41,7 @@ int gCurrButton = -1;
 pRecContext backup;
 double fps = 30.0;
 
-pRecContext GetContext(unsigned int windowID)
+pRecContext GetContext(unsigned long windowID)
 {
 	return pContextInfo;
 }
@@ -60,10 +58,10 @@ void RunHOGGUI(int argc, char** argv, int windowDimension)
 
 void RunHOGGUI(int argc, char* argv[], int xDimension, int yDimension)
 {
-  // Init traj global
-  startTrajRecap = false;
+//  // Init traj global
+//  startTrajRecap = false;
 
-	srandom(time(0));
+	srandom(unsigned(time(0)));
 	
 //	InstallCommandLineHandler(processFramesPerSecond, "-fps", "-fps <int>", "[System Option] Specifies the maximum frames per second.");
 	//initializeHandlers();
@@ -82,6 +80,7 @@ void RunHOGGUI(int argc, char* argv[], int xDimension, int yDimension)
 	glutIdleFunc(renderScene);
 	glutMouseFunc(mousePressedButton);
 	glutMotionFunc(mouseMovedButton);
+	glutPassiveMotionFunc(mouseMovedNoButton);
 	glutKeyboardFunc(keyPressed);
 	initialConditions(pContextInfo);
 	buildGL();
@@ -100,97 +99,11 @@ void RunHOGGUI(int argc, char* argv[], int xDimension, int yDimension)
 
 void createMenus()
 {
-//	int menu, submenu;
-//	
-//	// create the menu and
-//	// tell glut that "processMenuEvents" will 
-//	// handle the events
-//	submenu = glutCreateMenu(processMenuEvents);
-//	glutAddMenuEntry("Map1",'map1');
-//	glutAddMenuEntry("Map2",'map2');
-//	glutAddMenuEntry("Map3",'map3');
-//	menu = glutCreateMenu(processMenuEvents);
-//	
-//	//add entries to our menu
-//	glutAddSubMenu("Open Map",submenu);
-//	glutAddMenuEntry("clear Map...",'clar');
-//	
-//	// attach the menu to the right button
-//	glutAttachMenu(GLUT_MIDDLE_BUTTON);
 }
 
 void processMenuEvents(int option)
 {
-/*
-	switch (option) {
-		case 'map1':
-			sprintf(gDefaultMap, "/Users/nathanst/Development/hog/maps/bgmaps/AR0011SR.map");
-			//processStats(pContextInfo->unitLayer->getStats());
-			//delete pContextInfo->unitLayer;
-			//createSimulation(pContextInfo->unitLayer);
-			break;
-		case 'map2':
-			sprintf(gDefaultMap, "/Users/nathanst/Development/hog/maps/wc3maps/divideandconquer.map");
-			processStats(pContextInfo->unitLayer->getStats());
-			delete pContextInfo->unitLayer;
-			createSimulation(pContextInfo->unitLayer);
-			break;
-		case 'map3':
-			sprintf(gDefaultMap, "/Users/nathanst/Development/hog/maps/wc3maps/mysticisles.map");
-			processStats(pContextInfo->unitLayer->getStats());
-			delete pContextInfo->unitLayer;
-			createSimulation(pContextInfo->unitLayer);
-			break;
-		case 'clar':
-			gDefaultMap[0] = 0;
-			processStats(pContextInfo->unitLayer->getStats());
-			delete pContextInfo->unitLayer;
-			createSimulation(pContextInfo->unitLayer);
-			break;
-		default: printf("Unknown menu event: %d\n", option);
-			break;
-	}
- */
 }
-
-//int processFramesPerSecond(char *argument[], int maxNumArgs)
-//{
-//	if (maxNumArgs <= 1)
-//		return 0;
-//	fps = atof(argument[1]);
-//	if (fps == 0)
-//		fps = 1.0;
-//	return 2;
-//}
-
-//void pointPath() {
-//	
-//	ppMouseClicks = 0;
-//
-//	if (!pointpath) {
-//		glutSetCursor(GLUT_CURSOR_RIGHT_ARROW);
-//		backup = new recContext;
-//		*backup = *pContextInfo;
-//		
-//		// Reset the view so that you are looking straight down on the map
-//		resetCamera (&pContextInfo->camera);
-////		pContextInfo->worldRotation[0] = 180;
-////		pContextInfo->worldRotation[1] = 0;
-////		pContextInfo->worldRotation[2] = -.5;
-////		pContextInfo->worldRotation[3] = .5;
-//	}
-//	else {
-//		glutSetCursor(GLUT_CURSOR_INHERIT);
-//		*pContextInfo = *backup;
-//		if (backup) {
-//			delete backup;
-//			backup = 0;
-//		}
-//		
-//	}
-//	
-//	pointpath = 1 - pointpath;
-//}
 
 
 
@@ -208,12 +121,61 @@ void keyPressed(unsigned char key, int, int)
 
 
 
+void mouseMovedNoButton(int x, int y)
+{
+	point3d p(x, y, 0);// = GetOGLPos(pContextInfo, x, y);
+	tButtonType bType = kNoButton;
+	if (HandleMouseClick(pContextInfo, x, y, p, bType, kMouseMove))
+		return;
+
+	
+	if (!pContextInfo->camera[pContextInfo->currPort].thirdPerson)
+	{
+		if (gPan == GL_FALSE)
+		{
+			gDollyPanStartPoint[0] = (GLint)x;
+			gDollyPanStartPoint[1] = (GLint)y;
+			gTrackingContextInfo = pContextInfo;
+			gPan = GL_TRUE;
+			glutSetCursor(GLUT_CURSOR_NONE);
+		}
+		
+		float dx = gDollyPanStartPoint[0]-x;
+		float dy = gDollyPanStartPoint[1]-y;
+		gDollyPanStartPoint[0] = (GLint)x;
+		gDollyPanStartPoint[1] = (GLint)y;
+		float rotation[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+		
+//		rotation[0] = -dy/24;
+//		rotation[1] = 1;
+//		addToRotationTrackball(rotation, pContextInfo->camera[pContextInfo->currPort].rotations.cameraRotation);
+		//pContextInfo->controlShip->addRotation(rotation);
+		//addToRotationTrackball(rotation, pContextInfo->fRot);
+		rotation[0] = -dx/24;
+		rotation[1] = 0;
+		rotation[2] = 1;
+		//		if ((pContextInfo->controlShip)  && (rotation[0] != 0))
+		//			pContextInfo->controlShip->addRotation(rotation);
+		
+		addToRotationTrackball(rotation, pContextInfo->camera[pContextInfo->currPort].rotations.cameraRotation);
+
+		
+		if (x > pContextInfo->globalCamera.viewWidth ||
+			y > pContextInfo->globalCamera.viewHeight || x < 1 || y < 1)
+		{
+			glutWarpPointer(pContextInfo->globalCamera.viewWidth/2, pContextInfo->globalCamera.viewHeight/2);
+			gDollyPanStartPoint[0] = (GLint)pContextInfo->globalCamera.viewWidth/2;
+			gDollyPanStartPoint[1] = (GLint)pContextInfo->globalCamera.viewHeight/2;
+		}
+	}
+}
+
 /**
  * Called when the mouse is moved with a button pressed down.
  */
 void mouseMovedButton(int x, int y)
 {
-	point3d p = GetOGLPos(pContextInfo, x, y);
+	point3d p(x, y, 0);// = GetOGLPos(pContextInfo, x, y);
 	tButtonType bType = kLeftButton;
 	switch (gCurrButton)
 	{
@@ -224,16 +186,45 @@ void mouseMovedButton(int x, int y)
 	if (HandleMouseClick(pContextInfo, x, y, p, bType, kMouseDrag))
 		return;
 	
-	/*if (currentButton == GLUT_LEFT_BUTTON)
-		mousePan(x, y, pContextInfo);
-	else
-		mouseDolly(x, y, pContextInfo); */
+	
+//	if (!pContextInfo->camera[pContextInfo->currPort].thirdPerson)
+//	{
+//		float dx = gDollyPanStartPoint[0]-x;
+//		float dy = gDollyPanStartPoint[1]-y;
+//		gDollyPanStartPoint[0] = (GLint)x;
+//		gDollyPanStartPoint[1] = (GLint)y;
+//		float rotation[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+//		
+//		rotation[0] = -dy/24;
+//		rotation[1] = 1;
+//		addToRotationTrackball(rotation, pContextInfo->camera[pContextInfo->currPort].rotations.cameraRotation);
+//		//pContextInfo->controlShip->addRotation(rotation);
+//		//addToRotationTrackball(rotation, pContextInfo->fRot);
+//		rotation[0] = -dx/24;
+//		rotation[1] = 0;
+//		rotation[2] = 1;
+////		if ((pContextInfo->controlShip)  && (rotation[0] != 0))
+////			pContextInfo->controlShip->addRotation(rotation);
+//		
+//		addToRotationTrackball(rotation, pContextInfo->camera[pContextInfo->currPort].rotations.cameraRotation);
+//	}
+	//else
 	if (gTrackball) {
 		rollToTrackball((long) x, (long) y, gTrackBallRotation);
 	} 
 	else if (gDolly) {
 		mouseDolly(x, y, pContextInfo);
-	} 
+		if (pContextInfo->moveAllPortsTogether)
+		{
+			for (int x = 0; x < pContextInfo->numPorts; x++)
+			{
+				updateProjection(pContextInfo, x);  // update projection matrix
+			}
+		}
+		else {
+			updateProjection(pContextInfo, pContextInfo->currPort);  // update projection matrix
+		}
+	}
 	else if (gPan) {
 		mousePan(x, y, pContextInfo);
 	}
@@ -244,14 +235,14 @@ void mouseMovedButton(int x, int y)
 /**
  * Called when a mouse button is pressed.
  */
-void mousePressedButton(int button, int state, int x, int y)
+//void mousePressedButton(int button, int state, int x, int y)
 {
 	gCurrButton = button;
 	int modifiers = glutGetModifiers();
 	
 	//printf("Button = %d\n", button);
 	if (state == GLUT_DOWN) {
-		point3d p = GetOGLPos(pContextInfo, x, y);
+		point3d p(x, y, 0);// = GetOGLPos(pContextInfo, x, y);
 		tButtonType bType = kLeftButton;
 		switch (gCurrButton)
 		{
@@ -261,31 +252,44 @@ void mousePressedButton(int button, int state, int x, int y)
 		}
 		if (HandleMouseClick(pContextInfo, x, y, p, bType, kMouseDown))
 			return;
-		//		if (pointpath) {
-//			ppMouseClicks++;
-//			
-//			if (ppMouseClicks > 1) {
-//				pointPath();
-//			}
-//			
-//			return;
-//		}
 	
-	
-		if ((button == GLUT_RIGHT_BUTTON) || ((button == GLUT_LEFT_BUTTON) && (modifiers == GLUT_ACTIVE_CTRL)))
+		if (!pContextInfo->camera[pContextInfo->currPort].thirdPerson)
+		{
+			gDollyPanStartPoint[0] = (GLint)x;
+			gDollyPanStartPoint[1] = (GLint)y;
+			gPan = GL_TRUE;
+			gTrackingContextInfo = pContextInfo;
+		}
+		else if ((button == GLUT_RIGHT_BUTTON) || ((button == GLUT_LEFT_BUTTON) && (modifiers == GLUT_ACTIVE_CTRL)))
 		{ // pan
 			if (gTrackball)
 			{ // if we are currently tracking, end trackball
 				gTrackball = GL_FALSE;
 				if (gTrackBallRotation[0] != 0.0)
 				{
-					if (pContextInfo->moveAllPortsTogether)
+					// Mouse moves world object
+					if (pContextInfo->camera[pContextInfo->currPort].thirdPerson == true)
 					{
-						for (int x = 0; x < pContextInfo->numPorts; x++)
-							addToRotationTrackball(gTrackBallRotation, pContextInfo->rotations[x].worldRotation);
+						if (pContextInfo->moveAllPortsTogether)
+						{
+							for (int x = 0; x < pContextInfo->numPorts; x++)
+								addToRotationTrackball(gTrackBallRotation, pContextInfo->camera[x].rotations.worldRotation);
+						}
+						
+						else {
+							addToRotationTrackball(gTrackBallRotation, pContextInfo->camera[pContextInfo->currPort].rotations.worldRotation);
+						}
 					}
 					else {
-						addToRotationTrackball(gTrackBallRotation, pContextInfo->rotations[pContextInfo->currPort].worldRotation);
+						if (pContextInfo->moveAllPortsTogether)
+						{
+							for (int x = 0; x < pContextInfo->numPorts; x++)
+								addToRotationTrackball(gTrackBallRotation, pContextInfo->camera[x].rotations.cameraRotation);
+						}
+						
+						else {
+							addToRotationTrackball(gTrackBallRotation, pContextInfo->camera[pContextInfo->currPort].rotations.cameraRotation);
+						}
 					}
 				}
 				gTrackBallRotation [0] = gTrackBallRotation [1] = gTrackBallRotation [2] = gTrackBallRotation [3] = 0.0f;
@@ -306,13 +310,29 @@ void mousePressedButton(int button, int state, int x, int y)
 				gTrackball = GL_FALSE;
 				if (gTrackBallRotation[0] != 0.0)
 				{
-					if (pContextInfo->moveAllPortsTogether)
+					// Mouse moves world object
+					if (pContextInfo->camera[pContextInfo->currPort].thirdPerson == true)
 					{
-						for (int x = 0; x < pContextInfo->numPorts; x++)
-							addToRotationTrackball(gTrackBallRotation, pContextInfo->rotations[x].worldRotation);
+						if (pContextInfo->moveAllPortsTogether)
+						{
+							for (int x = 0; x < pContextInfo->numPorts; x++)
+								addToRotationTrackball(gTrackBallRotation, pContextInfo->camera[x].rotations.worldRotation);
+						}
+						
+						else {
+							addToRotationTrackball(gTrackBallRotation, pContextInfo->camera[pContextInfo->currPort].rotations.worldRotation);
+						}
 					}
 					else {
-						addToRotationTrackball(gTrackBallRotation, pContextInfo->rotations[pContextInfo->currPort].worldRotation);
+						if (pContextInfo->moveAllPortsTogether)
+						{
+							for (int x = 0; x < pContextInfo->numPorts; x++)
+								addToRotationTrackball(gTrackBallRotation, pContextInfo->camera[x].rotations.cameraRotation);
+						}
+						
+						else {
+							addToRotationTrackball(gTrackBallRotation, pContextInfo->camera[pContextInfo->currPort].rotations.cameraRotation);
+						}
 					}
 				}
 				gTrackBallRotation [0] = gTrackBallRotation [1] = gTrackBallRotation [2] = gTrackBallRotation [3] = 0.0f;
@@ -321,8 +341,8 @@ void mousePressedButton(int button, int state, int x, int y)
 			{ // if we are currently panning, end pan
 				gPan = GL_FALSE;
 			}
-			gDollyPanStartPoint[0] = (long)x;
-			gDollyPanStartPoint[1] = (long)y;
+			gDollyPanStartPoint[0] = (GLint)x;
+			gDollyPanStartPoint[1] = (GLint)y;
 			gDolly = GL_TRUE;
 			gTrackingContextInfo = pContextInfo;
 		}
@@ -347,9 +367,13 @@ void mousePressedButton(int button, int state, int x, int y)
 			gTrackingContextInfo = pContextInfo;
 		}
 	}
-	// stop trackball, pan, or dolly
-	else {
-		point3d p = GetOGLPos(pContextInfo, x, y);
+
+	
+	
+	if (state == GLUT_UP)
+	{
+		// stop trackball, pan, or dolly
+		point3d p(x, y, 0);// = GetOGLPos(pContextInfo, x, y);
 		tButtonType bType = kLeftButton;
 		switch (gCurrButton)
 		{
@@ -360,6 +384,13 @@ void mousePressedButton(int button, int state, int x, int y)
 		if (HandleMouseClick(pContextInfo, x, y, p, bType, kMouseUp))
 			return;
 
+		
+		// if we want to handle final movement when mouse is released
+//		if (!pContextInfo->camera[pContextInfo->currPort].thirdPerson)
+//		{
+//		}
+
+		
 		if (gDolly) { // end dolly
 			gDolly = GL_FALSE;
 		} 
@@ -370,15 +401,30 @@ void mousePressedButton(int button, int state, int x, int y)
 			gTrackball = GL_FALSE;
 			if (gTrackBallRotation[0] != 0.0)
 			{
-				if (pContextInfo->moveAllPortsTogether)
+				// Mouse moves world object
+				if (pContextInfo->camera[pContextInfo->currPort].thirdPerson == true)
 				{
-					for (int x = 0; x < pContextInfo->numPorts; x++)
-						addToRotationTrackball(gTrackBallRotation, pContextInfo->rotations[x].worldRotation);
+					if (pContextInfo->moveAllPortsTogether)
+					{
+						for (int x = 0; x < pContextInfo->numPorts; x++)
+							addToRotationTrackball(gTrackBallRotation, pContextInfo->camera[x].rotations.worldRotation);
+					}
+					
+					else {
+						addToRotationTrackball(gTrackBallRotation, pContextInfo->camera[pContextInfo->currPort].rotations.worldRotation);
+					}
 				}
 				else {
-					addToRotationTrackball(gTrackBallRotation, pContextInfo->rotations[pContextInfo->currPort].worldRotation);
+					if (pContextInfo->moveAllPortsTogether)
+					{
+						for (int x = 0; x < pContextInfo->numPorts; x++)
+							addToRotationTrackball(gTrackBallRotation, pContextInfo->camera[x].rotations.cameraRotation);
+					}
+					
+					else {
+						addToRotationTrackball(gTrackBallRotation, pContextInfo->camera[pContextInfo->currPort].rotations.cameraRotation);
+					}
 				}
-				//addToRotationTrackball (gTrackBallRotation, pContextInfo->rotations[pContextInfo->currPort].worldRotation);
 			}
 			gTrackBallRotation [0] = gTrackBallRotation [1] = gTrackBallRotation [2] = gTrackBallRotation [3] = 0.0f;
 		} 
@@ -404,34 +450,40 @@ static void mousePan (int x, int y, pRecContext pContextInfo)
 		pContextInfo->camera[pContextInfo->currPort].viewPos.x += panX;
 		pContextInfo->camera[pContextInfo->currPort].viewPos.y += panY;
 	}
-	gDollyPanStartPoint[0] = (long) x;
-	gDollyPanStartPoint[1] = (long) y;
+	gDollyPanStartPoint[0] = (GLint) x;
+	gDollyPanStartPoint[1] = (GLint) y;
 }
 
 
 // move camera in z axis
 static void mouseDolly (int x, int y, pRecContext pContextInfo)
 {
-	GLfloat dolly = (gDollyPanStartPoint[1] - y) * -pContextInfo->camera[pContextInfo->currPort].viewPos.z / 300.0f;
+	GLfloat dolly = (gDollyPanStartPoint[1] - y)/20.f;// * -pContextInfo->camera[pContextInfo->currPort].viewPos.z / 300.0f;
 
 	if (pContextInfo->moveAllPortsTogether)
 	{
 		for (int x = 0; x < pContextInfo->numPorts; x++)
 		{
-			pContextInfo->camera[x].viewPos.z += dolly;
+			pContextInfo->camera[x].aperture += dolly;
+			if (pContextInfo->camera[x].aperture < 1)
+				pContextInfo->camera[x].aperture = 1;
+//			pContextInfo->camera[x].viewPos.z += dolly;
 			if (pContextInfo->camera[x].viewPos.z == 0.0) // do not let z = 0.0
 				pContextInfo->camera[x].viewPos.z = 0.0001;
 			updateProjection(pContextInfo, x);  // update projection matrix
 		}
 	}
 	else {
-		pContextInfo->camera[pContextInfo->currPort].viewPos.z += dolly;
+		pContextInfo->camera[pContextInfo->currPort].aperture += dolly;
+		if (pContextInfo->camera[x].aperture < 1)
+			pContextInfo->camera[x].aperture = 1;
+//		pContextInfo->camera[pContextInfo->currPort].viewPos.z += dolly;
 		if (pContextInfo->camera[pContextInfo->currPort].viewPos.z == 0.0) // do not let z = 0.0
 			pContextInfo->camera[pContextInfo->currPort].viewPos.z = 0.0001;
 		updateProjection(pContextInfo, pContextInfo->currPort);  // update projection matrix
 	}
-	gDollyPanStartPoint[0] = (long) x;
-	gDollyPanStartPoint[1] = (long) y;
+	gDollyPanStartPoint[0] = (GLint) x;
+	gDollyPanStartPoint[1] = (GLint) y;
 }
 
 /**
@@ -465,8 +517,9 @@ void resizeWindow(int x, int y)
 		x++;
 	while (0 != y%4)
 		y++;
-	rect.size.width = x;
-	rect.size.height = y;
+	int scale = 2;//glutGet(GLUT_WINDOW_SCALE);
+	rect.size.width = scale*x;
+	rect.size.height = scale*y;
 	rect.origin.x = 0;
 	rect.origin.y = 0;
 	resizeGL(pContextInfo, rect);
@@ -518,31 +571,22 @@ void updateProjection(pRecContext pContextInfo, int viewPort)
 	}
 	for (int x = minVal; x <= maxVal; x++)
 	{
-		pContextInfo->frust[x].near = -pContextInfo->camera[x].viewPos.z - pContextInfo->shapeSize * 0.5;
-		pContextInfo->frust[x].far = -pContextInfo->camera[x].viewPos.z + pContextInfo->shapeSize * 0.5;
-		if (pContextInfo->frust[x].far < 4.0)
-		{
-			pContextInfo->frust[x].far = sqrt(pContextInfo->camera[x].viewDir.x*pContextInfo->camera[x].viewDir.x+
-																				pContextInfo->camera[x].viewDir.y*pContextInfo->camera[x].viewDir.y+
-																				pContextInfo->camera[x].viewDir.z+pContextInfo->camera[x].viewDir.z);
-			pContextInfo->frust[x].far *= 2;
-		}
-		if (pContextInfo->frust[x].near < 1.0)
-			pContextInfo->frust[x].near = 0.125;
+		pContextInfo->camera[x].frust.near = 0.01;
+		pContextInfo->camera[x].frust.far = 20.0;
 		
 		radians = 0.0174532925 * pContextInfo->camera[x].aperture / 2; // half aperture degrees to radians 
-		wd2 = pContextInfo->frust[x].near * tan(radians);
+		wd2 = pContextInfo->camera[x].frust.near * tan(radians);
 		ratio = pContextInfo->camera[x].viewWidth / (float) pContextInfo->camera[x].viewHeight;
 		if (ratio >= 1.0) {
-			pContextInfo->frust[x].left  = -ratio * wd2;
-			pContextInfo->frust[x].right = ratio * wd2;
-			pContextInfo->frust[x].top = wd2;
-			pContextInfo->frust[x].bottom = -wd2;	
+			pContextInfo->camera[x].frust.left  = -ratio * wd2;
+			pContextInfo->camera[x].frust.right = ratio * wd2;
+			pContextInfo->camera[x].frust.top = wd2;
+			pContextInfo->camera[x].frust.bottom = -wd2;
 		} else {
-			pContextInfo->frust[x].left  = -wd2;
-			pContextInfo->frust[x].right = wd2;
-			pContextInfo->frust[x].top = wd2 / ratio;
-			pContextInfo->frust[x].bottom = -wd2 / ratio;
+			pContextInfo->camera[x].frust.left  = -wd2;
+			pContextInfo->camera[x].frust.right = wd2;
+			pContextInfo->camera[x].frust.top = wd2 / ratio;
+			pContextInfo->camera[x].frust.bottom = -wd2 / ratio;
 		}
 	}
 }
@@ -556,29 +600,77 @@ void updateModelView(pRecContext pContextInfo, int currPort)
 	// move view
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	gluLookAt (pContextInfo->camera[currPort].viewPos.x, pContextInfo->camera[currPort].viewPos.y, pContextInfo->camera[currPort].viewPos.z,
-			   pContextInfo->camera[currPort].viewPos.x + pContextInfo->camera[currPort].viewDir.x,
-			   pContextInfo->camera[currPort].viewPos.y + pContextInfo->camera[currPort].viewDir.y,
-			   pContextInfo->camera[currPort].viewPos.z + pContextInfo->camera[currPort].viewDir.z,
-			   pContextInfo->camera[currPort].viewUp.x, pContextInfo->camera[currPort].viewUp.y ,pContextInfo->camera[currPort].viewUp.z);
 	
-	if ((gTrackingContextInfo == pContextInfo) && gTrackBallRotation[0] != 0.0f) // if we have trackball rotation to map (this IS the test I want as it can be explicitly 0.0f)
+	// mouse transforms object
+	if (pContextInfo->camera[currPort].thirdPerson)
 	{
-		if (pContextInfo->currPort == currPort || pContextInfo->moveAllPortsTogether)
-			glRotatef (gTrackBallRotation[0], gTrackBallRotation[1], gTrackBallRotation[2], gTrackBallRotation[3]);
+		gluLookAt (pContextInfo->camera[currPort].viewPos.x,
+				   pContextInfo->camera[currPort].viewPos.y,
+				   pContextInfo->camera[currPort].viewPos.z,
+				   pContextInfo->camera[currPort].viewPos.x + pContextInfo->camera[currPort].viewDir.x,
+				   pContextInfo->camera[currPort].viewPos.y + pContextInfo->camera[currPort].viewDir.y,
+				   pContextInfo->camera[currPort].viewPos.z + pContextInfo->camera[currPort].viewDir.z,
+				   pContextInfo->camera[currPort].viewUp.x, pContextInfo->camera[currPort].viewUp.y ,pContextInfo->camera[currPort].viewUp.z);
+
+		if ((gTrackingContextInfo == pContextInfo) && gTrackBallRotation[0] != 0.0f) // if we have trackball rotation to map (this IS the test I want as it can be explicitly 0.0f)
+		{
+			if (pContextInfo->currPort == currPort || pContextInfo->moveAllPortsTogether)
+				glRotatef (gTrackBallRotation[0], gTrackBallRotation[1], gTrackBallRotation[2], gTrackBallRotation[3]);
+		}
+		else {
+		}
+		
+		// accumlated world rotation via trackball
+		glRotatef (pContextInfo->camera[currPort].rotations.worldRotation[0],
+				   pContextInfo->camera[currPort].rotations.worldRotation[1],
+				   pContextInfo->camera[currPort].rotations.worldRotation[2],
+				   pContextInfo->camera[currPort].rotations.worldRotation[3]);
 	}
+	// if mouse moves whole world:
 	else {
+		glRotatef (pContextInfo->camera[currPort].rotations.cameraRotation[0],
+				   pContextInfo->camera[currPort].rotations.cameraRotation[1],
+				   pContextInfo->camera[currPort].rotations.cameraRotation[2],
+				   pContextInfo->camera[currPort].rotations.cameraRotation[3]);
+
+		if ((gTrackingContextInfo == pContextInfo) && gTrackBallRotation[0] != 0.0f) // if we have trackball rotation to map (this IS the test I want as it can be explicitly 0.0f)
+		{
+			if (pContextInfo->currPort == currPort || pContextInfo->moveAllPortsTogether)
+				glRotatef (gTrackBallRotation[0], gTrackBallRotation[1], gTrackBallRotation[2], gTrackBallRotation[3]);
+		}
+
+		//glRotatef(fRot[0], fRot[1], fRot[2], fRot[3]);
+//		glTranslated(-viewPos.x, -viewPos.y, -viewPos.z);
+
+		glTranslatef(pContextInfo->camera[currPort].viewPos.x,
+					 pContextInfo->camera[currPort].viewPos.y,
+					 pContextInfo->camera[currPort].viewPos.z);
+
+		if ((gTrackingContextInfo == pContextInfo) && gTrackBallRotation[0] != 0.0f) // if we have trackball rotation to map (this IS the test I want as it can be explicitly 0.0f)
+		{
+//			if (pContextInfo->currPort == currPort || pContextInfo->moveAllPortsTogether)
+//				glRotatef (gTrackBallRotation[0], gTrackBallRotation[1], gTrackBallRotation[2], gTrackBallRotation[3]);
+		}
+		else {
+		}
+		
+		// accumlated world rotation via trackball
+		//	glRotatef (pContextInfo->rotations[currPort].worldRotation[0],
+		//			   pContextInfo->rotations[currPort].worldRotation[1],
+		//			   pContextInfo->rotations[currPort].worldRotation[2],
+		//			   pContextInfo->rotations[currPort].worldRotation[3]);
+		
+		
+//		glRotatef (pContextInfo->camera[currPort].rotations.worldRotation[0],
+//				   pContextInfo->camera[currPort].rotations.worldRotation[1],
+//				   pContextInfo->camera[currPort].rotations.worldRotation[2],
+//				   pContextInfo->camera[currPort].rotations.worldRotation[3]);
+//		
+//		glTranslatef(pContextInfo->camera[currPort].viewPos.x,
+//					 pContextInfo->camera[currPort].viewPos.y,
+//					 pContextInfo->camera[currPort].viewPos.z);
 	}
-	// accumlated world rotation via trackball
-	glRotatef (pContextInfo->rotations[currPort].worldRotation[0],
-			   pContextInfo->rotations[currPort].worldRotation[1],
-			   pContextInfo->rotations[currPort].worldRotation[2],
-			   pContextInfo->rotations[currPort].worldRotation[3]);
-	// object itself rotating applied after camera rotation
-	glRotatef (pContextInfo->rotations[currPort].objectRotation[0],
-						 pContextInfo->rotations[currPort].objectRotation[1],
-						 pContextInfo->rotations[currPort].objectRotation[2],
-						 pContextInfo->rotations[currPort].objectRotation[3]);
+	
 }
 
 
@@ -596,15 +688,15 @@ void drawCStringGL (char * cstrOut, GLuint fontList)
 
 TextBox *myTextBox = 0;
 
-void appendTextToBuffer(char *tempStr)
+void appendTextToBuffer(const char *tempStr)
 {
-	int ind = strlen(pContextInfo->message);
+	int ind = int(strlen(pContextInfo->message));
 	pContextInfo->message[ind] = ' ';
 	sprintf(&pContextInfo->message[ind+1], "%s", tempStr);
 
 	delete myTextBox;
 	point3d a(-.95, .95, -.95), b(.95, -.95, .95);
-	recColor rc(1, 1, 1);
+	rgbColor rc(1, 1, 1);
 	myTextBox = new TextBox(pContextInfo->message, 120, a, b, 1000, true);
 	myTextBox->setColor(rc);
 }
@@ -614,11 +706,280 @@ void submitTextToBuffer(const char *val)
 	strncpy(pContextInfo->message, val, 255);
 	delete myTextBox;
 	point3d a(-.95, .95, -.95), b(.95, -.95, .95);
-	recColor rc(1, 1, 1);
+	rgbColor rc(1, 1, 1);
 	myTextBox = new TextBox(pContextInfo->message, 120, a, b, 1000, true);
 	myTextBox->setColor(rc);
 }
 
+void DrawGraphics(Graphics::Display &display, int port)
+{
+//	float epsilon = 0.0002;
+//	float de = 0.00008;
+	//for (int x = 0; x < display.backgroundDrawCommands.size(); x++)
+	for (auto &i : display.text)
+	{
+		if (i.viewport != port)
+			continue;
+		glColor3f(i.c.r, i.c.g, i.c.b);
+		if (i.align == Graphics::textAlignCenter)
+			DrawTextCentered(i.loc.x, i.loc.y,i.loc.z, i.size*2, i.s.c_str());
+		else
+			DrawText(i.loc.x, i.loc.y,i.loc.z, i.size*2, i.s.c_str());
+		//		std::string s;
+		//		point loc;
+		//		rgbColor c;
+		//		float size;
+		
+	}
+
+	for (auto &i : display.lineSegments)
+	{
+		if (i.viewport != port)
+			continue;
+		glColor3f(i.c.r, i.c.g, i.c.b);
+		
+		glBegin(GL_QUADS);
+		for (int t = 0; t < i.points.size()-1; t++)
+		{
+			GLfloat xOff = i.points[t].x-i.points[t+1].x;
+			GLfloat yOff = i.points[t].y-i.points[t+1].y;
+			GLfloat ratio = i.size/sqrt(xOff*xOff+yOff*yOff);
+			glVertex3f(i.points[t].x-ratio*yOff, i.points[t].y-ratio*xOff, i.points[t].z);
+			glVertex3f(i.points[t].x+ratio*yOff, i.points[t].y+ratio*xOff, i.points[t].z);
+			glVertex3f(i.points[t+1].x+ratio*yOff, i.points[t+1].y+ratio*xOff, i.points[t].z);
+			glVertex3f(i.points[t+1].x-ratio*yOff, i.points[t+1].y-ratio*xOff, i.points[t].z);
+		}
+		glEnd();
+		
+//		glLineWidth(i.size);
+//		glBegin(GL_LINE_STRIP);
+//		for (auto &p : i.points)
+//		{
+//			glVertex3f(p.x, p.y, p.z);
+//		}
+//		glEnd();
+	}
+	
+	for (int x = display.drawCommands.size()-1; x >= 0; x--)
+		//for (auto &i: drawCommands)
+	{
+		auto &i = display.drawCommands[x];
+		if (i.viewport != port)
+			continue;
+		switch (i.what)
+		{
+			case Graphics::Display::kFillRectangle:
+			{
+				glColor3f(i.shape.c.r, i.shape.c.g, i.shape.c.b);
+				glBegin(GL_QUADS);
+				glVertex2f(i.shape.r.left, i.shape.r.bottom);
+				glVertex2f(i.shape.r.left, i.shape.r.top);
+				glVertex2f(i.shape.r.right, i.shape.r.top);
+				glVertex2f(i.shape.r.right, i.shape.r.bottom);
+				glEnd();
+				//				epsilon -= de;
+				break;
+			}
+			case Graphics::Display::kFrameRectangle:
+			{
+				glColor3f(i.shape.c.r, i.shape.c.g, i.shape.c.b);
+				glLineWidth(i.shape.width);
+				//				glBegin(GL_LINE_LOOP);
+				//				glVertex2f(i.shape.r.left, i.shape.r.bottom);
+				//				glVertex2f(i.shape.r.left, i.shape.r.top);
+				//				glVertex2f(i.shape.r.right, i.shape.r.top);
+				//				glVertex2f(i.shape.r.right, i.shape.r.bottom);
+				//				glEnd();
+				
+				glBegin(GL_TRIANGLE_STRIP);
+				GLfloat rad = i.shape.width/2.0;
+				glVertex2f(i.shape.r.left-rad, i.shape.r.bottom+rad);
+				glVertex2f(i.shape.r.left+rad, i.shape.r.bottom-rad);
+				
+				glVertex2f(i.shape.r.left-rad, i.shape.r.top-rad);
+				glVertex2f(i.shape.r.left+rad, i.shape.r.top+rad);
+				
+				glVertex2f(i.shape.r.right+rad, i.shape.r.top-rad);
+				glVertex2f(i.shape.r.right-rad, i.shape.r.top+rad);
+				
+				glVertex2f(i.shape.r.right+rad, i.shape.r.bottom+rad);
+				glVertex2f(i.shape.r.right-rad, i.shape.r.bottom-rad);
+				
+				glVertex2f(i.shape.r.left-rad, i.shape.r.bottom+rad);
+				glVertex2f(i.shape.r.left+rad, i.shape.r.bottom-rad);
+				
+				glEnd();
+				
+				break;
+			}
+			case Graphics::Display::kFillOval:
+			{
+				glColor3f(i.shape.c.r, i.shape.c.g, i.shape.c.b);
+				//DrawSphere((i.shape.r.right+i.shape.r.left)/2, (i.shape.r.top+i.shape.r.bottom)/2, epsilon, fabs(i.shape.r.top-i.shape.r.bottom)/2.0);
+				DrawCircle((i.shape.r.right+i.shape.r.left)/2, (i.shape.r.top+i.shape.r.bottom)/2, fabs(i.shape.r.top-i.shape.r.bottom)/2.0, 64);
+				break;
+			}
+			case Graphics::Display::kFrameOval:
+			{
+				glColor3f(i.shape.c.r, i.shape.c.g, i.shape.c.b);
+				FrameCircle((i.shape.r.right+i.shape.r.left)/2, (i.shape.r.top+i.shape.r.bottom)/2,
+							fabs(i.shape.r.top-i.shape.r.bottom)/2.0,
+							i.shape.width,
+							64);
+				break;
+			}
+			case Graphics::Display::kFillNGon:
+			{
+				glColor3f(i.polygon.c.r, i.polygon.c.g, i.polygon.c.b);
+				DrawCircle(i.polygon.center.x, i.polygon.center.y, i.polygon.radius, i.polygon.segments, i.polygon.rotate);
+				break;
+			}
+			case Graphics::Display::kFrameNGon:
+			{
+				glColor3f(i.polygon.c.r, i.polygon.c.g, i.polygon.c.b);
+				//FrameCircle(i.polygon.p.x, i.polygon.p.y, i.polygon.radius, i.polygon.segments, , i.polygon.rotate);
+				break;
+			}
+			case Graphics::Display::kLine:
+			{
+				glLineWidth(i.line.width);
+				glBegin(GL_LINES);
+				glColor3f(i.line.c.r, i.line.c.g, i.line.c.b);
+				glVertex2f(i.line.start.x, i.line.start.y);
+				glVertex2f(i.line.end.x, i.line.end.y);
+				glEnd();
+				break;
+			}
+		}
+	}
+	for (auto &i : display.backgroundLineSegments)
+	{
+		if (i.viewport != port)
+			continue;
+		glColor3f(i.c.r, i.c.g, i.c.b);
+		
+		glBegin(GL_QUADS);
+		for (int t = 0; t < i.points.size()-1; t++)
+		{
+			GLfloat xOff = i.points[t].x-i.points[t+1].x;
+			GLfloat yOff = i.points[t].y-i.points[t+1].y;
+			GLfloat ratio = i.size/sqrt(xOff*xOff+yOff*yOff);
+			glVertex3f(i.points[t].x-ratio*yOff, i.points[t].y-ratio*xOff, i.points[t].z);
+			glVertex3f(i.points[t].x+ratio*yOff, i.points[t].y+ratio*xOff, i.points[t].z);
+			glVertex3f(i.points[t+1].x+ratio*yOff, i.points[t+1].y+ratio*xOff, i.points[t].z);
+			glVertex3f(i.points[t+1].x-ratio*yOff, i.points[t+1].y-ratio*xOff, i.points[t].z);
+		}
+		glEnd();
+
+//		glLineWidth(i.size);
+//		glBegin(GL_LINE_STRIP);
+//		for (auto &p : i.points)
+//		{
+//			glVertex3f(p.x, p.y, p.z);
+//		}
+//		glEnd();
+	}
+		for (int x = display.backgroundDrawCommands.size()-1; x >= 0; x--)
+			//for (auto &i: display.backgroundDrawCommands)
+		{
+			auto &i = display.backgroundDrawCommands[x];
+			if (i.viewport != port)
+				continue;
+			switch (i.what)
+			{
+				case Graphics::Display::kFillRectangle:
+				{
+					glColor3f(i.shape.c.r, i.shape.c.g, i.shape.c.b);
+
+					glBegin(GL_QUADS);
+					glVertex2f(i.shape.r.left, i.shape.r.bottom);
+					glVertex2f(i.shape.r.left, i.shape.r.top);
+					glVertex2f(i.shape.r.right, i.shape.r.top);
+					glVertex2f(i.shape.r.right, i.shape.r.bottom);
+					glEnd();
+	//				epsilon -= de;
+					break;
+				}
+				case Graphics::Display::kFrameRectangle:
+				{
+					glColor3f(i.shape.c.r, i.shape.c.g, i.shape.c.b);
+					glLineWidth(i.shape.width);
+	//				glBegin(GL_LINE_LOOP);
+	//				glVertex2f(i.shape.r.left, i.shape.r.bottom);
+	//				glVertex2f(i.shape.r.left, i.shape.r.top);
+	//				glVertex2f(i.shape.r.right, i.shape.r.top);
+	//				glVertex2f(i.shape.r.right, i.shape.r.bottom);
+	//				glEnd();
+					
+					glBegin(GL_TRIANGLE_STRIP);
+					GLfloat rad = i.shape.width/2.0;
+					glVertex2f(i.shape.r.left-rad, i.shape.r.bottom+rad);
+					glVertex2f(i.shape.r.left+rad, i.shape.r.bottom-rad);
+					
+					glVertex2f(i.shape.r.left-rad, i.shape.r.top-rad);
+					glVertex2f(i.shape.r.left+rad, i.shape.r.top+rad);
+					
+					glVertex2f(i.shape.r.right+rad, i.shape.r.top-rad);
+					glVertex2f(i.shape.r.right-rad, i.shape.r.top+rad);
+					
+					glVertex2f(i.shape.r.right+rad, i.shape.r.bottom+rad);
+					glVertex2f(i.shape.r.right-rad, i.shape.r.bottom-rad);
+					
+					glVertex2f(i.shape.r.left-rad, i.shape.r.bottom+rad);
+					glVertex2f(i.shape.r.left+rad, i.shape.r.bottom-rad);
+					
+					glEnd();
+
+
+					break;
+				}
+				case Graphics::Display::kFillOval:
+				{
+					glColor3f(i.shape.c.r, i.shape.c.g, i.shape.c.b);
+					DrawCircle((i.shape.r.right+i.shape.r.left)/2, (i.shape.r.top+i.shape.r.bottom)/2, fabs(i.shape.r.top-i.shape.r.bottom)/2.0, 64);
+					break;
+				}
+				case Graphics::Display::kFillNGon:
+				{
+					glColor3f(i.polygon.c.r, i.polygon.c.g, i.polygon.c.b);
+					DrawCircle(i.polygon.center.x, i.polygon.center.y, i.polygon.radius, i.polygon.segments, i.polygon.rotate);
+					break;
+				}
+				case Graphics::Display::kFrameNGon:
+				{
+					glColor3f(i.polygon.c.r, i.polygon.c.g, i.polygon.c.b);
+					//FrameCircle(i.polygon.p.x, i.polygon.p.y, i.polygon.radius, i.polygon.segments, , i.polygon.rotate);
+					break;
+				}
+				case Graphics::Display::kFrameOval:
+				{
+					
+					break;
+				}
+				case Graphics::Display::kLine:
+				{
+					glLineWidth(i.line.width);
+					glBegin(GL_LINES);
+					glColor3f(i.line.c.r, i.line.c.g, i.line.c.b);
+					glVertex2f(i.line.start.x, i.line.start.y);
+					glVertex2f(i.line.end.x, i.line.end.y);
+					glEnd();
+	//				epsilon -= de;
+					break;
+				}
+			}
+		}
+
+//	std::vector<data> backgroundDrawCommands;
+//	std::vector<textInfo> backgroundText;
+//	std::vector<segments> backgroundLineSegments;
+//
+//	std::vector<data> drawCommands;
+//	std::vector<textInfo> text;
+//	std::vector<segments> lineSegments;
+	// These are static items that don't usually change from frame to frame
+
+}
 
 /**
  * Main OpenGL drawing function.
@@ -627,7 +988,7 @@ void drawGL (pRecContext pContextInfo)
 {
 	if (!pContextInfo)
 	 return;
-
+	pContextInfo->display.StartFrame();
 	// clear our drawable
 	glClear(GL_COLOR_BUFFER_BIT);
 	
@@ -636,20 +997,20 @@ void drawGL (pRecContext pContextInfo)
 		glClear(GL_DEPTH_BUFFER_BIT);
 		
 		setViewport(pContextInfo, x);
-		if (pContextInfo->drawing)
+		//if (pContextInfo->drawing)
 		{
 			// set projection
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
 			
-			glFrustum(pContextInfo->frust[x].left, pContextInfo->frust[x].right,
-								pContextInfo->frust[x].bottom, pContextInfo->frust[x].top,
-								pContextInfo->frust[x].near, pContextInfo->frust[x].far);
+			glFrustum(pContextInfo->camera[x].frust.left, pContextInfo->camera[x].frust.right,
+								pContextInfo->camera[x].frust.bottom, pContextInfo->camera[x].frust.top,
+								pContextInfo->camera[x].frust.near, pContextInfo->camera[x].frust.far);
 			// projection matrix already set	
 			updateModelView(pContextInfo, x);
 			
 			HandleFrame(pContextInfo, x);
-			
+			DrawGraphics(pContextInfo->display, x);
 			if (pContextInfo->currPort == x)
 			{
 				glMatrixMode(GL_PROJECTION); glLoadIdentity();
@@ -666,8 +1027,13 @@ void drawGL (pRecContext pContextInfo)
 			}
 		}
 	}
+	if (myTextBox)
+	{
+		myTextBox->stepTime(0.1);
+		myTextBox->draw();
+	}
+	pContextInfo->display.EndFrame();
 	glutSwapBuffers();
-
 }
 
 
@@ -725,25 +1091,23 @@ void buildGL(void)
 	// build context
 	CGRect viewRect = {{0.0f, 0.0f}, {0.0f, 0.0f}};
 	
-	switch (pContextInfo->modeFSAA) {
-		case kFSAAOff:
-#ifndef WIN32
-			//glDisable (GL_MULTISAMPLE_ARB);
-#endif
-			break;
-		case kFSAAFast:
-		        #ifndef WIN32
-			//glEnable (GL_MULTISAMPLE_ARB);
-			//glHint (GL_MULTISAMPLE_FILTER_HINT_NV, GL_FASTEST);
-                        #endif
-			break;
-		case kFSAANice:
-		        #ifndef WIN32
-			//glEnable (GL_MULTISAMPLE_ARB);
-			//glHint (GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
-			#endif
-			break;
-	}
+//	switch (pContextInfo->modeFSAA) {
+//		case kFSAAOff:
+//#ifndef WIN32
+//			//glDisable (GL_MULTISAMPLE_ARB);
+//#endif
+//			break;
+//		case kFSAAFast:
+////			glEnable (GL_MULTISAMPLE_ARB);
+////			glHint (GL_MULTISAMPLE_FILTER_HINT_NV, GL_FASTEST);
+//			break;
+//		case kFSAANice:
+//		        #ifndef WIN32
+//			//glEnable (GL_MULTISAMPLE_ARB);
+//			//glHint (GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
+//			#endif
+//			break;
+//	}
 
 	// init GL stuff here
 	glEnable(GL_DEPTH_TEST);
@@ -754,26 +1118,15 @@ void buildGL(void)
 	glPolygonOffset (1.0, 1.0);
 		
 	glClearColor(0.0,0.0,0.0,0.0);
-	pContextInfo->shapeSize = 3.0f; // max radius of of objects
 
-	/*GetFNum ("\pGeneva", &fNum); // build font
-	pContextInfo->boldFontList = buildFontGL (pContextInfo->aglContext, fNum, bold, 9);
-	pContextInfo->regFontList = buildFontGL (pContextInfo->aglContext, fNum, normal, 9);
-	*/
-	
-	// setup viewport and prespective
-	/*GetWindowPortBounds (window, &rectPort);
-	viewRect.size.width = (float) (rectPort.right - rectPort.left);
-	viewRect.size.height = (float) (rectPort.bottom - rectPort.top);
-	*/
-	
-	viewRect.size.width = glutGet(GLUT_WINDOW_WIDTH);
-	viewRect.size.height = glutGet(GLUT_WINDOW_HEIGHT);
+	int scale = 2;//glutGet(GLUT_WINDOW_SCALE);
+	viewRect.size.width = scale*glutGet(GLUT_WINDOW_WIDTH);
+	viewRect.size.height = scale*glutGet(GLUT_WINDOW_HEIGHT);
 	
 	// setup viewport and prespective
 	resizeGL(pContextInfo, viewRect); // forces projection matrix update
 		
-	SetLighting (4);
-// 	BuildGeometry (pContextInfo->surface, pContextInfo->colorScheme, pContextInfo->subdivisions, pContextInfo->xyRatio,
-// 				   &(pContextInfo->polyList), &(pContextInfo->lineList), &(pContextInfo->pointList));
+	SetLighting();
 }
+
+

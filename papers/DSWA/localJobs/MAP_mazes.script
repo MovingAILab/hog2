@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./MAP_mazesJob0.script
+./MAP_mazesJob1.script
+./MAP_mazesJob2.script
+./MAP_mazesJob3.script
+./MAP_mazesJob4.script
+./MAP_mazesJob5.script
+./MAP_mazesJob6.script
+./MAP_mazesJob7.script
+./MAP_mazesJob8.script
+./MAP_mazesJob9.script

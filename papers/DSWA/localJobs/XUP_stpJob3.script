@@ -1,0 +1,16 @@
+#!/bin/tcsh
+
+foreach problem (`seq 60 79`)
+
+set alg = `echo 4`
+set puzzleW = `echo 0`
+
+foreach weight (1.50 2.00 3.00 4.00 5.00 6.00 7.00 8.00 9.00 10.00)
+
+echo "ALG " $alg " weight " $weight " problem " $problem
+
+./../bin/release/DSDWA -stpBaseLines $problem $alg $weight $puzzleW >> XUP_stp_3-results.txt
+
+end
+#end
+end

@@ -56,6 +56,9 @@ public:
 	void resetWeightVariance();
 	
 	int getWeightFrequency(unsigned int weightNum, unsigned int whichOutput=0);
+
+	double GetInput(std::vector<double> &input, const std::vector<double> &target)
+	{ assert(!"Unimplemented"); }
 private:
 	void allocateMemory();
 	void freeMemory();

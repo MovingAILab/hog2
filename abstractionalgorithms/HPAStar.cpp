@@ -48,8 +48,8 @@ path* hpaStar::GetPath(GraphAbstraction *aMap, node* from, node* to, reservation
 	// in to this function
 	assert(m==aMap);
 
-	if((from==to) || (from ==0) || (to==0)){
-		if(verbose) std::cout<<"Returning an empty path\n";
+	if ((from==to) || (from ==0) || (to==0)){
+		if (verbose) std::cout<<"Returning an empty path\n";
 		return 0;
 	}
 
@@ -61,38 +61,38 @@ path* hpaStar::GetPath(GraphAbstraction *aMap, node* from, node* to, reservation
 	//this takes care of the case where both nodes are in some enclosed
 	//area inside a cluster
 
-	if(m->getClusterIdFromNode(from)==m->getClusterIdFromNode(to))
+	if (m->getClusterIdFromNode(from)==m->getClusterIdFromNode(to))
 	{
 		aStarOld astar;
 		path* p = astar.GetPath(m,from,to);
 		nodesExpanded = astar.GetNodesExpanded();
 		nodesTouched = astar.GetNodesTouched();
-		if(verbose)std::cout<<"Nodes are inside the same cluster\n";
+		if (verbose)std::cout<<"Nodes are inside the same cluster\n";
 		return p;
 	}
 
 	setUpSearch(from, to);
 
 	// Check if there's a path at all
-	if(!m->Pathable(from,to)){
-		if(verbose) std::cout<<"Not Pathable\n";
+	if (!m->Pathable(from,to)){
+		if (verbose) std::cout<<"Not Pathable\n";
 		cleanUpSearch();
 		return 0;
  	}
 
  	else
-		if(verbose) std::cout<<"Pathable\n";
+		if (verbose) std::cout<<"Pathable\n";
 
 	//	t.StartTimer();
 	path* abPath = findAbstractPath(fromnum,tonum);
 	//std::cout<<"abstract path "<<t.EndTimer()<<std::endl;
 
-	if(!abPath){
+	if (!abPath){
 		cleanUpSearch();
 		return 0;
 	}
 	path* mapPath = 0; 
-	if(partialLimit > 0){
+	if (partialLimit > 0){
 		path *trav = abPath;
 		path *thisPart = new path(trav->n);
 		for (int x = 0; x < partialLimit-1; x++){
@@ -147,7 +147,7 @@ path* hpaStar::GetPath(GraphAbstraction *aMap, node* from, node* to, reservation
  */ 
 void hpaStar::setUpSearch(node* from, node* to)
 {
-	if(verbose) std::cout<<"HPA*: setting up search\n";
+	if (verbose) std::cout<<"HPA*: setting up search\n";
 	// set nodes expanded & nodes touched to 0
 	nodesExpanded = 0; 
 	nodesTouched = 0;
@@ -171,7 +171,7 @@ void hpaStar::setUpSearch(node* from, node* to)
  */
 path* hpaStar::findAbstractPath(node* from, node* to)
 {
-	if(verbose)	std::cout<<"HPA*: finding the abstract path\n";
+	if (verbose)	std::cout<<"HPA*: finding the abstract path\n";
 	aStarOld astar;
 	assert(from == fromnum);
 	assert(to == tonum);
@@ -179,9 +179,9 @@ path* hpaStar::findAbstractPath(node* from, node* to)
 	nodesExpanded = astar.GetNodesExpanded();
 	nodesTouched = astar.GetNodesTouched();
 
-	if(verbose){
+	if (verbose){
 		std::cout<<"Abstract path: ";
-		if(p)
+		if (p)
 			p->Print();
 		else
 			std::cout<<"Null";
@@ -246,7 +246,7 @@ path* hpaStar::findMapPath(path* abPath, node* /*from*/,node* /*to*/)
 		lowlevel = m->getCachedPath(e);
 		
 		
-		if(lowlevel)
+		if (lowlevel)
 		{
 
 			if ((lowlevel->n == m->getLowLevelNode(n2)) &&
@@ -256,7 +256,7 @@ path* hpaStar::findMapPath(path* abPath, node* /*from*/,node* /*to*/)
 			}
 			
 			path *tailend = returnme->tail();
-			if(tailend->n == lowlevel->n)
+			if (tailend->n == lowlevel->n)
 			{
 				tailend->next = lowlevel->next;
 				lowlevel->next = 0;
@@ -280,7 +280,7 @@ path* hpaStar::findMapPath(path* abPath, node* /*from*/,node* /*to*/)
 void hpaStar::cleanUpSearch()
 {
 	// remove nodes from map
-	if((fromnum!=0) && (tonum != 0)){
+	if ((fromnum!=0) && (tonum != 0)){
 		//		Timer t;
 		//t.StartTimer();
 		m->removeNodes(fromnum,tonum);
@@ -298,7 +298,7 @@ void hpaStar::cleanUpSearch()
  */
 path* hpaStar::smoothPath(path* p)
 {
-	if(verbose) std::cout<<"Smoothing the path\n";
+	if (verbose) std::cout<<"Smoothing the path\n";
 
 	//	findMinMax(p);
 	int clusterSize = m->getClusterSize();
@@ -323,7 +323,7 @@ path* hpaStar::smoothPath(path* p)
 		while(lookup[n]==0 && n<lookup.size()-1)
 			n++;
 
-		if(n>=lookup.size()-1){ 
+		if (n>=lookup.size()-1){ 
 			break;
 		}
 
@@ -334,7 +334,7 @@ path* hpaStar::smoothPath(path* p)
 		if (last!=n)
 		{
 			std::cout<<"in here\n";
- 			for(unsigned int j=n; j<last && j<lookup.size(); j++)
+ 			for (unsigned int j=n; j<last && j<lookup.size(); j++)
 			{
  				lookup[j]=0;
 			}
@@ -350,7 +350,7 @@ path* hpaStar::smoothPath(path* p)
 		maxy = currY + clusterSize;
 
 		int dir;
-		for(dir = NORTH; dir <= NW; dir++)
+		for (dir = NORTH; dir <= NW; dir++)
 		{
 			// get a shortcut if it exists
 			path* pathToNode = nextPathNode(lookup[n],dir);
@@ -389,10 +389,10 @@ path* hpaStar::smoothPath(path* p)
 						index++;
 					}
 
-					if(smType==END){
+					if (smType==END){
 						n = end;
 					}
-					else if(smType==TWO_BACK)
+					else if (smType==TWO_BACK)
 						n = backTwoNodes(end,lookup);
 					else		
 						n++; 
@@ -402,12 +402,12 @@ path* hpaStar::smoothPath(path* p)
 					break;
 
 				}
-				else if(dir==NW){
+				else if (dir==NW){
 					n++;
 				}
 				delete pathToNode;
 			} 
-			else if(dir==NW){
+			else if (dir==NW){
 				n++;
 			}
 		} //end for every direction
@@ -416,9 +416,9 @@ path* hpaStar::smoothPath(path* p)
 	}
 
 	//Create smoothed path from lookup table
-	for(unsigned int j=0; j<lookup.size(); j++){
-		if(lookup[j]!=0){
-			if(!smooth)
+	for (unsigned int j=0; j<lookup.size(); j++){
+		if (lookup[j]!=0){
+			if (!smooth)
 				smooth = new path(lookup[j],0);
 			else
 				smooth->tail()->next = new path(lookup[j],0);
@@ -452,14 +452,14 @@ int hpaStar::backTwoNodes(int i, std::vector<node*> lookupVec)
  */
 bool hpaStar::nextInLookup(int last, int curr, std::vector<node*> lookupVec)
 {
-	if(last<curr) 
+	if (last<curr) 
 		return false;
 	
-	for(int i=curr+1; i<=last; i++)	//
+	for (int i=curr+1; i<=last; i++)	//
 	{
-		if(i==last)
+		if (i==last)
 			return true;
-		if(lookupVec[i]!=NULL)
+		if (lookupVec[i]!=NULL)
 			return false;
 	}
 	return true;	
@@ -479,20 +479,20 @@ path* hpaStar::nextPathNode(node* n, int dir)
 	
 	node* next = getNextNode(px,py,dir);
 
-	if(next){
+	if (next){
 		nodesTouched++;
 
 		int nextKey = next->GetLabelL(kTemporaryLabel);
 		edge* e = g->FindEdge(n->GetNum(), next->GetNum());
 		
-		if(e && (nextKey >= 0) && (nextKey < static_cast<int>(lookup.size())) && (lookup[nextKey]==next)){
+		if (e && (nextKey >= 0) && (nextKey < static_cast<int>(lookup.size())) && (lookup[nextKey]==next)){
 			//we're done - we found the path
 			return new path(n,new path(next));
 		}
 		else{	// look further for a path node		
-			if(e){
+			if (e){
 				path * p = nextPathNode(next,dir);				 
-				if(p){
+				if (p){
 					return new path(n,p);
 				}
 				else // haven't found a path node
@@ -513,7 +513,7 @@ path* hpaStar::nextPathNode(node* n, int dir)
  */
 node* hpaStar::getNextNode(int x, int y, int dir)
 {
- 	if((x < minx) || (x > maxx) || (y < miny) || (y>maxy))
+ 	if ((x < minx) || (x > maxx) || (y < miny) || (y>maxy))
  		return 0;
 
 	switch(dir)
@@ -561,11 +561,11 @@ void hpaStar::findMinMax(path* p)
 		int x = pcopy->n->GetLabelL(kFirstData);
 		int y = pcopy->n->GetLabelL(kFirstData+1);
 
-		if(x < minx) minx = x;
-		if(x > maxx) maxx = x;
+		if (x < minx) minx = x;
+		if (x > maxx) maxx = x;
 		
-		if(y < miny) miny = y;
-		if(y > maxy) maxy = y;
+		if (y < miny) miny = y;
+		if (y > maxy) maxy = y;
 
 		pcopy = pcopy->next;
 	}
@@ -573,11 +573,11 @@ void hpaStar::findMinMax(path* p)
 	int x = pcopy->n->GetLabelL(kFirstData);
 	int y = pcopy->n->GetLabelL(kFirstData+1);
 
-	if(x < minx) minx = x;
-	if(x > maxx) maxx = x;
+	if (x < minx) minx = x;
+	if (x > maxx) maxx = x;
 	
-	if(y < miny) miny = y;
-	if(y > maxy) maxy = y;
+	if (y < miny) miny = y;
+	if (y > maxy) maxy = y;
 	
 	assert((minx != MAX_INT)&&(miny != MAX_INT)&&(maxx != -1)&&(maxy != -1));
 

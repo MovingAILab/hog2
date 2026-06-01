@@ -1,0 +1,18 @@
+#!/bin/tcsh
+
+foreach scen (./../scenarios/da2/ht_m*.map.scen ./../scenarios/da2/ht_p*.map.scen ./../scenarios/da2/ht_s*.map.scen ./../scenarios/da2/lt_0_lowtown_a*.map.scen)
+
+set alg = `echo 5`
+set numExtendedGoals = `echo 300`
+
+foreach weight (1.50 2.00 3.00 4.00 5.00 6.00 7.00 8.00 9.00 10.00)
+
+set x = `echo $scen | sed 's/.*\///g'`
+set map = `echo $x | sed 's/.scen//'`
+echo "ALG " $alg " weight " $weight " map " $map
+
+./../bin/release/DSDWA -rtDSD ./../maps/da2/$map $scen $alg $weight $numExtendedGoals >> DWP_RaceTrack_3-results.txt
+
+end
+#end
+end

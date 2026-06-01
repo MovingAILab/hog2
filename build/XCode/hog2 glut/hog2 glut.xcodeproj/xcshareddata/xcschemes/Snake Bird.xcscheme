@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme
+   LastUpgradeVersion = "1130"
+   version = "1.3">
+   <BuildAction
+      parallelizeBuildables = "YES"
+      buildImplicitDependencies = "YES">
+      <BuildActionEntries>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C4B9412823DF534E0091C825"
+               BuildableName = "Snake Bird.app"
+               BlueprintName = "Snake Bird"
+               ReferencedContainer = "container:hog2 glut.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+      </BuildActionEntries>
+   </BuildAction>
+   <TestAction
+      buildConfiguration = "Debug"
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      shouldUseLaunchSchemeArgsEnv = "YES">
+      <Testables>
+      </Testables>
+   </TestAction>
+   <LaunchAction
+      buildConfiguration = "Debug"
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      launchStyle = "0"
+      useCustomWorkingDirectory = "NO"
+      ignoresPersistentStateOnLaunch = "NO"
+      debugDocumentVersioning = "YES"
+      debugServiceExtension = "internal"
+      allowLocationSimulation = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C4B9412823DF534E0091C825"
+            BuildableName = "Snake Bird.app"
+            BlueprintName = "Snake Bird"
+            ReferencedContainer = "container:hog2 glut.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "-decode 20b20EhwGgugvgwhkhyieiyjwjxjyKFBidgrjtihSgtLDDSjvRD"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-decode 24b13EjfGcfcgchcjcpcqcwdcdddedjdkdpdqdrdwdxecedejewhjhkipiqiujcjdjhjpjqjuKfjfwfxghgkgxhvhwhxiiivFPcigjSehLLDLSdvRR"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-decode 20b15EhgGbxbycmdbdedfdgdhdqdwefegelfafhfiflfmfofpKFPddfnSduRRSezLL"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-decode 20b11EdqGcicjckcsctcucvcwcxdddedhdidodsdtdzedeeepeteuezfafefffgfkflfweoecKenFemSdbD"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_S1a.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_1.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_S2.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_bh.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_29.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_17.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_30.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_31.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_32.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_33.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_34.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_35.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_36.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_37.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_38.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_40.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_44.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebird_24.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebirdPrimer/snakebirdPrimer_bh.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebirdPrimer/snakebirdPrimer_69.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebirdPrimer/snakebirdPrimer_54.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebirdPrimer_S3.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-load /Users/nathanst/hog2/maps/snakebird/snakebirdPrimer/snakebirdPrimer_S4.map"
+            isEnabled = "NO">
+         </CommandLineArgument>
+      </CommandLineArguments>
+   </LaunchAction>
+   <ProfileAction
+      buildConfiguration = "Release"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      savedToolIdentifier = ""
+      useCustomWorkingDirectory = "NO"
+      debugDocumentVersioning = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C4B9412823DF534E0091C825"
+            BuildableName = "Snake Bird.app"
+            BlueprintName = "Snake Bird"
+            ReferencedContainer = "container:hog2 glut.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+   </ProfileAction>
+   <AnalyzeAction
+      buildConfiguration = "Debug">
+   </AnalyzeAction>
+   <ArchiveAction
+      buildConfiguration = "Release"
+      revealArchiveInOrganizer = "YES">
+   </ArchiveAction>
+</Scheme>

@@ -19,42 +19,33 @@ public:
 	void save(const char *);
 	void save(FILE *);
 
-	double train(std::vector<double> &input, std::vector<double> &output2);
+	double train(std::vector<double> &input, std::vector<double> &target);
 	double *test(const std::vector<double> &input);
-	double train(std::vector<unsigned int> &input, std::vector<double> &output2);
+	double GetInput(std::vector<double> &input, const std::vector<double> &target);
+	double train(std::vector<unsigned int> &input, std::vector<double> &target);
 	double *test(const std::vector<unsigned int> &input);
 
-	
-//	void setLearnRate(double);
-//	double getLearnRate();
-
-	void setMomentum(double);
-	double getMomentum();
-	
 	int getNumInputs() { return inputs; }
-	double getInputWeight(int inp, int outp=0) { return weights[outp][0][inp]; }
+	double getInputWeight(int inp, int outp=0) { return weights[0][outp][inp]; }
 
 	void Print();
 private:
-		void allocateMemory(const NN *nn = 0);
-		void freeMemory();
-
-		std::vector< std::vector< std::vector<double> > > weights;
-		std::vector< std::vector< std::vector<double> > > errors;
-//	double*** weights;
-//	double*** errors;
+	void allocateMemory(const NN *nn = 0);
+	void freeMemory();
+	
+	std::vector< std::vector< std::vector<double> > > weights;
+	std::vector< std::vector< std::vector<double> > > updatedweights;
+	std::vector< std::vector< std::vector<double> > > errors;
 	std::vector<double> hidden;
 	std::vector<double> output;
-//	double* hidden;
-//	double* output;
-	double momentum; // rate, 
 	int inputs, hiddens, outputs;
 	
 	double g(double a);
 	double dg(double a);
-	double outputerr(std::vector<double> &output, std::vector<double> &expected, int which);
-	double internalerr(std::vector<double> &output, std::vector<double> &expected, int which);
-	double error(std::vector<double> &outputs);
+	double outputerr(const std::vector<double> &output, const std::vector<double> &expected, int which);
+	double internalerr(const std::vector<double> &output, const std::vector<double> &expected, int which);
+	double internalinputerr(const std::vector<double> &output, const std::vector<double> &expected, int which);
+	double error(const std::vector<double> &outputs);
 };
 
 

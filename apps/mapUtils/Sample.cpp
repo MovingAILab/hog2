@@ -1,41 +1,26 @@
 /*
- * $Id: sample.cpp,v 1.23 2006/11/01 23:33:56 nathanst Exp $
- *
- *  sample.cpp
- *  hog
+ *  $Id: sample.cpp
+ *  hog2
  *
  *  Created by Nathan Sturtevant on 5/31/05.
- *  Copyright 2005 Nathan Sturtevant, University of Alberta. All rights reserved.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * This file is part of HOG.
- *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
  *
  */
 
+#include <random>
+#include <algorithm>
 #include "Common.h"
 #include "Sample.h"
 #include "UnitSimulation.h"
 #include "EpisodicSimulation.h"
 #include "Map2DEnvironment.h"
 #include "RandomUnits.h"
-#include "AStar.h"
+//#include "AStar.h"
 #include "TemplateAStar.h"
 #include "GraphEnvironment.h"
-#include "MapSectorAbstraction.h"
-#include "GraphRefinementEnvironment.h"
+//#include "MapSectorAbstraction.h"
 #include "ScenarioLoader.h"
 #include "BFS.h"
 #include "PEAStar.h"
@@ -43,6 +28,8 @@
 #include "MapGenerators.h"
 #include "FPUtil.h"
 #include "CanonicalGrid.h"
+#include "Graphics.h"
+#include "SVGUtil.h"
 
 bool mouseTracking = false;
 bool runningSearch1 = false;
@@ -72,7 +59,7 @@ GraphDistanceHeuristic *gdh = 0;
 
 GraphEnvironment *ge = 0;
 
-MapSectorAbstraction *msa;
+//MapSectorAbstraction *msa;
 
 std::vector<xyLoc> path;
 
@@ -82,12 +69,13 @@ std::vector<std::pair<xyLoc, xyLoc>> subgoalEdges;
 Map *ReduceMap(Map *inputMap);
 void MeasureHighwayDimension(Map *m, int depth);
 void EstimateDimension(Map *m);
-void EstimateLongPath(Map *m);
+double EstimateLongPath(Map *m);
 
 void testHeuristic(char *problems);
 
 int main(int argc, char* argv[])
 {
+	setvbuf(stdout, NULL, _IONBF, 0);
 	InstallHandlers();
 	RunHOGGUI(argc, argv, 1000, 1000);
 }
@@ -106,7 +94,9 @@ void CreateSimulation(int id)
 		//map = new Map("/Users/nathanst/hog2/maps/dao/orz101d.map");
 		//map = new Map("/Users/nathanst/hog2/maps/dao/orz107d.map");
 		//map = new Map("/Users/nathanst/hog2/maps/dao/lak308d.map");
-		map = new Map("/Users/nathanst/hog2/maps/da2/ht_chantry.map");
+		map = new Map("/Users/nathanst/hog2/maps/local/den407-crop.map");
+		//map = new Map("/Users/nathanst/hog2/maps/da2/ht_chantry.map");
+		//map = new Map("/Users/nathanst/hog2/maps/wc3maps/battleground.map");
 		//map = new Map("/Users/nathanst/hog2/maps/random/random512-35-6.map");
 		//map = new Map("/Users/nathanst/hog2/maps/da2/lt_backalley_g.map");
 		
@@ -125,18 +115,24 @@ void CreateSimulation(int id)
 //		map = new Map(mazeSize, mazeSize);
 //		MakeMaze(map, 5);
 //		map->Scale(512, 512);
+//		map = MakeWarehouseMap(10, 10, 1, 10, 5, 25, 25);
+//		map = MakeWarehouseMap(20, 20, 1, 10, 5, 50, 50);
+//		map = MakeWarehouseMap(10, 10, 2, 10, 5, 25, 25);
+//		map = MakeWarehouseMap(20, 20, 2, 10, 5, 50, 50);
 	}
 	else {
 		map = new Map(gDefaultMap);
 		//map->Scale(512, 512);
 	}
 	map->SetTileSet(kWinter);
-	msa = new MapSectorAbstraction(map, 2);
+//	msa = new MapSectorAbstraction(map, 2);
 	//msa->ToggleDrawAbstraction(1);
 	//msa->ToggleDrawAbstraction(2);
 	// ->ToggleDrawAbstraction(3);
 	unitSims.resize(id+1);
-	unitSims[id] = new UnitSimulation<xyLoc, tDirection, MapEnvironment>(new MapEnvironment(map));
+	MapEnvironment *me;
+	unitSims[id] = new UnitSimulation<xyLoc, tDirection, MapEnvironment>(me = new MapEnvironment(map));
+	me->SetDiagonalCost(1.5);
 	unitSims[id]->SetStepType(kMinTime);
 	SetNumPorts(id, 1);
 	grid = new CanonicalGrid::CanonicalGrid(map);
@@ -159,6 +155,7 @@ void InstallHandlers()
 	InstallKeyboardHandler(MyDisplayHandler, "Reset Rotations", "Reset the current rotation/translation of the map.", kAnyModifier, '|');
 	InstallKeyboardHandler(MyDisplayHandler, "Step Abs Type", "Increase abstraction type", kAnyModifier, ']');
 	InstallKeyboardHandler(MyDisplayHandler, "Step Abs Type", "Decrease abstraction type", kAnyModifier, '[');
+	InstallKeyboardHandler(MyDisplayHandler, "Detail", "Export detailed SVG from A*", kAnyModifier, 'q');
 	
 	InstallKeyboardHandler(MyPathfindingKeyHandler, "Mapbuilding Unit", "Deploy unit that paths to a target, building a map as it travels", kNoModifier, 'd');
 	InstallKeyboardHandler(MyRandomUnitKeyHandler, "Add A* Unit", "Deploys a simple a* unit", kNoModifier, 'a');
@@ -167,17 +164,23 @@ void InstallHandlers()
 	InstallKeyboardHandler(MySubgoalHandler, "Setup Subgoals", "Set up and display subgoal information", kNoModifier, 's');
 	
 	
-	InstallCommandLineHandler(MyCLHandler, "-makeMaze", "-makeMaze x-dim y-dim corridorsize filename", "Resizes map to specified dimensions and saves");
+	InstallCommandLineHandler(MyCLHandler, "-makeMazeSVG", "-makeMazeSVG x-dim y-dim corridorsize x-output y-output filename", "Makes map and exports as svg");
+	InstallCommandLineHandler(MyCLHandler, "-makeMaze", "-makeMaze x-dim y-dim corridorsize filename", "Makes maze");
 	InstallCommandLineHandler(MyCLHandler, "-makeRoom", "-makeRoom x-dim y-dim roomSie filename", "Resizes map to specified dimensions and saves");
 	InstallCommandLineHandler(MyCLHandler, "-makeRandom", "-makeRandom x-dim y-dim %%obstacles [0-100] filename", "makes a randomly filled with obstacles");
+	InstallCommandLineHandler(MyCLHandler, "-makeWarehouse", "-makeWarehouse <columns> <rows> <corridor> <shelf-width> <shelf-height> <left buffer> <right buffer> <filename>", "Build a warehouse with the given parameters");
 	InstallCommandLineHandler(MyCLHandler, "-resize", "-resize filename x-dim y-dim filename", "Resizes map to specified dimensions and saves");
 	InstallCommandLineHandler(MyCLHandler, "-map", "-map filename", "Selects the default map to be loaded.");
-	InstallCommandLineHandler(MyCLHandler, "-buildProblemSet", "-buildProblemSet filename", "Build problem set with the given map.");
+	InstallCommandLineHandler(MyCLHandler, "-buildProblemSet", "-buildProblemSet <map> <scen>", "Build problem set with the given map.");
+	InstallCommandLineHandler(MyCLHandler, "-buildRandomSet", "-buildRandomSet <map> <scen>", "Build random problem set with all locations in the map.");
 	InstallCommandLineHandler(MyCLHandler, "-problems", "-problems filename sectorMultiplier", "Selects the problem set to run.");
 	InstallCommandLineHandler(MyCLHandler, "-problems2", "-problems2 filename sectorMultiplier", "Selects the problem set to run.");
 	InstallCommandLineHandler(MyCLHandler, "-problems3", "-problems3 filename", "Selects the problem set to run.");
 	InstallCommandLineHandler(MyCLHandler, "-problems4", "-problems4 filename", "Selects the problem set to run comparing weighted A* with and without re-openings.");
+	InstallCommandLineHandler(MyCLHandler, "-problems5", "-problems5 filename additive_bound", "Selects the problem set to run comparing different methods of additive bounds.");
+	InstallCommandLineHandler(MyCLHandler, "-problems6", "-problems6 filename", "Tests alpha.");
 	InstallCommandLineHandler(MyCLHandler, "-screen", "-screen <map>", "take a screenshot of the screen and then exit");
+	InstallCommandLineHandler(MyCLHandler, "-svg", "-svg <map> <output> <optional-x> <optional-y>", "Save the map as SVG format");
 	InstallCommandLineHandler(MyCLHandler, "-size", "-batch integer", "If size is set, we create a square maze with the x and y dimensions specified.");
 	InstallCommandLineHandler(MyCLHandler, "-reduceMap", "-reduceMap input output", "Find the largest connected component in map and reduce.");
 	InstallCommandLineHandler(MyCLHandler, "-highwayDimension", "-highwayDimension map radius", "Measure the highway dimension of a map.");
@@ -224,51 +227,52 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 
 void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 {
+  Graphics::Display &display = getCurrentContext()->display;
 	if (ge)
 	{
-		ge->OpenGLDraw();
-		return;
+	  ge->Draw(display);
+	  return;
 	}
 	if (viewport == 0)
 	{
 		unitSims[windowID]->StepTime(1.0/30.0);
 	}
 
-	CanonicalGrid::xyLoc gLoc(px2, py2, CanonicalGrid::kAll);
-	//CanonicalGrid::xyLoc gLoc(10, 23, CanonicalGrid::kAll);
-	std::deque<CanonicalGrid::xyLoc> queue;
-	queue.push_back(gLoc);
-	std::vector<CanonicalGrid::xyLoc> v;
-	std::vector<bool> visited(grid->GetMap()->GetMapHeight()*grid->GetMap()->GetMapWidth());
-	while (!queue.empty())
-	{
-		grid->GetSuccessors(queue.front(), v);
-		for (auto &s : v)
-		{
-			if (!visited[s.x+s.y*grid->GetMap()->GetMapWidth()])
-			{
-				grid->SetColor(0.0, 0.0, 0.0);
-				queue.push_back(s);
-			}
-			else {
-				grid->SetColor(1.0, 0.0, 0.0);
-			}
-			grid->GLDrawLine(queue.front(), s);
-			visited[s.x+s.y*grid->GetMap()->GetMapWidth()] = true;
-		}
-		queue.pop_front();
-	}
+//	CanonicalGrid::xyLoc gLoc(px2, py2, CanonicalGrid::kAll);
+//	//CanonicalGrid::xyLoc gLoc(10, 23, CanonicalGrid::kAll);
+//	std::deque<CanonicalGrid::xyLoc> queue;
+//	queue.push_back(gLoc);
+//	std::vector<CanonicalGrid::xyLoc> v;
+//	std::vector<bool> visited(grid->GetMap()->GetMapHeight()*grid->GetMap()->GetMapWidth());
+//	while (!queue.empty())
+//	{
+//		grid->GetSuccessors(queue.front(), v);
+//		for (auto &s : v)
+//		{
+//			if (!visited[s.x+s.y*grid->GetMap()->GetMapWidth()])
+//			{
+//				grid->SetColor(0.0, 0.0, 0.0);
+//				queue.push_back(s);
+//			}
+//			else {
+//				grid->SetColor(1.0, 0.0, 0.0);
+//			}
+//			grid->GLDrawLine(queue.front(), s);
+//			visited[s.x+s.y*grid->GetMap()->GetMapWidth()] = true;
+//		}
+//		queue.pop_front();
+//	}
 	
 	//	for (unsigned int x = 0; x < astars.size(); x++)
 //		astars[x].OpenGLDraw();
 	//	astar.OpenGLDraw();	
-	unitSims[windowID]->OpenGLDraw();
+	//	unitSims[windowID]->OpenGLDraw();
 	//unitSims[windowID]->GetEnvironment()->OpenGLDraw();
 	
 	if (screenShot)
 	{
-		SaveScreenshot(windowID, gDefaultMap);
-		exit(0);
+	  //SaveScreenshot(windowID, gDefaultMap);
+	  exit(0);
 	}
 //	glTranslatef(0, 0, -0.1);
 //	glLineWidth(6.0);
@@ -277,43 +281,38 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 //	ge->OpenGLDraw();
 
 	//if (astars.size() > 0)
-	msa->OpenGLDraw();
+//	msa->OpenGLDraw();
 	
 	if (mouseTracking)
 	{
-		glBegin(GL_LINES);
-		glColor3f(1.0f, 0.0f, 0.0f);
 		Map *m = unitSims[windowID]->GetEnvironment()->GetMap();
-		GLdouble x, y, z, r;
-		m->GetOpenGLCoord(px1, py1, x, y, z, r);
-		glVertex3f(x, y, z-3*r);
-		m->GetOpenGLCoord(px2, py2, x, y, z, r);
-		glVertex3f(x, y, z-3*r);
-		glEnd();
+		double x, y, z, r;
+		m->GetCoord(px1, py1, x, y, z, r);
+		m->GetCoord(px2, py2, x, y, z, r);
 	}
 	
-	if ((gdh) && (!ma1))
-		gdh->OpenGLDraw();
+	//	if ((gdh) && (!ma1))
+	//	gdh->OpenGLDraw();
 
 	if ((ma1) && (viewport == 0)) // only do this once...
 	{
-		ma1->SetColor(0.0, 0.5, 0.0, 0.75);
-		if (runningSearch1 && !unitSims[windowID]->GetPaused())
+	  ma1->SetColor(0.0, 0.5, 0.0, 0.75);
+	  if (runningSearch1 && !unitSims[windowID]->GetPaused())
+	    {
+	      ma1->SetColor(0.0, 0.0, 1.0, 0.75);
+	      for (int x = 0; x < gStepsPerFrame; x++)
 		{
-			ma1->SetColor(0.0, 0.0, 1.0, 0.75);
-			for (int x = 0; x < gStepsPerFrame; x++)
-			{
-				if (a1.DoSingleSearchStep(path))
-				{
-					printf("Solution: moves %d, length %f, %lld nodes, %u on OPEN\n",
-						   (int)path.size(), ma1->GetPathLength(path), a1.GetNodesExpanded(),
-						   a1.GetNumOpenItems());
-					runningSearch1 = false;
-					break;
-				}
-			}
+		  if (a1.DoSingleSearchStep(path))
+		    {
+		      printf("Solution: moves %d, length %f, %lld nodes, %u on OPEN\n",
+			     (int)path.size(), ma1->GetPathLength(path), a1.GetNodesExpanded(),
+			     a1.GetNumOpenItems());
+		      runningSearch1 = false;
+		      break;
+		    }
 		}
-		a1.OpenGLDraw();
+	    }
+	  a1.Draw(display);
 	}
 	if ((ma2) && viewport == 1)
 	{
@@ -332,7 +331,8 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 				}
 			}
 		}
-		a2.OpenGLDraw();
+		//a2.OpenGLDraw();
+		a2.Draw(display);
 	}
 
 	
@@ -358,7 +358,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 	//glLineWidth(2.0);
 	for (auto &x : subgoalEdges)
 	{
-		unitSims[windowID]->GetEnvironment()->GLDrawLine(x.first, x.second);
+	  //unitSims[windowID]->GetEnvironment()->GLDrawLine(x.first, x.second);
 		printf("<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" style=\"stroke:rgb(0,0,0);stroke-width:1\" />\n",
 			   10*x.first.x,
 			   10*x.first.y,
@@ -369,7 +369,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 	unitSims[windowID]->GetEnvironment()->SetColor(1.0, 0.0, 0.0);
 	for (const xyLoc &x : subgoals)
 	{
-		unitSims[windowID]->GetEnvironment()->OpenGLDraw(x);
+	  //unitSims[windowID]->GetEnvironment()->OpenGLDraw(x);
 		
 		printf("<circle cx=\"%d\" cy=\"%d\" r=\"5\" stroke=\"black\" stroke-width=\"0.25\" fill=\"red\" />\n", 10*x.x, 10*x.y);
 	}
@@ -385,7 +385,7 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		static int cnt = 0;
 		char fname[255];
 		sprintf(fname, "/Users/nathanst/Movies/tmp/%d%d%d%d", (cnt/1000)%10, (cnt/100)%10, (cnt/10)%10, cnt%10);
-		SaveScreenshot(windowID, fname);
+		//SaveScreenshot(windowID, fname);
 		printf("Saved %s\n", fname);
 		cnt++;
 	}
@@ -393,6 +393,8 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 
 void doExport()
 {
+	assert(!"Abstraction export deprecated");
+/*
 	Map *map = new Map(gDefaultMap);
 	map->Scale(512, 512);
 	msa = new MapSectorAbstraction(map, 8);
@@ -411,58 +413,245 @@ void doExport()
 		edge *e = g->GetEdge(x);
 		printf("%d %d\n", e->getFrom(), e->getTo());//, (int)(100.0*e->GetWeight())); // %d 0
 	}
+ */
 	exit(0);
 }
 
-void buildProblemSet()
+#include <thread>
+#include "SharedQueue.h"
+SharedQueue<std::pair<graphState, graphState>> workQueue;
+SharedQueue<std::pair<std::pair<graphState, graphState>, double>> resultQueue;
+
+void GetPathLengthInRange(GraphEnvironment *ge, double minLen, double maxLen, int numNeeded)
 {
+	while (resultQueue.size() < numNeeded)
+	{
+		graphState start;
+		graphState goal;
+		double finalCost;
+		std::vector<graphState> endPath;
+		std::vector<graphState> eligible;
+		
+		start = ge->GetGraph()->GetRandomNode()->GetNum();
+		
+		// 2. search to depth d (all g-costs >= d)
+		TemplateAStar<graphState, graphMove, GraphEnvironment> theSearch;
+		theSearch.SetStopAfterGoal(false);
+		theSearch.InitializeSearch(ge, start, start, endPath);
+		while (1)
+		{
+			if (theSearch.GetNumOpenItems() == 0)
+				break;
+			graphState next = theSearch.CheckNextNode();
+			if (theSearch.DoSingleSearchStep(endPath))
+				break;
+			double tmpCost;
+			theSearch.GetClosedListGCost(next, tmpCost);
+			if (tmpCost >= minLen && tmpCost < maxLen)
+				eligible.push_back(next);
+			else if (tmpCost >= maxLen)
+				break;
+		}
+		if (eligible.size() == 0)
+		{
+			finalCost = 0;
+			continue;
+		}
+		goal = eligible[random()%eligible.size()];
+		double cost;
+		theSearch.GetClosedListGCost(goal, cost);
+		assert(cost >= minLen && cost < maxLen);
+		
+		if (random()%2) // randomize start and goal
+		{
+			graphState tmp = start;
+			start = goal;
+			goal = tmp;
+		}
+		finalCost = cost;
+
+		resultQueue.Add({{start, goal}, finalCost});
+	}
+}
+
+void ThreadedGetPathLengthInRange(GraphEnvironment *ge, std::vector<graphState> &start, std::vector<graphState> &goal,
+								  std::vector<double> &finalCost, double minLen, double maxLen, int numNeeded)
+{
+	std::vector<std::thread *> threads;
+	for (size_t x = 0; x < std::thread::hardware_concurrency(); x++)
+	{
+		threads.push_back(new std::thread(GetPathLengthInRange, ge, minLen, maxLen, numNeeded));
+	}
+	for (size_t x = 0; x < threads.size(); x++)
+	{
+		threads[x]->join();
+	}
+	while (resultQueue.size() > 0)
+	{
+		std::pair<std::pair<graphState, graphState>, double> result;
+		resultQueue.WaitRemove(result);
+		start.push_back(result.first.first);
+		goal.push_back(result.first.second);
+		finalCost.push_back(result.second);
+	}
+}
+
+
+
+void PathfindingThread(GraphEnvironment *ge)
+{
+	TemplateAStar<graphState, graphMove, GraphEnvironment> searcher;
+
+	std::pair<graphState, graphState> p;
+	std::vector<graphState> thePath;
+	while (true)
+	{
+		workQueue.WaitRemove(p);
+		if (p.first == p.second)
+			return;
+		searcher.GetPath(ge, p.first, p.second, thePath);
+		resultQueue.Add({{p.first, p.second}, ge->GetPathLength(thePath)});
+	}
+}
+
+void buildProblemSet(const char *output = 0)
+{
+	srandom(time(0));
 	ScenarioLoader s;
-	printf(gDefaultMap); printf("\n");
+	printf("Generating scenarios for map: %s\n", gDefaultMap);
 	Map map(gDefaultMap);
 	Graph *g = GraphSearchConstants::GetGraph(&map);
 	GraphDistanceHeuristic gdh(g);
 	gdh.SetPlacement(kFarPlacement);
 	// make things go fast; we're doing tons of searches, so use a good heuristic
-	for (unsigned int x = 0; x < 30; x++)
+	for (unsigned int x = 0; x < 10; x++)
 		gdh.AddHeuristic();
 	GraphEnvironment *ge = new GraphEnvironment(&map, g, &gdh);
 	ge->SetDirected(true);
 	
+	const auto numThreads = std::thread::hardware_concurrency();
+	std::vector<std::thread *> threads;
+	for (size_t x = 0; x < numThreads; x++)
+	{
+		threads.push_back(new std::thread(PathfindingThread, ge));
+	}
 	std::vector<std::vector<Experiment> > experiments;
-	for (unsigned int x = 0; x < 400000; x++)
+
+	std::vector<bool> startpoints;
+	std::vector<bool> endpoints;
+	endpoints.resize(g->GetNumNodes());
+	startpoints.resize(g->GetNumNodes());
+	//double len = EstimateLongPath(&map);
+	printf("First pass: 100%% random\n");
+	int totalTries = g->GetNumNodes()/10;//9*g->GetNumNodes()/10;
+	for (int x = 0; x < totalTries; x++)
 	{
 		if (0==x%100)
-		{ printf("\r%d", x); fflush(stdout); }
+		{ printf("\r%d of %d", x, totalTries); fflush(stdout); }
 		node *s1 = g->GetRandomNode();
 		node *g1 = g->GetRandomNode();
-//		uint64_t nodesExpanded = 0;
-//		printf("%d\t%d\t",  s1->GetNum(), g1->GetNum());
+		if (startpoints[s1->GetNum()]) // no duplicate start locations
+		{
+			x--;
+			continue;
+		}
+		if (endpoints[g1->GetNum()]) // no duplicate goal locations
+		{
+			x--;
+			continue;
+		}
+		if (g1->GetNum() == s1->GetNum())
+		{
+			x--;
+			continue;
+		}
+		startpoints[s1->GetNum()] = true;
+		endpoints[g1->GetNum()] = true;
 		graphState gs1, gs2;
 		gs1 = s1->GetNum();
 		gs2 = g1->GetNum();
-		std::vector<graphState> thePath;
-		astar.GetPath(ge, gs1, gs2, thePath);
-//		printf("%d\n", (int)ge->GetPathLength(thePath));
-		if (thePath.size() == 0)
+		workQueue.WaitAdd({gs1, gs2});
+	}
+	for (size_t x = 0; x < numThreads; x++)
+	{
+		workQueue.WaitAdd({0, 0});
+	}
+	printf("\nDone adding to threads\n");
+	for (unsigned int x = 0; x < totalTries; x++)
+	{
+		if (0==x%100)
+		{ printf("\r%d of %d", x, totalTries); fflush(stdout); }
+		std::pair<std::pair<graphState, graphState>, double> res;
+		resultQueue.WaitRemove(res);
+
+		if (res.second == 0)
+		{
+			startpoints[res.first.first] = false;
+			endpoints[res.first.second] = false;
 			continue;
-		
-		if (experiments.size() <= ge->GetPathLength(thePath)/4)
-			experiments.resize(ge->GetPathLength(thePath)/4+1);
-		if (experiments[ge->GetPathLength(thePath)/4].size() < 10)
+		}
+		node *s1 = g->GetNode(res.first.first);
+		node *g1 = g->GetNode(res.first.second);
+		if (experiments.size() <= res.second/4)
+			experiments.resize(res.second/4+1);
+		if (experiments[res.second/4].size() < 10)
 		{
 			Experiment e(s1->GetLabelL(GraphSearchConstants::kMapX), s1->GetLabelL(GraphSearchConstants::kMapY),
 						 g1->GetLabelL(GraphSearchConstants::kMapX), g1->GetLabelL(GraphSearchConstants::kMapY),
-						 map.GetMapWidth(), map.GetMapHeight(), ge->GetPathLength(thePath)/4, ge->GetPathLength(thePath), gDefaultMap);
-			experiments[ge->GetPathLength(thePath)/4].push_back(e);
+						 map.GetMapWidth(), map.GetMapHeight(), res.second/4, res.second, gDefaultMap);
+			experiments[res.second/4].push_back(e);
 		}
-		bool done = true;
-		for (unsigned int y = 0; y < experiments.size(); y++)
-		{
-			if (experiments[y].size() != 10)
-			{ done = false; break; }
+		else {
+			startpoints[s1->GetNum()] = false;
+			endpoints[g1->GetNum()] = false;
 		}
-		if (done) break;
 	}
+	printf("\nDone receiving from threads\n");
+	
+	for (size_t x = 0; x < numThreads; x++)
+	{
+		threads[x]->join();
+		delete threads[x];
+	}
+	threads.resize(0);
+	
+	for (size_t x = 0; x < experiments.size(); x++)
+	{
+		while (experiments[x].size() != 10)
+		{
+			printf("Filling bucket %d (cost %d to %d) Have %d so far\n", x, x*4, x*4+4, (int)experiments[x].size());
+			std::vector<graphState> start, goal;
+			std::vector<double> length;
+
+			ThreadedGetPathLengthInRange(ge, start, goal, length, x*4, x*4+4, 10-int(experiments[x].size()));
+			int success = 0;
+			for (int y = 0; y < start.size(); y++)
+			{
+				if (startpoints[start[y]]) // no duplicate start locations
+					continue;
+				if (endpoints[goal[y]]) // no duplicate goal locations
+					continue;
+				Experiment e(g->GetNode(start[y])->GetLabelL(GraphSearchConstants::kMapX), g->GetNode(start[y])->GetLabelL(GraphSearchConstants::kMapY),
+							 g->GetNode(goal[y])->GetLabelL(GraphSearchConstants::kMapX), g->GetNode(goal[y])->GetLabelL(GraphSearchConstants::kMapY),
+							 map.GetMapWidth(), map.GetMapHeight(), length[y]/4, length[y], gDefaultMap);
+				experiments[x].push_back(e);
+				startpoints[start[y]] = true;
+				endpoints[goal[y]] = true;
+				success++;
+				if (experiments[x].size() >= 10)
+					break;
+			}
+			if (success == 0)
+				break;
+		}
+		if (experiments[x].size() != 10)
+		{
+			printf("Can't fill bucket; aborting fill procedure and cutting off scenarios at %d buckets\n", x-1);
+			break;
+		}
+	}
+	
+	
 	for (unsigned int x = 0; x < experiments.size(); x++)
 	{
 		if (x > experiments.size()/10 && experiments[x].size() != 10)
@@ -471,12 +660,69 @@ void buildProblemSet()
 			s.AddExperiment(experiments[x][y]);
 	}
 	printf("\n");
-	char name[255];
-	sprintf(name, "%s.scen", gDefaultMap);
-	s.Save(name);
+	if (output == 0)
+	{
+		char name[255];
+		sprintf(name, "%s.scen", gDefaultMap);
+		s.Save(name);
+	}
+	else
+		s.Save(output);
 	exit(0);
 }
 
+void buildRandomSet(const char *output = 0)
+{
+	srandom(time(0));
+	ScenarioLoader s;
+	printf("Generating scenarios for map: %s\n", gDefaultMap);
+	Map map(gDefaultMap);
+	xyLoc start;
+	std::vector<xyLoc> path;
+	std::vector<xyLoc> points;
+	MapEnvironment me(&map);
+	while (true)
+	{
+		start.x = random()%map.GetMapWidth();
+		start.y = random()%map.GetMapWidth();
+		if (map.GetTerrainType(start.x, start.y) == kGround)
+			break;
+	}
+	TemplateAStar<xyLoc, tDirection, MapEnvironment> astar;
+	astar.SetStopAfterGoal(false);
+	astar.GetPath(&me, start, start, path);
+
+	points.clear();
+	for (int x = 0; x < astar.GetNumItems(); x++)
+	{
+		points.push_back(astar.GetItem(x).data);
+	}
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle( points.begin(), points.end(), g);
+	if (1 == points.size()%2)
+		points.pop_back();
+	if (points.size() > 2000)
+		points.resize(2000);
+	astar.SetStopAfterGoal(true);
+	for (size_t x = 0; x < points.size(); x+= 2)
+	{
+		astar.GetPath(&me, points[x], points[x+1], path);
+		//	Experiment(int sx,int sy,int gx,int gy,int b, double d, string m)
+		double len = me.GetPathLength(path);
+		Experiment e(points[x].x, points[x].y, points[x+1].x, points[x+1].y, map.GetMapWidth(), map.GetMapHeight(), len/4, len, gDefaultMap);
+		s.AddExperiment(e);
+	}
+	if (output == 0)
+	{
+		char name[255];
+		sprintf(name, "%s.scen", gDefaultMap);
+		s.Save(name);
+	}
+	else
+		s.Save(output);
+	exit(0);
+}
 void runProblemSet3(char *scenario)
 {
 	printf("Loading scenario %s\n", scenario);
@@ -568,9 +814,216 @@ void runProblemSet4(char *scenario)
 	exit(0);
 }
 
+void runProblemSet5(char *scenario, double bound)
+{
+	printf("Loading scenario %s\n", scenario);
+	ScenarioLoader sl(scenario);
+	
+	printf("Loading map %s\n", sl.GetNthExperiment(0).GetMapName());
+	Map *map = new Map(sl.GetNthExperiment(0).GetMapName());
+	map->Scale(sl.GetNthExperiment(0).GetXScale(),
+			   sl.GetNthExperiment(0).GetYScale());
+	
+	std::vector<xyLoc> thePath;
+	MapEnvironment ma(map);
+	ma.SetEightConnected();
+	//ma.SetFourConnected();
+	
+	// K = bound+1
+	// K = 2*bound
+	// y < K
 
+	TemplateAStar<xyLoc, tDirection, MapEnvironment> astar;
+	TemplateAStar<xyLoc, tDirection, MapEnvironment> astar2;
+	TemplateAStar<xyLoc, tDirection, MapEnvironment> astar3;
+	TemplateAStar<xyLoc, tDirection, MapEnvironment> astar4;
+	TemplateAStar<xyLoc, tDirection, MapEnvironment> astar5;
+
+	astar2.SetPhi([=](double x,double y){return (y<(bound+1))?(x+y/(bound+1)):(x+y-bound);});
+	astar3.SetPhi([=](double x,double y){return (y<(2*bound))?(x+y/2):(x+y-bound);});
+	astar4.SetReopenNodes(true);
+	
+	for (int x = 0; x < sl.GetNumExperiments(); x++)
+	{
+		if (sl.GetNthExperiment(x).GetBucket() != 32)
+			continue;
+		xyLoc from, to;
+		printf("%d\t", sl.GetNthExperiment(x).GetBucket());
+		from.x = sl.GetNthExperiment(x).GetStartX();
+		from.y = sl.GetNthExperiment(x).GetStartY();
+		to.x = sl.GetNthExperiment(x).GetGoalX();
+		to.y = sl.GetNthExperiment(x).GetGoalY();
+		printf("(%d, %d) (%d, %d)\t", from.x, from.y, to.x, to.y);
+		Timer t;
+		
+		t.StartTimer();
+		astar.GetPath(&ma, from, to, thePath);
+		t.EndTimer();
+		printf("astar-opt\t%1.2f\t%1.6f\t%llu\t%u\t", ma.GetPathLength(thePath), t.GetElapsedTime(), astar.GetNodesExpanded(), astar.GetNumOpenItems());
+
+		t.StartTimer();
+		astar2.GetPath(&ma, from, to, thePath);
+		t.EndTimer();
+		printf("astar-K=b+1\t%1.2f\t%1.6f\t%llu\t%u\t", ma.GetPathLength(thePath), t.GetElapsedTime(), astar2.GetNodesExpanded(), astar2.GetNumOpenItems());
+
+		t.StartTimer();
+		astar3.GetPath(&ma, from, to, thePath);
+		t.EndTimer();
+		printf("astar-K=b*2\t%1.2f\t%1.6f\t%llu\t%u\t", ma.GetPathLength(thePath), t.GetElapsedTime(), astar3.GetNodesExpanded(), astar3.GetNumOpenItems());
+
+		
+		double hi = ma.HCost(from, to);
+		astar4.SetPhi([=](double h,double g){return g+h+bound*std::min(h, hi)/hi;});
+		t.StartTimer();
+		astar4.GetPath(&ma, from, to, thePath);
+		t.EndTimer();
+		
+		printf("\tastar-yes\t%1.2f\t%1.6f\t%llu\t%u\t%u\t", ma.GetPathLength(thePath), t.GetElapsedTime(), astar4.GetNodesExpanded(), astar4.GetNumOpenItems(), astar4.GetNodesExpanded()-astar4.GetUniqueNodesExpanded());
+
+
+		if (hi < bound)
+			hi = bound+1;
+		astar5.SetPhi([=](double x,double y){return (y<hi)?(x+(hi-bound)*y/(hi)):(x+y-bound);});
+		t.StartTimer();
+		astar5.GetPath(&ma, from, to, thePath);
+		t.EndTimer();
+		
+		printf("\tastar\t%1.2f\t%1.6f\t%llu\t%u\n", ma.GetPathLength(thePath), t.GetElapsedTime(), astar5.GetNodesExpanded(), astar5.GetNumOpenItems());
+
+	}
+	
+	exit(0);
+}
+
+#include "GridHeuristics.h"
+void runProblemSet6(char *scenario, bool heuristic)
+{
+	printf("Loading scenario %s\n", scenario);
+	ScenarioLoader sl(scenario);
+	
+	printf("Loading map %s\n", sl.GetNthExperiment(0).GetMapName());
+	Map *map = new Map(sl.GetNthExperiment(0).GetMapName());
+	map->Scale(sl.GetNthExperiment(0).GetXScale(),
+			   sl.GetNthExperiment(0).GetYScale());
+	
+	std::vector<xyLoc> thePath;
+	MapEnvironment ma(map);
+	ma.SetEightConnected();
+	
+	TemplateAStar<xyLoc, tDirection, MapEnvironment> astar;
+
+	GridEmbedding *ge = new GridEmbedding(&ma, 10, kLINF);
+	if (heuristic)
+	{
+		for (int x = 0; x < 10; x++)
+			ge->AddDimension(kDifferential, kFurthest);
+		astar.SetHeuristic(ge);
+	}
+	
+	
+	Timer t;
+	for (float w = 9; w >= 1.05; w=(w-1)/2.0f+1) // weight
+		//		for (float w = 9; w >= 1.2; w=(w-1)/2.0f+1) // weight
+		//for (float w = 1.25; w <= 10; w=(w-1)*2+1) // weight
+	{
+		for (float alpha = 0; flesseq(alpha, 1); alpha += 0.25f*0.5f) // alpha
+		{
+			for (int z = 0; z < 4; z++) // priority functions
+			{
+				switch (z)
+				{
+					case 0:
+					{
+						// 0: XDP/XUP            (no reopenings)
+						float w1 = 1.0f+alpha*(2.0f*w-2.0f);
+						float w2 = (2*w-1)-alpha*(2.0f*w-2.0f);
+						astar.SetReopenNodes(false);
+						astar.SetWeight(w);
+						astar.SetPhi([=](double h,double g){
+							if (g <= w1*h) return (g+w1*h)/w1;
+							else return (g+w2*h)/w;
+						});
+					}
+						break;
+					case 1:
+					{
+						// 1: XDP/XUP-0.5 offset (no reopenings)
+						float w1 = 1.0f+alpha*(2.0f*w-2.0f);
+						float w2 = (2*w-1)-alpha*(2.0f*w-2.0f);
+						astar.SetReopenNodes(false);
+						astar.SetWeight(w);
+						astar.SetPhi([=](double h,double g){
+							if (3*g <= w1*h) return (g+w1*h)/w1;
+							else if (g <= h*(4*w-w1)) return 4*(g+w2*h)/(w1+3*w2);
+							else return (g+w1*h)/w;
+						});
+					}
+						break;
+					case 2:
+					{
+						// 0: XDP/XUP            (no reopenings)
+						float w1 = 1.0f+alpha*(2.0f*w-2.0f);
+						float w2 = (2*w-1)-alpha*(2.0f*w-2.0f);
+						astar.SetReopenNodes(true);
+						astar.SetWeight(w);
+						astar.SetPhi([=](double h,double g){
+							if (g <= w1*h) return (g+w1*h)/w1;
+							else return (g+w2*h)/w;
+						});
+					}
+						break;
+					case 3:
+					{
+						// 3: XDP/XUP-0.5 offset (   reopenings)
+						float w1 = 1.0f+alpha*(2.0f*w-2.0f);
+						float w2 = (2*w-1)-alpha*(2.0f*w-2.0f);
+						astar.SetReopenNodes(true);
+						astar.SetWeight(w);
+						astar.SetPhi([=](double h,double g){
+							if (3*g <= w1*h) return (g+w1*h)/w1;
+							else if (g <= h*(4*w-w1)) return 4*(g+w2*h)/(w1+3*w2);
+							else return (g+w1*h)/w;
+						});
+					}
+						break;
+				}
+				printf("Starting w=%1.2f, alpha=%1.2f, alg = %d\n", w, alpha, z);
+				for (int x = 0; x < sl.GetNumExperiments(); x++)
+				{
+					if (sl.GetNthExperiment(x).GetBucket() < 25 || sl.GetNthExperiment(x).GetBucket() >= 50)
+						continue;
+					xyLoc from, to;
+//					printf("%d\t", sl.GetNthExperiment(x).GetBucket());
+					from.x = sl.GetNthExperiment(x).GetStartX();
+					from.y = sl.GetNthExperiment(x).GetStartY();
+					to.x = sl.GetNthExperiment(x).GetGoalX();
+					to.y = sl.GetNthExperiment(x).GetGoalY();
+//					printf("(%d, %d) (%d, %d)\t", from.x, from.y, to.x, to.y);
+					Timer t;
+					
+					t.StartTimer();
+					astar.GetPath(&ma, from, to, path);
+					t.EndTimer();
+					printf("[Re-open: %s. w = %1.2f. alpha=%1.2f. Alg: %d.] Problem %d solved in %f seconds. %llu expanded. Solution length %f; h = %s\n",
+						   astar.GetReopenNodes() ? "yes" : "no", w, alpha, z,
+						   x+1,
+						   t.GetElapsedTime(), astar.GetNodesExpanded(), ma.GetPathLength(path), heuristic?"yes":"no");
+				}
+//				for (int x = 0; x < 100; x++)
+//				{
+//					start = STP::GetKorfInstance(x);
+//					goal.Reset();
+//					t.StartTimer();
+//					astar.GetPath(&mnp44, start, goal, path);
+//					t.EndTimer();
+//				}
+			}
+		}
+	}
+}
 void runProblemSet2(char *problems, int multiplier)
 {
+	/*
 	Map *map = new Map(gDefaultMap);
 	map->Scale(512, 512);
 	msa = new MapSectorAbstraction(map, 8, multiplier);
@@ -626,119 +1079,32 @@ void runProblemSet2(char *problems, int multiplier)
 	}
 	fclose(f);
 	exit(0);
+	 */
 }
 
 void runProblemSet(char *problems, int multiplier)
 {
-	Map *map = new Map(gDefaultMap);
-	map->Scale(512, 512);
-	msa = new MapSectorAbstraction(map, 8, multiplier);
-
-	Graph *g = msa->GetAbstractGraph(1);
-	GraphAbstractionHeuristic gah2(msa, 2);
-	GraphAbstractionHeuristic gah1(msa, 1);
+	TemplateAStar<xyLoc, tDirection, MapEnvironment> searcher;
+	ScenarioLoader s(problems);
+	Map *map = new Map(s.GetNthExperiment(0).GetMapName());
+	map->Scale(s.GetNthExperiment(0).GetXScale(), s.GetNthExperiment(0).GetYScale());
+	MapEnvironment e(map);
 	
-	GraphRefinementEnvironment env2(msa, 2, &gah2);
-	GraphRefinementEnvironment env1(msa, 1, &gah1);
-	env1.SetDirected(false);
-	env2.SetDirected(false);
-	
-	FILE *f = fopen(problems, "r");
-	if (f == 0)
+	for (int x = 0; x < s.GetNumExperiments(); x++)
 	{
-		printf("Cannot open file: '%s'\n", problems);
-		exit(0);
-	}
-	printf("len\tlvl2n\tlvl2nt\tlvl2len\tlvl2tim\tlvl1nf\tlvl1ntf\tlvl1tn\tlvl1tt\tlvl1len_f\ttot\ttott\ttot_len\n");
-	Timer t;
-	while (!feof(f))
-	{
-		int from, to, cost;
-		if (fscanf(f, "%d\t%d\t%d\n", &from, &to, &cost) != 3)
-			break;
-		node *s1 = g->GetNode(from);
-		node *g1 = g->GetNode(to);
-		node *s2 = msa->GetParent(s1);
-		node *g2 = msa->GetParent(g1);
-		uint64_t nodesExpanded = 0;
-		uint64_t nodesTouched = 0;
-		double totalTime = 0;
-		//		printf("Searching from %d to %d in level 1; %d to %d in level 2\n",
-		//			   s1->GetNum(), g1->GetNum(), s2->GetNum(), g2->GetNum());
-		graphState gs1, gs2;
-		gs1 = s2->GetNum();
-		gs2 = g2->GetNum();
-		std::vector<graphState> thePath;
-		std::vector<graphState> abstractPath;
-		t.StartTimer();
-		astar.GetPath(&env2, gs1, gs2, abstractPath);
-		totalTime = t.EndTimer();
-		printf("%d\t", cost);
-		printf("%llu\t%llu\t%1.2f\t%f\t", astar.GetNodesExpanded(), astar.GetNodesTouched(), env2.GetPathLength(abstractPath), totalTime);
-		if (abstractPath.size() == 0)
+		xyLoc from = xyLoc(s.GetNthExperiment(x).GetStartX(), s.GetNthExperiment(x).GetStartY());
+		xyLoc to = xyLoc(s.GetNthExperiment(x).GetGoalX(), s.GetNthExperiment(x).GetGoalY());
+		searcher.GetPath(&e, from, to, path);
+		if (fgreater(fabs(e.GetPathLength(path)-s.GetNthExperiment(x).GetDistance()), 0.01))
 		{
-			printf("%llu\t%llu\t%llu\t%llu\t%1.2f\t%f\t", (uint64_t)0, (uint64_t)0, astar.GetNodesExpanded(), astar.GetNodesTouched(), 0.0, 0.0);
-			printf("%llu\t%llu\t%1.2f\t%f\t%d\t%d\n", astar.GetNodesExpanded(), astar.GetNodesTouched(), 0.0, 0.0, 0, 0);
-//			printf("\n");
-			continue;
+			std::cout << "From: " << from << " to " << to << "\n";
+			printf("Found solution %d length %f; expected %f difference %f\n", map->GetTerrainType(from.x, from.y), e.GetPathLength(path), s.GetNthExperiment(x).GetDistance(),
+				   e.GetPathLength(path)-s.GetNthExperiment(x).GetDistance());
+			exit(1);
 		}
-
-		nodesExpanded += astar.GetNodesExpanded();
-		nodesTouched += astar.GetNodesTouched();
-
-		env1.SetPlanningCorridor(abstractPath, 2);
-		gs1 = s1->GetNum();
-		gs2 = g1->GetNum();
-		t.StartTimer();
-		astar.GetPath(&env1, gs1, gs2, thePath);
-		t.EndTimer();
-		printf("%llu\t%llu\t%llu\t%llu\t%1.2f\t%f\t",
-			   astar.GetNodesExpanded(), astar.GetNodesTouched(),
-			   astar.GetNodesExpanded()+nodesExpanded, astar.GetNodesTouched()+nodesTouched,
-			   env1.GetPathLength(thePath), totalTime+t.GetElapsedTime());
-		
-		int abstractStart = 0;
-		gs1 = s1->GetNum();
-		double totalLength = 0;
-		int refineAmt = 2;
-		int refinedPathNodes = 0;
-		do { // not working yet -- fully check!
-			env1.SetPlanningCorridor(abstractPath, 2, abstractStart);
-			gs2 = g1->GetNum();
-			if (abstractPath.size()-abstractStart > refineAmt)
-			{
-				env1.SetUseAbstractGoal(true, 2);
-				gs2 = abstractPath[abstractStart+refineAmt];
-			}
-			else {
-				env1.SetUseAbstractGoal(false, 0);
-			}
-			t.StartTimer();
-			astar.GetPath(&env1, gs1, gs2, thePath);
-			t.EndTimer();
-			refinedPathNodes += thePath.size();
-			totalTime+=t.GetElapsedTime();
-			abstractStart += refineAmt;
-			gs1 = thePath.back();
-			
-			nodesExpanded += astar.GetNodesExpanded();
-			nodesTouched += astar.GetNodesTouched();
-			totalLength += env1.GetPathLength(thePath);
-			if (thePath.back() == gs2)
-				break;
-		} while (thePath.back() != g1->GetNum());
-		
-//		printf("%llu\t%llu\t%1.2f\t", astar.GetNodesExpanded(), astar.GetNodesTouched(), env1.GetPathLength(thePath));
-		thePath.resize(0);
-		printf("%llu\t%llu\t%1.2f\t%f\t%d\t%d\n", nodesExpanded, nodesTouched, totalLength, totalTime, abstractPath.size(), refinedPathNodes);
-		
-//		gs1 = s1->GetNum();
-//		gs2 = g1->GetNum();
-//		env1.SetPlanningCorridor(abstractPath, 2);
-//		astar.GetPath(&env1, gs1, gs2, thePath);
-//		printf("%llu\t%1.2f\n", astar.GetNodesExpanded(), env1.GetPathLength(thePath));
+		printf("%f\t%llu\n", e.GetPathLength(path), searcher.GetNodesExpanded());
 	}
-	fclose(f);
+	
 	exit(0);
 }
 
@@ -755,6 +1121,45 @@ int MyCLHandler(char *argument[], int maxNumArgs)
 		exit(0);
 		return 5;
 	}
+	if (strcmp( argument[0], "-makeMazeSVG" ) == 0 )
+	{
+		if (maxNumArgs <= 4)
+			return 0;
+		Map map(atoi(argument[1]), atoi(argument[2]));
+		MakeMaze(&map, atoi(argument[3]));
+		Graphics::Display disp;
+		for (int y = 0; y < map.GetMapHeight(); y++)
+		{
+			for (int x = 0; x < map.GetMapWidth(); x++)
+			{
+				if (x+1 < map.GetMapWidth() && map.GetTerrainType(x, y) != kGround && map.GetTerrainType(x+1, y) != kGround)
+				{
+					double a, b, c, d, e, f, r;
+					map.GetCoord(x, y, a, b, c, r);
+					map.GetCoord(x+1, y, d, e, f, r);
+					disp.DrawLine(Graphics::point(a, b), Graphics::point(d, e), r/4.0, Colors::black);
+				}
+				if (y+1 < map.GetMapHeight() && map.GetTerrainType(x, y) != kGround && map.GetTerrainType(x, y+1) != kGround)
+				{
+					double a, b, c, d, e, f, r;
+					map.GetCoord(x, y, a, b, c, r);
+					map.GetCoord(x, y+1, d, e, f, r);
+					disp.DrawLine(Graphics::point(a, b), Graphics::point(d, e), r/4.0, Colors::black);
+				}
+			}
+		}
+		{
+			double a, b, c, r;
+			map.GetCoord(1, 1, a, b, c, r);
+			disp.DrawText("S", Graphics::point(a, b), Colors::blue, r*2);
+			map.GetCoord((int)map.GetMapWidth()-2, (int)map.GetMapHeight()-2, a, b, c, r);
+			disp.DrawText("F", Graphics::point(a, b), Colors::blue, r*2);
+		}
+		//map.Save(argument[4]);
+		MakeSVG(disp, argument[6], atoi(argument[4]), atoi(argument[5]));
+		exit(0);
+		return 5;
+	}//
 	if (strcmp( argument[0], "-makeMaze" ) == 0 )
 	{
 		if (maxNumArgs <= 4)
@@ -810,6 +1215,25 @@ int MyCLHandler(char *argument[], int maxNumArgs)
 		exit(0);
 		return 5;
 	}
+	else if (strcmp( argument[0], "-makeWarehouse" ) == 0 )
+	{
+		if (maxNumArgs <= 8)
+			return 0;
+		// 0: -makeWarehouse
+		// 1:<columns>
+		// 2:<rows>
+		// 3:<corridor>
+		// 4:<shelf-width>
+		// 5:<shelf-height>
+		// 6:<left buffer>
+		// 7:<right buffer>
+		// 8:<filename>
+		Map *map = MakeWarehouseMap(atoi(argument[1]), atoi(argument[2]), atoi(argument[3]), atoi(argument[4]), atoi(argument[5]),
+									atoi(argument[6]), atoi(argument[7]));
+		map->Save(argument[8]);
+		delete map;
+		return 9;
+	}
 	else if (strcmp( argument[0], "-reduceMap" ) == 0 )
 	{
 		if (maxNumArgs <= 2)
@@ -839,6 +1263,37 @@ int MyCLHandler(char *argument[], int maxNumArgs)
 		strncpy(gDefaultMap, argument[1], 1024);
 		return 2;
 	}
+	if (strcmp( argument[0], "-svg" ) == 0 )
+	{
+		if (maxNumArgs <= 2)
+			return 0;
+		Graphics::Display d;
+		
+		std::fstream svgFile;
+		MapEnvironment *me = new MapEnvironment(new Map(argument[1]));
+		me->SetDrawOptions(kEfficientCells);
+		me->Draw(d);
+		int width = 1024;
+		int height = 1024;
+		if (maxNumArgs > 3)
+		{
+			height = width = atoi(argument[3]);
+		}
+		if (maxNumArgs > 4)
+		{
+			height = atoi(argument[4]);
+		}
+		printf("Making image %dx%d\n", width, height);
+
+		MakeSVG(d, argument[2], width, height);
+//		svgFile.open(argument[2], std::fstream::out | std::fstream::trunc);
+//		svgFile << me->SVGHeader();
+//		svgFile << me->SVGDraw();
+//		svgFile << "</svg>\n";
+//		svgFile.close();
+		exit(0);
+		return 2;
+	}
 	if (strcmp( argument[0], "-map" ) == 0 )
 	{
 		if (maxNumArgs <= 1)
@@ -855,7 +1310,19 @@ int MyCLHandler(char *argument[], int maxNumArgs)
 	else if (strcmp( argument[0], "-buildProblemSet" ) == 0 )
 	{
 		strncpy(gDefaultMap, argument[1], 1024);
-		buildProblemSet();
+		if (maxNumArgs >= 2)
+			buildProblemSet(argument[2]);
+		else
+			buildProblemSet();
+	}
+	else if (strcmp( argument[0], "-buildRandomSet" ) == 0 )
+	{
+		strncpy(gDefaultMap, argument[1], 1024);
+		if (maxNumArgs >= 2)
+			buildRandomSet(argument[2]);
+		else
+			buildRandomSet();
+
 	}
 	else if (strcmp( argument[0], "-size" ) == 0 )
 	{
@@ -867,8 +1334,13 @@ int MyCLHandler(char *argument[], int maxNumArgs)
 	}
 	else if (strcmp(argument[0], "-problems" ) == 0 )
 	{
-		if (maxNumArgs <= 2) exit(0);
-		runProblemSet(argument[1], atoi(argument[2]));
+		int val; 
+		if (maxNumArgs <= 1)
+			exit(0);
+		else if (maxNumArgs <= 2)
+			val = 1;
+		else val = atoi(argument[2]);
+		runProblemSet(argument[1], val);
 		return 3;
 	}
 	else if (strcmp(argument[0], "-problems2" ) == 0 )
@@ -889,6 +1361,20 @@ int MyCLHandler(char *argument[], int maxNumArgs)
 		runProblemSet4(argument[1]);
 		return 2;
 	}
+	else if (strcmp(argument[0], "-problems5" ) == 0 )
+	{
+		if (maxNumArgs <= 2) exit(0);
+		runProblemSet5(argument[1], atof(argument[2]));
+		return 3;
+	}
+	else if (strcmp(argument[0], "-problems6" ) == 0 )
+	{
+		if (maxNumArgs <= 1) exit(0);
+		runProblemSet6(argument[1], false);
+		runProblemSet6(argument[1], true);
+		exit(0);
+		return 3;
+	}
 	return 2; //ignore typos
 }
 
@@ -896,7 +1382,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 {
 	switch (key)
 	{
-		case '|': resetCamera(); break;
+	case '|': //resetCamera(); break;
 		case 'r': recording = !recording; break;
 		case '0':
 		case '1':
@@ -908,7 +1394,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 		case '7':
 		case '8':
 		case '9':
-			msa->ToggleDrawAbstraction(key-'0');
+//			msa->ToggleDrawAbstraction(key-'0');
 			break;
 		case 't':
 			reopenNodes = !reopenNodes;
@@ -937,12 +1423,6 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 				((GraphMapInconsistentHeuristic*)gdh)->IncreaseDisplayHeuristic();
 			break;
 		case '\t':
-			if (mod != kShiftDown)
-				SetActivePort(windowID, (GetActivePort(windowID)+1)%GetNumPorts(windowID));
-			else
-			{
-				SetNumPorts(windowID, 1+(GetNumPorts(windowID)%MAXPORTS));
-			}
 			break;
 		case 'p': unitSims[windowID]->SetPaused(!unitSims[windowID]->GetPaused()); break;
 		case 'o':
@@ -967,6 +1447,24 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 			}
 		}
 			break;
+		case 'q':
+		{
+			std::fstream svgFile;
+			svgFile.open("/Users/nathanst/Desktop/AStarSample.svg", std::fstream::out | std::fstream::trunc);
+			svgFile << ma1->SVGHeader();
+			svgFile << ma1->SVGDraw();
+			svgFile << a1.SVGDrawDetailed();
+			svgFile << "</svg>\n";
+			svgFile.close();
+			svgFile.open("/Users/nathanst/Desktop/AStarSample2.svg", std::fstream::out | std::fstream::trunc);
+			svgFile << ma1->SVGHeader();
+			svgFile << ma1->SVGDraw();
+			ma1->SetColor(0, 0, 0);
+			svgFile << ma1->SVGLabelState(xyLoc(px1, py1), "S", 1.0, -0.5, -0.5);
+			svgFile << ma1->SVGLabelState(xyLoc(px2, py2), "G", 1.0, -0.5, -0.5);
+			svgFile << "</svg>\n";
+			svgFile.close();
+		}
 		default:
 			break;
 	}
@@ -1005,7 +1503,7 @@ void MySubgoalHandler(unsigned long windowID, tKeyboardModifier, char key)
 //	std::vector<std::pair<xyLoc, xyLoc>> subgoalEdges;
 	Map *map = unitSims[windowID]->GetEnvironment()->GetMap();
 	world.resize(map->GetMapWidth());
-	for (int x = 0; x < world.size(); x++)
+	for (size_t x = 0; x < world.size(); x++)
 	{
 		world[x].resize(map->GetMapHeight());
 		for (int y = 0; y < map->GetMapHeight(); y++)
@@ -1085,6 +1583,7 @@ void MySubgoalHandler(unsigned long windowID, tKeyboardModifier, char key)
 
 void MyRandomUnitKeyHandler(unsigned long w, tKeyboardModifier , char)
 {
+	/*
 	astars.resize(0);
 	static uint64_t average1=0, average2 = 0;
 	static int count = 0;
@@ -1172,6 +1671,7 @@ void MyRandomUnitKeyHandler(unsigned long w, tKeyboardModifier , char)
 		thePath.resize(0);
 		printf("Tot\t%llu\t%llu\n", nodesExpanded, nodesTouched);
 	}
+	 */
 }
 
 
@@ -1180,7 +1680,7 @@ void MyPathfindingKeyHandler(unsigned long windowID, tKeyboardModifier , char)
 	Graph *g = new Graph();
 	node *n = new node("");
 	g->AddNode(n);
-	FILE *f = fopen("/Users/nathanst/Downloads/USA-road-d.BAY.co", "r");
+	FILE *f = fopen("/Users/nathanst/Downloads/USA-road-d.COL.co", "r");
 	std::vector<double> xloc, yloc;
 	double minx = DBL_MAX, maxx=-DBL_MAX, miny=DBL_MAX, maxy=-DBL_MAX;
 	while (!feof(f))
@@ -1227,7 +1727,7 @@ void MyPathfindingKeyHandler(unsigned long windowID, tKeyboardModifier , char)
 		//printf("(%f, %f)\n", xloc[x], yloc[x]);
 	}
 	//a 1 2 1988
-	f = fopen("/Users/nathanst/Downloads/USA-road-d.BAY.gr", "r");
+	f = fopen("/Users/nathanst/Downloads/USA-road-d.COL.gr", "r");
 	while (!feof(f))
 	{
 		char line[255];
@@ -1306,10 +1806,13 @@ bool MyClickHandler(unsigned long windowID, int, int, point3d loc, tButtonType b
 				//px1 = 129-22; py1 = 460-25; px2 = 129; py2 = 460; //128 181 430 364
 
 				printf("Searching from (%d, %d) to (%d, %d)\n", px1, py1, px2, py2);
-				
+				//331 355 67 318
+//				px1 = 331; py1 = 355;
+//				px2 = 67; py2 = 318;
 				if (ma1 == 0)
 				{
 					ma1 = new MapEnvironment(unitSims[windowID]->GetEnvironment()->GetMap());
+					ma1->SetDiagonalCost(1.5);
 //					if (gdh == 0)
 //					{
 //						gdh = new GraphMapInconsistentHeuristic(ma1->GetMap(), GraphSearchConstants::GetGraph(ma1->GetMap()));
@@ -1327,6 +1830,7 @@ bool MyClickHandler(unsigned long windowID, int, int, point3d loc, tButtonType b
 				if (ma2 == 0)
 				{
 					ma2 = new MapEnvironment(unitSims[windowID]->GetEnvironment()->GetMap());
+					ma2->SetDiagonalCost(1.5);
 					ma2->SetEightConnected();
 				}
 				
@@ -1576,13 +2080,13 @@ void EstimateDimension(Map *m)
 		//printf("%d items on open [%1.1f/%1.1f]\n", theSearch.GetNumOpenItems(), gCost, limit);
 	}	
 	graphState start = n->GetNum();
-	BFS<graphState, graphMove> b;
+	BFS<graphState, graphMove, GraphEnvironment> b;
 	b.GetPath(&ge, start, start, endPath);
 }
 
 double FindFarDist(Graph *g, node *n, graphState &from, graphState &to);
 
-void EstimateLongPath(Map *m)
+double EstimateLongPath(Map *m)
 {
 	Graph *g = GraphSearchConstants::GetGraph(m);
 	GraphMapHeuristic gh(m, g);
@@ -1601,6 +2105,7 @@ void EstimateLongPath(Map *m)
 		}
 		printf("%f\t%f\t%f\t%f\n", dist, dist/g->GetNumNodes(), heur, dist/heur);
 	}
+	return dist;
 }
 
 double FindFarDist(Graph *g, node *n, graphState &from, graphState &to)
@@ -1668,4 +2173,3 @@ void testHeuristic(char *problems)
 	
 	exit(0);
 }
-

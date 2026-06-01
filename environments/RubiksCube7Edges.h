@@ -41,24 +41,24 @@ public:
 		state = state&(~(blank<<(12+4*whichLoc)));
 		state |= (value<<(12+4*whichLoc));
 	}
-	bool GetCubeOrientation(int whichLoc) const
+	bool GetCubeOrientation(int whichCube) const
 	{
-		return state&(0x1<<whichLoc);
+		return state&(0x1<<whichCube);
 	}
-	void SetCubeOrientation(int whichLoc, bool flip)
+	void SetCubeOrientation(int whichCube, bool flip)
 	{
 		uint64_t blank = 0x1;
 		if (flip)
-			state |= (0x1<<whichLoc);
+			state |= (0x1<<whichCube);
 		else
-			state = state&(~(blank<<whichLoc));
+			state = state&(~(blank<<whichCube));
 	}
-	void FlipCubeOrientation(int whichLoc)
+	void FlipCubeOrientation(int whichCube)
 	{
-//		if (whichLoc == 0xF)
+//		if (whichCube == 0xF)
 //			return;
-		//		printf("Was: 0x%X [flip %d] -- ", state, whichLoc);
-		state = state^(0x1<<whichLoc);
+		//		printf("Was: 0x%X [flip %d] -- ", state, whichCube);
+		state = state^(0x1<<whichCube);
 		//		printf("Now: 0x%X \n", state);
 	}
 	uint64_t state;
@@ -118,11 +118,11 @@ public:
 	virtual void ApplyAction(Rubik7EdgeState &s, Rubik7EdgeAction a) const;
 
 	
-	virtual double HCost(const Rubik7EdgeState &node1, const Rubik7EdgeState &node2) { return 0; }
+	virtual double HCost(const Rubik7EdgeState &node1, const Rubik7EdgeState &node2) const { return 0; }
 	
-	virtual double GCost(const Rubik7EdgeState &node1, const Rubik7EdgeState &node2) { return 1; }
-	virtual double GCost(const Rubik7EdgeState &node, const Rubik7EdgeAction &act) { return 1; }
-	virtual bool GoalTest(const Rubik7EdgeState &node, const Rubik7EdgeState &goal) { return node == goal; }
+	virtual double GCost(const Rubik7EdgeState &node1, const Rubik7EdgeState &node2) const { return 1; }
+	virtual double GCost(const Rubik7EdgeState &node, const Rubik7EdgeAction &act) const { return 1; }
+	virtual bool GoalTest(const Rubik7EdgeState &node, const Rubik7EdgeState &goal) const { return node == goal; }
 	
 
 	void ApplyMove(Rubik7EdgeState &s, Rubik7EdgeMove *a);
@@ -163,11 +163,11 @@ public:
 	virtual uint64_t GetActionHash(Rubik7EdgeAction act) const { return 0; }
 	virtual void GetStateFromHash(uint64_t hash, Rubik7EdgeState &node) const;
 	
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const Rubik7EdgeState&) const;
-	/** Draw the transition at some percentage 0...1 between two states */
-	virtual void OpenGLDraw(const Rubik7EdgeState&, const Rubik7EdgeState&, float) const;
-	virtual void OpenGLDraw(const Rubik7EdgeState&, const Rubik7EdgeAction&) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const Rubik7EdgeState&) const;
+//	/** Draw the transition at some percentage 0...1 between two states */
+//	virtual void OpenGLDraw(const Rubik7EdgeState&, const Rubik7EdgeState&, float) const;
+//	virtual void OpenGLDraw(const Rubik7EdgeState&, const Rubik7EdgeAction&) const;
 private:
 	void MRUnrank(int n, uint64_t r, uint64_t &perm) const;
 	void MRUnrank2(int n, uint64_t r, uint64_t &perm) const;

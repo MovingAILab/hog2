@@ -8,7 +8,7 @@
  */
 
 #include "Unit.h"
-#include <ext/hash_map>
+#include <unordered_map>
 
 template <class state, class action>
 struct stateInfo {
@@ -53,7 +53,7 @@ public:
 	void LogFinalStats(StatCollection *) {}
 private:
 	
-	typedef __gnu_cxx::hash_map<uint64_t, stateInfo<state, action>, Hash64 > LSStateStorage;
+	typedef std::unordered_map<uint64_t, stateInfo<state, action>, Hash64 > LSStateStorage;
 	LSStateStorage hashTable;
 	
 	bool init;

@@ -100,10 +100,10 @@ public:
 	If exactGoal is not set, GoalTest returns true if state and goal have the same parent*/
 	bool GoalTest(const graphState &state, const graphState &goal)
 	{
-		if(noDummyGoal)
+		if (noDummyGoal)
 			return false;
 
-		if(exactGoal)
+		if (exactGoal)
 		{
 			//std::cout<<"exact\n";
 			return (state == goal);
@@ -120,18 +120,18 @@ public:
 		//std::cout<<"Parents: "<<nParent<<" "<<goalParent<<std::endl;
 
  		// if parent of node & goal are the same, return true
-		if(nParent == goalParent)
+		if (nParent == goalParent)
 		{
 			return true;
 		}
 		return false;
 	}
 
-	double HCost(const graphState &state1, const graphState &state2)
+	double HCost(const graphState &state1, const graphState &state2) const
 	{
-		if(h)
+		if (h)
 		{
-			if(exactGoal || noDummyGoal)
+			if (exactGoal || noDummyGoal)
 			{
 				//		Print(state1);
 				//		std::cout<<" to ";
@@ -230,9 +230,9 @@ public:
 
 	virtual void StoreGoal(graphState &) {}
 	virtual void ClearGoal() {}
-	virtual bool IsGoalStored() {return false;}
+	virtual bool IsGoalStored() const {return false;}
 
-	virtual double HCost(const graphState &) {
+	virtual double HCost(const graphState &) const {
 		fprintf(stderr, "ERROR: Single State HCost not implemented for AbsGraphEnvironment\n");
 		exit(1); return -1.0;}
 
@@ -256,7 +256,7 @@ public:
 	GraphStraightLineHeuristic(Map *map, Graph *graph, Graph *mg)
 	:m(map), g(graph), mapgraph(mg) {}
 	Graph *GetGraph() { return g; }
-	double HCost(const graphState &state1, const graphState &state2)
+	double HCost(const graphState &state1, const graphState &state2) const
 	{
 	//std::cout<<"state1 "<<state1<<" state2 "<<state2<<std::endl;
 	//modified for abstract nodes
@@ -294,7 +294,7 @@ public:
 	OctileHeuristic(Map *map, Graph *graph)
 	:m(map), g(graph) {}
 	Graph *GetGraph() { return g; }
-	double HCost(const graphState &state1, const graphState &state2)
+	double HCost(const graphState &state1, const graphState &state2) const
 	{
 		int x1 = g->GetNode(state1)->GetLabelL(GraphAbstractionConstants::kFirstData);
 		int y1 = g->GetNode(state1)->GetLabelL(GraphAbstractionConstants::kFirstData+1);
@@ -398,7 +398,7 @@ void AbstractWeightedSearchAlgorithm<state,action,environment>::GetPath(environm
 	graphState toGs = tonode->GetNum();
 
 	// Check if we're already in the same abstract node
-	if(fromPar == toPar)
+	if (fromPar == toPar)
 	{
 		//		std::cout<<"in same parent\n";
 		// Do straight planning on lower level, using the direction map
@@ -418,7 +418,7 @@ void AbstractWeightedSearchAlgorithm<state,action,environment>::GetPath(environm
 	//	std::cout<<"No abs path. "<<fromGs<<" to "<<toGs<<" required "<<astar->GetNodesExpanded()<<" nodes exp.\n";
 
 		// Copy the path into thePath, as xyLoc
-		for(unsigned int j=0; j<refpath.size(); j++)
+		for (unsigned int j=0; j<refpath.size(); j++)
 		{
 			node* newnode = g->GetNode(refpath[j]);
 			xyLoc newloc;
@@ -453,7 +453,7 @@ void AbstractWeightedSearchAlgorithm<state,action,environment>::GetPath(environm
 		nodesExpanded += astar.GetNodesExpanded();
 		nodesTouched += astar.GetNodesTouched();
 		//	std::cout<<"Abs path "<<fromPar<<" to "<<toPar<<" required "<<astar->GetNodesExpanded()<<" nodes exp.\n";
-		//		for(int i=0; i<abspath.size(); i++)
+		//		for (int i=0; i<abspath.size(); i++)
 		//		{
 		//				std::cout<<abspath[i]<<" ";
 		//		}
@@ -492,11 +492,11 @@ void AbstractWeightedSearchAlgorithm<state,action,environment>::GetPath(environm
 
 		// if partialSkip is true, we find a path to the one-after-next abstract node, and cut off the path
 		// after some percentage (skipPerc is a value between 0 and 1, indicating the proportion to keep)
-		if(partialSkip)
+		if (partialSkip)
  		{
 
  			//if absPath's length is 2, want to do straight planning to goal (no cut off)
- 			if(abspath.size()==2)
+ 			if (abspath.size()==2)
  			{
 
 				// 				std::cout<<"Size 2\n";
@@ -516,7 +516,7 @@ void AbstractWeightedSearchAlgorithm<state,action,environment>::GetPath(environm
 				nodesTouched += AStar.GetNodesTouched();
 
 				// Copy the path into thePath, as xyLoc
-				for(unsigned int j=1; j<refPath.size(); j++)
+				for (unsigned int j=1; j<refPath.size(); j++)
 				{
 					node* newnode = g->GetNode(refPath[j]);
 					xyLoc newloc;
@@ -548,9 +548,9 @@ void AbstractWeightedSearchAlgorithm<state,action,environment>::GetPath(environm
  				nodesExpanded += astar2.GetNodesExpanded();
  				nodesTouched += astar2.GetNodesTouched();
 
- 				if(refpath.size()>0)
+ 				if (refpath.size()>0)
  				{
- 					for(unsigned int j=1; j<refpath.size(); j++)
+ 					for (unsigned int j=1; j<refpath.size(); j++)
  					{
  						node* newnode = g->GetNode(refpath[j]);
 
@@ -579,7 +579,7 @@ void AbstractWeightedSearchAlgorithm<state,action,environment>::GetPath(environm
 //  				nodesExpanded += astar3->GetNodesExpanded();
 //  				nodesTouched += astar3->GetNodesTouched();
 //
-//  				for(int j=1; j<refpath.size(); j++)
+//  				for (int j=1; j<refpath.size(); j++)
 //  				{
 //  					node* newnode = g->GetNode(refpath[j]);
 //  					xyLoc newloc;
@@ -590,12 +590,12 @@ void AbstractWeightedSearchAlgorithm<state,action,environment>::GetPath(environm
  				// Chop off the path
  				int desiredLength = (int)(refinePart * thePath.size());
 
- 				if(desiredLength>3)
+ 				if (desiredLength>3)
 					thePath.resize(desiredLength);
 
 			//	std::cout<<"desiredlength is "<<desiredLength<<" total is "<<thePath.size()<<std::endl;
 				//int oldsize = thePath.size();
- 				//for(int i=desiredLength; i<oldsize; i++)
+ 				//for (int i=desiredLength; i<oldsize; i++)
  				//{
  				//	thePath.pop_back();
  				//}
@@ -615,21 +615,21 @@ void AbstractWeightedSearchAlgorithm<state,action,environment>::GetPath(environm
 
 
 
-		} // end if(partialSkip)
+		} // end if (partialSkip)
 		else//not partialskip
 		{
-			for(unsigned int i=1; i<abspath.size()-1; i++)
-			//for(unsigned int i=1; i<2; i++)
+			for (unsigned int i=1; i<abspath.size()-1; i++)
+			//for (unsigned int i=1; i<2; i++)
 			{
 				//if any of my neighbours is a child of this abs node - skip it
 				std::vector<graphState> nb;
 				age->GetSuccessors(start, nb);
 
 				bool skip = false;
-				for(unsigned int k=0; k<nb.size(); k++)
+				for (unsigned int k=0; k<nb.size(); k++)
 				{
 					node* neigh = g->GetNode(nb[k]);
-					if(neigh->GetLabelL(GraphAbstractionConstants::kParent) == (long)abspath[i])
+					if (neigh->GetLabelL(GraphAbstractionConstants::kParent) == (long)abspath[i])
 						skip = true;
 				}
 
@@ -672,9 +672,9 @@ void AbstractWeightedSearchAlgorithm<state,action,environment>::GetPath(environm
 				//std::cout<<start<<" to "<<end<<" required "<<astar2->GetNodesExpanded()<<" nodes exp.\n";
 				//std::cout<<"Refining nodes expanded now "<<nodesExpanded<<std::endl;
 
-				if(refpath.size()>0)
+				if (refpath.size()>0)
 				{
-					for(unsigned int j=1; j<refpath.size(); j++)
+					for (unsigned int j=1; j<refpath.size(); j++)
 					{
 						node* newnode = g->GetNode(refpath[j]);
 						//std::cout<<newnode->GetNum()<<std::endl;
@@ -708,7 +708,7 @@ void AbstractWeightedSearchAlgorithm<state,action,environment>::GetPath(environm
 		//std::cout<<start<<" to "<<toGs<<" required "<<astar3->GetNodesExpanded()<<" nodes exp.\n";
 			//Transfer the path to thePath, as series of xyLoc
 		//	std::cout<<"last bit "<<std::endl;
-			for(unsigned int j=1; j<refpath.size(); j++)
+			for (unsigned int j=1; j<refpath.size(); j++)
 			{
 				node* newnode = g->GetNode(refpath[j]);
 				xyLoc newloc;

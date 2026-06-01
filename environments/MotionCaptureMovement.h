@@ -51,19 +51,19 @@ public:
 	virtual bool InvertAction(mcMovementAction &a) const;
 	
 	/** Heuristic value between two arbitrary nodes. **/
-	virtual double HCost(const mcMovementState &node1, const mcMovementState &node2);
+	virtual double HCost(const mcMovementState &node1, const mcMovementState &node2) const;
 	
 	/** Heuristic value between node and the stored goal. Asserts that the
 	 goal is stored **/
-	virtual double HCost(const mcMovementState &node)
+	virtual double HCost(const mcMovementState &node) const
 	{ assert(bValidSearchGoal); return HCost(node, searchGoal); }
 	
-	virtual double GCost(const mcMovementState &node1, const mcMovementState &node2);
-	virtual double GCost(const mcMovementState &node, const mcMovementAction &act);
-	virtual bool GoalTest(const mcMovementState &node, const mcMovementState &goal);
+	virtual double GCost(const mcMovementState &node1, const mcMovementState &node2) const;
+	virtual double GCost(const mcMovementState &node, const mcMovementAction &act) const;
+	virtual bool GoalTest(const mcMovementState &node, const mcMovementState &goal) const;
 	
 	/** Goal Test if the goal is stored **/
-	virtual bool GoalTest(const mcMovementState &node)
+	virtual bool GoalTest(const mcMovementState &node) const
 	{ return bValidSearchGoal&&(node == searchGoal); }
 	
 	virtual uint64_t GetStateHash(const mcMovementState &node) const;
@@ -78,7 +78,7 @@ public:
 	virtual void OpenGLDraw(const mcMovementState&, const mcMovementAction&) const;
 	void GLDrawLine(const mcMovementState &a, const mcMovementState &b) const;
 private:
-	double distance(const mcMovementState &n1, const mcMovementState &n2);
+	double distance(const mcMovementState &n1, const mcMovementState &n2) const;
 	bool GetOpenGLCoord(float x_, float y_, GLdouble &x, GLdouble &y, GLdouble &z, GLdouble &radius) const;
 
 };

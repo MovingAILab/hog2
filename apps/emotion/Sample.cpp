@@ -1,27 +1,11 @@
 /*
- * $Id: sample.cpp,v 1.23 2006/11/01 23:33:56 nathanst Exp $
- *
- *  sample.cpp
- *  hog
+ *  $Id: sample.cpp
+ *  hog2
  *
  *  Created by Nathan Sturtevant on 5/31/05.
- *  Copyright 2005 Nathan Sturtevant, University of Alberta. All rights reserved.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * This file is part of HOG.
- *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
  *
  */
 
@@ -34,7 +18,7 @@
 #include "TemplateAStar.h"
 #include "GraphEnvironment.h"
 #include "MapSectorAbstraction.h"
-#include "GraphRefinementEnvironment.h"
+//#include "GraphRefinementEnvironment.h"
 #include "ScenarioLoader.h"
 #include "Map2DHeading.h"
 #include "GenericSearchUnit.h"
@@ -321,7 +305,7 @@ void MyPathfindingKeyHandler(unsigned long windowID, tKeyboardModifier , char)
 void ExportGraph(Map *m, Map2DHeading *env)
 {
 	// export map as graph
-	typedef __gnu_cxx::hash_map<uint64_t, int, Hash64> HT;
+	typedef std::unordered_map<uint64_t, int, Hash64> HT;
 
 	HT table;
 	Graph *g = new Graph();
@@ -404,7 +388,7 @@ void ExportGraph(Map *m)
 	Directional2DEnvironment *env = new Directional2DEnvironment(m, kVehicle, kOctileHeuristic);
 
 	// export map as graph
-	typedef __gnu_cxx::hash_map<uint64_t, int, Hash64> HT;
+	typedef std::unordered_map<uint64_t, int, Hash64> HT;
 	
 	HT table;
 	Graph *g = new Graph();
@@ -638,5 +622,3 @@ bool MyClickHandler(unsigned long windowID, int, int, point3d loc, tButtonType b
 	}
 	return false;
 }
-
-

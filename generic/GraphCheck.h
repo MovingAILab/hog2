@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 #include <vector>
-#include <ext/hash_map>
+#include <unordered_map>
 #include "SearchEnvironment.h"
 #include "UnitSimulation.h"
 #include "Graph.h"
@@ -45,10 +45,10 @@ template <typename state, typename action>
 class GraphCheck {
 public:
 	static void NumNodesWithinRadius(SearchEnvironment<state, action> &env, state from, int depth, int &inner_count, int &leaf_count);
-	static void PathCountWithinRadius(SearchEnvironment<state, action> &env, state from, int depth, __gnu_cxx::hash_map<uint64_t, int, Hash64> &counts, __gnu_cxx::hash_map<uint64_t, double, Hash64> &aveCosts );
+	static void PathCountWithinRadius(SearchEnvironment<state, action> &env, state from, int depth, std::unordered_map<uint64_t, int, Hash64> &counts, std::unordered_map<uint64_t, double, Hash64> &aveCosts );
 
 private:
-	static void DFSVisit(SearchEnvironment<state, action> &env, std::vector<SimpleNode<state> > &thePath, int depth, __gnu_cxx::hash_map<uint64_t, int, Hash64> &counts, __gnu_cxx::hash_map<uint64_t, double, Hash64> &aveCosts, double gval);
+	static void DFSVisit(SearchEnvironment<state, action> &env, std::vector<SimpleNode<state> > &thePath, int depth, std::unordered_map<uint64_t, int, Hash64> &counts, std::unordered_map<uint64_t, double, Hash64> &aveCosts, double gval);
 
 };
 
@@ -59,7 +59,7 @@ void GraphCheck<state, action>::NumNodesWithinRadius(SearchEnvironment<state, ac
 	inner_count = 0;
 	leaf_count = 0;
 	std::queue<SimpleNode<state> > myqueue;
-	__gnu_cxx::hash_map<uint64_t, SimpleNode<state>, Hash64> closedlist;
+	std::unordered_map<uint64_t, SimpleNode<state>, Hash64> closedlist;
 
 	std::vector<state> neighbors;
 
@@ -104,7 +104,7 @@ void GraphCheck<state, action>::NumNodesWithinRadius(SearchEnvironment<state, ac
 }
 
 template <typename state, typename action>
-void GraphCheck<state, action>::PathCountWithinRadius(SearchEnvironment<state, action> &env, state from, int depth, __gnu_cxx::hash_map<uint64_t, int, Hash64> &counts, __gnu_cxx::hash_map<uint64_t, double, Hash64> &aveCosts )
+void GraphCheck<state, action>::PathCountWithinRadius(SearchEnvironment<state, action> &env, state from, int depth, std::unordered_map<uint64_t, int, Hash64> &counts, std::unordered_map<uint64_t, double, Hash64> &aveCosts )
 {
 	// using recursive version of DFS
 	std::vector<SimpleNode<state> > thePath;
@@ -115,7 +115,7 @@ void GraphCheck<state, action>::PathCountWithinRadius(SearchEnvironment<state, a
 
 	DFSVisit(env, thePath,depth,counts,aveCosts,0);
 
-	for (__gnu_cxx::hash_map<uint64_t,int, Hash64> ::iterator it = counts.begin(); it != counts.end(); it++)
+	for (std::unordered_map<uint64_t,int, Hash64> ::iterator it = counts.begin(); it != counts.end(); it++)
 	{
 		if (it->second > 0)
 			aveCosts[it->first] /= it->second;
@@ -123,7 +123,7 @@ void GraphCheck<state, action>::PathCountWithinRadius(SearchEnvironment<state, a
 }
 
 template <typename state, typename action>
-void GraphCheck<state, action>::DFSVisit(SearchEnvironment<state, action> &env, std::vector<SimpleNode<state> > &thePath, int depth, __gnu_cxx::hash_map<uint64_t, int, Hash64> &counts, __gnu_cxx::hash_map<uint64_t, double, Hash64> &aveCosts, double gval)
+void GraphCheck<state, action>::DFSVisit(SearchEnvironment<state, action> &env, std::vector<SimpleNode<state> > &thePath, int depth, std::unordered_map<uint64_t, int, Hash64> &counts, std::unordered_map<uint64_t, double, Hash64> &aveCosts, double gval)
 {
 	std::vector<state> neighbors;
 

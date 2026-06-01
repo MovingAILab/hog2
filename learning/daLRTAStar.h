@@ -13,7 +13,7 @@
 #include "FPUtil.h"
 #include <deque>
 #include <vector>
-#include <ext/hash_map>
+#include <unordered_map>
 #include "TemplateAStar.h"
 #include "Timer.h"
 #include <queue>
@@ -73,12 +73,19 @@ namespace DALRTA {
 			heur[env->GetStateHash(where)].theState = where;
 #endif
 		}
-		double HCost(environment *env, const state &from, const state &to)
+		double HCost(environment *env, const state &from, const state &to) const
 		{
-			if (heur.find(env->GetStateHash(from)) != heur.end())
-				return heur[env->GetStateHash(from)].theHeuristic+
-				env->HCost(from, to);
+			auto val = heur.find(env->GetStateHash(from));
+			if (val != heur.end())
+			{
+				return val->second.theHeuristic+env->HCost(from, to);
+			}
 			return env->HCost(from, to);
+//
+//			if (heur.find(env->GetStateHash(from)) != heur.end())
+//				return heur[env->GetStateHash(from)].theHeuristic+
+//				env->HCost(from, to);
+//			return env->HCost(from, to);
 		}
 		double HCostLearned(environment *env, const state &from)
 		{
@@ -86,7 +93,7 @@ namespace DALRTA {
 				return heur[env->GetStateHash(from)].theHeuristic;
 			return 0;
 		}
-		double HCost(const state &from, const state &to)
+		double HCost(const state &from, const state &to) const
 		{
 			assert(m_pEnv != 0);
 			return HCost(m_pEnv, from, to);
@@ -98,12 +105,12 @@ namespace DALRTA {
 		{ s->AddStat("TotalLearning", GetName(),fAmountLearned); }
 		
 		double GetAmountLearned() { return fAmountLearned; }
-		void OpenGLDraw() const {}
-		void OpenGLDraw(const environment *env) const;
+//		void OpenGLDraw() const {}
+//		void OpenGLDraw(const environment *env) const;
 	private:
 		typedef std::priority_queue<borderData<state>,std::vector<borderData<state> >,compareBorderData<state> > pQueue;
-		typedef __gnu_cxx::hash_map<uint64_t, lssLearnedData<state>, Hash64 > LearnedHeuristic;
-		typedef __gnu_cxx::hash_map<uint64_t, bool, Hash64 > ClosedList;
+		typedef std::unordered_map<uint64_t, lssLearnedData<state>, Hash64 > LearnedHeuristic;
+		typedef std::unordered_map<uint64_t, bool, Hash64 > ClosedList;
 		
 
 		bool ExpandLSS(environment *env, const state &from, const state &to, std::vector<state> &thePath);
@@ -183,7 +190,7 @@ namespace DALRTA {
 		unsigned int openSize = astar.GetNumOpenItems();
 		for (unsigned int x = 0; x < openSize; x++)
 		{
-			const AStarOpenClosedData<state> data = astar.GetOpenItem(x);
+			const auto data = astar.GetOpenItem(x);
 			if ((bestF == -1) || (fless(HCostLearned(env,data.data)*10000+(data.g+data.h), bestF)))
 			{
 				bestF = HCostLearned(env,data.data)*10000+(data.g+data.h);
@@ -256,47 +263,47 @@ namespace DALRTA {
 	}
 
 	
-	template <class state, class action, class environment>
-	void daLRTAStar<state, action, environment>::OpenGLDraw(const environment *e) const
-	{
-		//astar.OpenGLDraw();
-		
-		unsigned int openSize = astar.GetNumOpenItems();
-		for (unsigned int x = 0; x < openSize; x++)
-		{
-			const AStarOpenClosedData<state> data = astar.GetOpenItem(x);
-			if (data.data == first)
-				e->SetColor(0, 0.5, 0.5);
-			else
-				e->SetColor(0, 1, 0);
-			e->OpenGLDraw(data.data);
-		}
-		
-		double learned = 1;
-		for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
-		{
-			double thisState = (*it).second.theHeuristic;
-			if (learned < thisState)
-				learned = thisState;
-			
-		}
-		char str[255];
-		//printf("Max learning: %f/%f\n", learned[0], learned[1]);
-		for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
-		{
-			double r = (*it).second.theHeuristic;
-			if (r > 0)
-			{
-				sprintf(str, "%3.2f", r);
-				e->SetColor(1,1,1);
-//				e->GLLabelState((*it).second.theState, str);
-				e->SetColor(0.5+0.5*r/learned, 0, 0.0, 0.5+0.5*r/learned);
-#ifndef NO_OPENGL
-				e->OpenGLDraw((*it).second.theState);
-#endif
-			}
-		}
-	}
+//	template <class state, class action, class environment>
+//	void daLRTAStar<state, action, environment>::OpenGLDraw(const environment *e) const
+//	{
+//		//astar.OpenGLDraw();
+//		
+//		unsigned int openSize = astar.GetNumOpenItems();
+//		for (unsigned int x = 0; x < openSize; x++)
+//		{
+//			const auto data = astar.GetOpenItem(x);
+//			if (data.data == first)
+//				e->SetColor(0, 0.5, 0.5);
+//			else
+//				e->SetColor(0, 1, 0);
+//			e->OpenGLDraw(data.data);
+//		}
+//		
+//		double learned = 1;
+//		for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
+//		{
+//			double thisState = (*it).second.theHeuristic;
+//			if (learned < thisState)
+//				learned = thisState;
+//			
+//		}
+//		char str[255];
+//		//printf("Max learning: %f/%f\n", learned[0], learned[1]);
+//		for (typename LearnedHeuristic::const_iterator it = heur.begin(); it != heur.end(); it++)
+//		{
+//			double r = (*it).second.theHeuristic;
+//			if (r > 0)
+//			{
+//				sprintf(str, "%3.2f", r);
+//				e->SetColor(1,1,1);
+////				e->GLLabelState((*it).second.theState, str);
+//				e->SetColor(0.5+0.5*r/learned, 0, 0.0, 0.5+0.5*r/learned);
+//#ifndef NO_OPENGL
+//				e->OpenGLDraw((*it).second.theState);
+//#endif
+//			}
+//		}
+//	}
 	
 }
 

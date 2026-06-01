@@ -1,31 +1,19 @@
 /*
- * $Id: sample.cpp,v 1.23 2006/11/01 23:33:56 nathanst Exp $
- *
- *  sample.cpp
- *  hog
+ *  $Id: sample.cpp
+ *  hog2
  *
  *  Created by Nathan Sturtevant on 5/31/05.
- *  Copyright 2005 Nathan Sturtevant, University of Alberta. All rights reserved.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * This file is part of HOG.
- *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
  *
  */
 
+#include <cstring>
 #include "Common.h"
+#include "PermutationPDB.h"
+#include "LexPermutationPDB.h"
+#include "MR1PermutationPDB.h"
 #include "Driver.h"
 #include "UnitSimulation.h"
 #include "EpisodicSimulation.h"
@@ -33,18 +21,26 @@
 #include "RandomUnit.h"
 #include "MNPuzzle.h"
 #include "IDAStar.h"
+#include "ParallelIDAStar.h"
 #include "Timer.h"
+#include "STPInstances.h"
+#include "TemplateAStar.h"
+#include "FocalAdd.h"
+#include "SVGUtil.h"
 
 void CompareToMinCompression();
 void CompareToSmallerPDB();
 
 void BuildSTP_PDB(unsigned long windowID, tKeyboardModifier , char);
 void STPTest(unsigned long , tKeyboardModifier , char);
-MNPuzzleState GetInstance(int which, bool weighted);
-void Test(MNPuzzle &mnp, const char *prefix);
+void Test(MNPuzzle<4, 4> &mnp, const char *prefix);
 void MinCompressionTest();
-void MeasureIR(MNPuzzle &mnp);
+void MeasureIR(MNPuzzle<4, 4> &mnp);
 void GetBitValueCutoffs(std::vector<int> &cutoffs, int bits);
+void BaselineTest();
+void WeightedTest(unsigned long , tKeyboardModifier , char);
+void SolveKorfAdditive(std::string path);
+void SolveKorfMax(std::string path);
 
 void BitDeltaValueCompressionTest(bool weighted);
 void ModValueCompressionTest(bool weighted);
@@ -61,14 +57,16 @@ void ModNodesDeltaCompressionTest(bool weighted);
 void DivNodesCompressionTest(bool weighted);
 void DivNodesDeltaCompressionTest(bool weighted);
 
-MNPuzzle *ts = 0;
+MNPuzzle<4, 4> *mnp = 0;
 
 bool recording = false;
 
 int main(int argc, char* argv[])
 {
+	setvbuf(stdout, NULL, _IONBF, 0);
 	InstallHandlers();
 	RunHOGGUI(argc, argv, 640, 640);
+	return 0;
 }
 
 /**
@@ -76,27 +74,28 @@ int main(int argc, char* argv[])
  */
 void InstallHandlers()
 {
+	InstallKeyboardHandler(MyDisplayHandler, "Test", "Basic test with MD heuristic", kAnyModifier, 't');
 	InstallKeyboardHandler(MyDisplayHandler, "Record", "Record a movie", kAnyModifier, 'r');
 	InstallKeyboardHandler(MyDisplayHandler, "Toggle Abstraction", "Toggle display of the ith level of the abstraction", kAnyModifier, '0', '9');
 	InstallKeyboardHandler(MyDisplayHandler, "Cycle Abs. Display", "Cycle which group abstraction is drawn", kAnyModifier, '\t');
 	InstallKeyboardHandler(MyDisplayHandler, "Pause Simulation", "Pause simulation execution.", kNoModifier, 'p');
 	InstallKeyboardHandler(MyDisplayHandler, "Step Simulation", "If the simulation is paused, step forward .1 sec.", kAnyModifier, 'o');
-	InstallKeyboardHandler(MyDisplayHandler, "Step History", "If the simulation is paused, step forward .1 sec in history", kAnyModifier, '}');
-	InstallKeyboardHandler(MyDisplayHandler, "Step History", "If the simulation is paused, step back .1 sec in history", kAnyModifier, '{');
-	InstallKeyboardHandler(MyDisplayHandler, "Step Abs Type", "Increase abstraction type", kAnyModifier, ']');
-	InstallKeyboardHandler(MyDisplayHandler, "Step Abs Type", "Decrease abstraction type", kAnyModifier, '[');
 
+	InstallKeyboardHandler(WeightedTest, "Weighted STP Test", "Test the STP with weights", kNoModifier, 'w');
 	InstallKeyboardHandler(STPTest, "STP Test", "Test the STP PDBs", kNoModifier, 'd');
 	InstallKeyboardHandler(BuildSTP_PDB, "Build STP PDBs", "Build PDBs for the STP", kNoModifier, 'a');
 
 	InstallCommandLineHandler(MyCLHandler, "-run", "-run", "Runs pre-set experiments.");
-	
+	InstallCommandLineHandler(MyCLHandler, "-test", "-test", "Basic test with MD heuristic");
+	InstallCommandLineHandler(MyCLHandler2, "-add", "-add", "Additive test");
+	InstallCommandLineHandler(MyCLHandler3, "-max", "-max", "Max test");
+
 	InstallWindowHandler(MyWindowHandler);
 
 	InstallMouseClickHandler(MyClickHandler);
 }
 
-MNPuzzleState s(4,3), t(4, 3);
+MNPuzzleState<4, 4> s, t;
 std::vector<slideDir> moves;
 double v = 1;
 
@@ -112,38 +111,119 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 		printf("Window %ld created\n", windowID);
 		InstallFrameHandler(MyFrameHandler, windowID, 0);
 		SetNumPorts(windowID, 1);
-		ts = new MNPuzzle(4, 3);
 
-		IDAStar<MNPuzzleState, slideDir> ida;
-		for (unsigned int x = 0; x < 500; x++)
+		mnp = new MNPuzzle<4, 4>;
+		if (0)
 		{
-			std::vector<slideDir> acts;
-			ts->GetActions(s, acts);
-			ts->ApplyAction(s, acts[random()%acts.size()]);
+			IDAStar<MNPuzzleState<4, 4>, slideDir> ida;
+			s = STP::GetKorfInstance(87);
+			ida.GetPath(mnp, s, t, moves);
+			v = 5;
+			std::cout << s << std::endl;
+			for (int x = 0; x < moves.size(); x++)
+			{
+				std::cout << moves[x] << " ";
+			}
+			std::cout << std::endl;
+			t = s;
+			//		recording = true;
 		}
-		ida.GetPath(ts, s, t, moves);
-		v = 5;
-		std::cout << s << std::endl;
-		for (int x = 0; x < moves.size(); x++)
+		if (0)
 		{
-			std::cout << moves[x] << " ";
+			Graphics::Display d;
+			d.FillRect({-1.0, -1.0, 1.0, 1}, Colors::white);
+			s.puzzle = {
+				-1, -1, -1, -1,
+				 8, -1, -1, -1,
+				12,  9, 15, 11,
+				-1, 13, 10, 14};
+			mnp->Draw(d, s);
+			MakeSVG(d, "/Users/nathanst/Pictures/SVG/STP1.svg", 512, 512);
+			d.EndFrame();
+			d.StartFrame();
+			s.puzzle = {
+				12, 13, 14, 15,
+				-1, -1, -1, -1,
+				 8,  9, 10, 11,
+				-1, -1, -1, -1};
+			mnp->Draw(d, s);
+			MakeSVG(d, "/Users/nathanst/Pictures/SVG/STP2.svg", 512, 512);
+			s.Reset();
 		}
-		std::cout << std::endl;
-		t = s;
-		recording = true;
+		if (0)
+		{
+			//std::vector<int> pattern = {1, 2, 3, 4, 5, 6, 7, 8, 0};//{8, 9, 10, 11, 12, 13, 14, 15, 0};
+			//std::vector<int> pattern = {1, 2, 3, 4, 5, 6, 7, 0};//{8, 9, 10, 11, 12, 13, 14, 15, 0};
+
+			// Build & compress 8-15 Additive PDB
+			if (0)
+			{
+				std::vector<int> pattern = {1, 2, 3, 4, 5, 6, 0};//{8, 9, 10, 11, 12, 13, 14, 15, 0};
+				//std::vector<int> pattern = {8, 9, 10, 11, 12, 13, 14, 15, 0};
+				t.Reset();
+				mnp->SetPattern(pattern);
+				mnp->StoreGoal(t);
+				LexPermutationPDB<MNPuzzleState<4, 4>, slideDir, MNPuzzle<4, 4>> pdb2(mnp, t, pattern);
+				pdb2.BuildAdditivePDB(t, 1/*std::thread::hardware_concurrency()
+										   */);
+				exit(0);
+
+				printf("Starting Delta Compress\n");
+				pdb2.DeltaCompress(mnp, t, true);
+				printf("Starting DIV Compress\n");
+				pdb2.DivCompress(17-pattern.size(), true);
+				printf("PDB After DIV:\n");
+				for (int x = 0; x < 20; x++)
+				{
+					pdb2.GetStateFromPDBHash(x, t);
+					std::cout << t << " - " << pdb2.HCost(t, t);
+					std::cout << "\n";
+					//pdb2.Heuristic<MNPuzzleState<4, 4> >::HCost(t, t);
+				}
+				pdb2.Save("/Users/nathanst/");
+			}
+			
+			// Build & compress 8-15 Additive PDB
+			for (int x = 1; x < 4; x++)
+			{
+				std::vector<std::vector<int>> patterns = {{2, 3, 4, 7, 8, 9, 0}, {1, 5, 6, 10, 11, 12, 0}, {13, 14, 18, 19, 23, 24, 0}, {15, 16, 17, 20, 21, 22, 0}};
+
+				std::vector<int> pattern = patterns[x];
+				MNPuzzle<5, 5> mnp55;
+				MNPuzzleState<5, 5> t;
+				t.Reset();
+				mnp55.SetPattern(pattern);
+				mnp55.StoreGoal(t);
+				LexPermutationPDB<MNPuzzleState<5, 5>, slideDir, MNPuzzle<5, 5>> pdb(&mnp55, t, pattern);
+				pdb.BuildAdditivePDB(t, std::thread::hardware_concurrency());
+				printf("Starting Delta Compress\n");
+				pdb.DeltaCompress(&mnp55, t, true);
+				printf("Starting DIV Compress\n");
+				pdb.DivCompress(26-pattern.size(), true);
+				for (int x = 0; x < 20; x++)
+				{
+					pdb.GetStateFromPDBHash(x, t);
+					std::cout << t << " - " << pdb.HCost(t, t);
+					std::cout << "\n";
+				}
+				pdb.Save("/Users/nathanst/");
+			}
+
+			exit(0);
+		}
 	}
 }
 
 
 void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 {
-	//ts->OpenGLDraw(s);
+	//mnp->OpenGLDraw(s);
 
 	v += 0.1;
 	if (v > 1 && moves.size() > 0)
 	{
 		t = s;
-		ts->ApplyAction(s, moves[0]);
+		mnp->ApplyAction(s, moves[0]);
 		v = 0;
 		moves.erase(moves.begin());
 	}
@@ -152,14 +232,14 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 		v = 1;
 		recording = false;
 	}
-	ts->OpenGLDraw(s, t, v);
+	//mnp->OpenGLDraw(s, t, v);
 
 	if (recording && viewport == GetNumPorts(windowID)-1)
 	{
 		static int cnt = 0;
 		char fname[255];
 		sprintf(fname, "/Users/nathanst/Movies/tmp/%d%d%d%d", (cnt/1000)%10, (cnt/100)%10, (cnt/10)%10, cnt%10);
-		SaveScreenshot(windowID, fname);
+		//SaveScreenshot(windowID, fname);
 		printf("Saved %s\n", fname);
 		cnt++;
 	}
@@ -169,6 +249,11 @@ void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
 
 int MyCLHandler(char *argument[], int maxNumArgs)
 {
+	if (strcmp(argument[0], "-test") == 0)
+	{
+		BaselineTest();
+		exit(0);
+	}
 	BuildSTP_PDB(0, kNoModifier, 'a');
 	exit(0);
 	return 2;
@@ -178,11 +263,14 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 {
 	switch (key)
 	{
+		case 't':
+			
+			BaselineTest(); break;
 		case 'r': recording = !recording; break;
-		case '0': ts->ApplyAction(s, kUp); break;
-		case '1': ts->ApplyAction(s, kDown); break;
-		case '2': ts->ApplyAction(s, kLeft); break;
-		case '3': ts->ApplyAction(s, kRight); break;
+		case '0': mnp->ApplyAction(s, kUp); break;
+		case '1': mnp->ApplyAction(s, kDown); break;
+		case '2': mnp->ApplyAction(s, kLeft); break;
+		case '3': mnp->ApplyAction(s, kRight); break;
 		case '4':
 		case '5':
 		case '6':
@@ -191,35 +279,54 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 		case '9':
 			break;
 		case '\t':
-			if (mod != kShiftDown)
-				SetActivePort(windowID, (GetActivePort(windowID)+1)%GetNumPorts(windowID));
-			else
-			{
-				SetNumPorts(windowID, 1+(GetNumPorts(windowID)%MAXPORTS));
-			}
 			break;
 		case 'p':
+		{
+			std::vector<int> pattern = {0, 1, 2, 3, 4, 5, 6};
+			if (0)
+			{
+				t.Reset();
+				MR1PermutationPDB<MNPuzzleState<4, 4>, slideDir, MNPuzzle<4, 4>> pdb(mnp, t, pattern);
+				MR1PermutationPDB<MNPuzzleState<4, 4>, slideDir, MNPuzzle<4, 4>> pdb2(mnp, t, pattern);
+				pdb.BuildPDB(t, std::thread::hardware_concurrency());
+				pdb.PrintHistogram();
+				pdb.DivCompress(5, true);
+			}
+			{
+				t.Reset();
+				LexPermutationPDB<MNPuzzleState<4, 4>, slideDir, MNPuzzle<4, 4>> pdb(mnp, t, pattern);
+				pdb.BuildPDB(t, std::thread::hardware_concurrency());
+				t.Reset();
+				mnp->StoreGoal(t);
+				pdb.DeltaCompress(mnp, t, true);
+//				pdb.DivCompress(10, true);
+//
+//				PermutationPDB<MNPuzzleState<4, 4>, slideDir, MNPuzzle> pdb2(ts, t, pattern);
+//				pdb2.BuildPDB(t, std::thread::hardware_concurrency());
+//				pdb2.DeltaCompress(&pdb, t, true);
+			}
+		}
 			break;
 		case 'o':
 		{
-			if (!ts) break;
+			if (!mnp) break;
 			if (mod == kShiftDown)
 			{
-				IDAStar<MNPuzzleState, slideDir> ida;
+				IDAStar<MNPuzzleState<4, 4>, slideDir> ida;
 				std::vector<slideDir> path1;
-				std::vector<MNPuzzleState> path2;
-				MNPuzzleState s(4, 4);
-				MNPuzzleState g(4, 4);
+				std::vector<MNPuzzleState<4, 4>> path2;
+				MNPuzzleState<4, 4> s;
+				MNPuzzleState<4, 4> g;
 				for (unsigned int x = 0; x < 500; x++)
 				{
 					std::vector<slideDir> acts;
-					ts->GetActions(s, acts);
-					ts->ApplyAction(s, acts[random()%acts.size()]);
+					mnp->GetActions(s, acts);
+					mnp->ApplyAction(s, acts[random()%acts.size()]);
 				}
 				std::cout << "Searching from: " << std::endl << s << std::endl << g << std::endl;
 				Timer t;
 				t.StartTimer();
-				ida.GetPath(ts, s, g, path1);
+				ida.GetPath(mnp, s, g, path1);
 				t.EndTimer();
 				std::cout << "Path found, length " << path1.size() << " time:" << t.GetElapsedTime() << std::endl;
 			}
@@ -237,7 +344,7 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 #include "DFS.h"
 #include "NaryTree.h"
 
-void GetSTPInstance(const MNPuzzle &ts, MNPuzzleState &theState, int which)
+void GetSTPInstance(const MNPuzzle<4, 4> &ts, MNPuzzleState<4, 4> &theState, int which)
 {
 	srandom(which);
 	theState.Reset();
@@ -251,7 +358,7 @@ void GetSTPInstance(const MNPuzzle &ts, MNPuzzleState &theState, int which)
 
 void BuildSTP_PDB(unsigned long windowID, tKeyboardModifier , char)
 {
-//	MNPuzzle mnp(4, 4);
+//	MNPuzzle<4, 4> mnp;
 //	MNPuzzleState s1(4, 4);
 //	mnp.Get_PDB_Size(s1, 1);
 //	mnp.Get_PDB_Size(s1, 15);
@@ -297,67 +404,79 @@ void BuildSTP_PDB(unsigned long windowID, tKeyboardModifier , char)
 	exit(0);
 }
 
+void WeightedTest(unsigned long , tKeyboardModifier , char)
+{
+	std::vector<slideDir> path;
+	IDAStar<MNPuzzleState<4, 4>, slideDir> ida;
+	MNPuzzle<4, 4> mnp;
+	mnp.SetWeighted(kSquared);
+	MNPuzzleState<4, 4> s, g;
+	s = STP::GetKorfInstance(0);
+	ida.GetPath(&mnp, s, g, path);
+}
+
 void STPTest(unsigned long , tKeyboardModifier , char)
 {
-	int N = 4, k = 4;
-	std::vector<int> tiles;
-
-	MNPuzzle mnp(4, 4);
-	MNPuzzleState s(4, 4);
-	MNPuzzleState g(4, 4);
-
+	assert("!Code currently not using refactored PDB setup; needs to be re-written");
+//	int N = 4, k = 4;
+//	std::vector<int> tiles;
+//
+//	MNPuzzle<4, 4> mnp;
+//	MNPuzzleState<4, 4> s;
+//	MNPuzzleState<4, 4> g;
+//
+////	if (ts->PDB.size() == 0)
+////	{
+////		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_0-5.pdb", g, true);
+////		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_12-15.pdb", g, true);
+////		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_6-11.pdb", g, true);
+////		mnp.lookups.push_back({kMaxNode, 3, 1, 0});
+////		mnp.lookups.push_back({kLeafNode, 0, 0, 0});
+////		mnp.lookups.push_back({kLeafNode, 0, 0, 1});
+////		mnp.lookups.push_back({kLeafNode, 0, 0, 2});
+////	}
+//
 //	if (ts->PDB.size() == 0)
 //	{
-//		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_0-5.pdb", g, true);
+//		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_0-3.pdb", g, true);
+//		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_0-5+.pdb", g, true);
+//		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_6-9.pdb", g, true);
+//		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_6-11+.pdb", g, true);
 //		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_12-15.pdb", g, true);
-//		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_6-11.pdb", g, true);
-//		mnp.lookups.push_back({kMaxNode, 3, 1, 0});
-//		mnp.lookups.push_back({kLeafNode, 0, 0, 0});
-//		mnp.lookups.push_back({kLeafNode, 0, 0, 1});
-//		mnp.lookups.push_back({kLeafNode, 0, 0, 2});
+//		mnp.lookups.push_back({PermutationPuzzle::kMaxNode, 3, 1, 0});
+//		mnp.lookups.push_back({PermutationPuzzle::kAddNode, 2, 4, 0});
+//		mnp.lookups.push_back({PermutationPuzzle::kAddNode, 2, 6, 0});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, 0, 0, 4});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, 0, 0, 0});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, 0, 0, 1});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, 0, 0, 2});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, 0, 0, 3});
 //	}
-
-	if (ts->PDB.size() == 0)
-	{
-		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_0-3.pdb", g, true);
-		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_0-5+.pdb", g, true);
-		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_6-9.pdb", g, true);
-		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_6-11+.pdb", g, true);
-		mnp.Load_Regular_PDB("/Users/nathanst/Desktop/STP_12-15.pdb", g, true);
-		mnp.lookups.push_back({kMaxNode, 3, 1, 0});
-		mnp.lookups.push_back({kAddNode, 2, 4, 0});
-		mnp.lookups.push_back({kAddNode, 2, 6, 0});
-		mnp.lookups.push_back({kLeafNode, 0, 0, 4});
-		mnp.lookups.push_back({kLeafNode, 0, 0, 0});
-		mnp.lookups.push_back({kLeafNode, 0, 0, 1});
-		mnp.lookups.push_back({kLeafNode, 0, 0, 2});
-		mnp.lookups.push_back({kLeafNode, 0, 0, 3});
-	}
-
-	
-	IDAStar<MNPuzzleState, slideDir> ida;
-	std::vector<slideDir> path1;
-
-
-	//mnp.SetPruneSuccessors(true);
-	for (int x = 0; x < 100; x++)
-	{
-		GetSTPInstance(mnp, s, x);
-		std::cout << "Problem " << x << std::endl;
-		std::cout << "Searching from: " << std::endl << s << std::endl << g << std::endl;
-		Timer t;
-		t.StartTimer();
-		ida.GetPath(&mnp, s, g, path1);
-		t.EndTimer();
-		std::cout << "Path found, length " << path1.size() << " time:" << t.GetElapsedTime() << " ";
-		std::cout << ida.GetNodesExpanded() << " nodes expanded" << std::endl;
-//		for (int x = 0; x < ts->histogram.size(); x++)
-//		{
-//			printf("%2d  %d\n", x, ts->histogram[x]);
-//		}
-		
-//		mnp.PrintHStats();
-	}
+//
+//	
+//	IDAStar<MNPuzzleState<4, 4>, slideDir> ida;
+//	std::vector<slideDir> path1;
+//
+//
+//	//mnp.SetPruneSuccessors(true);
+//	for (int x = 0; x < 100; x++)
+//	{
+//		GetSTPInstance(mnp, s, x);
+//		std::cout << "Problem " << x << std::endl;
+//		std::cout << "Searching from: " << std::endl << s << std::endl << g << std::endl;
+//		Timer t;
+//		t.StartTimer();
+//		ida.GetPath(&mnp, s, g, path1);
+//		t.EndTimer();
+//		std::cout << "Path found, length " << path1.size() << " time:" << t.GetElapsedTime() << " ";
+//		std::cout << ida.GetNodesExpanded() << " nodes expanded" << std::endl;
+////		for (int x = 0; x < ts->histogram.size(); x++)
+////		{
+////			printf("%2d  %d\n", x, ts->histogram[x]);
+////		}
+//		
+////		mnp.PrintHStats();
+//	}
 }
 
 bool MyClickHandler(unsigned long , int, int, point3d , tButtonType , tMouseEventType )
@@ -433,112 +552,115 @@ const char *getPDB9b(bool weighted)
 
 void BuildPDBs(bool aPDBs, bool bPDBs, bool weighted)
 {
-	MNPuzzle mnp(4, 4);
-	mnp.SetWeighted(weighted);
-	std::vector<int> tiles;
-	
-	MNPuzzleState s(4, 4);
-	MNPuzzleState g(4, 4);
-	
-	mnp.StoreGoal(g);
-	mnp.ClearPDBs();
-
-	if (aPDBs)
-	{
-		if (!fileExists(getPDB8a(weighted)))
-		{
-			g.Reset();
-			tiles.resize(0);
-			//for (int x = 0; x <= 14; x+=2)
-			for (int x = 0; x <= 7; x++)
-				tiles.push_back(x);
-			
-			mnp.Build_PDB(g, tiles, getPDB8a(weighted),
-						  std::thread::hardware_concurrency(), true);
-			mnp.ClearPDBs();
-		}
-	}
-	
-	if (bPDBs)
-	{
-		if (!fileExists(getPDB8b(weighted)))
-		{
-			g.Reset();
-			tiles.resize(0);
-			tiles.push_back(0);
-			for (int x = 8; x <= 14; x++)
-				//for (int x = 1; x <= 14; x+=2)
-				tiles.push_back(x);
-			
-			mnp.Build_PDB(g, tiles, getPDB8b(weighted),
-						  std::thread::hardware_concurrency(), true);
-			mnp.ClearPDBs();
-		}
-
-		if (!fileExists(getPDB1b(weighted)))
-		{
-			g.Reset();
-			tiles.resize(0);
-			tiles.push_back(0);
-			tiles.push_back(15);
-			
-			mnp.Build_PDB(g, tiles, getPDB1b(weighted),
-						  std::thread::hardware_concurrency(), true);
-			mnp.ClearPDBs();
-		}
-
-		if (!fileExists(getPDB9b(weighted)))
-		{
-			g.Reset();
-			tiles.resize(0);
-			tiles.push_back(0);
-			for (int x = 8; x <= 15; x++)
-			//for (int x = 1; x <= 15; x+=2)
-				tiles.push_back(x);
-			
-			mnp.Build_PDB(g, tiles, getPDB9b(weighted),
-						  std::thread::hardware_concurrency(), true);
-			mnp.ClearPDBs();
-		}
-	}
+	assert("!Code currently not using refactored PDB setup; needs to be re-written");
+//	MNPuzzle<4, 4> mnp;
+//	mnp.SetWeighted(weighted);
+//	std::vector<int> tiles;
+//	
+//	MNPuzzleState<4, 4> s;
+//	MNPuzzleState<4, 4> g;
+//	
+//	mnp.StoreGoal(g);
+//	mnp.ClearPDBs();
+//
+//	if (aPDBs)
+//	{
+//		if (!fileExists(getPDB8a(weighted)))
+//		{
+//			g.Reset();
+//			tiles.resize(0);
+//			//for (int x = 0; x <= 14; x+=2)
+//			for (int x = 0; x <= 7; x++)
+//				tiles.push_back(x);
+//			
+//			mnp.Build_PDB(g, tiles, getPDB8a(weighted),
+//						  std::thread::hardware_concurrency(), true);
+//			mnp.ClearPDBs();
+//		}
+//	}
+//	
+//	if (bPDBs)
+//	{
+//		if (!fileExists(getPDB8b(weighted)))
+//		{
+//			g.Reset();
+//			tiles.resize(0);
+//			tiles.push_back(0);
+//			for (int x = 8; x <= 14; x++)
+//				//for (int x = 1; x <= 14; x+=2)
+//				tiles.push_back(x);
+//			
+//			mnp.Build_PDB(g, tiles, getPDB8b(weighted),
+//						  std::thread::hardware_concurrency(), true);
+//			mnp.ClearPDBs();
+//		}
+//
+//		if (!fileExists(getPDB1b(weighted)))
+//		{
+//			g.Reset();
+//			tiles.resize(0);
+//			tiles.push_back(0);
+//			tiles.push_back(15);
+//			
+//			mnp.Build_PDB(g, tiles, getPDB1b(weighted),
+//						  std::thread::hardware_concurrency(), true);
+//			mnp.ClearPDBs();
+//		}
+//
+//		if (!fileExists(getPDB9b(weighted)))
+//		{
+//			g.Reset();
+//			tiles.resize(0);
+//			tiles.push_back(0);
+//			for (int x = 8; x <= 15; x++)
+//			//for (int x = 1; x <= 15; x+=2)
+//				tiles.push_back(x);
+//			
+//			mnp.Build_PDB(g, tiles, getPDB9b(weighted),
+//						  std::thread::hardware_concurrency(), true);
+//			mnp.ClearPDBs();
+//		}
+//	}
 }
 
 #pragma mark heuristic value tests
 
 void ModValueCompressionTest(bool weighted)
 {
-	std::vector<int> tiles;
-	
-	MNPuzzle mnp(4, 4);
-	mnp.SetWeighted(weighted);
-	MNPuzzleState s(4, 4);
-	MNPuzzleState g(4, 4);
-	
-	mnp.StoreGoal(g);
-	mnp.ClearPDBs();
-	
-	BuildPDBs(true, false, weighted);
-	
-	for (int x = 2; x <= 10; x++)
-	{
-		g.Reset();
-		printf("==>Compressing (mod) by factor of %d\n", x);
-		mnp.ClearPDBs();
-		//mnp.Load_Regular_PDB(getPDB7a(weighted), g, true);
-		uint64_t oldSize = mnp.Get_PDB_Size(g, 8);
-		uint64_t newSize = oldSize / x;
-		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
-		mnp.Mod_Compress_PDB(0, newSize, true);
-		mnp.lookups.push_back({kLeafModCompress, -0, -0, -0});
-		MeasureIR(mnp);
-	}
+	assert("!Code currently not using refactored PDB setup; needs to be re-written");
+
+//	std::vector<int> tiles;
+//	
+//	MNPuzzle<4, 4> mnp;
+//	mnp.SetWeighted(weighted);
+//	MNPuzzleState<4, 4> s;
+//	MNPuzzleState<4, 4> g;
+//	
+//	mnp.StoreGoal(g);
+//	mnp.ClearPDBs();
+//	
+//	BuildPDBs(true, false, weighted);
+//	
+//	for (int x = 2; x <= 10; x++)
+//	{
+//		g.Reset();
+//		printf("==>Compressing (mod) by factor of %d\n", x);
+//		mnp.ClearPDBs();
+//		//mnp.Load_Regular_PDB(getPDB7a(weighted), g, true);
+//		uint64_t oldSize = mnp.Get_PDB_Size(g, 8);
+//		uint64_t newSize = oldSize / x;
+//		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
+//		mnp.Mod_Compress_PDB(0, newSize, true);
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafModCompress, -0, -0, -0});
+//		MeasureIR(mnp);
+//	}
 }
 
 void ModValueDeltaCompressionTest(bool weighted)
 {
 //	std::vector<int> tiles;
 //	
-//	MNPuzzle mnp(4, 4);
+//	MNPuzzle<4, 4> mnp;
 //	mnp.SetWeighted(weighted);
 //	MNPuzzleState s(4, 4);
 //	MNPuzzleState g(4, 4);
@@ -570,7 +692,7 @@ void DivValueCompressionTest(bool weighted)
 {
 //	std::vector<int> tiles;
 //	
-//	MNPuzzle mnp(4, 4);
+//	MNPuzzle<4, 4> mnp;
 //	mnp.SetWeighted(weighted);
 //	MNPuzzleState s(4, 4);
 //	MNPuzzleState g(4, 4);
@@ -618,7 +740,7 @@ void DivDeltaValueCompressionTest(bool weighted)
 {
 //	std::vector<int> tiles;
 //	
-//	MNPuzzle mnp(4, 4);
+//	MNPuzzle<4, 4> mnp;
 //	mnp.SetWeighted(weighted);
 //	MNPuzzleState s(4, 4);
 //	MNPuzzleState g(4, 4);
@@ -669,7 +791,7 @@ void BitDeltaValueCompressionTest(bool weighted)
 {
 //	std::vector<int> tiles;
 //	
-//	MNPuzzle mnp(4, 4);
+//	MNPuzzle<4, 4> mnp;
 //	mnp.SetWeighted(weighted);
 //	MNPuzzleState s(4, 4);
 //	MNPuzzleState g(4, 4);
@@ -700,457 +822,466 @@ void BitDeltaValueCompressionTest(bool weighted)
 
 void BaseHeuristicTest(bool weighted)
 {
-	std::vector<int> tiles;
-	
-	MNPuzzle mnp(4, 4);
-	mnp.SetWeighted(weighted);
-	MNPuzzleState s(4, 4);
-	MNPuzzleState g(4, 4);
-	
-	mnp.StoreGoal(g);
-	
-	mnp.ClearPDBs();
-	BuildPDBs(true, true, weighted);
-
-	if (0)
-	{
-		printf("==>Solving with MD\n");
-		mnp.ClearPDBs();
-		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-		std::string desc = "MD-";
-		Test(mnp, desc.c_str());
-	}
-
-	{
-		printf("==>Solving with 8-piece additive PDBs\n");
-		mnp.ClearPDBs();
-		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
-		mnp.Load_Regular_PDB(getPDB8b(weighted), g, true);
-		mnp.Load_Regular_PDB(getPDB1b(weighted), g, true);
-		mnp.lookups.push_back({kAddNode, 3, 1, -0}); // max of 2 children starting at 1 in the tree
-		mnp.lookups.push_back({kLeafNode, -0, -0, 0});
-		mnp.lookups.push_back({kLeafNode, -0, -0, 1});
-		mnp.lookups.push_back({kLeafNode, -0, -0, 2});
-		std::string desc = "BASE8-";
-		Test(mnp, desc.c_str());
-	}
-	
-	if (0)
-	{
-		printf("==>Solving with 8+9-piece additive PDBs\n");
-		mnp.ClearPDBs();
-		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
-		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true);
-		mnp.lookups.push_back({kAddNode, 2, 1, -0}); // max of 2 children starting at 1 in the tree
-		mnp.lookups.push_back({kLeafNode, -0, -0, 0});
-		mnp.lookups.push_back({kLeafNode, -0, -0, 1});
-		std::string desc = "BASE9-";
-		Test(mnp, desc.c_str());
-	}
+	assert("!Code currently not using refactored PDB setup; needs to be re-written");
+//	std::vector<int> tiles;
+//	
+//	MNPuzzle<4, 4> mnp;
+//	mnp.SetWeighted(weighted);
+//	MNPuzzleState<4, 4> s;
+//	MNPuzzleState<4, 4> g;
+//	
+//	mnp.StoreGoal(g);
+//	
+//	mnp.ClearPDBs();
+//	BuildPDBs(true, true, weighted);
+//
+//	if (0)
+//	{
+//		printf("==>Solving with MD\n");
+//		mnp.ClearPDBs();
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafDefaultHeuristic, -0, -0, -0});
+//		std::string desc = "MD-";
+//		Test(mnp, desc.c_str());
+//	}
+//
+//	{
+//		printf("==>Solving with 8-piece additive PDBs\n");
+//		mnp.ClearPDBs();
+//		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
+//		mnp.Load_Regular_PDB(getPDB8b(weighted), g, true);
+//		mnp.Load_Regular_PDB(getPDB1b(weighted), g, true);
+//		mnp.lookups.push_back({PermutationPuzzle::kAddNode, 3, 1, -0}); // max of 2 children starting at 1 in the tree
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 0});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 1});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 2});
+//		std::string desc = "BASE8-";
+//		Test(mnp, desc.c_str());
+//	}
+//	
+//	if (0)
+//	{
+//		printf("==>Solving with 8+9-piece additive PDBs\n");
+//		mnp.ClearPDBs();
+//		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
+//		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true);
+//		mnp.lookups.push_back({PermutationPuzzle::kAddNode, 2, 1, -0}); // max of 2 children starting at 1 in the tree
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 0});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 1});
+//		std::string desc = "BASE9-";
+//		Test(mnp, desc.c_str());
+//	}
 }
 
 //Fractional_Mod_Compress_PDB
 void FractionalNodesCompressionTest(bool weighted)
 {
-	std::vector<int> tiles;
-	
-	MNPuzzle mnp(4, 4);
-	mnp.SetWeighted(weighted);
-	MNPuzzleState s(4, 4);
-	MNPuzzleState g(4, 4);
-	
-	mnp.StoreGoal(g);
-	mnp.ClearPDBs();
-	
-	BuildPDBs(true, true, weighted);
-	
-	for (int x = 2; x <= 10; x++)
-	{
-		g.Reset();
-		printf("==>Fractional (contiguous): Reducing by factor of %d\n", x);
-		mnp.ClearPDBs();
-		uint64_t oldSize = mnp.Get_PDB_Size(g, 9);
-		uint64_t newSize = oldSize / x;
-		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true); // pdb 0
-		mnp.Load_Regular_PDB(getPDB8b(weighted), g, true); // pdb 1
-		mnp.Load_Regular_PDB(getPDB1b(weighted), g, true); // pdb 2
-		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true); // pdb 3
-		mnp.Fractional_Compress_PDB(3, newSize, true);
-		mnp.lookups.push_back({kAddNode, 2, 1, -0}); // max of 2 children starting at 1 in the tree
-		mnp.lookups.push_back({kMaxNode, 2, 3, -0}); // max of 2 children starting at 3 in the tree
-		mnp.lookups.push_back({kLeafNode, -0, -0, 0});
-		mnp.lookups.push_back({kAddNode, 2, 5, -0});
-		mnp.lookups.push_back({kLeafFractionalCompress, -0, -0, 3});
-		mnp.lookups.push_back({kLeafNode, -0, -0, 1});
-		mnp.lookups.push_back({kLeafNode, -0, -0, 2});
-		std::string desc = "FCT-C-";
-		desc += ('0'+x/10);
-		desc += ('0'+x%10);
-		Test(mnp, desc.c_str());
-	}
+	assert("!Code currently not using refactored PDB setup; needs to be re-written");
 
+//	std::vector<int> tiles;
+//	
+//	MNPuzzle<4, 4> mnp;
+//	mnp.SetWeighted(weighted);
+//	MNPuzzleState<4, 4> s;
+//	MNPuzzleState<4, 4> g;
+//	
+//	mnp.StoreGoal(g);
+//	mnp.ClearPDBs();
+//	
+//	BuildPDBs(true, true, weighted);
+//	
 //	for (int x = 2; x <= 10; x++)
 //	{
 //		g.Reset();
-//		printf("==>Fractional (contiguous over MD): Reducing by factor of %d\n", x);
+//		printf("==>Fractional (contiguous): Reducing by factor of %d\n", x);
 //		mnp.ClearPDBs();
 //		uint64_t oldSize = mnp.Get_PDB_Size(g, 9);
 //		uint64_t newSize = oldSize / x;
-//		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-//
 //		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true); // pdb 0
-//		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true); // pdb 1
-//		mnp.Delta_Compress_PDB(g, 0, true);
-//		mnp.Delta_Compress_PDB(g, 1, true);
-//		mnp.Fractional_Compress_PDB(1, newSize, true);
-//		
-//		mnp.lookups.resize(0);
-//		mnp.lookups.push_back({kAddNode, 3, 1, -0}); // max of 3 children starting at 1 in the tree
-//		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-//		mnp.lookups.push_back({kLeafNode, -0, -0, 0});
-//		mnp.lookups.push_back({kLeafFractionalCompress, -0, -0, 1});
-//		std::string desc = "FCT-MD-C-";
+//		mnp.Load_Regular_PDB(getPDB8b(weighted), g, true); // pdb 1
+//		mnp.Load_Regular_PDB(getPDB1b(weighted), g, true); // pdb 2
+//		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true); // pdb 3
+//		mnp.Fractional_Compress_PDB(3, newSize, true);
+//		mnp.lookups.push_back({PermutationPuzzle::kAddNode, 2, 1, -0}); // max of 2 children starting at 1 in the tree
+//		mnp.lookups.push_back({PermutationPuzzle::kMaxNode, 2, 3, -0}); // max of 2 children starting at 3 in the tree
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 0});
+//		mnp.lookups.push_back({PermutationPuzzle::kAddNode, 2, 5, -0});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafFractionalCompress, -0, -0, 3});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 1});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 2});
+//		std::string desc = "FCT-C-";
 //		desc += ('0'+x/10);
 //		desc += ('0'+x%10);
 //		Test(mnp, desc.c_str());
 //	}
+//
+////	for (int x = 2; x <= 10; x++)
+////	{
+////		g.Reset();
+////		printf("==>Fractional (contiguous over MD): Reducing by factor of %d\n", x);
+////		mnp.ClearPDBs();
+////		uint64_t oldSize = mnp.Get_PDB_Size(g, 9);
+////		uint64_t newSize = oldSize / x;
+////		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
+////
+////		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true); // pdb 0
+////		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true); // pdb 1
+////		mnp.Delta_Compress_PDB(g, 0, true);
+////		mnp.Delta_Compress_PDB(g, 1, true);
+////		mnp.Fractional_Compress_PDB(1, newSize, true);
+////		
+////		mnp.lookups.resize(0);
+////		mnp.lookups.push_back({kAddNode, 3, 1, -0}); // max of 3 children starting at 1 in the tree
+////		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
+////		mnp.lookups.push_back({kLeafNode, -0, -0, 0});
+////		mnp.lookups.push_back({kLeafFractionalCompress, -0, -0, 1});
+////		std::string desc = "FCT-MD-C-";
+////		desc += ('0'+x/10);
+////		desc += ('0'+x%10);
+////		Test(mnp, desc.c_str());
+////	}
 }
 
 void FractionalModNodesCompressionTest(bool weighted)
 {
-	std::vector<int> tiles;
-	
-	MNPuzzle mnp(4, 4);
-	mnp.SetWeighted(weighted);
-	MNPuzzleState s(4, 4);
-	MNPuzzleState g(4, 4);
-	
-	mnp.StoreGoal(g);
-	mnp.ClearPDBs();
-	
-	BuildPDBs(true, true, weighted);
-	
-	for (int x = 2; x <= 10; x++)
-	{
-		g.Reset();
-		printf("==>Fractional MOD: Reducing by factor of %d\n", x);
-		mnp.ClearPDBs();
-		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true); // pdb 0
-		mnp.Load_Regular_PDB(getPDB8b(weighted), g, true); // pdb 1
-		mnp.Load_Regular_PDB(getPDB1b(weighted), g, true); // pdb 2
-		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true); // pdb 3
-		mnp.Fractional_Mod_Compress_PDB(3, x, true);
-		mnp.lookups.push_back({kAddNode, 2, 1, -0}); // max of 2 children starting at 1 in the tree
-		mnp.lookups.push_back({kMaxNode, 2, 3, -0}); // max of 2 children starting at 3 in the tree
-		mnp.lookups.push_back({kLeafNode, -0, -0, 0});
-		mnp.lookups.push_back({kAddNode, 2, 5, -0});
-		mnp.lookups.push_back({kLeafFractionalModCompress, static_cast<uint8_t>(x), -0, 3});
-		mnp.lookups.push_back({kLeafNode, -0, -0, 1});
-		mnp.lookups.push_back({kLeafNode, -0, -0, 2});
-		
-		std::string desc = "FCT-M-";
-		desc += ('0'+x/10);
-		desc += ('0'+x%10);
-		Test(mnp, desc.c_str());
-	}
-
-
-//  over MD ineffective
+	assert("!Code currently not using refactored PDB setup; needs to be re-written");
+//	std::vector<int> tiles;
+//	
+//	MNPuzzle<4, 4> mnp;
+//	mnp.SetWeighted(weighted);
+//	MNPuzzleState<4, 4> s;
+//	MNPuzzleState<4, 4> g;
+//	
+//	mnp.StoreGoal(g);
+//	mnp.ClearPDBs();
+//	
+//	BuildPDBs(true, true, weighted);
+//	
 //	for (int x = 2; x <= 10; x++)
 //	{
 //		g.Reset();
-//		printf("==>Fractional MOD over MD: Reducing by factor of %d\n", x);
+//		printf("==>Fractional MOD: Reducing by factor of %d\n", x);
 //		mnp.ClearPDBs();
-//		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-//		
 //		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true); // pdb 0
-//		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true); // pdb 1
-//		mnp.Delta_Compress_PDB(g, 0, true);
-//		mnp.Delta_Compress_PDB(g, 1, true);
-//		mnp.Fractional_Mod_Compress_PDB(1, x, true);
+//		mnp.Load_Regular_PDB(getPDB8b(weighted), g, true); // pdb 1
+//		mnp.Load_Regular_PDB(getPDB1b(weighted), g, true); // pdb 2
+//		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true); // pdb 3
+//		mnp.Fractional_Mod_Compress_PDB(3, x, true);
+//		mnp.lookups.push_back({PermutationPuzzle::kAddNode, 2, 1, -0}); // max of 2 children starting at 1 in the tree
+//		mnp.lookups.push_back({PermutationPuzzle::kMaxNode, 2, 3, -0}); // max of 2 children starting at 3 in the tree
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 0});
+//		mnp.lookups.push_back({PermutationPuzzle::kAddNode, 2, 5, -0});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafFractionalModCompress, static_cast<uint8_t>(x), -0, 3});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 1});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 2});
 //		
-//		mnp.lookups.resize(0);
-//		mnp.lookups.push_back({kAddNode, 2, 1, -0});
-//		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-//		mnp.lookups.push_back({kLeafNode, -0, -0, 0});
-//		mnp.lookups.push_back({kLeafFractionalModCompress, static_cast<uint8_t>(x), -0, 1});
-//		
-//		std::string desc = "FCT-MD-M-";
+//		std::string desc = "FCT-M-";
 //		desc += ('0'+x/10);
 //		desc += ('0'+x%10);
 //		Test(mnp, desc.c_str());
 //	}
-
+//
+//
+////  over MD ineffective
+////	for (int x = 2; x <= 10; x++)
+////	{
+////		g.Reset();
+////		printf("==>Fractional MOD over MD: Reducing by factor of %d\n", x);
+////		mnp.ClearPDBs();
+////		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
+////		
+////		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true); // pdb 0
+////		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true); // pdb 1
+////		mnp.Delta_Compress_PDB(g, 0, true);
+////		mnp.Delta_Compress_PDB(g, 1, true);
+////		mnp.Fractional_Mod_Compress_PDB(1, x, true);
+////		
+////		mnp.lookups.resize(0);
+////		mnp.lookups.push_back({kAddNode, 2, 1, -0});
+////		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
+////		mnp.lookups.push_back({kLeafNode, -0, -0, 0});
+////		mnp.lookups.push_back({kLeafFractionalModCompress, static_cast<uint8_t>(x), -0, 1});
+////		
+////		std::string desc = "FCT-MD-M-";
+////		desc += ('0'+x/10);
+////		desc += ('0'+x%10);
+////		Test(mnp, desc.c_str());
+////	}
+//
 }
 
 
 void ModNodesCompressionTest(bool weighted)
 {
-	std::vector<int> tiles;
-	
-	MNPuzzle mnp(4, 4);
-	mnp.SetWeighted(weighted);
-	MNPuzzleState s(4, 4);
-	MNPuzzleState g(4, 4);
-	
-	mnp.StoreGoal(g);
-	mnp.ClearPDBs();
-	
-	BuildPDBs(true, true, weighted);
-	
-	for (int x = 2; x <= 10; x++)
-	{
-		g.Reset();
-		printf("==>Compressing (mod) by factor of %d\n", x);
-		mnp.ClearPDBs();
-		uint64_t oldSize = mnp.Get_PDB_Size(g, 8);
-		uint64_t newSize = oldSize / x;
-		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
-		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true);
-		mnp.Mod_Compress_PDB(1, newSize, true);
-		mnp.lookups.push_back({kAddNode, 2, 1, -0}); // max of 2 children starting at 1 in the tree
-		mnp.lookups.push_back({kLeafNode, -0, -0, 0});
-		mnp.lookups.push_back({kLeafModCompress, -0, -0, 1});
-
-		std::string desc = "MOD-";
-		desc += ('0'+x/10);
-		desc += ('0'+x%10);
-		Test(mnp, desc.c_str());
-	}
+	assert("!Code currently not using refactored PDB setup; needs to be re-written");
+//	std::vector<int> tiles;
+//	
+//	MNPuzzle<4, 4> mnp;
+//	mnp.SetWeighted(weighted);
+//	MNPuzzleState<4, 4> s;
+//	MNPuzzleState<4, 4> g;
+//	
+//	mnp.StoreGoal(g);
+//	mnp.ClearPDBs();
+//	
+//	BuildPDBs(true, true, weighted);
+//	
+//	for (int x = 2; x <= 10; x++)
+//	{
+//		g.Reset();
+//		printf("==>Compressing (mod) by factor of %d\n", x);
+//		mnp.ClearPDBs();
+//		uint64_t oldSize = mnp.Get_PDB_Size(g, 8);
+//		uint64_t newSize = oldSize / x;
+//		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
+//		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true);
+//		mnp.Mod_Compress_PDB(1, newSize, true);
+//		mnp.lookups.push_back({PermutationPuzzle::kAddNode, 2, 1, -0}); // max of 2 children starting at 1 in the tree
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 0});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafModCompress, -0, -0, 1});
+//
+//		std::string desc = "MOD-";
+//		desc += ('0'+x/10);
+//		desc += ('0'+x%10);
+//		Test(mnp, desc.c_str());
+//	}
 }
 
 void ModNodesDeltaCompressionTest(bool weighted)
 {
-	std::vector<int> tiles;
-	
-	MNPuzzle mnp(4, 4);
-	mnp.SetWeighted(weighted);
-	MNPuzzleState s(4, 4);
-	MNPuzzleState g(4, 4);
-	
-	mnp.StoreGoal(g);
-	mnp.ClearPDBs();
-	
-	BuildPDBs(true, true, weighted);
-	
-	for (int x = 2; x <= 10; x++)
-	{
-		g.Reset();
-		printf("==>Compressing (mod+delta) by factor of %d\n", x);
-		mnp.ClearPDBs();
-		uint64_t oldSize = mnp.Get_PDB_Size(g, 8);
-		uint64_t newSize = oldSize / x;
-		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
-		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true);
-		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-		mnp.Delta_Compress_PDB(g, 0, true);
-		mnp.Delta_Compress_PDB(g, 1, true);
-		mnp.Mod_Compress_PDB(1, newSize, true);
-		mnp.lookups.clear();
-		mnp.lookups.push_back({kAddNode, 3, 1, -0}); // max of 2 children starting at 1 in the tree
-		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-		mnp.lookups.push_back({kLeafNode, -0, -0, 0});
-		mnp.lookups.push_back({kLeafModCompress, -0, -0, 1});
-		
-		std::string desc = "MOD-D-";
-		desc += ('0'+x/10);
-		desc += ('0'+x%10);
-		Test(mnp, desc.c_str());
-	}
+	assert("!Code currently not using refactored PDB setup; needs to be re-written");
+//	std::vector<int> tiles;
+//	
+//	MNPuzzle<4, 4> mnp;
+//	mnp.SetWeighted(weighted);
+//	MNPuzzleState<4, 4> s;
+//	MNPuzzleState<4, 4> g;
+//	
+//	mnp.StoreGoal(g);
+//	mnp.ClearPDBs();
+//	
+//	BuildPDBs(true, true, weighted);
+//	
+//	for (int x = 2; x <= 10; x++)
+//	{
+//		g.Reset();
+//		printf("==>Compressing (mod+delta) by factor of %d\n", x);
+//		mnp.ClearPDBs();
+//		uint64_t oldSize = mnp.Get_PDB_Size(g, 8);
+//		uint64_t newSize = oldSize / x;
+//		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
+//		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true);
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafDefaultHeuristic, -0, -0, -0});
+//		mnp.Delta_Compress_PDB(g, 0, true);
+//		mnp.Delta_Compress_PDB(g, 1, true);
+//		mnp.Mod_Compress_PDB(1, newSize, true);
+//		mnp.lookups.clear();
+//		mnp.lookups.push_back({PermutationPuzzle::kAddNode, 3, 1, -0}); // max of 2 children starting at 1 in the tree
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafDefaultHeuristic, -0, -0, -0});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 0});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafModCompress, -0, -0, 1});
+//		
+//		std::string desc = "MOD-D-";
+//		desc += ('0'+x/10);
+//		desc += ('0'+x%10);
+//		Test(mnp, desc.c_str());
+//	}
 }
 
 void DivNodesCompressionTest(bool weighted)
 {
-	std::vector<int> tiles;
-	
-	MNPuzzle mnp(4, 4);
-	mnp.SetWeighted(weighted);
-	MNPuzzleState s(4, 4);
-	MNPuzzleState g(4, 4);
-	
-	mnp.StoreGoal(g);
-	mnp.ClearPDBs();
-	
-	BuildPDBs(true, true, weighted);
-	
-	for (int x = 1; x <= 10; x++)
-	{
-		g.Reset();
-		printf("==>Compressing (div) by factor of %d\n", x);
-		mnp.ClearPDBs();
-		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
-		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true);
-		mnp.Min_Compress_PDB(1, x, true);
-
-		mnp.lookups.push_back({kAddNode, 2, 1, -0}); // max of 2 children starting at 1 in the tree
-		mnp.lookups.push_back({kLeafNode, -0, -0, 0});
-		mnp.lookups.push_back({kLeafMinCompress, static_cast<uint8_t>(x), -0, 1});
-
-		std::string desc = "DIV-";
-		desc += ('0'+x/10);
-		desc += ('0'+x%10);
-		Test(mnp, desc.c_str());
-		//MeasureIR(mnp);
-	}
+	assert("!Code currently not using refactored PDB setup; needs to be re-written");
+//	std::vector<int> tiles;
+//	
+//	MNPuzzle<4, 4> mnp;
+//	mnp.SetWeighted(weighted);
+//	MNPuzzleState<4, 4> s;
+//	MNPuzzleState<4, 4> g;
+//	
+//	mnp.StoreGoal(g);
+//	mnp.ClearPDBs();
+//	
+//	BuildPDBs(true, true, weighted);
+//	
+//	for (int x = 1; x <= 10; x++)
+//	{
+//		g.Reset();
+//		printf("==>Compressing (div) by factor of %d\n", x);
+//		mnp.ClearPDBs();
+//		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
+//		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true);
+//		mnp.Min_Compress_PDB(1, x, true);
+//
+//		mnp.lookups.push_back({PermutationPuzzle::kAddNode, 2, 1, -0}); // max of 2 children starting at 1 in the tree
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 0});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafMinCompress, static_cast<uint8_t>(x), -0, 1});
+//
+//		std::string desc = "DIV-";
+//		desc += ('0'+x/10);
+//		desc += ('0'+x%10);
+//		Test(mnp, desc.c_str());
+//		//MeasureIR(mnp);
+//	}
 }
 
 void DivNodesDeltaCompressionTest(bool weighted)
 {
-	std::vector<int> tiles;
-	
-	MNPuzzle mnp(4, 4);
-	mnp.SetWeighted(weighted);
-	MNPuzzleState s(4, 4);
-	MNPuzzleState g(4, 4);
-	
-	mnp.StoreGoal(g);
-	mnp.ClearPDBs();
-	
-	BuildPDBs(true, true, weighted);
-
-	if (0)
-	{
-		for (int x = 2; x <= 10; x++)
-		{
-			g.Reset();
-			printf("==>Compressing (div+delta) by factor of %d\n", x);
-			mnp.ClearPDBs();
-			mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
-			mnp.Load_Regular_PDB(getPDB9b(weighted), g, true);
-			mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-			mnp.Delta_Compress_PDB(g, 0, true);
-			mnp.Delta_Compress_PDB(g, 1, true);
-			mnp.Min_Compress_PDB(1, x, true);
-			mnp.lookups.clear();
-			mnp.lookups.push_back({kAddNode, 3, 1, -0}); // max of 2 children starting at 1 in the tree
-			mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-			mnp.lookups.push_back({kLeafNode, -0, -0, 0});
-			mnp.lookups.push_back({kLeafMinCompress, static_cast<uint8_t>(x), -0, 1});
-			
-			std::string desc = "MIN-D-";
-			desc += ('0'+x/10);
-			desc += ('0'+x%10);
-			Test(mnp, desc.c_str());
-		}
-	}
-	
-	for (int x = 2; x <= 10; x++)
-	{
-		g.Reset();
-		printf("==>Compressing (div+delta) by factor of %d\n", x);
-		mnp.ClearPDBs();
-		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
-		mnp.Load_Regular_PDB(getPDB8b(weighted), g, true);
-		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true);
-		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-		mnp.Delta_Compress_PDB(g, 0, true);
-		mnp.Delta_Compress_PDB(g, 1, true);
-		mnp.Delta_Compress_PDB(g, 2, true);
-		mnp.lookups.clear();
-		mnp.lookups.push_back({kLeafNode, -0, -0, 1});
-		mnp.Delta_Compress_PDB(g, 2, true);
-		mnp.Min_Compress_PDB(2, x, true);
-
-		mnp.lookups.clear();
-		mnp.lookups.push_back({kAddNode, 4, 1, -0}); // max of 2 children starting at 1 in the tree
-		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-		mnp.lookups.push_back({kLeafNode, -0, -0, 0});
-		mnp.lookups.push_back({kLeafNode, -0, -0, 1});
-		mnp.lookups.push_back({kLeafMinCompress, static_cast<uint8_t>(x), -0, 2});
-		
-		std::string desc = "MIN-D8-";
-		desc += ('0'+x/10);
-		desc += ('0'+x%10);
-		Test(mnp, desc.c_str());
-	}
+	assert("!Code currently not using refactored PDB setup; needs to be re-written");
+//	std::vector<int> tiles;
+//	
+//	MNPuzzle<4, 4> mnp;
+//	mnp.SetWeighted(weighted);
+//	MNPuzzleState<4, 4> s;
+//	MNPuzzleState<4, 4> g;
+//	
+//	mnp.StoreGoal(g);
+//	mnp.ClearPDBs();
+//	
+//	BuildPDBs(true, true, weighted);
+//
+//	if (0)
+//	{
+//		for (int x = 2; x <= 10; x++)
+//		{
+//			g.Reset();
+//			printf("==>Compressing (div+delta) by factor of %d\n", x);
+//			mnp.ClearPDBs();
+//			mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
+//			mnp.Load_Regular_PDB(getPDB9b(weighted), g, true);
+//			mnp.lookups.push_back({PermutationPuzzle::kLeafDefaultHeuristic, -0, -0, -0});
+//			mnp.Delta_Compress_PDB(g, 0, true);
+//			mnp.Delta_Compress_PDB(g, 1, true);
+//			mnp.Min_Compress_PDB(1, x, true);
+//			mnp.lookups.clear();
+//			mnp.lookups.push_back({PermutationPuzzle::kAddNode, 3, 1, -0}); // max of 2 children starting at 1 in the tree
+//			mnp.lookups.push_back({PermutationPuzzle::kLeafDefaultHeuristic, -0, -0, -0});
+//			mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 0});
+//			mnp.lookups.push_back({PermutationPuzzle::kLeafMinCompress, static_cast<uint8_t>(x), -0, 1});
+//			
+//			std::string desc = "MIN-D-";
+//			desc += ('0'+x/10);
+//			desc += ('0'+x%10);
+//			Test(mnp, desc.c_str());
+//		}
+//	}
+//	
+//	for (int x = 2; x <= 10; x++)
+//	{
+//		g.Reset();
+//		printf("==>Compressing (div+delta) by factor of %d\n", x);
+//		mnp.ClearPDBs();
+//		mnp.Load_Regular_PDB(getPDB8a(weighted), g, true);
+//		mnp.Load_Regular_PDB(getPDB8b(weighted), g, true);
+//		mnp.Load_Regular_PDB(getPDB9b(weighted), g, true);
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafDefaultHeuristic, -0, -0, -0});
+//		mnp.Delta_Compress_PDB(g, 0, true);
+//		mnp.Delta_Compress_PDB(g, 1, true);
+//		mnp.Delta_Compress_PDB(g, 2, true);
+//		mnp.lookups.clear();
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 1});
+//		mnp.Delta_Compress_PDB(g, 2, true);
+//		mnp.Min_Compress_PDB(2, x, true);
+//
+//		mnp.lookups.clear();
+//		mnp.lookups.push_back({PermutationPuzzle::kAddNode, 4, 1, -0}); // max of 2 children starting at 1 in the tree
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafDefaultHeuristic, -0, -0, -0});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 0});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 1});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafMinCompress, static_cast<uint8_t>(x), -0, 2});
+//		
+//		std::string desc = "MIN-D8-";
+//		desc += ('0'+x/10);
+//		desc += ('0'+x%10);
+//		Test(mnp, desc.c_str());
+//	}
 }
 
 
 void BitDeltaNodesCompressionTest(bool weighted)
 {
-	std::vector<int> tiles;
-	
-	MNPuzzle mnp(4, 4);
-	mnp.SetWeighted(weighted);
-	MNPuzzleState s(4, 4);
-	MNPuzzleState g(4, 4);
-	
-	mnp.StoreGoal(g);
-	mnp.ClearPDBs();
-	
-	BuildPDBs(true, true, weighted);
-	
-	if (0)
-	{
-		for (int x = 1; x <= 4; x*=2)
-		{
-			std::vector<int> cutoffs;
-			GetBitValueCutoffs(cutoffs, x);
-			
-			g.Reset();
-			printf("==>Compressing to %d bits\n", x);
-			mnp.ClearPDBs();
-			mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-			
-			mnp.Load_Regular_PDB(getPDB8a(weighted), g, false); // PDB 0
-			mnp.Delta_Compress_PDB(g, 0, true);
-			
-			mnp.Load_Regular_PDB(getPDB9b(weighted), g, false); // PDB 1
-			mnp.Delta_Compress_PDB(g, 1, true);
-			mnp.Value_Range_Compress_PDB(1, x, true);
-			
-			
-			mnp.lookups.resize(0);
-			mnp.lookups.push_back({kAddNode, 3, 1, -0});
-			mnp.lookups.push_back({kLeafNode, -0, -0, 0});
-			mnp.lookups.push_back({kLeafNode, -0, -0, 1});
-			mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-			
-			std::string desc = "VALRNG-DMD-";
-			desc += ('0'+x/10);
-			desc += ('0'+x%10);
-			Test(mnp, desc.c_str());
-		}
-	}
-
-	for (int x = 1; x <= 2; x*=2)
-	{
-		std::vector<int> cutoffs;
-		GetBitValueCutoffs(cutoffs, x);
-		
-		g.Reset();
-		printf("==>Compressing to %d bits\n", x);
-		mnp.ClearPDBs();
-		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-		
-		mnp.Load_Regular_PDB(getPDB8a(weighted), g, false); // PDB 0
-		mnp.Delta_Compress_PDB(g, 0, true);
-
-		mnp.Load_Regular_PDB(getPDB8b(weighted), g, false); // PDB 1
-		mnp.Delta_Compress_PDB(g, 1, true);
-		
-		mnp.Load_Regular_PDB(getPDB9b(weighted), g, false); // PDB 2
-		mnp.Delta_Compress_PDB(g, 2, true);
-
-		mnp.lookups.clear();
-		mnp.lookups.push_back({kLeafNode, -0, -0, 1});
-		mnp.Delta_Compress_PDB(g, 2, true);
-
-		mnp.Value_Range_Compress_PDB(2, x, true);
-		
-		
-		mnp.lookups.resize(0);
-		mnp.lookups.push_back({kAddNode, 4, 1, -0});
-		mnp.lookups.push_back({kLeafNode, -0, -0, 0});
-		mnp.lookups.push_back({kLeafNode, -0, -0, 1});
-		mnp.lookups.push_back({kLeafNode, -0, -0, 2});
-		mnp.lookups.push_back({kLeafDefaultHeuristic, -0, -0, -0});
-		
-		std::string desc = "VALRNG-D8-";
-		desc += ('0'+x/10);
-		desc += ('0'+x%10);
-		Test(mnp, desc.c_str());
-	}
+	assert("!Code currently not using refactored PDB setup; needs to be re-written");
+//	std::vector<int> tiles;
+//	
+//	MNPuzzle<4, 4> mnp;
+//	mnp.SetWeighted(weighted);
+//	MNPuzzleState<4, 4> s;
+//	MNPuzzleState<4, 4> g;
+//	
+//	mnp.StoreGoal(g);
+//	mnp.ClearPDBs();
+//	
+//	BuildPDBs(true, true, weighted);
+//	
+//	if (0)
+//	{
+//		for (int x = 1; x <= 4; x*=2)
+//		{
+//			std::vector<int> cutoffs;
+//			GetBitValueCutoffs(cutoffs, x);
+//			
+//			g.Reset();
+//			printf("==>Compressing to %d bits\n", x);
+//			mnp.ClearPDBs();
+//			mnp.lookups.push_back({PermutationPuzzle::kLeafDefaultHeuristic, -0, -0, -0});
+//			
+//			mnp.Load_Regular_PDB(getPDB8a(weighted), g, false); // PDB 0
+//			mnp.Delta_Compress_PDB(g, 0, true);
+//			
+//			mnp.Load_Regular_PDB(getPDB9b(weighted), g, false); // PDB 1
+//			mnp.Delta_Compress_PDB(g, 1, true);
+//			mnp.Value_Range_Compress_PDB(1, x, true);
+//			
+//			
+//			mnp.lookups.resize(0);
+//			mnp.lookups.push_back({PermutationPuzzle::kAddNode, 3, 1, -0});
+//			mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 0});
+//			mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 1});
+//			mnp.lookups.push_back({PermutationPuzzle::kLeafDefaultHeuristic, -0, -0, -0});
+//			
+//			std::string desc = "VALRNG-DMD-";
+//			desc += ('0'+x/10);
+//			desc += ('0'+x%10);
+//			Test(mnp, desc.c_str());
+//		}
+//	}
+//
+//	for (int x = 1; x <= 2; x*=2)
+//	{
+//		std::vector<int> cutoffs;
+//		GetBitValueCutoffs(cutoffs, x);
+//		
+//		g.Reset();
+//		printf("==>Compressing to %d bits\n", x);
+//		mnp.ClearPDBs();
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafDefaultHeuristic, -0, -0, -0});
+//		
+//		mnp.Load_Regular_PDB(getPDB8a(weighted), g, false); // PDB 0
+//		mnp.Delta_Compress_PDB(g, 0, true);
+//
+//		mnp.Load_Regular_PDB(getPDB8b(weighted), g, false); // PDB 1
+//		mnp.Delta_Compress_PDB(g, 1, true);
+//		
+//		mnp.Load_Regular_PDB(getPDB9b(weighted), g, false); // PDB 2
+//		mnp.Delta_Compress_PDB(g, 2, true);
+//
+//		mnp.lookups.clear();
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 1});
+//		mnp.Delta_Compress_PDB(g, 2, true);
+//
+//		mnp.Value_Range_Compress_PDB(2, x, true);
+//		
+//		
+//		mnp.lookups.resize(0);
+//		mnp.lookups.push_back({PermutationPuzzle::kAddNode, 4, 1, -0});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 0});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 1});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafNode, -0, -0, 2});
+//		mnp.lookups.push_back({PermutationPuzzle::kLeafDefaultHeuristic, -0, -0, -0});
+//		
+//		std::string desc = "VALRNG-D8-";
+//		desc += ('0'+x/10);
+//		desc += ('0'+x%10);
+//		Test(mnp, desc.c_str());
+//	}
 
 }
 
@@ -1158,8 +1289,8 @@ void BitDeltaNodesCompressionTest(bool weighted)
 
 void GetBitValueCutoffs(std::vector<int> &cutoffs, int bits)
 {
-	MNPuzzle mnp(4, 4);
-	MNPuzzleState g(4, 4);
+	MNPuzzle<4, 4> mnp;
+	MNPuzzleState<4, 4> g;
 	g.Reset();
 	
 	if (mnp.GetWeighted()) // non-uniform costs
@@ -1223,22 +1354,24 @@ uint64_t random64()
 	return (r1<<32)|r2;
 }
 
-void MeasureIR(MNPuzzle &mnp)
+void MeasureIR(MNPuzzle<4, 4> &mnp)
 {
 	srandom(1234);
-	MNPuzzleState s(4, 4);
-	MNPuzzleState g(4, 4);
+	MNPuzzleState<4, 4> s;
+	MNPuzzleState<4, 4> g;
 	g.Reset();
 	mnp.StoreGoal(g);
 	//mnp.SetPruneSuccessors(true);
 	
-	IDAStar<MNPuzzleState, slideDir> ida;
+	IDAStar<MNPuzzleState<4, 4>, slideDir> ida;
 	std::vector<slideDir> path1;
-	MNPuzzleState start;
+	MNPuzzleState<4, 4> start;
 	Timer t;
 	t.StartTimer();
 
-	uint64_t count = mnp.Get_PDB_Size(s, 16);
+	//uint64_t count = mnp.Get_PDB_Size(s, 16);
+	assert("!Code currently not using refactored PDB setup; needs to be re-written");
+	uint64_t count = 0;
 	double sumg = 0, sumh = 0;
 	int total = 1000000;
 	std::vector<slideDir> acts;
@@ -1250,8 +1383,8 @@ void MeasureIR(MNPuzzle &mnp)
 		mnp.GetNextState(s, acts[random()%acts.size()], g);
 		
 		sumg += mnp.GCost(s, g);
-		sumh += fabs(mnp.PermutationPuzzleEnvironment<MNPuzzleState,slideDir>::HCost(s)-
-					 mnp.PermutationPuzzleEnvironment<MNPuzzleState,slideDir>::HCost(g));
+		sumh += fabs(mnp.PermutationPuzzleEnvironment<MNPuzzleState<4, 4>,slideDir>::HCost(s)-
+					 mnp.PermutationPuzzleEnvironment<MNPuzzleState<4, 4>,slideDir>::HCost(g));
 //		printf("G: %1.0f ∆H: %1.0f\n", mnp.GCost(s, g),
 //			   fabs(mnp.PermutationPuzzleEnvironment<MNPuzzleState,slideDir>::HCost(s)-
 //					mnp.PermutationPuzzleEnvironment<MNPuzzleState,slideDir>::HCost(g)));
@@ -1260,24 +1393,95 @@ void MeasureIR(MNPuzzle &mnp)
 }
 
 
-void Test(MNPuzzle &mnp, const char *prefix)
+void BaselineTest()
 {
-	MNPuzzleState s(4, 4);
-	MNPuzzleState g(4, 4);
+	MNPuzzle<4, 4> mnp;
+	MNPuzzleState<4, 4> s;
+	MNPuzzleState<4, 4> g;
 	g.Reset();
 	mnp.StoreGoal(g);
 	
-	IDAStar<MNPuzzleState, slideDir> ida;
+	{
+		ParallelIDAStar<MNPuzzle<4, 4>, MNPuzzleState<4, 4>, slideDir> ida;
+		std::vector<slideDir> path1;
+		MNPuzzleState<4, 4> start;
+		Timer t1;
+		t1.StartTimer();
+		uint64_t nodesExpanded = 0;
+		uint64_t nodesGenerated = 0;
+		double totaltime = 0;
+		
+		g.Reset();
+		mnp.StoreGoal(g);
+		for (int x = 0; x < 100; x++)
+		{
+			s = STP::GetKorfInstance(x);
+			g.Reset();
+			printf("Problem %d of %d\n", x+1, 100);
+			std::cout << "Searching from: " << std::endl << s << std::endl << g << std::endl;
+			Timer t;
+			t.StartTimer();
+			ida.GetPath(&mnp, s, g, path1);
+			t.EndTimer();
+			totaltime += t.GetElapsedTime();
+			std::cout << "Path found, length " << path1.size() << " time:" << t.GetElapsedTime() << std::endl;
+			nodesExpanded += ida.GetNodesExpanded();
+			nodesGenerated += ida.GetNodesTouched();
+		}
+		printf("Parallel: %1.2fs elapsed; %llu nodes expanded; %llu nodes generated\n", t1.EndTimer(), nodesExpanded, nodesGenerated);
+	}
+	{
+		IDAStar<MNPuzzleState<4, 4>, slideDir> ida;
+		ida.SetUseBDPathMax(true);
+
+		std::vector<slideDir> path1;
+		MNPuzzleState<4, 4> start;
+		Timer t1;
+		t1.StartTimer();
+		uint64_t nodesExpanded = 0;
+		uint64_t nodesGenerated = 0;
+		double totaltime = 0;
+		
+		g.Reset();
+		mnp.StoreGoal(g);
+		for (int x = 0; x < 100; x++)
+		{
+			s = STP::GetKorfInstance(x);
+			g.Reset();
+			printf("Problem %d of %d\n", x+1, 100);
+			std::cout << "Searching from: " << std::endl << s << std::endl << g << std::endl;
+			Timer t;
+			t.StartTimer();
+			ida.GetPath(&mnp, s, g, path1);
+			t.EndTimer();
+			totaltime += t.GetElapsedTime();
+			std::cout << "Path found, length " << path1.size() << " time:" << t.GetElapsedTime() << std::endl;
+			nodesExpanded += ida.GetNodesExpanded();
+			nodesGenerated += ida.GetNodesTouched();
+		}
+		printf("Sequential: %1.2fs elapsed; %llu nodes expanded; %llu nodes generated\n", t1.EndTimer(), nodesExpanded, nodesGenerated);
+	}
+	
+}
+
+void Test(MNPuzzle<4, 4> &mnp, const char *prefix)
+{
+	MNPuzzleState<4, 4> s;
+	MNPuzzleState<4, 4> g;
+	g.Reset();
+	mnp.StoreGoal(g);
+	
+	IDAStar<MNPuzzleState<4, 4>, slideDir> ida;
 	ida.SetUseBDPathMax(true);
 	std::vector<slideDir> path1;
-	MNPuzzleState start;
+	MNPuzzleState<4, 4> start;
 	Timer t1;
 	t1.StartTimer();
 	uint64_t nodes = 0;
 	double totaltime = 0;
 	for (int x = 0; x < 100; x++)
 	{
-		s = GetInstance(x, mnp.GetWeighted());
+		s = STP::GetKorfInstance(x);
 		g.Reset();
 		printf("Problem %d of %d\n", x+1, 100);
 		std::cout << "Searching from: " << std::endl << s << std::endl << g << std::endl;
@@ -1293,134 +1497,395 @@ void Test(MNPuzzle &mnp, const char *prefix)
 }
 
 
-MNPuzzleState GetKorfInstance(int which);
-
-MNPuzzleState GetInstance(int which, bool weighted)
+int MyCLHandler3(char *argument[], int maxNumArgs)
 {
-	return GetKorfInstance(which);
-//	srandom(which*101+11);
-//	MNPuzzle mnp(4, 4);
-//	MNPuzzleState s(4, 4);
-//	s.Reset();
-//	int length = 10000;
-//	for (int x = 0; x < length; x++)
-//	{
-//		mnp.ApplyAction(s, random()%16);
-//	}
-//	return s;
+	if (strcmp(argument[0], "-max") != 0)
+		return 0;
+	SolveKorfMax(argument[1]);
 }
 
-
-MNPuzzleState GetKorfInstance(int which)
+int MyCLHandler2(char *argument[], int maxNumArgs)
 {
-	int instances[100][16] =
-	{{14, 13, 15, 7, 11, 12, 9, 5, 6, 0, 2, 1, 4, 8, 10, 3},
-		{13, 5, 4, 10, 9, 12, 8, 14, 2, 3, 7, 1, 0, 15, 11, 6},
-		{14, 7, 8, 2, 13, 11, 10, 4, 9, 12, 5, 0, 3, 6, 1, 15},
-		{5, 12, 10, 7, 15, 11, 14, 0, 8, 2, 1, 13, 3, 4, 9, 6},
-		{4, 7, 14, 13, 10, 3, 9, 12, 11, 5, 6, 15, 1, 2, 8, 0},
-		{14, 7, 1, 9, 12, 3, 6, 15, 8, 11, 2, 5, 10, 0, 4, 13},
-		{2, 11, 15, 5, 13, 4, 6, 7, 12, 8, 10, 1, 9, 3, 14, 0},
-		{12, 11, 15, 3, 8, 0, 4, 2, 6, 13, 9, 5, 14, 1, 10, 7},
-		{3, 14, 9, 11, 5, 4, 8, 2, 13, 12, 6, 7, 10, 1, 15, 0},
-		{13, 11, 8, 9, 0, 15, 7, 10, 4, 3, 6, 14, 5, 12, 2, 1},
-		{5, 9, 13, 14, 6, 3, 7, 12, 10, 8, 4, 0, 15, 2, 11, 1},
-		{14, 1, 9, 6, 4, 8, 12, 5, 7, 2, 3, 0, 10, 11, 13, 15},
-		{3, 6, 5, 2, 10, 0, 15, 14, 1, 4, 13, 12, 9, 8, 11, 7},
-		{7, 6, 8, 1, 11, 5, 14, 10, 3, 4, 9, 13, 15, 2, 0, 12},
-		{13, 11, 4, 12, 1, 8, 9, 15, 6, 5, 14, 2, 7, 3, 10, 0},
-		{1, 3, 2, 5, 10, 9, 15, 6, 8, 14, 13, 11, 12, 4, 7, 0},
-		{15, 14, 0, 4, 11, 1, 6, 13, 7, 5, 8, 9, 3, 2, 10, 12},
-		{6, 0, 14, 12, 1, 15, 9, 10, 11, 4, 7, 2, 8, 3, 5, 13},
-		{7, 11, 8, 3, 14, 0, 6, 15, 1, 4, 13, 9, 5, 12, 2, 10},
-		{6, 12, 11, 3, 13, 7, 9, 15, 2, 14, 8, 10, 4, 1, 5, 0},
-		{12, 8, 14, 6, 11, 4, 7, 0, 5, 1, 10, 15, 3, 13, 9, 2},
-		{14, 3, 9, 1, 15, 8, 4, 5, 11, 7, 10, 13, 0, 2, 12, 6},
-		{10, 9, 3, 11, 0, 13, 2, 14, 5, 6, 4, 7, 8, 15, 1, 12},
-		{7, 3, 14, 13, 4, 1, 10, 8, 5, 12, 9, 11, 2, 15, 6, 0},
-		{11, 4, 2, 7, 1, 0, 10, 15, 6, 9, 14, 8, 3, 13, 5, 12},
-		{5, 7, 3, 12, 15, 13, 14, 8, 0, 10, 9, 6, 1, 4, 2, 11},
-		{14, 1, 8, 15, 2, 6, 0, 3, 9, 12, 10, 13, 4, 7, 5, 11},
-		{13, 14, 6, 12, 4, 5, 1, 0, 9, 3, 10, 2, 15, 11, 8, 7},
-		{9, 8, 0, 2, 15, 1, 4, 14, 3, 10, 7, 5, 11, 13, 6, 12},
-		{12, 15, 2, 6, 1, 14, 4, 8, 5, 3, 7, 0, 10, 13, 9, 11},
-		{12, 8, 15, 13, 1, 0, 5, 4, 6, 3, 2, 11, 9, 7, 14, 10},
-		{14, 10, 9, 4, 13, 6, 5, 8, 2, 12, 7, 0, 1, 3, 11, 15},
-		{14, 3, 5, 15, 11, 6, 13, 9, 0, 10, 2, 12, 4, 1, 7, 8},
-		{6, 11, 7, 8, 13, 2, 5, 4, 1, 10, 3, 9, 14, 0, 12, 15},
-		{1, 6, 12, 14, 3, 2, 15, 8, 4, 5, 13, 9, 0, 7, 11, 10},
-		{12, 6, 0, 4, 7, 3, 15, 1, 13, 9, 8, 11, 2, 14, 5, 10},
-		{8, 1, 7, 12, 11, 0, 10, 5, 9, 15, 6, 13, 14, 2, 3, 4},
-		{7, 15, 8, 2, 13, 6, 3, 12, 11, 0, 4, 10, 9, 5, 1, 14},
-		{9, 0, 4, 10, 1, 14, 15, 3, 12, 6, 5, 7, 11, 13, 8, 2},
-		{11, 5, 1, 14, 4, 12, 10, 0, 2, 7, 13, 3, 9, 15, 6, 8},
-		{8, 13, 10, 9, 11, 3, 15, 6, 0, 1, 2, 14, 12, 5, 4, 7},
-		{4, 5, 7, 2, 9, 14, 12, 13, 0, 3, 6, 11, 8, 1, 15, 10},
-		{11, 15, 14, 13, 1, 9, 10, 4, 3, 6, 2, 12, 7, 5, 8, 0},
-		{12, 9, 0, 6, 8, 3, 5, 14, 2, 4, 11, 7, 10, 1, 15, 13},
-		{3, 14, 9, 7, 12, 15, 0, 4, 1, 8, 5, 6, 11, 10, 2, 13},
-		{8, 4, 6, 1, 14, 12, 2, 15, 13, 10, 9, 5, 3, 7, 0, 11},
-		{6, 10, 1, 14, 15, 8, 3, 5, 13, 0, 2, 7, 4, 9, 11, 12},
-		{8, 11, 4, 6, 7, 3, 10, 9, 2, 12, 15, 13, 0, 1, 5, 14},
-		{10, 0, 2, 4, 5, 1, 6, 12, 11, 13, 9, 7, 15, 3, 14, 8},
-		{12, 5, 13, 11, 2, 10, 0, 9, 7, 8, 4, 3, 14, 6, 15, 1},
-		{10, 2, 8, 4, 15, 0, 1, 14, 11, 13, 3, 6, 9, 7, 5, 12},
-		{10, 8, 0, 12, 3, 7, 6, 2, 1, 14, 4, 11, 15, 13, 9, 5},
-		{14, 9, 12, 13, 15, 4, 8, 10, 0, 2, 1, 7, 3, 11, 5, 6},
-		{12, 11, 0, 8, 10, 2, 13, 15, 5, 4, 7, 3, 6, 9, 14, 1},
-		{13, 8, 14, 3, 9, 1, 0, 7, 15, 5, 4, 10, 12, 2, 6, 11},
-		{3, 15, 2, 5, 11, 6, 4, 7, 12, 9, 1, 0, 13, 14, 10, 8},
-		{5, 11, 6, 9, 4, 13, 12, 0, 8, 2, 15, 10, 1, 7, 3, 14},
-		{5, 0, 15, 8, 4, 6, 1, 14, 10, 11, 3, 9, 7, 12, 2, 13},
-		{15, 14, 6, 7, 10, 1, 0, 11, 12, 8, 4, 9, 2, 5, 13, 3},
-		{11, 14, 13, 1, 2, 3, 12, 4, 15, 7, 9, 5, 10, 6, 8, 0},
-		{6, 13, 3, 2, 11, 9, 5, 10, 1, 7, 12, 14, 8, 4, 0, 15},
-		{4, 6, 12, 0, 14, 2, 9, 13, 11, 8, 3, 15, 7, 10, 1, 5},
-		{8, 10, 9, 11, 14, 1, 7, 15, 13, 4, 0, 12, 6, 2, 5, 3},
-		{5, 2, 14, 0, 7, 8, 6, 3, 11, 12, 13, 15, 4, 10, 9, 1},
-		{7, 8, 3, 2, 10, 12, 4, 6, 11, 13, 5, 15, 0, 1, 9, 14},
-		{11, 6, 14, 12, 3, 5, 1, 15, 8, 0, 10, 13, 9, 7, 4, 2},
-		{7, 1, 2, 4, 8, 3, 6, 11, 10, 15, 0, 5, 14, 12, 13, 9},
-		{7, 3, 1, 13, 12, 10, 5, 2, 8, 0, 6, 11, 14, 15, 4, 9},
-		{6, 0, 5, 15, 1, 14, 4, 9, 2, 13, 8, 10, 11, 12, 7, 3},
-		{15, 1, 3, 12, 4, 0, 6, 5, 2, 8, 14, 9, 13, 10, 7, 11},
-		{5, 7, 0, 11, 12, 1, 9, 10, 15, 6, 2, 3, 8, 4, 13, 14},
-		{12, 15, 11, 10, 4, 5, 14, 0, 13, 7, 1, 2, 9, 8, 3, 6},
-		{6, 14, 10, 5, 15, 8, 7, 1, 3, 4, 2, 0, 12, 9, 11, 13},
-		{14, 13, 4, 11, 15, 8, 6, 9, 0, 7, 3, 1, 2, 10, 12, 5},
-		{14, 4, 0, 10, 6, 5, 1, 3, 9, 2, 13, 15, 12, 7, 8, 11},
-		{15, 10, 8, 3, 0, 6, 9, 5, 1, 14, 13, 11, 7, 2, 12, 4},
-		{0, 13, 2, 4, 12, 14, 6, 9, 15, 1, 10, 3, 11, 5, 8, 7},
-		{3, 14, 13, 6, 4, 15, 8, 9, 5, 12, 10, 0, 2, 7, 1, 11},
-		{0, 1, 9, 7, 11, 13, 5, 3, 14, 12, 4, 2, 8, 6, 10, 15},
-		{11, 0, 15, 8, 13, 12, 3, 5, 10, 1, 4, 6, 14, 9, 7, 2},
-		{13, 0, 9, 12, 11, 6, 3, 5, 15, 8, 1, 10, 4, 14, 2, 7},
-		{14, 10, 2, 1, 13, 9, 8, 11, 7, 3, 6, 12, 15, 5, 4, 0},
-		{12, 3, 9, 1, 4, 5, 10, 2, 6, 11, 15, 0, 14, 7, 13, 8},
-		{15, 8, 10, 7, 0, 12, 14, 1, 5, 9, 6, 3, 13, 11, 4, 2},
-		{4, 7, 13, 10, 1, 2, 9, 6, 12, 8, 14, 5, 3, 0, 11, 15},
-		{6, 0, 5, 10, 11, 12, 9, 2, 1, 7, 4, 3, 14, 8, 13, 15},
-		{9, 5, 11, 10, 13, 0, 2, 1, 8, 6, 14, 12, 4, 7, 3, 15},
-		{15, 2, 12, 11, 14, 13, 9, 5, 1, 3, 8, 7, 0, 10, 6, 4},
-		{11, 1, 7, 4, 10, 13, 3, 8, 9, 14, 0, 15, 6, 5, 2, 12},
-		{5, 4, 7, 1, 11, 12, 14, 15, 10, 13, 8, 6, 2, 0, 9, 3},
-		{9, 7, 5, 2, 14, 15, 12, 10, 11, 3, 6, 1, 8, 13, 0, 4},
-		{3, 2, 7, 9, 0, 15, 12, 4, 6, 11, 5, 14, 8, 13, 10, 1},
-		{13, 9, 14, 6, 12, 8, 1, 2, 3, 4, 0, 7, 5, 10, 11, 15},
-		{5, 7, 11, 8, 0, 14, 9, 13, 10, 12, 3, 15, 6, 1, 4, 2},
-		{4, 3, 6, 13, 7, 15, 9, 0, 10, 5, 8, 11, 2, 12, 1, 14},
-		{1, 7, 15, 14, 2, 6, 4, 9, 12, 11, 13, 3, 0, 8, 5, 10},
-		{9, 14, 5, 7, 8, 15, 1, 2, 10, 4, 13, 6, 12, 0, 11, 3},
-		{0, 11, 3, 12, 5, 2, 1, 9, 8, 10, 14, 15, 7, 4, 13, 6},
-		{7, 15, 4, 0, 10, 9, 2, 5, 12, 11, 13, 6, 1, 3, 14, 8},
-		{11, 4, 0, 8, 6, 10, 5, 13, 12, 7, 14, 3, 1, 2, 9, 15}};
-	
-	MNPuzzleState s(4,4);
-	for (int x = 0; x < 16; x++)
+	if (strcmp(argument[0], "-add") != 0)
+		return 0;
+	std::string path = argument[1];
+	const int width = 4, height = 4;
+	MNPuzzle<4, 4> mnp;
+	Heuristic<MNPuzzleState<4, 4>> h;
+	MNPuzzleState<4, 4> start, goal;
+	std::vector<slideDir> moves;
+	std::vector<MNPuzzleState<4, 4>> statepath;
+	goal.Reset();
+	mnp.StoreGoal(goal);
+
+	if (1) // use 7-8 additive PDB
 	{
-		s.puzzle[x] = instances[which][x];
-		if (s.puzzle[x] == 0)
-			s.blank = x;
+		std::vector<int> p1 = {0, 1, 2, 3, 4, 5, 6, 7};
+		std::vector<int> p2 = {0, 8, 9, 10, 11, 12, 13, 14, 15};
+		int threads = std::thread::hardware_concurrency();
+		static LexPermutationPDB<MNPuzzleState<width, height>, slideDir, MNPuzzle<width, height>> pdb1(&mnp, goal, p1);
+		static LexPermutationPDB<MNPuzzleState<width, height>, slideDir, MNPuzzle<width, height>> pdb2(&mnp, goal, p2);
+		
+		if (pdb1.Load(path.c_str()))
+		{
+			printf("Loaded successfully\n");
+		}
+		else {
+			mnp.SetPattern(p1);
+			pdb1.BuildAdditivePDB(goal, threads);
+			pdb1.Save(path.c_str());
+		}
+		if (pdb2.Load(path.c_str()))
+		{
+			printf("Loaded successfully\n");
+		}
+		else {
+			mnp.SetPattern(p2);
+			pdb2.BuildAdditivePDB(goal, threads);
+			pdb2.Save(path.c_str());
+		}
+		
+		h.lookups.resize(0);
+		h.lookups.push_back({kAddNode, 1, 2});
+		h.lookups.push_back({kLeafNode, 0, 0});
+		h.lookups.push_back({kLeafNode, 1, 1});
+		
+		h.heuristics.resize(0);
+		h.heuristics.push_back(&pdb1);
+		h.heuristics.push_back(&pdb2);
 	}
-	return s;
+	else {// use weaker pdbs
+		std::vector<int> p1 = {0, 1, 2, 3};
+		std::vector<int> p2 = {0, 4, 5, 6, 7};
+		std::vector<int> p3 = {0, 8, 9, 10, 11};
+		std::vector<int> p4 = {0, 12, 13, 14, 15};
+		int threads = std::thread::hardware_concurrency();
+		static LexPermutationPDB<MNPuzzleState<width, height>, slideDir, MNPuzzle<width, height>> pdb1(&mnp, goal, p1);
+		static LexPermutationPDB<MNPuzzleState<width, height>, slideDir, MNPuzzle<width, height>> pdb2(&mnp, goal, p2);
+		static LexPermutationPDB<MNPuzzleState<width, height>, slideDir, MNPuzzle<width, height>> pdb3(&mnp, goal, p3);
+		static LexPermutationPDB<MNPuzzleState<width, height>, slideDir, MNPuzzle<width, height>> pdb4(&mnp, goal, p4);
+
+		if (pdb1.Load(path.c_str()))
+		{
+			printf("Loaded successfully\n");
+		}
+		else {
+			mnp.SetPattern(p1);
+			pdb1.BuildAdditivePDB(goal, threads);
+			pdb1.Save(path.c_str());
+		}
+		if (pdb2.Load(path.c_str()))
+		{
+			printf("Loaded successfully\n");
+		}
+		else {
+			mnp.SetPattern(p2);
+			pdb2.BuildAdditivePDB(goal, threads);
+			pdb2.Save(path.c_str());
+		}
+		if (pdb3.Load(path.c_str()))
+		{
+			printf("Loaded successfully\n");
+		}
+		else {
+			mnp.SetPattern(p3);
+			pdb3.BuildAdditivePDB(goal, threads);
+			pdb3.Save(path.c_str());
+		}
+		if (pdb4.Load(path.c_str()))
+		{
+			printf("Loaded successfully\n");
+		}
+		else {
+			mnp.SetPattern(p4);
+			pdb4.BuildAdditivePDB(goal, threads);
+			pdb4.Save(path.c_str());
+		}
+
+		h.lookups.resize(0);
+		h.lookups.push_back({kAddNode, 1, 4});
+		h.lookups.push_back({kLeafNode, 0, 0});
+		h.lookups.push_back({kLeafNode, 1, 1});
+		h.lookups.push_back({kLeafNode, 2, 2});
+		h.lookups.push_back({kLeafNode, 3, 3});
+
+		h.heuristics.resize(0);
+		h.heuristics.push_back(&pdb1);
+		h.heuristics.push_back(&pdb2);
+		h.heuristics.push_back(&pdb3);
+		h.heuristics.push_back(&pdb4);
+	}
+	{
+		IDAStar<MNPuzzleState<4, 4>, slideDir> ida;
+		ida.SetHeuristic(&h);
+		std::vector<slideDir> path;
+		for (int x = 0; x < 100; x++)
+		{
+			start = STP::GetKorfInstance(x);
+			ida.GetPath(&mnp, start, goal, path);
+			printf("ida\t%1.2f\t%llu\t%llu\n", mnp.GetPathLength(start, path), ida.GetNodesExpanded(), ida.GetNodesTouched());
+		}
+		exit(0);
+	}
+	for (int bound = 0; bound <= 256; bound*=2)
+	{
+		TemplateAStar<MNPuzzleState<4, 4>, slideDir, MNPuzzle<4, 4>> astar;
+		TemplateAStar<MNPuzzleState<4, 4>, slideDir, MNPuzzle<4, 4>> astar2;
+		TemplateAStar<MNPuzzleState<4, 4>, slideDir, MNPuzzle<4, 4>> astar3;
+		TemplateAStar<MNPuzzleState<4, 4>, slideDir, MNPuzzle<4, 4>> astar4;
+		TemplateAStar<MNPuzzleState<4, 4>, slideDir, MNPuzzle<4, 4>> astar5;
+		astar.SetHeuristic(&h);
+		astar2.SetHeuristic(&h);
+		astar3.SetHeuristic(&h);
+		astar4.SetHeuristic(&h);
+		astar5.SetHeuristic(&h);
+
+		astar2.SetPhi([=](double x,double y){return (y<(bound+1))?(x+y/(bound+1)):(x+y-bound);});
+		astar3.SetPhi([=](double x,double y){return (y<(2*bound))?(x+y/2):(x+y-bound);});
+		astar4.SetReopenNodes(true);
+		
+		for (int x = 0; x < 100; x++)
+		{
+			start = STP::GetKorfInstance(x);
+			printf("%d\t", bound);
+			Timer t;
+			
+			t.StartTimer();
+//			if (bound == 0)
+				astar.GetPath(&mnp, start, goal, statepath);
+//			else
+//				astar.InitializeSearch(&mnp, start, goal, statepath);
+			t.EndTimer();
+			printf("astar-opt\t%1.2f\t%1.6f\t%llu\t%u\t", mnp.GetPathLength(statepath), t.GetElapsedTime(), astar.GetNodesExpanded(), astar.GetNumOpenItems());
+
+			t.StartTimer();
+			astar2.GetPath(&mnp, start, goal, statepath);
+			t.EndTimer();
+			printf("astar-K=b+1\t%1.2f\t%1.6f\t%llu\t%u\t", mnp.GetPathLength(statepath), t.GetElapsedTime(), astar2.GetNodesExpanded(), astar2.GetNumOpenItems());
+
+			t.StartTimer();
+			astar3.GetPath(&mnp, start, goal, statepath);
+			t.EndTimer();
+			printf("astar-K=b*2\t%1.2f\t%1.6f\t%llu\t%u\t", mnp.GetPathLength(statepath), t.GetElapsedTime(), astar3.GetNodesExpanded(), astar3.GetNumOpenItems());
+
+			
+			double hi = mnp.HCost(start, goal);
+			astar4.SetPhi([=](double h,double g){return g+h+bound*std::min(h, hi)/hi;});
+			t.StartTimer();
+			astar4.GetPath(&mnp, start, goal, statepath);
+			t.EndTimer();
+			
+			printf("\tastar-yes\t%1.2f\t%1.6f\t%llu\t%u\t%u\t", mnp.GetPathLength(statepath), t.GetElapsedTime(), astar4.GetNodesExpanded(), astar4.GetNumOpenItems(), astar4.GetNodesExpanded()-astar4.GetUniqueNodesExpanded());
+
+//			hi *= 0.5;
+			if (hi < bound)
+				hi = bound+1;
+			astar5.SetPhi([=](double x,double y){return (y<hi)?(x+(hi-bound)*y/(hi)):(x+y-bound);});
+			t.StartTimer();
+			astar5.GetPath(&mnp, start, goal, statepath);
+			t.EndTimer();
+			
+			printf("\tastar-K=h(s)\t%1.2f\t%1.6f\t%llu\t%u\n", mnp.GetPathLength(statepath), t.GetElapsedTime(), astar5.GetNodesExpanded(), astar5.GetNumOpenItems());
+		}
+		
+		if (bound == 0)
+			bound++;
+	}
+	
+	
+//
+//	TemplateAStar<MNPuzzleState<4, 4>, slideDir, MNPuzzle<4, 4>> astar;
+//	FocalAdd<MNPuzzleState<4, 4>, slideDir, MNPuzzle<4, 4>> focal;
+//
+//	//	astar.setph
+//	for (int addBound = 0; addBound <= 256; addBound*=2)
+//	{
+//		double pdbTime = 0, mdTime = 0, astarTime = 0;
+//		uint64_t pdbExpand = 0, pdbGenerate = 0;
+//		uint64_t astarExpand = 0, astarGenerate = 0;
+//		uint64_t mdExpand = 0, mdGenerate = 0;
+//		int pathLen = 0;
+//		Timer t2;
+//
+//		const int K = addBound+sqrt(addBound);//addBound*2;
+////		const int addBound = 16;
+//		astar.SetPhi([=](double x,double y){return y<K?(x+(y*(K-addBound))/K):(x+y-addBound);});
+//
+//		focal.SetOptimalityBound(addBound);
+//		focal.SetHeuristic(&h);
+//
+//		for (int x = 0; x < 100; x++)
+//		{
+//			start = STP::GetKorfInstance(x);
+//
+//			//		printf("IDA*; Heuristic: PDB\n");
+//			//		ida.SetHeuristic(&h);
+//			//		t2.StartTimer();
+//			//		ida.GetPath(&mnp, start, goal, path);
+//			//		t2.EndTimer();
+//			//		printf("Problem %d solved; %1.2f elapsed; %llu expanded, %llu generated\n", x+1, t2.GetElapsedTime(),
+//			//			   ida.GetNodesExpanded(), ida.GetNodesTouched());
+//			//		pdbTime += t2.GetElapsedTime();
+//			//		pdbExpand += ida.GetNodesExpanded();
+//			//		pdbGenerate += ida.GetNodesTouched();
+//			//
+//			//		printf("IDA*; Heuristic: MD\n");
+//			//		ida.SetHeuristic(&mnp);
+//			//		t2.StartTimer();
+//			//		ida.GetPath(&mnp, start, goal, path);
+//			//		t2.EndTimer();
+//			//		printf("Problem %d solved; %1.2f elapsed; %llu expanded, %llu generated\n", x+1, t2.GetElapsedTime(),
+//			//			   ida.GetNodesExpanded(), ida.GetNodesTouched());
+//			//		mdTime += t2.GetElapsedTime();
+//			//		mdExpand += ida.GetNodesExpanded();
+//			//		mdGenerate += ida.GetNodesTouched();
+//
+//			printf("A*; Heuristic: PDB\n");
+//			astar.SetHeuristic(&h);
+//			t2.StartTimer();
+//			focal.GetPath(&mnp, start, goal, statepath);
+////			astar.GetPath(&mnp, start, goal, statepath);
+//			t2.EndTimer();
+//			printf("Problem %d solved length %d; %1.2f elapsed; %llu expanded, %llu generated\n", x+1, statepath.size(), t2.GetElapsedTime(),
+//				   astar.GetNodesExpanded(), astar.GetNodesTouched());
+//			pathLen += statepath.size();
+//			astarTime += t2.GetElapsedTime();
+//			astarExpand += astar.GetNodesExpanded();
+//			astarGenerate += astar.GetNodesTouched();
+//
+//		}
+//		//	printf("PDB Time: %1.2f; expansions: %llu; generations %llu\n", pdbTime, pdbExpand, pdbGenerate);
+//		//	printf("MD Time: %1.2f; expansions: %llu; generations %llu\n", mdTime, mdExpand, mdGenerate);
+//		printf("[%d-%d] A* PDB Time: %1.2f; length: %d, expansions: %llu; generations %llu\n", addBound, K, astarTime, pathLen, astarExpand, astarGenerate);
+//		if (addBound == 0)
+//			addBound++;
+//	}
+	exit(0);
+}
+
+void SolveKorfAdditive(std::string path)
+{
+	const int width = 4, height = 4;
+	MNPuzzle<4, 4> mnp;
+	Heuristic<MNPuzzleState<4, 4>> h;
+	MNPuzzleState<4, 4> start, goal;
+	std::vector<slideDir> moves;
+	std::vector<MNPuzzleState<4, 4>> statepath;
+	goal.Reset();
+	mnp.StoreGoal(goal);
+		
+	std::vector<int> p1 = {0, 1, 2, 3, 4, 5, 6, 7};
+	std::vector<int> p2 = {0, 8, 9, 10, 11, 12, 13, 14, 15};
+	int threads = std::thread::hardware_concurrency();
+	static LexPermutationPDB<MNPuzzleState<width, height>, slideDir, MNPuzzle<width, height>> pdb1(&mnp, goal, p1);
+	static LexPermutationPDB<MNPuzzleState<width, height>, slideDir, MNPuzzle<width, height>> pdb2(&mnp, goal, p2);
+	
+	if (pdb1.Load(path.c_str()))
+	{
+		printf("Loaded successfully\n");
+	}
+	else {
+		mnp.SetPattern(p1);
+		pdb1.BuildAdditivePDB(goal, threads);
+		pdb1.Save(path.c_str());
+	}
+	if (pdb2.Load(path.c_str()))
+	{
+		printf("Loaded successfully\n");
+	}
+	else {
+		mnp.SetPattern(p2);
+		pdb2.BuildAdditivePDB(goal, threads);
+		pdb2.Save(path.c_str());
+	}
+	
+	h.lookups.resize(0);
+	h.lookups.push_back({kAddNode, 1, 2});
+	h.lookups.push_back({kLeafNode, 0, 0});
+	h.lookups.push_back({kLeafNode, 1, 1});
+			
+	h.heuristics.resize(0);
+	h.heuristics.push_back(&pdb1);
+	h.heuristics.push_back(&pdb2);
+
+	{
+		IDAStar<MNPuzzleState<4, 4>, slideDir> ida;
+		ida.SetHeuristic(&h);
+		std::vector<slideDir> path;
+		for (int x = 0; x < 100; x++)
+		{
+			start = STP::GetKorfInstance(x);
+			ida.GetPath(&mnp, start, goal, path);
+			printf("ida\t%1.2f\t%llu\t%llu\n", mnp.GetPathLength(start, path), ida.GetNodesExpanded(), ida.GetNodesTouched());
+		}
+	}
+}
+
+void SolveKorfMax(std::string path)
+{
+	const int width = 4, height = 4;
+	MNPuzzle<4, 4> mnp;
+	Heuristic<MNPuzzleState<4, 4>> h;
+	MNPuzzleState<4, 4> start, goal;
+	std::vector<slideDir> moves;
+	std::vector<MNPuzzleState<4, 4>> statepath;
+	goal.Reset();
+	mnp.StoreGoal(goal);
+	
+	std::vector<int> p1 = {0, 1, 2, 3, 4, 5, 6, 7};
+	std::vector<int> p2 = {0, 8, 9, 10, 11, 12, 13, 14, 15};
+	int threads = std::thread::hardware_concurrency();
+//	static LexPermutationPDB<MNPuzzleState<width, height>, slideDir, MNPuzzle<width, height>> pdb1(&mnp, goal, p1);
+//	static LexPermutationPDB<MNPuzzleState<width, height>, slideDir, MNPuzzle<width, height>> pdb2(&mnp, goal, p2);
+	static MR1PermutationPDB<MNPuzzleState<width, height>, slideDir, MNPuzzle<width, height>> pdb1(&mnp, goal, p1);
+	static MR1PermutationPDB<MNPuzzleState<width, height>, slideDir, MNPuzzle<width, height>> pdb2(&mnp, goal, p2);
+
+	if (pdb1.Load(path.c_str()))
+	{
+		printf("Loaded successfully\n");
+	}
+	else {
+		pdb1.BuildPDB(goal, threads);
+//		pdb1.BuildAdditivePDB(goal, threads);
+		pdb1.Save(path.c_str());
+	}
+	if (pdb2.Load(path.c_str()))
+	{
+		printf("Loaded successfully\n");
+	}
+	else {
+//		mnp.SetPattern(p2);
+		pdb2.BuildPDB(goal, threads);
+		pdb2.Save(path.c_str());
+	}
+	
+	h.lookups.resize(0);
+	h.lookups.push_back({kMaxNode, 1, 2});
+	h.lookups.push_back({kLeafNode, 0, 0});
+	h.lookups.push_back({kLeafNode, 1, 1});
+	
+	h.heuristics.resize(0);
+	h.heuristics.push_back(&pdb1);
+	h.heuristics.push_back(&pdb2);
+	
+	Timer t, timer;
+	t.StartTimer();
+	{
+		IDAStar<MNPuzzleState<4, 4>, slideDir> ida;
+		ida.SetHeuristic(&h);
+		std::vector<slideDir> path;
+		for (int x = 0; x < 100; x++)
+		{
+			start = STP::GetKorfInstance(x);
+			timer.StartTimer();
+			ida.GetPath(&mnp, start, goal, path);
+			timer.EndTimer();
+			printf("%d\tIDA\t%1.2f\t%llu\t%llu\t%1.2fs\n", x+1,
+				   mnp.GetPathLength(start, path),
+				   ida.GetNodesExpanded(), ida.GetNodesTouched(),
+				   timer.GetElapsedTime());
+		}
+	}
+	printf("%1.2fs total time elapsed\n", t.GetElapsedTime());
+	exit(0);
 }

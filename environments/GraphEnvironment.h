@@ -10,14 +10,17 @@
 #ifndef GRAPHENVIRONMENT_H
 #define GRAPHENVIRONMENT_H
 
-#include <stdint.h>
-#include <ext/hash_map>
-#include <iostream>
+
 #include "SearchEnvironment.h"
 #include "UnitSimulation.h"
 #include "Graph.h"
-#include "GraphAbstraction.h"
-#include "GLUtil.h"
+//#include "GraphAbstraction.h"
+#include "Constants.h"
+
+#include <iostream>
+#include <stdint.h>
+#include <unordered_map>
+#include <functional>
 
 #ifndef UINT32_MAX
 #define UINT32_MAX        4294967295U
@@ -57,11 +60,13 @@ namespace GraphSearchConstants
 	const double kStraightEdgeCost = 1.0;
 	const double kDiagonalEdgeCost = ROOT_TWO;
 
-	Graph *GetEightConnectedGraph(Map *m);
-	Graph *GetFourConnectedGraph(Map *m);
+	Graph *GetEightConnectedGraph(Map *m, bool directed = true);
+	Graph *GetFourConnectedGraph(Map *m, bool directed = true);
 	Graph *GetGraph(Map *m);
+	Graph *GetUndirectedGraph(Map *m);
 	void AddNodesToGraph(Map *m, Graph *g);
 	void AddEdges(Map *m, Graph *g, int x, int y,
+				  bool directed = true,
 				  double straigtEdgeCost = 1.0,
 				  double diagEdgeCost = ROOT_TWO,
 				  int straightEdgeProb = 100,
@@ -73,10 +78,10 @@ class GraphHeuristic {
 public:
 	virtual ~GraphHeuristic() { }
 	virtual Graph *GetGraph() = 0;
-	virtual double HCost(const graphState &state1, const graphState &state2) = 0;
+	virtual double HCost(const graphState &state1, const graphState &state2) const = 0;
 	// if one is better as the start or goal state, this can swap for you.
 	virtual void ChooseStartGoal(graphState &/*start*/, graphState &/*goal*/) {}
-	virtual void OpenGLDraw() const {}
+//	virtual void OpenGLDraw() const {}
 private:
 };
 
@@ -86,7 +91,7 @@ public:
 	~GraphHeuristicContainer() {}
 	virtual Graph *GetGraph() { return g; }
 	void AddHeuristic(GraphHeuristic *h) { heuristics.push_back(h); }
-	virtual double HCost(const graphState &state1, const graphState &state2)
+	virtual double HCost(const graphState &state1, const graphState &state2) const
 	{
 		double cost = 0;
 		for (unsigned int x = 0; x < heuristics.size(); x++)
@@ -105,7 +110,7 @@ public:
 	GraphLabelHeuristic(Graph *graph, graphState target)
 	{ g = graph; goal = target; }
 	Graph *GetGraph() { return g; }
-	double HCost(const graphState &state1, const graphState &state2)
+	double HCost(const graphState &state1, const graphState &state2) const
 	{
 		if (state2 == goal)
 			return g->GetNode(state1)->GetLabelF(GraphSearchConstants::kHCost);
@@ -121,7 +126,7 @@ public:
 	GraphMapHeuristic(Map *map, Graph *graph)
 	:m(map), g(graph) {}
 	Graph *GetGraph() { return g; }
-	double HCost(const graphState &state1, const graphState &state2)
+	double HCost(const graphState &state1, const graphState &state2) const
 	{
 		int x1 = g->GetNode(state1)->GetLabelL(GraphSearchConstants::kMapX);
 		int y1 = g->GetNode(state1)->GetLabelL(GraphSearchConstants::kMapY);
@@ -137,12 +142,13 @@ private:
 	Graph *g;
 };
 
+/*
 class GraphAbstractionHeuristic : public GraphHeuristic {
 public:
 	GraphAbstractionHeuristic(MapAbstraction *mabs, int lev)
 	:mAbs(mabs), level(lev) { }
 	Graph *GetGraph() { return mAbs->GetAbstractGraph(level); }
-	double HCost(const graphState &state1, const graphState &state2)
+	double HCost(const graphState &state1, const graphState &state2) const
 	{
 		return mAbs->h(mAbs->GetAbstractGraph(level)->GetNode(state1),
 					   mAbs->GetAbstractGraph(level)->GetNode(state2));
@@ -151,7 +157,7 @@ private:
 	MapAbstraction *mAbs;
 	int level;
 };
-
+*/
 class GraphMapPerfectHeuristic : public GraphHeuristic {
 public:
 	GraphMapPerfectHeuristic(Map *map, Graph *graph):m(map), g(graph)
@@ -161,10 +167,10 @@ public:
 	}
 	Graph *GetGraph() { return g; }
 	void SetProbability(double p) { prob = p; }
-	double HCost(const graphState &state1, const graphState &state2)
+	double HCost(const graphState &state1, const graphState &state2) const
 	{ // warning: in this implementation HCost(s1,s2) != HCost(s2,s1)
 
-		if(probTable[int(state1)]) {
+		if (probTable[int(state1)]) {
 			int x1 = g->GetNode(state1)->GetLabelL(GraphSearchConstants::kMapX);
 			int y1 = g->GetNode(state1)->GetLabelL(GraphSearchConstants::kMapY);
 			int x2 = g->GetNode(state2)->GetLabelL(GraphSearchConstants::kMapX);
@@ -180,12 +186,12 @@ public:
 	}
 	double prob;
 private:
-	double GetOctileDistance(double dx, double dy)
+	double GetOctileDistance(double dx, double dy) const
 	{
 		dx = fabs(dx);
 		dy = fabs(dy);
 
-		if(dx > dy)
+		if (dx > dy)
 			return dx-dy + sqrt(2)*dy;
 		else
 			return dy-dx + sqrt(2)*dx;
@@ -194,8 +200,9 @@ private:
 	{
 		int size = m->GetMapWidth() * m->GetMapHeight();
 		probTable = (bool*)malloc( size );
-		for(int i=0;i<size;i++) {
-			if(drand48() < prob)
+		for (int i=0;i<size;i++) {
+#pragma message("drand was removed here. New code hasn't been tested.")
+			if ((random()%10000)/10000.0 < prob)
 				probTable[i] = 1;
 			else
 				probTable[i] = 0;
@@ -216,13 +223,13 @@ class GraphDistanceHeuristic : public GraphHeuristic {
 public:
 	GraphDistanceHeuristic(Graph *graph) :g(graph) { placement = kRandomPlacement; }
 	~GraphDistanceHeuristic() {}
-	virtual double HCost(const graphState &state1, const graphState &state2);
+	virtual double HCost(const graphState &state1, const graphState &state2) const;
 	void AddHeuristic(node *n = 0);
 	int GetNumHeuristics() { return heuristics.size(); }
 	void SetPlacement(placementScheme s) { placement = s; }
 	Graph *GetGraph() { return g; }
 	void ChooseStartGoal(graphState &start, graphState &goal);
-	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw() const;
 protected:
 	void GetOptimalDistances(node *n, std::vector<double> &values);
 	void AddHeuristic(std::vector<double> &values, graphState location);
@@ -257,7 +264,7 @@ enum tHeuristicCombination
 class GraphMapInconsistentHeuristic : public GraphDistanceHeuristic {
 public:
 	GraphMapInconsistentHeuristic(Map *map, Graph *graph);
-	double HCost(const graphState &state1, const graphState &state2);
+	double HCost(const graphState &state1, const graphState &state2) const;
 	void SetMode(tHeuristicCombination mode)
 	{ hmode = mode; if (compressed) hmode = kCompressed; }
 	tHeuristicCombination GetMode() { return hmode; }
@@ -266,14 +273,14 @@ public:
 	int GetNumUsedHeuristics()
 	{ return numHeuristics; }	
 	void Compress();
-	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw() const;
 	
 	void IncreaseDisplayHeuristic()
 	{ displayHeuristic = (displayHeuristic+1)%(heuristics.size()+1); }
 private:
 	void FillInCache(std::vector<double> &vals,
 					 std::vector<double> &errors,
-					 graphState state2);
+					 graphState state2) const;
 	tHeuristicCombination hmode;
 	int numHeuristics;
 	int displayHeuristic;
@@ -296,39 +303,63 @@ public:
 	void SetDirected(bool b) { directed = b; }
 
 	OccupancyInterface<graphState, graphMove> *GetOccupancyInfo() { return 0; }
-	virtual double HCost(const graphState &state1, const graphState &state2);
-	virtual double GCost(const graphState &state1, const graphState &state2);
-	virtual double GCost(const graphState &state1, const graphMove &state2);
-	virtual bool GoalTest(const graphState &state, const graphState &goal);
+	virtual double HCost(const graphState &state1, const graphState &state2) const;
+	virtual double GCost(const graphState &state1, const graphState &state2) const;
+	virtual double GCost(const graphState &state1, const graphMove &state2) const;
+	virtual bool GoalTest(const graphState &state, const graphState &goal) const;
+	virtual uint64_t GetMaxHash() const { return g->GetNumNodes(); }
 	virtual uint64_t GetStateHash(const graphState &state) const;
+	virtual void GetStateFromHash(uint64_t parent, graphState &s) const;
 	virtual uint64_t GetActionHash(graphMove act) const;
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const graphState &s) const;
-	virtual void OpenGLDraw(const graphState &s, const graphMove &gm) const;
-	virtual void OpenGLDraw(const graphState &s, const graphState&, float) const { OpenGLDraw(s); }
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const graphState &s) const;
+//	virtual void OpenGLDraw(const graphState &s, const graphMove &gm) const;
+//	virtual void OpenGLDraw(const graphState &s, const graphState&, float) const { OpenGLDraw(s); }
+//	virtual void GLDrawLine(const graphState &x, const graphState &y) const;
+//	virtual void GLLabelState(const graphState&, const char *) const;
 
+	virtual void Draw(Graphics::Display &disp) const;
+	void DrawLERP(Graphics::Display &disp, Graph *a, Graph *b, float mix) const;
+	void DrawLERP(Graphics::Display &disp, Graph *a, Graph *b, float mix, std::function<float(float, float, float)> l1, std::function<float(float, float, float)> l2) const;
+	void DrawLERP(Graphics::Display &disp, Graph *a, Graph *b, graphState sa, graphState sb, float mix,
+				  std::function<float(float, float, float)> l1,
+				  std::function<float(float, float, float)> l2) const;
+
+	virtual void Draw(Graphics::Display &disp, const graphState &l) const;
+	virtual void DrawStateLabel(Graphics::Display &disp, const graphState &l1, const char *txt) const;
+	virtual void DrawLine(Graphics::Display &disp, const graphState &x, const graphState &y, double width = 1.0) const;
+	virtual void DrawLine(Graphics::Display &disp, float x1, float y1, float x2, float y2, double width = 1.0) const;
+	Graphics::point GetLocation(const graphState &s) const;
 	Graph *GetGraph() { return g; };
 
 	virtual void StoreGoal(graphState &) {}
 	virtual void ClearGoal() {}
-	virtual bool IsGoalStored() {return false;}
+	virtual bool IsGoalStored() const {return false;}
 
-	virtual double HCost(const graphState &) {
+	virtual double HCost(const graphState &) const {
 		fprintf(stderr, "ERROR: Single State HCost not implemented for GraphEnvironment\n");
 		exit(1); return -1.0;}
 
-	virtual bool GoalTest(const graphState &){
+	virtual bool GoalTest(const graphState &) const {
 		fprintf(stderr, "ERROR: Single State Goal Test not implemented for GraphEnvironment\n");
 		exit(1); return false;
 	}
-
+	void SetIntegerEdgeCosts(bool val) { integerEdgeCosts = val; }
+	void SetDrawEdgeCosts(bool val) { drawEdgeCosts = val; }
+	void SetDrawNodeLabels(bool val) { drawNodeLabels = val; }
+	void SetNodeScale(float v) { nodeScale = v; }
+	float GetNodeScale() { return nodeScale; }
 protected:
 	bool directed;
 	Map *m;
 	Graph *g;
 	GraphHeuristic *h;
+	bool drawEdgeCosts;
+	bool integerEdgeCosts;
+	bool drawNodeLabels;
+	float nodeScale;
 };
-
+/*
 class AbstractionGraphEnvironment: public GraphEnvironment {
 	public:
 	AbstractionGraphEnvironment( GraphAbstraction *gabs, unsigned int level, GraphHeuristic *gh );
@@ -345,7 +376,7 @@ protected:
 	GraphAbstraction *gabs;
 	double graphscale;
 };
-
+*/
 typedef UnitSimulation<graphState, graphMove, GraphEnvironment> GraphSimulation;
 
 #endif

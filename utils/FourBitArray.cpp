@@ -10,6 +10,7 @@
 #include <string.h>
 #include "FourBitArray.h"
 #include <string.h>
+#include <cinttypes>
 
 //	uint8_t *mem;
 //	uint64_t entries;
@@ -28,6 +29,11 @@ FourBitArray::~FourBitArray()
 void FourBitArray::FillMax()
 {
 	memset(mem, 0xFF, (entries+1)/2);
+}
+
+void FourBitArray::Clear()
+{
+	memset(mem, 0x0, (entries+1)/2);
 }
 
 void FourBitArray::Resize(uint64_t newMaxEntries)
@@ -67,7 +73,7 @@ void FourBitArray::Set(uint64_t index, uint8_t val)
 void FourBitArray::Write(const char *file)
 {
 	FILE *f = fopen(file, "w+");
-	fprintf(f, "%llu\n", entries);
+	fprintf(f, "%" PRId64 "\n", entries);
 	fwrite(mem, sizeof(uint8_t), (entries+1)/2, f);
 	fclose(f);
 }
@@ -75,7 +81,7 @@ void FourBitArray::Write(const char *file)
 void FourBitArray::Read(const char *file)
 {
 	FILE *f = fopen(file, "r");
-	fscanf(f, "%llu\n", &entries);
+	fscanf(f, "%" PRId64 "\n", &entries);
 	Resize(entries);
 	fread(mem, sizeof(uint8_t), (entries+1)/2, f);
 	fclose(f);

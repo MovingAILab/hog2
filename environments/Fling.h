@@ -30,7 +30,7 @@ public:
 	bool CanMove(int which, int x, int y) const;
 	void Move(int which, int x, int y);
 	int LocationAfterAction(FlingMove m);
-	int NumPieces() const { return locs.size(); }
+	int NumPieces() const { return int(locs.size()); }
 	int GetPieceLocation(int which) const { return locs[which].first; }
 	bool HasPiece(int x, int y) const;
 	bool HasPiece(int offset) const;
@@ -149,23 +149,24 @@ public:
 	virtual bool InvertAction(FlingMove &a) const { assert(false); }
 	
 	/** Heuristic value between two arbitrary nodes. **/
-	virtual double HCost(const FlingBoard &node1, const FlingBoard &node2) { return 0; }
+	virtual double HCost(const FlingBoard &node1, const FlingBoard &node2) const { return 0; }
 	
-	virtual double GCost(const FlingBoard &node1, const FlingBoard &node2) { return 1; }
-	virtual double GCost(const FlingBoard &node, const FlingMove &act) { return 1; }
+	virtual double GCost(const FlingBoard &node1, const FlingBoard &node2) const { return 1; }
+	virtual double GCost(const FlingBoard &node, const FlingMove &act) const { return 1; }
 	
 	void SetGoalPanda(int which);
 	void ClearGoalPanda();
 	void SetGoalLoc(int val);
 	void ClearGoalLoc();
-	virtual bool GoalTest(const FlingBoard &node, const FlingBoard &goal);
+	virtual bool GoalTest(const FlingBoard &node, const FlingBoard &goal) const;
 	
 	virtual uint64_t GetStateHash(const FlingBoard &node) const;
 	virtual void GetStateFromHash(uint64_t parent, FlingBoard &s) const;
 	virtual uint64_t GetActionHash(FlingMove act) const;
 	
 	bool GetXYFromPoint(const FlingBoard &b, point3d loc, int &x, int &y) const;
-	
+	void IncrementRank(FlingBoard &b) const;
+
 	int64_t getMaxSinglePlayerRank(int spots, int numPieces);
 	int64_t getMaxSinglePlayerRank2(int spots, int numPieces);
 	int64_t getMaxSinglePlayerRank2(int spots, int numPieces, int64_t firstIndex);
@@ -183,15 +184,17 @@ public:
 	int64_t bi(unsigned int n, unsigned int k);
 
 	
-	virtual void OpenGLDraw() const {}
-	virtual void OpenGLDraw(const FlingBoard&) const;
-	virtual void OpenGLDrawAlternate(const FlingBoard&) const;
-	virtual void OpenGLDrawPlain(const FlingBoard&b) const;
-
-	virtual void OpenGLDraw(const FlingBoard&, const FlingMove&) const;
-	virtual void GLLabelState(const FlingBoard&, const char *) const;
+//	virtual void OpenGLDraw() const {}
+//	virtual void OpenGLDraw(const FlingBoard&) const;
+//	virtual void OpenGLDrawAlternate(const FlingBoard&) const;
+//	virtual void OpenGLDrawPlain(const FlingBoard&b) const;
+//
+//	virtual void OpenGLDraw(const FlingBoard&, const FlingMove&) const;
+//	virtual void GLLabelState(const FlingBoard&, const char *) const;
 
 private:
+	int IncrementRank(FlingBoard &b, int piece) const;
+
 	bool specificGoalLoc;
 	bool specificGoalPanda;
 	int goalLoc;
@@ -199,3 +202,21 @@ private:
 	std::vector<int64_t> binomials;
 
 };
+
+namespace std {
+	
+	template <>
+	struct hash<FlingBoard>
+	{
+		std::size_t operator()(const FlingBoard& node) const
+		{
+			std::size_t hash = 0;
+			for (unsigned int x = 0; x < node.locs.size(); x++)
+			{
+				hash |= (1ull<<node.locs[x].first);
+			}
+			return hash;
+		}
+	};
+	
+}

@@ -11,7 +11,7 @@
 #define HEURISTICLEARNINGMEASURE_H
 
 #include "SearchEnvironment.h"
-#include <ext/hash_map>
+#include <unordered_map>
 #include "TemplateAStar.h"
 #include <iostream>
 #include <queue>
@@ -66,7 +66,7 @@ public:
 	
 	void ShowHistogram()
 	{
-		typedef __gnu_cxx::hash_map<double, sVal, HashDouble> HistogramData;
+		typedef std::unordered_map<double, sVal, HashDouble> HistogramData;
 		HistogramData histogram;
 		for (typename EnvironmentData::const_iterator it = learnData.begin(); it != learnData.end(); it++)
 		{
@@ -80,30 +80,30 @@ public:
 		}
 	}
 	
-	void OpenGLDraw(environment *env) const
-	{
-		double maxLearning = 0;
-		for (typename EnvironmentData::const_iterator it = learnData.begin(); it != learnData.end(); it++)
-		{
-			double cnt = (*it).second.learnedHeuristic - (*it).second.initialHeuristic;
-			if (cnt > maxLearning)
-				maxLearning = cnt;
-		}
-		
-		for (typename EnvironmentData::const_iterator it = learnData.begin(); it != learnData.end(); it++)
-		{
-			double r = (*it).second.learnedHeuristic - (*it).second.initialHeuristic;
-			if (r > 0)
-			{
-				env->SetColor(0.5+0.5*r/maxLearning, 0, 0, 0.1+0.8*r/maxLearning);
-				env->OpenGLDraw((*it).second.theState);
-			}
-		}
-		
-	}
+//	void OpenGLDraw(environment *env) const
+//	{
+//		double maxLearning = 0;
+//		for (typename EnvironmentData::const_iterator it = learnData.begin(); it != learnData.end(); it++)
+//		{
+//			double cnt = (*it).second.learnedHeuristic - (*it).second.initialHeuristic;
+//			if (cnt > maxLearning)
+//				maxLearning = cnt;
+//		}
+//		
+//		for (typename EnvironmentData::const_iterator it = learnData.begin(); it != learnData.end(); it++)
+//		{
+//			double r = (*it).second.learnedHeuristic - (*it).second.initialHeuristic;
+//			if (r > 0)
+//			{
+//				env->SetColor(0.5+0.5*r/maxLearning, 0, 0, 0.1+0.8*r/maxLearning);
+//				env->OpenGLDraw((*it).second.theState);
+//			}
+//		}
+//		
+//	}
 	
 private:
-	typedef __gnu_cxx::hash_map<uint64_t, stateData<state>, Hash64 > EnvironmentData;
+	typedef std::unordered_map<uint64_t, stateData<state>, Hash64 > EnvironmentData;
 
 	double SumLearningRequired()
 	{

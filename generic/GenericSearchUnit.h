@@ -62,7 +62,7 @@ public:
 	virtual void UpdateLocation(environment *env, state &l, bool success, SimulationInfo<state,action,environment> *si);
 	
 	virtual void GetLocation(state& s) {s=loc;}
-	virtual void OpenGLDraw(const environment *, const SimulationInfo<state,action,environment> *) const;
+//	virtual void OpenGLDraw(const environment *, const SimulationInfo<state,action,environment> *) const;
 	//void printRoundStats(FILE *f);
 	void LogStats(StatCollection *stats);
 	void LogFinalStats(StatCollection *stats);
@@ -140,7 +140,7 @@ bool GenericSearchUnit<state,action,environment>::MakeMove(environment *theEnv, 
 		// check if target has moved from goal state - update goal if necessary
 		state targpos;
 		target->GetLocation(targpos);
-		if(~(targpos == goal))
+		if (~(targpos == goal))
 			goal = targpos;
 	}
 	
@@ -198,47 +198,47 @@ bool GenericSearchUnit<state,action,environment>::MakeMove(environment *theEnv, 
 	return true;
 }
 
-template <class state, class action, class environment>
-void GenericSearchUnit<state,action,environment>::OpenGLDraw(const environment *theEnv, const SimulationInfo<state,action,environment> *si) const
-{
-	// Draw current + goal states as states. May need to find something
-	// different for the goal
-	//printf("Drawing %p at \n", this);
-	{
-		PublicUnitInfo<state, action, environment> i;
-		si->GetPublicUnitInfo(si->GetCurrentUnit(), i);
-		
-		GLfloat _r,_g,_b;
-		this->GetColor(_r,_g,_b);
-		theEnv->SetColor(_r, _g, _b);
-
-		if (fgreater(si->GetSimulationTime(), i.nextTime))
-			theEnv->OpenGLDraw(i.currentState);
-		else
-			theEnv->OpenGLDraw(i.lastState, i.currentState,
-							   (si->GetSimulationTime()-i.lastTime)/(i.nextTime-i.lastTime));
-		theEnv->SetColor(1.0, 0.25, 0.25, 0.25);
-
-		//algorithm->OpenGLDraw();
-
-		theEnv->SetColor(_r, _g, _b, 0.5);
-		theEnv->OpenGLDraw(goal);
-	}
-
-	state current = loc;
-	state next;
-	
-	// Draw the cached moves
-  	for(unsigned int i=0; i<moves.size(); i++)
- 	{
-		theEnv->SetColor(1.0, 0.0, 0.0, 0.5);
- 		theEnv->OpenGLDraw(current);
- 		//theEnv->OpenGLDraw(current, moves[i]/*,1.0,0,0*/); // draw in red
- 		//theEnv->GetNextState(current, moves[i], next);
-		theEnv->ApplyAction(current, moves[i]);
- 	}
- 	
-}
+//template <class state, class action, class environment>
+//void GenericSearchUnit<state,action,environment>::OpenGLDraw(const environment *theEnv, const SimulationInfo<state,action,environment> *si) const
+//{
+//	// Draw current + goal states as states. May need to find something
+//	// different for the goal
+//	//printf("Drawing %p at \n", this);
+//	{
+//		PublicUnitInfo<state, action, environment> i;
+//		si->GetPublicUnitInfo(si->GetCurrentUnit(), i);
+//		
+//		GLfloat _r,_g,_b;
+//		this->GetColor(_r,_g,_b);
+//		theEnv->SetColor(_r, _g, _b);
+//
+//		if (fgreater(si->GetSimulationTime(), i.nextTime))
+//			theEnv->OpenGLDraw(i.currentState);
+//		else
+//			theEnv->OpenGLDraw(i.lastState, i.currentState,
+//							   (si->GetSimulationTime()-i.lastTime)/(i.nextTime-i.lastTime));
+//		theEnv->SetColor(1.0, 0.25, 0.25, 0.25);
+//
+//		//algorithm->OpenGLDraw();
+//
+//		theEnv->SetColor(_r, _g, _b, 0.5);
+//		theEnv->OpenGLDraw(goal);
+//	}
+//
+//	state current = loc;
+//	state next;
+//	
+//	// Draw the cached moves
+//  	for (unsigned int i=0; i<moves.size(); i++)
+// 	{
+//		theEnv->SetColor(1.0, 0.0, 0.0, 0.5);
+// 		theEnv->OpenGLDraw(current);
+// 		//theEnv->OpenGLDraw(current, moves[i]/*,1.0,0,0*/); // draw in red
+// 		//theEnv->GetNextState(current, moves[i], next);
+//		theEnv->ApplyAction(current, moves[i]);
+// 	}
+// 	
+//}
 
 template <class state, class action, class environment>
 void GenericSearchUnit<state,action,environment>::LogStats(StatCollection *stats)
@@ -270,7 +270,7 @@ void GenericSearchUnit<state,action,environment>::LogFinalStats(StatCollection *
 template<class state, class action, class environment>
 void GenericSearchUnit<state,action,environment>::AddPathToCache(environment *theEnv, std::vector<state> &path)
 {
- 	for(unsigned int i=0; i<path.size()-1; i++)
+ 	for (unsigned int i=0; i<path.size()-1; i++)
  	{
  		moves.push_back(theEnv->GetAction(path[i], path[i+1]));
  	}

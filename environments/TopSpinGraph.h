@@ -7,7 +7,7 @@
  *
  */
 
-//#include <ext/hash_map>
+//#include <unordered_map>
 #include "GraphEnvironment.h"
 
 //#include "ts.h"
@@ -23,7 +23,7 @@ public:
 	Graph *GetGraph() { return 0; }
 	void SetState(TopSpinGraph *tss) { ts = tss; }
 	virtual ~TopSpinGraphHeuristic() { }
-	virtual double HCost(const graphState &state1, const graphState &state2);
+	virtual double HCost(const graphState &state1, const graphState &state2) const;
 
 	static int THmode;
 private:
@@ -47,8 +47,8 @@ public:
 	~TopSpinGraph();
 	void GetSuccessors(const graphState &stateID, std::vector<graphState> &neighbors) const;
 	void GetActions(const graphState &stateID, std::vector<graphMove> &actions) const;
-	bool GoalTest(const graphState &state, const graphState &goal);
-	virtual bool GoalTest(graphState &) { assert(false); return false; }
+	bool GoalTest(const graphState &state, const graphState &goal) const;
+	virtual bool GoalTest(graphState &) const { assert(false); return false; }
 	
 	graphState Dual(graphState s);
 	graphState GetState(const std::vector<int> &configuration) const;
@@ -62,7 +62,7 @@ public:
 	uint64_t GetPDBHash(const graphState &state, int pdb_size) const;
 	uint64_t GetPDBSize(int puzzle_size, int pdb_size) const;
 private:
-	typedef __gnu_cxx::hash_map<uint64_t, unsigned long, Hash64> TopSpinHashTable;
+	typedef std::unordered_map<uint64_t, unsigned long, Hash64> TopSpinHashTable;
 
 	void ExpandNode(const graphState &stateID) const;
 	void Flip(std::vector<int> &arrangement, int index, int radius) const;

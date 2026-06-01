@@ -1,0 +1,21 @@
+#!/bin/tcsh
+
+set Experiment = `echo 2`
+# Set the Experiment variable to:
+# 1 (if you wanna see the work/suboptimality table in terminal),
+# 2 (if you wanna generate the work/suboptimality plots),
+# 3 (if you wanna see the TimePerNode/suboptimality table in terminal),
+# 4 (if you wanna generate the TimePerNode/suboptimality plots),
+
+## SET THE PATH TO THE ROOT OF THE PROJECT
+cd ./../
+
+python3 ./papers/DSDWA/CreatePlots.py -stp $Experiment 8 10 Total_STP
+python3 ./papers/DSDWA/CreatePlots.py -stp $Experiment 8 10 Total_SquaredSTP
+python3 ./papers/DSDWA/CreatePlots.py -stp $Experiment 7 10 Total_DWSTP
+python3 ./papers/DSDWA/CreatePlots.py -stp $Experiment 8 10 Total_SquareRootSTP
+python3 ./papers/DSDWA/CreatePlots.py -map $Experiment 8 10 Total_DWrandom10
+python3 ./papers/DSDWA/CreatePlots.py -map $Experiment 7 10 Total_DWmazes
+python3 ./papers/DSDWA/CreatePlots.py -map $Experiment 7 10 Total_Mazes
+python3 ./papers/DSDWA/CreatePlots.py -map $Experiment 8 10 Total_RaceTrack
+python3 ./papers/DSDWA/CreatePlots.py -map $Experiment 7 10 Total_DWmazesDH

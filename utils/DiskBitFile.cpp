@@ -277,7 +277,7 @@ void DiskBitFile::Init(const std::vector<bucketData> &buckets)
 	int subBucket = 0;
 	for (unsigned int x = 0; x < buckets.size(); x++)
 	{
-		printf("Bucket %d has %llu entries\n", x, buckets[x].theSize);
+		printf("Bucket %d has %" PRId64 " entries\n", x, buckets[x].theSize);
 		
 		FILE *f = fopen(getBucketFileName(x, subBucket), "w");
 		if (f == 0)

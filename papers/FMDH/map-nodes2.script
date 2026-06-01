@@ -1,0 +1,10 @@
+#!/bin/tcsh
+
+foreach scen ( ../../scenarios/${3}/*.scen )
+
+set x = `echo $scen | sed 's/.*\///g'`
+set map = `echo $x | sed 's/\.scen//'`
+
+../../bin/release/FMDH -solve ${1} ${2} ../../maps/${3}/$map $scen >> ${3}-nodes-${2}-${1}.txt
+
+end

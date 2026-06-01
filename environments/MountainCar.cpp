@@ -8,6 +8,7 @@
  */
 
 #include "MountainCar.h"
+#include <math.h>
 
 MountainCarEnvironment::MountainCarEnvironment()
 {
@@ -97,20 +98,20 @@ bool MountainCarEnvironment::InvertAction(MountainCarAction &a) const
 }
 
 /** Heuristic value between two arbitrary nodes. **/
-double MountainCarEnvironment::HCost(const MountainCarState &node1, const MountainCarState &node2)
+double MountainCarEnvironment::HCost(const MountainCarState &node1, const MountainCarState &node2) const
 { return 0; }
 
-double MountainCarEnvironment::GCost(const MountainCarState &node1, const MountainCarState &node2)
+double MountainCarEnvironment::GCost(const MountainCarState &node1, const MountainCarState &node2) const
 {
 	return 1;
 }
 
-double MountainCarEnvironment::GCost(const MountainCarState &node, const MountainCarAction &act)
+double MountainCarEnvironment::GCost(const MountainCarState &node, const MountainCarAction &act) const
 {
 	return 1;
 }
 
-bool MountainCarEnvironment::GoalTest(const MountainCarState &node, const MountainCarState &goal)
+bool MountainCarEnvironment::GoalTest(const MountainCarState &node, const MountainCarState &goal) const
 {
 	return fgreater(node.loc, goalPosition);
 }
@@ -125,20 +126,20 @@ uint64_t MountainCarEnvironment::GetActionHash(MountainCarAction act) const
 	return act+1;
 }
 
-void MountainCarEnvironment::OpenGLDraw() const
-{
-//	minPosition = -1.2;
-//    maxPosition = 0.6;
-	glBegin(GL_LINE_STRIP);
-	glColor3f(0, 1.0, 0);
-	for (double x = minPosition; x < maxPosition; x += 0.1)
-	{
-		glVertex3f(x, GetHeightAtPosition(x), 0);
-	}	
-	glEnd();
-}
+//void MountainCarEnvironment::OpenGLDraw() const
+//{
+////	minPosition = -1.2;
+////    maxPosition = 0.6;
+//	glBegin(GL_LINE_STRIP);
+//	glColor3f(0, 1.0, 0);
+//	for (double x = minPosition; x < maxPosition; x += 0.1)
+//	{
+//		glVertex3f(x, GetHeightAtPosition(x), 0);
+//	}	
+//	glEnd();
+//}
 
-void MountainCarEnvironment::OpenGLDraw(const MountainCarState&) const { }
-void MountainCarEnvironment::OpenGLDraw(const MountainCarState&, const MountainCarState&, float) const { }
-void MountainCarEnvironment::OpenGLDraw(const MountainCarState&, const MountainCarAction&) const { }
+//void MountainCarEnvironment::OpenGLDraw(const MountainCarState&) const { }
+//void MountainCarEnvironment::OpenGLDraw(const MountainCarState&, const MountainCarState&, float) const { }
+//void MountainCarEnvironment::OpenGLDraw(const MountainCarState&, const MountainCarAction&) const { }
 

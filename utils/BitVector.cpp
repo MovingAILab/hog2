@@ -1,65 +1,38 @@
 /*
- * $Id: BitVector.cpp,v 1.3 2006/09/18 06:20:15 nathanst Exp $
+ *  $Id: BitVector.cpp
+ *  hog2
  *
- * This file is part of HOG.
+ *  Created by Nathan Sturtevant on 09/18/06.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
  *
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #include <cstdlib>
 #include <cstdio>
 #include "BitVector.h"
-#include "MMapUtil.h"
-#include <sys/mman.h>
-
+#include <cinttypes>
+#include <cassert>
 
 BitVector::BitVector(uint64_t _size)
 {
 	true_size = _size;
 	size = (_size>>storageBitsPower)+1;
 	storage = new storageElement[size];
-	for (int x = 0; x < size; x++)
+	for (size_t x = 0; x < size; x++)
 		storage[x] = 0;
-	memmap = false;
 }
 
-BitVector::BitVector(uint64_t entries, const char *file, bool zero)
+BitVector::BitVector(uint64_t size, const char *fname)
 {
-	// make sure we allocate even space for 32 bit entries
-	while (0 != entries%storageBits)
-	{
-		entries++;
-	}
-	uint8_t *mem = GetMMAP(file, entries/8, fd, zero); // number of bytes needed
-	storage = (storageElement*)mem;
-	size = (entries>>storageBitsPower)+1;
-	true_size = entries;
-	memmap = true;
+	Load(fname);
+	assert(size == true_size);
 }
 
 BitVector::~BitVector()
 {
-	if (!memmap)
-	{
-		delete [] storage;
-	}
-	else {
-		printf("Closing mmap\n");
-		// close memmap
-		CloseMMap((uint8_t*)storage, true_size/8, fd);
-	}
+	delete [] storage;
 }
 
 void BitVector::Save(const char *file)
@@ -77,12 +50,6 @@ void BitVector::Save(const char *file)
 
 void BitVector::Load(const char *file)
 {
-	if (memmap)
-	{
-		printf("BitVector is memmapped; not loading\n");
-		return;
-	}
-	
 	delete [] storage;
 	FILE *f = fopen(file, "r");
 	if (f == 0)
@@ -92,7 +59,7 @@ void BitVector::Load(const char *file)
 	}
 	//fread(&size, sizeof(size), 1, f);
 	fread(&true_size, sizeof(true_size), 1, f);
-	printf("Loading %llu entries\n", true_size);
+	printf("Loading %" PRId64 " entries\n", true_size);
 	// allocate storage
 	size = (true_size>>storageBitsPower)+1;
 	
@@ -121,7 +88,7 @@ void BitVector::clear()
 void BitVector::Set(uint64_t index, bool value)
 {
 	if ((index>>storageBitsPower) > size) {
-		printf("SET %llu OUT OF RANGE\n", index);
+		printf("SET %" PRId64 " OUT OF RANGE\n", index);
 		exit(0);
 	}
 	if (value)
@@ -144,7 +111,7 @@ void BitVector::Set(uint64_t index, bool value)
 bool BitVector::Equals(BitVector *bv)
 {
 	if (bv->size != size) return false;
-	for (int x = 0; x < size; x++)
+	for (size_t x = 0; x < size; x++)
 		if (storage[x] != bv->storage[x])
 			return false;
 	return true;
@@ -153,7 +120,7 @@ bool BitVector::Equals(BitVector *bv)
 uint64_t BitVector::GetNumSetBits()
 {
 	uint64_t sum = 0;
-	for (int x = 0; x < size; x++)
+	for (size_t x = 0; x < size; x++)
 	{
 		storageElement iter = storage[x];
 		while (iter) {

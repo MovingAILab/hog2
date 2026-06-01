@@ -12,10 +12,10 @@
 
 #include <iostream>
 #include "SearchEnvironment.h"
-#include <ext/hash_map>
+#include <unordered_map>
 #include "FPUtil.h"
 
-typedef __gnu_cxx::hash_map<uint64_t, bool, Hash64> FrontierBFSClosedList;
+typedef std::unordered_map<uint64_t, bool, Hash64> FrontierBFSClosedList;
 
 template <class state, class action>
 class FrontierBFS {
@@ -113,7 +113,7 @@ bool FrontierBFS<state, action>::DoOneIteration(SearchEnvironment<state, action>
 	else {
 		return true;
 	}
-	printf("Depth %d complete; nodes expanded %lld (%lld new); %d in memory\n", depth, nodesExpanded, nodesExpanded - n,
+	printf("Depth %d complete; nodes expanded %lld (%lld new); %lu in memory\n", depth, nodesExpanded, nodesExpanded - n,
 		   mOpen1.size()+mOpen2.size()+mClosed1.size()+mClosed2.size());
 	if ((mOpen1.size() == 0) && (mOpen2.size() == 0))
 		return true;

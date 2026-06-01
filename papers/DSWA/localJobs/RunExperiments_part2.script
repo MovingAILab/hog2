@@ -1,0 +1,26 @@
+#!/bin/tcsh
+
+cd ./../build/SFML
+make
+cd ../../localJobs
+echo "============================================================================================"
+
+echo "Warning: Double check to be sure you turned on the useDH in DSDWAStar.h code"
+
+cd ./OutputData
+rm W*DWmazes_*-results.txt P*DWmazes_*-results.txt X*DWmazes_*-results.txt D*DWmazes_*-results.txt M*DWmazes_*-results.txt
+cd ./..
+
+echo "DWmazes domain.."
+./WA_DWmazes.script
+./PWXD_DWmazes.script
+./PWXU_DWmazes.script
+./XDP_DWmazes.script
+./XUP_DWmazes.script
+./DWP_DWmazes.script
+./MAP_DWmazes.script
+
+mv *-results.txt ./OutputData
+cd ./OutputData
+cat W*DWmazes_*-results.txt P*DWmazes_*-results.txt X*DWmazes_*-results.txt D*DWmazes_*-results.txt M*DWmazes_*-results.txt > Total_DWmazesDH.txt
+cd ./../

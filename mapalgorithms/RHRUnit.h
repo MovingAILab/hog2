@@ -20,13 +20,13 @@ class RHRUnit : public MapUnit {
 public:
 	RHRUnit(int x, int y)
 	:MapUnit(x, y)
-  { lastIndex = 0; }
+	{ lastIndex = 0; initial = true; }
 	const char *GetName() { return "RHRUnit"; }
 	bool MakeMove(MapEnvironment *, OccupancyInterface<xyLoc, tDirection> *, MapSimulationInfo *, tDirection &);
 	void UpdateLocation(MapEnvironment *, xyLoc &, bool, MapSimulationInfo *);
 private:
 	int lastIndex;
-	xyLoc loc;
+	bool initial;
 };
 
 #endif

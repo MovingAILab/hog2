@@ -37,7 +37,7 @@
 #endif
 
 #include "FPUtil.h"
-#include <ext/hash_map>
+#include <unordered_map>
 #include "AStarOpenClosed.h"
 #include "BucketOpenClosed.h"
 //#include "SearchEnvironment.h" // for the SearchEnvironment class
@@ -132,7 +132,7 @@ public:
 	void SetStopAfterGoal(bool val) { stopAfterGoal = val; }
 	bool GetStopAfterGoal() { return stopAfterGoal; }
 	
-	void OpenGLDraw() const;
+//	void OpenGLDraw() const;
 	
 	void SetWeight(double w) {weight = w;}
 private:
@@ -202,7 +202,7 @@ bool EPEAStar<state,action,environment>::InitializeSearch(environment *_env, con
 {
 	theHeuristic = _env;
 	thePath.resize(0);
-	//if(useRadius)
+	//if (useRadius)
 	//std::cout<<"Using radius\n";
 	env = _env;
 	//	closedList.clear();
@@ -429,44 +429,44 @@ bool EPEAStar<state, action,environment>::GetClosedListGCost(const state &val, d
  * @date 03/12/09
  * 
  */
-template <class state, class action, class environment>
-void EPEAStar<state, action,environment>::OpenGLDraw() const
-{
-	double transparency = 1.0;
-	if (openClosedList.size() == 0)
-		return;
-	uint64_t top = -1;
-	if (openClosedList.OpenSize() > 0)
-		top = openClosedList.Peek();
-	for (unsigned int x = 0; x < openClosedList.size(); x++)
-	{
-		const EPEAOpenClosedData<state> &data = openClosedList.Lookat(x);
-		if (x == top)
-		{
-			env->SetColor(1.0, 1.0, 0.0, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		if ((data.where == kOpenList) && (data.reopened))
-		{
-			env->SetColor(0.0, 0.5, 0.5, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		else if (data.where == kOpenList) 
-		{
-			env->SetColor(0.0, 1.0, 0.0, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		else if ((data.where == kClosedList) && (data.reopened))
-		{
-			env->SetColor(0.5, 0.0, 0.5, transparency);
-			env->OpenGLDraw(data.data);
-		}
-		else if (data.where == kClosedList)
-		{
-			env->SetColor(1.0, 0.0, 0.0, transparency);
-			env->OpenGLDraw(data.data);
-		}
-	}
-}
+//template <class state, class action, class environment>
+//void EPEAStar<state, action,environment>::OpenGLDraw() const
+//{
+//	double transparency = 1.0;
+//	if (openClosedList.size() == 0)
+//		return;
+//	uint64_t top = -1;
+//	if (openClosedList.OpenSize() > 0)
+//		top = openClosedList.Peek();
+//	for (unsigned int x = 0; x < openClosedList.size(); x++)
+//	{
+//		const EPEAOpenClosedData<state> &data = openClosedList.Lookat(x);
+//		if (x == top)
+//		{
+//			env->SetColor(1.0, 1.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		if ((data.where == kOpenList) && (data.reopened))
+//		{
+//			env->SetColor(0.0, 0.5, 0.5, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		else if (data.where == kOpenList) 
+//		{
+//			env->SetColor(0.0, 1.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		else if ((data.where == kClosedList) && (data.reopened))
+//		{
+//			env->SetColor(0.5, 0.0, 0.5, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//		else if (data.where == kClosedList)
+//		{
+//			env->SetColor(1.0, 0.0, 0.0, transparency);
+//			env->OpenGLDraw(data.data);
+//		}
+//	}
+//}
 
 #endif

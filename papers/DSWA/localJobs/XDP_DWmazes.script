@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./XDP_DWmazesJob0.script
+./XDP_DWmazesJob1.script
+./XDP_DWmazesJob2.script
+./XDP_DWmazesJob3.script
+./XDP_DWmazesJob4.script
+./XDP_DWmazesJob5.script
+./XDP_DWmazesJob6.script
+./XDP_DWmazesJob7.script
+./XDP_DWmazesJob8.script
+./XDP_DWmazesJob9.script

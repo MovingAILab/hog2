@@ -1,29 +1,14 @@
 /*
- * $Id: OpenListB.h,v 1.9 2006/11/27 23:21:37 nathanst Exp $
- *
- *  hog
+ *  $Id: OpenListB.h
+ *  hog2
  *
  *  Created by Nathan Sturtevant on 1/14/06.
- *  Copyright 2006 Nathan Sturtevant. All rights reserved.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * This file is part of HOG.
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
  *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Modified by Zhifu Zhang
  *
-
- modified by Zhifu Zhang
  */
 
 #ifndef OpenListB_H
@@ -32,7 +17,7 @@
 #include <cassert>
 #include <vector>
 #include <deque>
-#include <ext/hash_map>
+#include <unordered_map>
 
 /**
 * A simple & efficient Heap class.
@@ -63,7 +48,7 @@ private:
   std::vector<OBJ> _elts;
 	void HeapifyUp(unsigned int index);
   void HeapifyDown(unsigned int index);
-	typedef __gnu_cxx::hash_map<OBJ, unsigned int, HashKey, EqKey > IndexTable;
+	typedef std::unordered_map<OBJ, unsigned int, HashKey, EqKey > IndexTable;
 	IndexTable table;
 };
 
@@ -257,7 +242,7 @@ OBJ OpenListB<OBJ, HashKey, EqKey, CmpKey, SpecialKey, CmpKeyStrictExtract>::Fin
 	CmpKeyStrictExtract extractor;
 	SpecialKey spk;
 
-	if(!fless(extractor(_elts[0]), F))
+	if (!fless(extractor(_elts[0]), F))
 		return OBJ();
 
 	unsigned int resultIndex = 0;
@@ -268,7 +253,7 @@ OBJ OpenListB<OBJ, HashKey, EqKey, CmpKey, SpecialKey, CmpKeyStrictExtract>::Fin
 		unsigned int current = candidates.front();
 		candidates.pop_front();
 
-		if(spk(_elts[resultIndex],_elts[current])) 
+		if (spk(_elts[resultIndex],_elts[current])) 
 		{
 			resultIndex = current;
 		}
@@ -278,12 +263,12 @@ OBJ OpenListB<OBJ, HashKey, EqKey, CmpKey, SpecialKey, CmpKeyStrictExtract>::Fin
 		unsigned int child1 = current*2+1;
 		unsigned int child2 = current*2+2;
 		
-		if(child1 < count && fless(extractor(_elts[child1]),F))
+		if (child1 < count && fless(extractor(_elts[child1]),F))
 		{
 			candidates.push_back(child1);
 		}
 
-		if(child2 < count && fless(extractor(_elts[child2]),F))
+		if (child2 < count && fless(extractor(_elts[child2]),F))
 		{
 			candidates.push_back(child2);
 		}
@@ -300,7 +285,7 @@ OBJ OpenListB<OBJ, HashKey, EqKey, CmpKey, SpecialKey, CmpKeyStrictExtract>::Fin
 	CmpKeyStrictExtract extractor;
 	SpecialKey spk;
 
-	if(!fequal(extractor(_elts[0]), F))
+	if (!fequal(extractor(_elts[0]), F))
 		return OBJ();
 
 	unsigned int resultIndex = 0;
@@ -311,7 +296,7 @@ OBJ OpenListB<OBJ, HashKey, EqKey, CmpKey, SpecialKey, CmpKeyStrictExtract>::Fin
 		unsigned int current = candidates.front();
 		candidates.pop_front();
 
-		if(spk(_elts[resultIndex],_elts[current])) 
+		if (spk(_elts[resultIndex],_elts[current])) 
 		{
 			resultIndex = current;
 		}
@@ -321,12 +306,12 @@ OBJ OpenListB<OBJ, HashKey, EqKey, CmpKey, SpecialKey, CmpKeyStrictExtract>::Fin
 		unsigned int child1 = current*2+1;
 		unsigned int child2 = current*2+2;
 		
-		if(child1 < count && fequal(extractor(_elts[child1]),F))
+		if (child1 < count && fequal(extractor(_elts[child1]),F))
 		{
 			candidates.push_back(child1);
 		}
 
-		if(child2 < count && fequal(extractor(_elts[child2]),F))
+		if (child2 < count && fequal(extractor(_elts[child2]),F))
 		{
 			candidates.push_back(child2);
 		}

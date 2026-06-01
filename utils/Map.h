@@ -1,32 +1,18 @@
 /*
- * $Id: map.h,v 1.20 2007/03/07 22:01:05 nathanst Exp $
+ *  $Id: map.h
+ *  hog2
  *
- * This file is part of HOG.
+ *  Created by Nathan Sturtevant on 03/07/07.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
+ *
  */ 
 
 // HOG File
 
 #ifndef MAP_H
 #define MAP_H
-
-static const double ONE = 1.0;
-static const double TWO = 2.0;
-static const double ROOT_TWO = 1.414213562;//1.5f?
-static const double ONE_OVER_ROOT_TWO = 1.0/ROOT_TWO;//0.707106781f;
 
 #include <cassert>
 #include <cmath>
@@ -35,8 +21,9 @@ static const double ONE_OVER_ROOT_TWO = 1.0/ROOT_TWO;//0.707106781f;
 #include <unistd.h>
 #include <iostream>
 #include <stdint.h>
+#include "Graphics.h"
 
-#include "GLUtil.h"
+#include "Constants.h"
 //#include "Graph.h"
 
 enum tTileset {
@@ -74,7 +61,7 @@ enum tTerrain {
 };
 
 inline bool CanPass(long a, long b)
-{ return (((a&b)&0xF0) != 0); }
+{ return ((a&0xF0) == (b&0xF0)); }
 
 // ground split types
 enum tSplit {
@@ -219,15 +206,15 @@ public:
 	// returns whether we can step between two locations or not
 	bool CanStep(long x1, long y1, long x2, long y2) const;
 	
-	void OpenGLDraw(tDisplay how = kPolygons) const;
-	bool GetOpenGLCoord(int _x, int _y, GLdouble &x, GLdouble &y, GLdouble &z, GLdouble &radius) const;
-	bool GetOpenGLCoord(float _x, float _y, GLdouble &x, GLdouble &y, GLdouble &z, GLdouble &radius) const;
-	void GetPointFromCoordinate(point3d loc, int &px, int &py) const;
+//	void OpenGLDraw(tDisplay how = kPolygons) const;
+	bool GetCoord(int _x, int _y, double &x, double &y, double &z, double &radius) const;
+	bool GetCoord(float _x, float _y, double &x, double &y, double &z, double &radius) const;
+	void GetPointFromCoordinate(Graphics::point loc, int &px, int &py) const;
 	double GetCoordinateScale();
 	
 	void SetDrawLand(bool land);
 	bool GetDrawLand() { return drawLand; }
-	void DrawTile(Tile *t, int x, int y, tDisplay how) const;
+	//void DrawTile(Tile *t, int x, int y, tDisplay how) const;
 	void DoVertexColor(tTerrain type, int height, bool darken = false) const;
 	void DoNormal(tSplit split, halfTile *t, int x, int y) const;
 	
@@ -247,11 +234,11 @@ private:
 	bool tryDragonAge(FILE *f);
 	bool isLegalStone(char c);
 	void paintRoomInside(int x, int y);
-	void drawLandQuickly() const;
+	//void drawLandQuickly() const;
 	int width, height;
 	Tile **land;
 	bool drawLand;
-	mutable GLuint dList;
+//	mutable GLuint dList;
 	mutable bool updated;
 	int sizeMultiplier;
 	int revision;

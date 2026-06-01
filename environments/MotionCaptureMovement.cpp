@@ -140,24 +140,24 @@ bool MCEnvironment::InvertAction(mcMovementAction &a) const
 }
 
 /** Heuristic value between two arbitrary nodes. **/
-double MCEnvironment::HCost(const mcMovementState &node1, const mcMovementState &node2)
+double MCEnvironment::HCost(const mcMovementState &node1, const mcMovementState &node2) const
 {
 	return distance(node1, node2);
 }
 
-double MCEnvironment::GCost(const mcMovementState &node1, const mcMovementState &node2)
+double MCEnvironment::GCost(const mcMovementState &node1, const mcMovementState &node2) const
 {
 	return distance(node1, node2);
 }
 
-double MCEnvironment::GCost(const mcMovementState &node, const mcMovementAction &act)
+double MCEnvironment::GCost(const mcMovementState &node, const mcMovementAction &act) const
 {
 	mcMovementState node2;
 	GetNextState(node, act, node2);
 	return distance(node, node2);
 }
 
-bool MCEnvironment::GoalTest(const mcMovementState &node, const mcMovementState &goal)
+bool MCEnvironment::GoalTest(const mcMovementState &node, const mcMovementState &goal) const
 {
 	return (distance(node, goal) < goalTolerance && abs(node.heading-goal.heading) < 5.0);
 }
@@ -175,7 +175,7 @@ uint64_t MCEnvironment::GetActionHash(mcMovementAction act) const
 	return act;
 }
 
-double MCEnvironment::distance(const mcMovementState &n1, const mcMovementState &n2)
+double MCEnvironment::distance(const mcMovementState &n1, const mcMovementState &n2) const
 {
 	return sqrt((n1.x - n2.x)*(n1.x - n2.x) + (n1.y-n2.y)*(n1.y-n2.y));
 }

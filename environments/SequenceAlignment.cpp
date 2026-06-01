@@ -60,14 +60,14 @@ void SequenceAlignment::GetNextState(const SequenceAlignmentState &s1, SequenceA
 bool SequenceAlignment::InvertAction(SequenceAlignmentAction &a) const
 { a=-a; return true; }
 
-double SequenceAlignment::HCost(const SequenceAlignmentState &node1, const SequenceAlignmentState &node2)
+double SequenceAlignment::HCost(const SequenceAlignmentState &node1, const SequenceAlignmentState &node2) const
 { if (node1==node2) return 0; return 1; }
 
-double SequenceAlignment::GCost(const SequenceAlignmentState &node1, const SequenceAlignmentState &node2)
+double SequenceAlignment::GCost(const SequenceAlignmentState &node1, const SequenceAlignmentState &node2) const
 { if (((node1%d) == (node2%d)) || (node1/d == node2/d)) return 1; return 1.5; }
-double SequenceAlignment::GCost(const SequenceAlignmentState &node, const SequenceAlignmentAction &act)
+double SequenceAlignment::GCost(const SequenceAlignmentState &node, const SequenceAlignmentAction &act) const
 { if ((act == 2)||(act == -2)) return 1.5; return 1; }
-bool SequenceAlignment::GoalTest(const SequenceAlignmentState &node, const SequenceAlignmentState &goal)
+bool SequenceAlignment::GoalTest(const SequenceAlignmentState &node, const SequenceAlignmentState &goal) const
 { return node == goal; }
 
 uint64_t SequenceAlignment::GetStateHash(const SequenceAlignmentState &node) const { return node; }

@@ -1,0 +1,7 @@
+#!/bin/tcsh
+
+./DWP_DWrandom10Job0.script
+./DWP_DWrandom10Job1.script
+./DWP_DWrandom10Job2.script
+./DWP_DWrandom10Job3.script
+./DWP_DWrandom10Job4.script

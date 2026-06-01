@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./PWXU_mazesJob0.script
+./PWXU_mazesJob1.script
+./PWXU_mazesJob2.script
+./PWXU_mazesJob3.script
+./PWXU_mazesJob4.script
+./PWXU_mazesJob5.script
+./PWXU_mazesJob6.script
+./PWXU_mazesJob7.script
+./PWXU_mazesJob8.script
+./PWXU_mazesJob9.script

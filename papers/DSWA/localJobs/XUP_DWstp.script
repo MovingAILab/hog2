@@ -1,0 +1,7 @@
+#!/bin/tcsh
+
+./XUP_DWstpJob0.script
+./XUP_DWstpJob1.script
+./XUP_DWstpJob2.script
+./XUP_DWstpJob3.script
+./XUP_DWstpJob4.script

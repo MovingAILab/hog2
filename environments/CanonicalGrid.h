@@ -13,10 +13,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <iostream>
+#include <string.h>
 #include "Map.h"
 #include "SearchEnvironment.h"
 #include "UnitSimulation.h"
 #include <cassert>
+#include "Graphics.h"
 
 namespace CanonicalGrid {
 	
@@ -59,34 +61,55 @@ namespace CanonicalGrid {
 		
 		bool InvertAction(tDirection &a) const;
 		
-		double HCost(const xyLoc &) {
+		double HCost(const xyLoc &) const {
 			fprintf(stderr, "ERROR: Single State HCost not implemented for CanonicalGrid\n");
 			exit(1); return -1.0;}
-		double HCost(const xyLoc &node1, const xyLoc &node2);
-		double GCost(const xyLoc &node1, const xyLoc &node2);
-		double GCost(const xyLoc &node1, const tDirection &act);
-		bool GoalTest(const xyLoc &node, const xyLoc &goal);
+		double HCost(const xyLoc &node1, const xyLoc &node2) const;
+		double GCost(const xyLoc &node1, const xyLoc &node2) const;
+		double GCost(const xyLoc &node1, const tDirection &act) const;
+		bool GoalTest(const xyLoc &node, const xyLoc &goal) const;
 		
-		bool GoalTest(const xyLoc &){
+		bool GoalTest(const xyLoc &) const {
 			fprintf(stderr, "ERROR: Single State Goal Test not implemented for CanonicalGrid\n");
 			exit(1); return false;}
 		
+		uint64_t GetMaxHash() const;
 		uint64_t GetStateHash(const xyLoc &node) const;
 		uint64_t GetActionHash(tDirection act) const;
-		void OpenGLDraw() const;
-		void OpenGLDraw(const xyLoc &l) const;
-		void OpenGLDraw(const xyLoc &l1, const xyLoc &l2, float v) const;
-		void OpenGLDraw(const xyLoc &, const tDirection &) const;
-		void GLLabelState(const xyLoc &, const char *) const;
-		void GLLabelState(const xyLoc &s, const char *str, double scale) const;
-		void GLDrawLine(const xyLoc &x, const xyLoc &y) const;
+//		void OpenGLDraw() const;
+//		void OpenGLDraw(const xyLoc &l) const;
+//		void OpenGLDraw(const xyLoc &l1, const xyLoc &l2, float v) const;
+//		void OpenGLDraw(const xyLoc &, const tDirection &) const;
+//		void GLLabelState(const xyLoc &, const char *) const;
+//		void GLLabelState(const xyLoc &s, const char *str, double scale) const;
+//		void GLDrawLine(const xyLoc &x, const xyLoc &y) const;
 		Map* GetMap() const { return map; }
 		
+		std::string SVGHeader();
+		std::string SVGDraw();
+		std::string SVGDraw(const xyLoc &);
+		std::string SVGLabelState(const xyLoc &, const char *, double scale) const;
+		std::string SVGDrawLine(const xyLoc &x, const xyLoc &y, int width=1) const;
+		std::string SVGFrameRect(int left, int top, int right, int bottom, int width = 1);
+		
+		virtual void Draw(Graphics::Display &disp) const;
+		virtual void Draw(Graphics::Display &disp, const xyLoc &l) const;
+		virtual void DrawAlternate(Graphics::Display &disp, const xyLoc &l) const;
+		virtual void Draw(Graphics::Display &disp, const xyLoc &l1, const xyLoc &l2, float v) const;
+		virtual void DrawStateLabel(Graphics::Display &disp, const xyLoc &l1, const char *txt) const;
+		virtual void DrawStateLabel(Graphics::Display &disp, const xyLoc &l1, const xyLoc &l2, float v, const char *txt) const;
+		virtual void DrawLine(Graphics::Display &disp, const xyLoc &x, const xyLoc &y, double width = 1.0) const;
+		virtual void DrawArrow(Graphics::Display &disp, const xyLoc &x, const xyLoc &y, double width = 1.0) const;
+
+		void DrawBasicOrdering(::Graphics::Display &disp, const xyLoc l) const; // Only draws canonical ordering
+		void DrawOrdering(::Graphics::Display &disp, const xyLoc l) const; // Only draws canonical ordering
+		void GetFirstJumpPoints(const xyLoc &nodeID, std::vector<xyLoc> &neighbors) const;
+
 		void GetNextState(const xyLoc &currents, tDirection dir, xyLoc &news) const;
 		
 		void StoreGoal(xyLoc &) {} // stores the locations for the given goal state
 		void ClearGoal() {}
-		bool IsGoalStored() {return false;}
+		bool IsGoalStored() const {return false;}
 		void SetDiagonalCost(double val) { DIAGONAL_COST = val; }
 		double GetDiagonalCost() { return DIAGONAL_COST; }
 		bool FourConnected() { return fourConnected; }
@@ -94,6 +117,7 @@ namespace CanonicalGrid {
 		void SetFourConnected() { fourConnected = true; }
 		void SetEightConnected() { fourConnected = false; }
 	protected:
+		void GetBasicSuccessors(const xyLoc &nodeID, std::vector<xyLoc> &neighbors) const;
 		Map *map;
 		double DIAGONAL_COST;
 		bool fourConnected;

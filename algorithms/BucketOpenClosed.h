@@ -18,8 +18,8 @@ public:
 	BucketOpenClosed();
 	~BucketOpenClosed();
 	void Reset();
-	uint64_t AddOpenNode(const state &val, uint64_t hash, double g, double h, uint64_t parent=kTAStarNoNode);
-	uint64_t AddClosedNode(state &val, uint64_t hash, double g, double h, uint64_t parent=kTAStarNoNode);
+	uint64_t AddOpenNode(const state &val, uint64_t hash, double f, double g, double h, uint64_t parent=kTAStarNoNode);
+	uint64_t AddClosedNode(state &val, uint64_t hash, double f, double g, double h, uint64_t parent=kTAStarNoNode);
 	void KeyChanged(uint64_t objKey);
 	//void IncreaseKey(uint64_t objKey);
 	dataLocation Lookup(uint64_t hashKey, uint64_t &objKey) const;
@@ -48,7 +48,7 @@ private:
 	};
 	std::vector<qData> pQueue;
 	// storing the element id; looking up with...hash?
-	typedef __gnu_cxx::hash_map<uint64_t, uint64_t, AHash64> IndexTable;
+	typedef std::unordered_map<uint64_t, uint64_t, AHash64> IndexTable;
 	IndexTable table;
 	std::vector<dataStructure > elements;
 };
@@ -76,7 +76,7 @@ void BucketOpenClosed<state, CmpKey, dataStructure>::Reset()
 	table.clear();
 	elements.clear();
 	pQueue.resize(0);
-	pQueue.resize(3);
+	//pQueue.resize(3);
 }
 
 //inline uint64_t compactGH(uint64_t g, uint64_t h)
@@ -98,7 +98,7 @@ void BucketOpenClosed<state, CmpKey, dataStructure>::Reset()
  * Add object into open list.
  */
 template<typename state, typename CmpKey, class dataStructure>
-uint64_t BucketOpenClosed<state, CmpKey, dataStructure>::AddOpenNode(const state &val, uint64_t hash, double g, double h, uint64_t parent)
+uint64_t BucketOpenClosed<state, CmpKey, dataStructure>::AddOpenNode(const state &val, uint64_t hash, double f, double g, double h, uint64_t parent)
 {
 	// should do lookup here...
 	if (table.find(hash) != table.end())
@@ -107,15 +107,15 @@ uint64_t BucketOpenClosed<state, CmpKey, dataStructure>::AddOpenNode(const state
 		assert(false);
 	}
 	openCount++;
-	uint64_t newg = g;
-	uint64_t newh = h;
-	uint64_t loc = Add(elements.size(), newg+newh);
-	elements.push_back(dataStructure(val, g, h, parent, loc, kOpenList));
+//	uint64_t newg = g;
+//	uint64_t newh = h;
+	uint64_t loc = Add(elements.size(), f);
+	elements.push_back(dataStructure(val, f, g, h, parent, loc, kOpenList));
 	if (parent == kTAStarNoNode)
 		elements.back().parentID = elements.size()-1;
 	table[hash] = elements.size()-1; // hashing to element list location
 	FindNewMin();
-	//printf("Added node to buckets %llu/%llu\n", newg+newh, newh);
+	//printf("Added node to buckets %" PRId64 "/%" PRId64 "\n", newg+newh, newh);
 	return elements.size()-1;
 }
 
@@ -123,11 +123,11 @@ uint64_t BucketOpenClosed<state, CmpKey, dataStructure>::AddOpenNode(const state
  * Add object into closed list.
  */
 template<typename state, typename CmpKey, class dataStructure>
-uint64_t BucketOpenClosed<state, CmpKey, dataStructure>::AddClosedNode(state &val, uint64_t hash, double g, double h, uint64_t parent)
+uint64_t BucketOpenClosed<state, CmpKey, dataStructure>::AddClosedNode(state &val, uint64_t hash, double f, double g, double h, uint64_t parent)
 {
 	// should do lookup here...
 	assert(table.find(hash) == table.end());
-	elements.push_back(dataStructure(val, g, h, parent, 0, kClosedList));
+	elements.push_back(dataStructure(val, f, g, h, parent, 0, kClosedList));
 	if (parent == kTAStarNoNode)
 		elements.back().parentID = elements.size()-1;
 	table[hash] = elements.size(); // hashing to element list location
@@ -143,7 +143,7 @@ void BucketOpenClosed<state, CmpKey, dataStructure>::KeyChanged(uint64_t val)
 //	uint64_t g, h;
 //	g = extractG(elements[val].openLocation);
 //	h = extractH(elements[val].openLocation);
-	//printf("-----\nChanging key of [%llu][%llu] to [%1.0f][%1.0f]\n", g+h, h, elements[val].g+elements[val].h, elements[val].h);
+	//printf("-----\nChanging key of [%" PRId64 "][%" PRId64 "] to [%1.0f][%1.0f]\n", g+h, h, elements[val].g+elements[val].h, elements[val].h);
 	//Print();
 	Remove(val, elements[val].openLocation);
 //	int len = pQueue[g+h][0].size();
@@ -163,7 +163,7 @@ void BucketOpenClosed<state, CmpKey, dataStructure>::KeyChanged(uint64_t val)
 //	pQueue[g+h][0].push_back(val);
 	elements[val].openLocation = Add(val, elements[val].g+elements[val].h);
 	//pQueue[g+h][h].push_back(val);
-	//printf("Removed and re-added node to buckets %llu/%llu\n", g+h, h);
+	//printf("Removed and re-added node to buckets %" PRId64 "/%" PRId64 "\n", g+h, h);
 
 //	FindNewMin();
 	//Print();
@@ -216,7 +216,7 @@ uint64_t BucketOpenClosed<state, CmpKey, dataStructure>::Close()
 	if (pQueue[minBucket].entries.size() == 0)
 		pQueue[minBucket].fCost = -1;
 	elements[ans].where = kClosedList;
-	//printf("Removed item from %llu/%llu\n", minBucket, minSubBucket);
+	//printf("Removed item from %" PRId64 "/%" PRId64 "\n", minBucket, minSubBucket);
 	FindNewMin();
 	
 	return ans;

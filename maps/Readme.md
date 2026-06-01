@@ -1,0 +1,1 @@
+The maps in HOG2 have been moved to: https://github.com/nathansttt/grid_benchmarks

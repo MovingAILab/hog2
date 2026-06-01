@@ -39,7 +39,7 @@ class VisualizableGenericSearchAlgorithm : public GenericSearchAlgorithm
 	bool Initialize(SearchEnvironment<state, action> *env, state &start, state &goal);
 	bool StepAlgorithm(std::vector<action> &path);
 	bool StepAlgorithm(std::vector<state> &path);
-	void OpenGlDraw();
+//	void OpenGlDraw();
 };
 
 #endif

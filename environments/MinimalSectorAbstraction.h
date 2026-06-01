@@ -25,7 +25,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */ 
+ */
 
 #ifdef _MSC_VER
 #include "stdafx.h"
@@ -35,6 +35,7 @@
 
 #include <vector>
 #include "Map.h"
+#include "Graphics.h"
 
 #ifndef MINIMALSECTORABSTRACTION_H
 #define MINIMALSECTORABSTRACTION_H
@@ -42,7 +43,7 @@
 const int maxNumParents    = 14;
 const int parentBits       =  4;
 //const int sectorSize       = 16;
-extern int sectorSize;
+///extern int sectorSize;
 const int sectorOffsetBits =  4;
 const int maxNumEdges      =  7;
 
@@ -63,22 +64,22 @@ const int maxNumEdges      =  7;
 // abstraction size info = 2*parents + edges + (4-(2*parents + edges)%4)
 
 struct sectorInfo {
-  uint8_t numRegions;
-  uint8_t numEdges;
-  uint16_t memoryAddress;
+	uint8_t numRegions;
+	uint8_t numEdges;
+	uint16_t memoryAddress;
 };
 
 struct tempEdgeData {
-  int from, to, direction;
+	int from, to, direction;
 };
 
 inline bool operator==(const tempEdgeData& x, const tempEdgeData& y)
 {
-  return ((x.to == y.to) && (x.from == y.from) && (x.direction == y.direction));
+	return ((x.to == y.to) && (x.from == y.from) && (x.direction == y.direction));
 }
 
 /**
-* MinimalSectorAbstraction
+ * MinimalSectorAbstraction
  *
  * \brief Builds a map abstraction
  *
@@ -89,61 +90,62 @@ inline bool operator==(const tempEdgeData& x, const tempEdgeData& y)
  * The code could be a bit cleaner...but it works
  */
 class MinimalSectorAbstraction {
- public:
-  MinimalSectorAbstraction(Map *map, int sectorSize);
-  void OpenGLDraw();
-  int GetSector(int x, int y);
-  int GetRegion(int x, int y);
-  void GetXYLocation(unsigned int sector, unsigned int region,
-                     unsigned int &x, unsigned int &y);
-  void GetNeighbors(unsigned int sector, unsigned int region,
-            std::vector<tempEdgeData> &edges);
-  int GetAdjacentSector(unsigned int sector, int direction);
-
-  void OptimizeRegionLocations();
-  void InitializeOptimization();
-  bool PerformOneOptimizationStep();
+public:
+	MinimalSectorAbstraction(Map *map, int sectorSize);
+//	void OpenGLDraw();
+	void Draw(Graphics::Display &display) const;
+	int GetSector(int x, int y);
+	int GetRegion(int x, int y);
+	void GetXYLocation(unsigned int sector, unsigned int region,
+					   unsigned int &x, unsigned int &y) const;
+	void GetNeighbors(unsigned int sector, unsigned int region,
+					  std::vector<tempEdgeData> &edges) const;
+	int GetAdjacentSector(unsigned int sector, int direction);
+	
+	void OptimizeRegionLocations();
+	void InitializeOptimization();
+	bool PerformOneOptimizationStep();
 	int GetAbstractionBytesUsed() { return sectors.size()*4+memory.size(); }
- private:
-  void BuildAbstraction();
-  void GetEdges(std::vector<std::vector<int> > &areas,
-        int xSector, int ySector,
-        std::vector<tempEdgeData> &edges);
-
-  void GetEdgeHelper(std::vector<int> &startRegion,
-             int startIndex, int startOffset,
-             std::vector<int> &targetRegion,
-             int tarGetIndex, int targetOffset,
-             std::vector<tempEdgeData> &edges,
-             int direction);
-  int GetSectorRegions(std::vector<int> &area,
-               int absXSector,
-               int absYSector);
-  void LabelRegion(std::vector<int> &area,
-           int x, int y, int label);
-        
-  void StoreSectorInMemory(sectorInfo &si,
-               std::vector<int> &area,
-               std::vector<tempEdgeData> &edges);
-  uint8_t GetAbstractEdge(tempEdgeData &data);
-  uint8_t GetAbstractLocation(std::vector<int> area, int value);
-  int FindParentRegion(int startLoc,
-               std::vector<int> &parents,
-               int mapXOffset, int mapYOffset);
-  double GetRegionError(int fromSector, int fromRegion,
-                        int sx, int sy, double limit);
-  void MoveRegionCenter(int sector, int region);
-  void ComputePotentialMemorySavings();
-  void ResetAbstractCenter(int sector, int region);
-    
-  int numXSectors, numYSectors;
-  std::vector<sectorInfo> sectors;
-  std::vector<uint8_t> memory;
-  std::vector<std::vector<double> > regionError;
-  Map *map;
-  std::vector<std::vector<int> > areas;
-
-  int optimizationIndex;
+private:
+	void BuildAbstraction();
+	void GetEdges(std::vector<std::vector<int> > &areas,
+				  int xSector, int ySector,
+				  std::vector<tempEdgeData> &edges);
+	
+	void GetEdgeHelper(std::vector<int> &startRegion,
+					   int startIndex, int startOffset,
+					   std::vector<int> &targetRegion,
+					   int tarGetIndex, int targetOffset,
+					   std::vector<tempEdgeData> &edges,
+					   int direction);
+	int GetSectorRegions(std::vector<int> &area,
+						 int absXSector,
+						 int absYSector);
+	void LabelRegion(std::vector<int> &area,
+					 int x, int y, int label);
+	
+	void StoreSectorInMemory(sectorInfo &si,
+							 std::vector<int> &area,
+							 std::vector<tempEdgeData> &edges);
+	uint8_t GetAbstractEdge(tempEdgeData &data);
+	uint8_t GetAbstractLocation(std::vector<int> area, int value);
+	int FindParentRegion(int startLoc,
+						 std::vector<int> &parents,
+						 int mapXOffset, int mapYOffset);
+	double GetRegionError(int fromSector, int fromRegion,
+						  int sx, int sy, double limit);
+	void MoveRegionCenter(int sector, int region);
+	void ComputePotentialMemorySavings();
+	void ResetAbstractCenter(int sector, int region);
+	
+	int numXSectors, numYSectors;
+	std::vector<sectorInfo> sectors;
+	std::vector<uint8_t> memory;
+	std::vector<std::vector<double> > regionError;
+	Map *map;
+	std::vector<std::vector<int> > areas;
+	int sectorSize;
+	int optimizationIndex;
 };
 
 #endif

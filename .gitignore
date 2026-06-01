@@ -1,0 +1,15 @@
+bin/
+objs/
+html/
+objs_html/
+.DS_Store
+**/.DS_Store
+build/.DS_Store
+.idea/
+papers/FMDH/results/
+*~
+
+*.pdb
+
+cmake-build-debug/
+CMakeLists.txt

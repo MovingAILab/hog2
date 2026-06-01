@@ -11,8 +11,9 @@
 #define PLOT2D_H
 
 #include <vector>
-#include "GLUtil.h"
+//#include "Constants.h"
 #include "FPUtil.h"
+#include "Graphics.h"
 
 namespace Plotting {
 
@@ -23,14 +24,18 @@ namespace Plotting {
 
 	class Line {
 	public:
-		Line(char *label, tPlotType = kLinePlot);
+		Line(const char *label, tPlotType = kLinePlot);
 		void AddPoint(double x, double y);
 		void AddPoint(double x);
+		void Clear();
 		const char *GetLabel() { return name; }
 		
 		void ClearColor();
 		void SetColor(double, double, double);
-		void OpenGLDraw() const;
+		void SetColor(const rgbColor &c);
+		void SetWidth(float w) { width = w; }
+//		void OpenGLDraw() const;
+		void Draw(Graphics::Display &display, double xOff, double yOff, double xScale, double yScale) const;
 		void SetHidden( bool val) { hidden = val; }
 		bool IsHidden() { return hidden; }
 
@@ -53,28 +58,55 @@ namespace Plotting {
 		std::vector<double> y;
 		bool hidden;
 		char name[1024];
+		float width;
 	};
 
+	struct Point {
+		double x, y, r;
+		rgbColor c;
+		void Draw(Graphics::Display &display, double xOff, double yOff, double xScale, double yScale) const;
+	};
+	
 	class Plot2D {
 	public:
 		Plot2D();
+		void Clear();
 		void AddLine(Line *);
-//		void SetCurrMouse(double, double, Rect &winRect);
+		void AddPoint(const Point &p);
+		void IncludeInX(double x);
+		void IncludeInY(double y);
+		void SetXAxisLabel(const char *);
+		void SetYAxisLabel(const char *);
+		//		void SetCurrMouse(double, double, Rect &winRect);
 //		void Recenter(double, double, Rect &rectPort);
+		double GetMaxX() { return dRight; }
+		double GetMinX() { return dLeft; }
+		double GetMaxY() { return dTop; }
+		double GetMinY() { return dBottom; }
 		void OffsetCurrMouse(double deltaX, double deltaY);
 		void SetAxis(double, double, double, double);
 		void Zoom(double);
 		void ResetAxis();
-		void OpenGLDraw() const;
+//		void OpenGLDraw() const;
+		void Draw(Graphics::Display &display) const;
 		void SmoothLines();
+		void NormalizeAxes();
 	private:
-			double mouseXLoc, mouseYLoc;
-			double dLeft, dRight, dTop, dBottom;
-			double xMin, xMax, yMin, yMax;
-			bool forceAxis, drawMouse, recomputeBorders;
-			int lastSelectedLine;
-			std::vector<Line *> lines;
-	};
+		point3d MakeHOG(double x, double y) const;
+		double MakeHOGWidth(double w) const;
+		double mouseXLoc, mouseYLoc;
+		double dLeft, dRight, dTop, dBottom;
+		double xMin, xMax, yMin, yMax;
+		bool forceAxis, drawMouse, recomputeBorders;
+		int lastSelectedLine;
+		std::vector<Point> points;
+		std::vector<Line *> lines;
+		std::string xLabel, yLabel;
+		mutable double xOffset;
+		mutable double yOffset;
+		mutable double xScale;
+		mutable double yScale;
+};
 
 }
 

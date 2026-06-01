@@ -197,6 +197,13 @@ public:
 	uint8_t destSector;
 };
 
+static bool operator==(const action3d &l1, const action3d &l2)
+{
+	return ((l1.direction == l2.direction) &&
+			(l1.destRegion == l2.destRegion) &&
+			(l1.destSector == l2.destSector));
+}
+
 class Map3DGrid : public SearchEnvironment<state3d, action3d> {
 public:
 	Map3DGrid(int width, int height, int theSectorSize);
@@ -214,20 +221,20 @@ public:
 	bool InvertAction(action3d &a) const { return false; }
 	action3d GetAction(const state3d &s1, const state3d &s2) const { return action3d(); }
 	/** Heuristic value between two arbitrary nodes. **/
-	double HCost(const state3d &node1, const state3d &node2);
-	double GCost(const state3d &node1, const state3d &node2);
-	double GCost(const state3d &node, const action3d &act);
-	bool GoalTest(const state3d &node, const state3d &goal);
+	double HCost(const state3d &node1, const state3d &node2) const;
+	double GCost(const state3d &node1, const state3d &node2) const;
+	double GCost(const state3d &node, const action3d &act) const;
+	bool GoalTest(const state3d &node, const state3d &goal) const;
 	
 	uint64_t GetStateHash(const state3d &node) const;
 	uint64_t GetActionHash(action3d act) const;
 	
 	int FindNearState(int x, int y, int z, state3d &s) const;
 	
-	void OpenGLDraw() const;
-	void OpenGLDraw(const state3d&) const;
-	void OpenGLDraw(const state3d&, const action3d&) const { }
-	void GLDrawLine(const state3d &x, const state3d &y) const;
+//	void OpenGLDraw() const;
+//	void OpenGLDraw(const state3d&) const;
+//	void OpenGLDraw(const state3d&, const action3d&) const { }
+//	void GLDrawLine(const state3d &x, const state3d &y) const;
 
 	
 	bool AddPoint(int x, int y, int z);
@@ -254,9 +261,9 @@ private:
 	void GetXYFromState(const state3d &s, int &x, int &y) const;
 	void GetXYZFromState(const state3d &s, int &x, int &y, int &z) const;
 	void GetStateFromXYZ(state3d &s, int x, int y, int z) const;
-	void GetOpenGLCoord(int xLoc, int yLoc, int zLoc,
-						GLdouble &x, GLdouble &y, GLdouble &z,
-						GLdouble &r, GLdouble &h) const;
+//	void GetCoord(int xLoc, int yLoc, int zLoc,
+//						GLdouble &x, GLdouble &y, GLdouble &z,
+//						GLdouble &r, GLdouble &h) const;
 	int mWidth, mHeight;
 	int mXSectors, mYSectors;
 	std::vector<SectorData> sectors;

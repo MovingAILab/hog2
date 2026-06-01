@@ -10,7 +10,7 @@
 #include "MeroB.h"
 #include <cstring>
 
-const static bool verbose = true;
+const static bool verbose = false;
 
 void MeroB::GetPath(GraphEnvironment *_env, Graph* _g, graphState from, graphState to, std::vector<graphState> &thePath) 
 {
@@ -20,13 +20,15 @@ void MeroB::GetPath(GraphEnvironment *_env, Graph* _g, graphState from, graphSta
 	while(!DoSingleSearchStep(thePath)) 
 		{}
 	
-	if (thePath.size() > 0)
+	if (thePath.size() > 0 && verbose)
 		printf("\nNodes expanded=%lld, Nodes touched=%lld.\n",GetNodesExpanded(),GetNodesTouched());
 }
 
 bool MeroB::InitializeSearch(GraphEnvironment *_env, Graph* _g, graphState from, graphState to, std::vector<graphState> &thePath) 
 {
 	env = _env;
+	if (heuristic == 0)
+		heuristic = env;
 	g = _g;
 	nodesTouched = nodesExpanded = 0;
 	start = from;
@@ -43,7 +45,7 @@ bool MeroB::InitializeSearch(GraphEnvironment *_env, Graph* _g, graphState from,
 	}
 	
 	// step (1)
-	MeroBUtil::SearchNode first(env->HCost(start, goal), 0, start, start);
+	MeroBUtil::SearchNode first(heuristic->HCost(start, goal), 0, start, start);
 	openQueue.Add(first);
 	
 	//if (verID == MB_B || verID == MB_BP)
@@ -107,7 +109,7 @@ bool MeroB::DoSingleStepA(std::vector<graphState> &thePath)
 	neighbors.resize(0);
 	env->GetSuccessors(topNodeID, neighbors);
 	
-	for(unsigned int x = 0; x<neighbors.size(); x++)
+	for (unsigned int x = 0; x<neighbors.size(); x++)
 	{
 		nodesTouched++;
 		
@@ -115,7 +117,7 @@ bool MeroB::DoSingleStepA(std::vector<graphState> &thePath)
 		graphState neighbor = neighbors[x];
 		double edgeWeight = env->GCost(topNodeID,neighbor);
 		double gcost = topNode.gCost + edgeWeight;
-		double h = env->HCost(neighbor,goal);
+		double h = heuristic->HCost(neighbor,goal);
 		double f = gcost + h;
 		
 		/* step (6), neither in OPEN nor CLOSED */
@@ -215,7 +217,7 @@ bool MeroB::DoSingleStepB(std::vector<graphState> &thePath)
 	{
 		topNode = openQueue.Remove();
 		
-		if(fgreater(topNode.fCost,F)) 
+		if (fgreater(topNode.fCost,F)) 
 		  {
 		    F = topNode.fCost; // update F
 		    if (verbose) 
@@ -257,7 +259,7 @@ bool MeroB::DoSingleStepB(std::vector<graphState> &thePath)
 	neighbors.resize(0);
 	env->GetSuccessors(topNodeID, neighbors);
 	
-	for(unsigned int x = 0; x<neighbors.size(); x++)
+	for (unsigned int x = 0; x<neighbors.size(); x++)
 	{
 		nodesTouched++;
 		
@@ -265,7 +267,7 @@ bool MeroB::DoSingleStepB(std::vector<graphState> &thePath)
 		graphState neighbor = neighbors[x];
 		double edgeWeight = env->GCost(topNodeID,neighbor);
 		double gcost = topNode.gCost + edgeWeight;
-		double h = env->HCost(neighbor,goal);
+		double h = heuristic->HCost(neighbor,goal);
 		double f = gcost + h;
 		
 		/* step (6), neither in OPEN nor CLOSED */
@@ -365,7 +367,7 @@ bool MeroB::DoSingleStepBP(std::vector<graphState> &thePath)
 	{
 		topNode = openQueue.Remove();
 		
-		if(fgreater(topNode.fCost,F)) 
+		if (fgreater(topNode.fCost,F)) 
 		{
 		  F = topNode.fCost; // update F
 		  if (verbose) 
@@ -409,7 +411,7 @@ bool MeroB::DoSingleStepBP(std::vector<graphState> &thePath)
 	double hTop = topNode.fCost - topNode.gCost;
 	double minH2 = DBL_MAX; // min ( edgeWeight(i) + h(neighbor(i)) )
 	
-	for(unsigned int x = 0; x<neighbors.size(); x++) 
+	for (unsigned int x = 0; x<neighbors.size(); x++) 
 	{
 		nodesTouched++;
 		
@@ -437,9 +439,9 @@ bool MeroB::DoSingleStepBP(std::vector<graphState> &thePath)
 		}
 		else 
 		{
-			h = max( env->HCost(neighbor,goal), hTop - edgeWeight);
+			h = max( heuristic->HCost(neighbor,goal), hTop - edgeWeight);
 			
-			h_tmp = env->HCost(neighbor,goal);
+			h_tmp = heuristic->HCost(neighbor,goal);
 		}
 		
 		if (verbose) 
@@ -569,8 +571,8 @@ void MeroB::ExtractPathToStart(graphState goalNode, std::vector<graphState> &the
 //	OpenGLDraw();
 //}
 
-void MeroB::OpenGLDraw() const
-{
+//void MeroB::OpenGLDraw() const
+//{
 //	//float r,gcost,b;
 //	double x,y,z;
 //	const MeroBUtil::SearchNode sn;
@@ -580,7 +582,7 @@ void MeroB::OpenGLDraw() const
 //
 //	// draw nodes
 //	node_iterator ni = g->getNodeIter();
-//	for(node* n = g->nodeIterNext(ni); n; n = g->nodeIterNext(ni))
+//	for (node* n = g->nodeIterNext(ni); n; n = g->nodeIterNext(ni))
 //	{
 //		MeroBUtil::graphGenerator::GetLoc(n,x,y,z);
 //
@@ -615,7 +617,7 @@ void MeroB::OpenGLDraw() const
 //					break;
 //			}
 //
-//			if(FCache.size() > 0)
+//			if (FCache.size() > 0)
 //			{
 //				topn = FCache.top();
 //			}
@@ -630,7 +632,7 @@ void MeroB::OpenGLDraw() const
 //			}
 //
 //			// if on top, blue
-//			if(topn.currNode == sn.currNode)
+//			if (topn.currNode == sn.currNode)
 //			{
 //				glColor3f(0,0,1);
 //				DrawSphere(x,y,z,0.025);
@@ -653,7 +655,7 @@ void MeroB::OpenGLDraw() const
 //			DrawSphere(x,y,z,0.025);
 //
 //			memset(buf,0,100);
-//			sprintf(buf,"%d [?,%ld,?]",n->GetNum(), (long)env->HCost(nodeID,goal));
+//			sprintf(buf,"%d [?,%ld,?]",n->GetNum(), (long)h->HCost(nodeID,goal));
 //		}
 //
 //		// draw the text info, in black
@@ -662,54 +664,54 @@ void MeroB::OpenGLDraw() const
 //
 //	// draw edges
 //	edge_iterator ei = g->getEdgeIter();
-//	for(edge* e = g->edgeIterNext(ei); e; e = g->edgeIterNext(ei))
+//	for (edge* e = g->edgeIterNext(ei); e; e = g->edgeIterNext(ei))
 //	{
 //		DrawEdge(e->getFrom(), e->getTo(), e->GetWeight());
 //	}
-}
-
-void MeroB::DrawText(double x, double y, double z, float r, float gg, float b, char* str)
-{
-	//glPushMatrix();
-	// rotate ?
-
-	glPushMatrix();
-	glColor3f(r,gg,b);
-	glTranslatef(x,y,z);
-	glScalef(1.0/(20*120.0), 1.0/(20*120.0), 1);
-	glRotatef(180, 0.0, 0.0, 1.0);
-	glRotatef(180, 0.0, 1.0, 0.0);
-	
-	int i=0;
-	while(str[i]) 
-	{
-		glutStrokeCharacter(GLUT_STROKE_ROMAN,str[i]);
-		i++;
-	}
-	glPopMatrix();
-}
-
-void MeroB::DrawEdge(unsigned int from, unsigned int to, double weight)
-{
-	double x1,y1,z1;
-	double x2,y2,z2;
-	char buf[100] = {0};
-
-	node* nfrom = g->GetNode(from);
-	node* nto = g->GetNode(to);
-
-	MeroBUtil::graphGenerator::GetLoc(nfrom,x1,y1,z1);
-	MeroBUtil::graphGenerator::GetLoc(nto,x2,y2,z2);
-
-	// draw line segment
-	glBegin(GL_LINES);
-	glColor3f(1,1,0); // yellow
-	glVertex3f(x1,y1,z1);
-	glVertex3f(x2,y2,z2);
-	glEnd();
-
-	// draw weight info
-	sprintf(buf,"%ld",(long)weight);
-	DrawText((x1+x2)/2, (y1+y2)/2, (z1+z2)/2 + 0.05, 1, 0, 0, buf); // in red
-}
-
+//}
+//
+//void MeroB::DrawText(double x, double y, double z, float r, float gg, float b, char* str)
+//{
+//	//glPushMatrix();
+//	// rotate ?
+//
+//	glPushMatrix();
+//	glColor3f(r,gg,b);
+//	glTranslatef(x,y,z);
+//	glScalef(1.0/(20*120.0), 1.0/(20*120.0), 1);
+//	glRotatef(180, 0.0, 0.0, 1.0);
+//	glRotatef(180, 0.0, 1.0, 0.0);
+//	
+//	int i=0;
+//	while(str[i]) 
+//	{
+//		//glutStrokeCharacter(GLUT_STROKE_ROMAN,str[i]);
+//		i++;
+//	}
+//	glPopMatrix();
+//}
+//
+//void MeroB::DrawEdge(unsigned int from, unsigned int to, double weight)
+//{
+//	double x1,y1,z1;
+//	double x2,y2,z2;
+//	char buf[100] = {0};
+//
+//	node* nfrom = g->GetNode(from);
+//	node* nto = g->GetNode(to);
+//
+//	MeroBUtil::graphGenerator::GetLoc(nfrom,x1,y1,z1);
+//	MeroBUtil::graphGenerator::GetLoc(nto,x2,y2,z2);
+//
+//	// draw line segment
+//	glBegin(GL_LINES);
+//	glColor3f(1,1,0); // yellow
+//	glVertex3f(x1,y1,z1);
+//	glVertex3f(x2,y2,z2);
+//	glEnd();
+//
+//	// draw weight info
+//	sprintf(buf,"%ld",(long)weight);
+//	DrawText((x1+x2)/2, (y1+y2)/2, (z1+z2)/2 + 0.05, 1, 0, 0, buf); // in red
+//}
+//

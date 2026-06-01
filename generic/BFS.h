@@ -10,38 +10,45 @@
 #ifndef BFS_H
 #define BFS_H
 
-#include <iostream>
 #include "SearchEnvironment.h"
-#include <ext/hash_map>
 #include "FPUtil.h"
 
-template <class state, class action>
+#include <algorithm>
+#include <iostream>
+#include <unordered_map>
+
+template <class state, class action, class environment>
 class BFS {
 public:
-	BFS() { }
+	BFS():stopAtGoal(true), nodeLimit(~(0ull)), verbose(true) {}
 	virtual ~BFS() {}
-	void DoBFS(SearchEnvironment<state, action> *env, state from);
-	void GetPath(SearchEnvironment<state, action> *env, state from, state to,
+	void DoBFS(environment *env, state from);
+	void GetPath(environment *env, state from, state to,
 				 std::vector<state> &thePath);
 	
+	void SetNodeLimit(uint64_t value) {nodeLimit = value; }
+	void ClearNodeLimit() {nodeLimit = ~(0ull);}
+	void SetVerbose(bool v) {verbose = v;}
 	uint64_t GetNodesExpanded() { return nodesExpanded; }
 	uint64_t GetNodesTouched() { return nodesTouched; }
+	bool stopAtGoal;
 private:
-	
+	bool verbose;
+	uint64_t nodeLimit;
 	uint64_t nodesExpanded, nodesTouched;
 	
 };
 
 // pure BFS, just marking which states have been visited
 // no path is saved
-template <class state, class action>
-void BFS<state, action>::DoBFS(SearchEnvironment<state, action> *env, state from)
+template <class state, class action, class environment>
+void BFS<state, action, environment>::DoBFS(environment *env, state from)
 {
-	typedef __gnu_cxx::hash_map<uint64_t, bool, Hash64> BFSClosedList;
+//	typedef std::unordered_map<uint64_t, bool, Hash64> BFSClosedList;
+//	BFSClosedList mClosed; // store parent id!
 	std::deque<state> mOpen;
 	std::deque<int> depth;
-	BFSClosedList mClosed; // store parent id!
-
+	std::unordered_map<state, bool> mClosed;
 	
 	std::vector<state> successors;
 	nodesExpanded = nodesTouched = 0;
@@ -69,7 +76,7 @@ void BFS<state, action>::DoBFS(SearchEnvironment<state, action> *env, state from
 		currDepth = depth.front();
 		depth.pop_front();
 		
-		if (mClosed.find(env->GetStateHash(s)) != mClosed.end())
+		if (mClosed.find(s) != mClosed.end())
 		{
 //			if (mOpen.size() == 0)
 //			{
@@ -77,13 +84,18 @@ void BFS<state, action>::DoBFS(SearchEnvironment<state, action> *env, state from
 //			}
 			continue;
 		}
-		mClosed[env->GetStateHash(s)] = true;
+		mClosed[s] = true;
 		
 		nodesExpanded++;
+		if (nodesExpanded > nodeLimit)
+		{
+			printf("Node limit hit. Aborting search\n");
+			return;
+		}
 		env->GetSuccessors(s, successors);
 		for (unsigned int x = 0; x < successors.size(); x++)
 		{
-			if (mClosed.find(env->GetStateHash(successors[x])) == mClosed.end())
+			if (mClosed.find(successors[x]) == mClosed.end())
 			{
 				mOpen.push_back(successors[x]);
 				depth.push_back(currDepth+1);
@@ -98,28 +110,28 @@ void BFS<state, action>::DoBFS(SearchEnvironment<state, action> *env, state from
 }
 
 // Richer BFS which saves information to allow the best path to be reconstructed.
-template <class state, class action>
-void BFS<state, action>::GetPath(SearchEnvironment<state, action> *env,
+template <class state, class action, class environment>
+void BFS<state, action, environment>::GetPath(environment *env,
 								 state from, state to,
 								 std::vector<state> &thePath)
 {
-	typedef __gnu_cxx::hash_map<uint64_t, uint64_t, Hash64> BFSClosedList;
-	std::deque<state> mOpen;
-	std::deque<int> depth;
-	BFSClosedList mClosed; // store parent id!
+//	typedef std::unordered_map<uint64_t, uint64_t, Hash64> BFSClosedList;
+	std::deque<std::pair<state, uint16_t>> mOpen;
+	//std::deque<int> depth;
+	std::unordered_map<state, state> mClosed; // store parent with each state
+
 	thePath.resize(0);
 	bool goalFound = false;
+	int numGoals = 0;
 	nodesExpanded = nodesTouched = 0;
 	
 	mOpen.clear();
 	mClosed.clear();
-	depth.clear();
+	//depth.clear();
 	
-	depth.push_back(0);
-	mOpen.push_back(from);
-	mClosed[env->GetStateHash(from)] = env->GetStateHash(from);
-//	printf("Setting parent of %llu to be %llu\n", env->GetStateHash(from),
-//		   env->GetStateHash(from));
+	//depth.push_back(0);
+	mOpen.push_back({from, 0});
+	mClosed[from] = from; // root has itself as parent
 
 	int currDepth = 0;
 	uint64_t lastNodes = 0, lastIter = 0;
@@ -127,34 +139,45 @@ void BFS<state, action>::GetPath(SearchEnvironment<state, action> *env,
 	state goal;
 	while (mOpen.size() > 0)
 	{
-		assert(mOpen.size() == depth.size());
-		s = mOpen.front();
-		mOpen.pop_front();
-		if (depth.front() != currDepth)
+		s = mOpen.front().first;
+		if (mOpen.front().second != currDepth)
 		{
-//			printf("%ld tot %d inc %lld b %.2f\n", currDepth, nodesExpanded, nodesExpanded-lastNodes, (double)(nodesExpanded-lastNodes)/lastIter);
+			if (verbose)
+				printf("%ld tot %d inc %lld b %.2f [%d]\n", currDepth, nodesExpanded, nodesExpanded-lastNodes, (double)(nodesExpanded-lastNodes)/lastIter, numGoals);
 			lastIter = nodesExpanded-lastNodes;
 			lastNodes = nodesExpanded;
 		}			
-		currDepth = depth.front();
-		depth.pop_front();
+		currDepth = mOpen.front().second;//depth.front();
+		mOpen.pop_front();
+//		depth.pop_front();
 		if (env->GoalTest(s, to))
 		{
-			goal = s;
+			if (numGoals == 0)
+				goal = s;
 			goalFound = true;
+			numGoals++;
+			if (stopAtGoal)
+				break;
 		}
 		else { // don't expand goal nodes
 			nodesExpanded++;
+			if (nodesExpanded > nodeLimit)
+			{
+				printf("Node limit hit. Aborting search\n");
+				thePath.clear();
+				return;
+			}
+			
 			env->GetSuccessors(s, thePath);
 			for (unsigned int x = 0; x < thePath.size(); x++)
 			{
-				if (mClosed.find(env->GetStateHash(thePath[x])) == mClosed.end())
+				if (mClosed.find(thePath[x]) == mClosed.end())
 				{
-					mOpen.push_back(thePath[x]);
-					depth.push_back(currDepth+1);
-					//				printf("Setting parent of %llu to be %llu\n", env->GetStateHash(thePath[x]),
+					mOpen.push_back({thePath[x], currDepth+1});
+					//depth.push_back(currDepth+1);
+					//				printf("Setting parent of %" PRId64 " to be %" PRId64 "\n", env->GetStateHash(thePath[x]),
 					//					   env->GetStateHash(s));
-					mClosed[env->GetStateHash(thePath[x])] = env->GetStateHash(s);
+					mClosed[thePath[x]] = s;
 				}
 			}
 		}
@@ -165,22 +188,21 @@ void BFS<state, action>::GetPath(SearchEnvironment<state, action> *env,
 	thePath.resize(0);
 	if (goalFound)
 	{
-		uint64_t parent, lastParent;
+		state parent;
 		s = goal;
 		//	std::cout << s << std::endl;
 		do {
-			lastParent = env->GetStateHash(s);
 			thePath.push_back(s);
-			parent = mClosed[env->GetStateHash(s)];
-			env->GetStateFromHash(parent, s);
-			//		std::cout << s << std::endl;
-		} while (parent != lastParent);
+			parent = s;
+			s = mClosed[s];
+		} while (!(s == parent));
 	}
-//	printf("Final depth: %d, Nodes Expanded %llu, Exponential BF: %f\n", currDepth, nodesExpanded, pow(nodesExpanded, (double)1.0/currDepth));
+	std::reverse(thePath.begin(), thePath.end());
+	//	printf("Final depth: %d, Nodes Expanded %" PRId64 ", Exponential BF: %f\n", currDepth, nodesExpanded, pow(nodesExpanded, (double)1.0/currDepth));
 }
 
-//template <class state, class action>
-//void BFS<state, action>::GetPath(SearchEnvironment<state, action> *env,
+//template <class state, class action, class environment>
+//void BFS<state, action>::GetPath(environment *env,
 //								 state from, state to,
 //								 std::vector<action> &thePath)
 //{

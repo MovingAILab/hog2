@@ -29,10 +29,10 @@
 
 #include "MinimalSectorAbstraction.h"
 #include <queue>
-#include "GenericAStar.h"
+//#include "GenericAStar.h"
 #include "Map2DEnvironment.h"
 
-int sectorSize = 11;
+//int sectorSize = 11;
 
 #define DIAG_MOVES
 
@@ -430,127 +430,225 @@ uint8_t MinimalSectorAbstraction::GetAbstractLocation(std::vector<int> area, int
     return index;
 }
 
-/**
- * MinimalSectorAbstraction::OpenGLDraw()
- *
- * \brief Draw the abstraction using OpenGL
- *
- * Draws the abstraction & edges using OpenGL. If the abstraction
- * is being optimized, draws the edges being optimized in red.
- *
- * \param none
- * \return none
- */
-void MinimalSectorAbstraction::OpenGLDraw()
+///**
+// * MinimalSectorAbstraction::OpenGLDraw()
+// *
+// * \brief Draw the abstraction using OpenGL
+// *
+// * Draws the abstraction & edges using OpenGL. If the abstraction
+// * is being optimized, draws the edges being optimized in red.
+// *
+// * \param none
+// * \return none
+// */
+//void MinimalSectorAbstraction::OpenGLDraw()
+//{
+//    static bool draw = false;
+//    
+//    //  this will draw the sectors for the map
+//    GLdouble xx, yy, zz, rr;
+//    glColor4f(0.5, 0.0, 0.0, 0.5);
+//    map->GetCoord(0, 0, xx, yy, zz, rr);
+//    
+//    // draw grid lines for sectors
+//    glLineWidth(2);
+//    glBegin(GL_LINES);
+//    for (int y = 0; y <= numYSectors; y++)
+//    {
+//        glVertex3f(xx-rr, yy-rr+2*y*rr*sectorSize, zz-1*rr);
+//        glVertex3f(xx+2*numXSectors*rr*sectorSize, yy-rr+2*y*sectorSize*rr, zz-1*rr);
+//    }
+//    for (int x = 0; x <= numXSectors; x++)
+//    {
+//        glVertex3f(xx-rr+2*x*rr*sectorSize, yy-rr, zz-1*rr);
+//        glVertex3f(xx-rr+2*x*rr*sectorSize, yy-rr+2*numYSectors*rr*sectorSize, zz-1*rr);
+//    }
+//    glEnd();
+//    glLineWidth(1);
+//    
+//    if (draw) printf("===BEGIN DRAW\n");
+//    // now draw the abstraction itself
+//    for (unsigned int x = 0; x < sectors.size(); x++)
+//    {
+//        for (unsigned int y = 0; y < sectors[x].numRegions; y++)
+//        {
+//            if (draw) printf("===DRAW SECTOR %d region %d\n", x, y);
+//            
+//            unsigned int loc1, loc2;
+//            std::vector<tempEdgeData> neighbors;
+//            GetNeighbors(x, y, neighbors);
+//            
+//            glBegin(GL_LINES);
+//            GetXYLocation(x, y, loc1, loc2);
+//            map->GetCoord((int)loc1, (int)loc2, xx, yy, zz, rr);
+//            for (unsigned int z = 0; z < neighbors.size(); z++)
+//            {
+//                // if the current sector is being optimized, change the color
+//                if ((int)x == optimizationIndex)
+//                    glColor3f(1.0, 0.0, 0.0);
+//                else
+//                    glColor4f(0.2, 0.8, 0.2, 1.00);
+//                
+//                if (draw) printf("Got edge from region %d to region %d (going dir %d)\n",
+//                                 neighbors[z].from, neighbors[z].to, neighbors[z].direction);
+//                if (draw) printf("Drawing from (%d, %d)\n", loc1, loc2);
+//                
+//                GLdouble xx2, yy2, zz2, rr2;
+//                // only draw half of the directions, since edges are represented twice
+//                switch (neighbors[z].direction)
+//                {
+//                    case 0:
+//                        glVertex3f(xx, yy, zz-5.1*rr);
+//                        if ((int)x-numXSectors == optimizationIndex)
+//                            glColor3f(1.0, 0.0, 0.0);
+//                        else
+//                            glColor4f(0.2, 0.8, 0.2, 1.00);
+//                        GetXYLocation(x-numXSectors, neighbors[z].to, loc1, loc2);
+//                        map->GetCoord((int)loc1, (int)loc2, xx2, yy2, zz2, rr2);
+//                        if (draw) printf("Drawing to (%d, %d)\n", loc1, loc2);
+//                            glVertex3f(xx2, yy2, zz2-5.1*rr2);
+//                        break;
+//                    case 1:
+//                        glVertex3f(xx, yy, zz-5.1*rr);
+//                        if ((int)x+1 == optimizationIndex)
+//                            glColor3f(1.0, 0.0, 0.0);
+//                        else
+//                            glColor4f(0.2, 0.8, 0.2, 1.00);
+//                        GetXYLocation(x+1, neighbors[z].to, loc1, loc2);
+//                        map->GetCoord((int)loc1, (int)loc2, xx2, yy2, zz2, rr2);
+//                        if (draw) printf("Drawing to (%d, %d)\n", loc1, loc2);
+//                            glVertex3f(xx2, yy2, zz2-5.1*rr2);
+//                        break;
+//                    case 2:
+//                    case 3: break;
+//                    case 4:
+//                        glVertex3f(xx, yy, zz-5.1*rr);
+//                        if ((int)x-numXSectors+1 == optimizationIndex)
+//                            glColor3f(1.0, 0.0, 0.0);
+//                        else
+//                            glColor4f(0.2, 0.8, 0.2, 1.00);
+//                        GetXYLocation(x-numXSectors+1, neighbors[z].to, loc1, loc2);
+//                        map->GetCoord((int)loc1, (int)loc2, xx2, yy2, zz2, rr2);
+//                        if (draw) printf("Drawing to (%d, %d)\n", loc1, loc2);
+//                            glVertex3f(xx2, yy2, zz2-5.1*rr2);
+//                        break;
+//                    case 5:
+//                        glVertex3f(xx, yy, zz-5.1*rr);
+//                        if ((int)x+numXSectors+1 == optimizationIndex)
+//                            glColor3f(1.0, 0.0, 0.0);
+//                        else
+//                            glColor4f(0.2, 0.8, 0.2, 1.00);
+//                        GetXYLocation(x+numXSectors+1, neighbors[z].to, loc1, loc2);
+//                        map->GetCoord((int)loc1, (int)loc2, xx2, yy2, zz2, rr2);
+//                        if (draw) printf("Drawing to (%d, %d)\n", loc1, loc2);
+//                            glVertex3f(xx2, yy2, zz2-5.1*rr2);
+//                        break;
+//                    default: 
+//                        break; // otherwise we draw all edges twice
+//                }
+//            }
+//            glEnd();
+//        }
+//    }
+//    draw = false;
+//}
+
+void MinimalSectorAbstraction::Draw(Graphics::Display &display) const
 {
-    static bool draw = false;
-    
-    //  this will draw the sectors for the map
-    GLdouble xx, yy, zz, rr;
-    glColor4f(0.5, 0.0, 0.0, 0.5);
-    map->GetOpenGLCoord(0, 0, xx, yy, zz, rr);
-    
-    // draw grid lines for sectors
-    glLineWidth(2);
-    glBegin(GL_LINES);
-    for (int y = 0; y <= numYSectors; y++)
-    {
-        glVertex3f(xx-rr, yy-rr+2*y*rr*sectorSize, zz-1*rr);
-        glVertex3f(xx+2*numXSectors*rr*sectorSize, yy-rr+2*y*sectorSize*rr, zz-1*rr);
-    }
-    for (int x = 0; x <= numXSectors; x++)
-    {
-        glVertex3f(xx-rr+2*x*rr*sectorSize, yy-rr, zz-1*rr);
-        glVertex3f(xx-rr+2*x*rr*sectorSize, yy-rr+2*numYSectors*rr*sectorSize, zz-1*rr);
-    }
-    glEnd();
-    glLineWidth(1);
-    
-    if (draw) printf("===BEGIN DRAW\n");
-    // now draw the abstraction itself
-    for (unsigned int x = 0; x < sectors.size(); x++)
-    {
-        for (unsigned int y = 0; y < sectors[x].numRegions; y++)
-        {
-            if (draw) printf("===DRAW SECTOR %d region %d\n", x, y);
-            
-            unsigned int loc1, loc2;
-            std::vector<tempEdgeData> neighbors;
-            GetNeighbors(x, y, neighbors);
-            
-            glBegin(GL_LINES);
-            GetXYLocation(x, y, loc1, loc2);
-            map->GetOpenGLCoord((int)loc1, (int)loc2, xx, yy, zz, rr);
-            for (unsigned int z = 0; z < neighbors.size(); z++)
-            {
-                // if the current sector is being optimized, change the color
-                if ((int)x == optimizationIndex)
-                    glColor3f(1.0, 0.0, 0.0);
-                else
-                    glColor4f(0.2, 0.8, 0.2, 1.00);
-                
-                if (draw) printf("Got edge from region %d to region %d (going dir %d)\n",
-                                 neighbors[z].from, neighbors[z].to, neighbors[z].direction);
-                if (draw) printf("Drawing from (%d, %d)\n", loc1, loc2);
-                
-                GLdouble xx2, yy2, zz2, rr2;
-                // only draw half of the directions, since edges are represented twice
-                switch (neighbors[z].direction)
-                {
-                    case 0:
-                        glVertex3f(xx, yy, zz-5.1*rr);
-                        if ((int)x-numXSectors == optimizationIndex)
-                            glColor3f(1.0, 0.0, 0.0);
-                        else
-                            glColor4f(0.2, 0.8, 0.2, 1.00);
-                        GetXYLocation(x-numXSectors, neighbors[z].to, loc1, loc2);
-                        map->GetOpenGLCoord((int)loc1, (int)loc2, xx2, yy2, zz2, rr2);
-                        if (draw) printf("Drawing to (%d, %d)\n", loc1, loc2);
-                            glVertex3f(xx2, yy2, zz2-5.1*rr2);
-                        break;
-                    case 1:
-                        glVertex3f(xx, yy, zz-5.1*rr);
-                        if ((int)x+1 == optimizationIndex)
-                            glColor3f(1.0, 0.0, 0.0);
-                        else
-                            glColor4f(0.2, 0.8, 0.2, 1.00);
-                        GetXYLocation(x+1, neighbors[z].to, loc1, loc2);
-                        map->GetOpenGLCoord((int)loc1, (int)loc2, xx2, yy2, zz2, rr2);
-                        if (draw) printf("Drawing to (%d, %d)\n", loc1, loc2);
-                            glVertex3f(xx2, yy2, zz2-5.1*rr2);
-                        break;
-                    case 2:
-                    case 3: break;
-                    case 4:
-                        glVertex3f(xx, yy, zz-5.1*rr);
-                        if ((int)x-numXSectors+1 == optimizationIndex)
-                            glColor3f(1.0, 0.0, 0.0);
-                        else
-                            glColor4f(0.2, 0.8, 0.2, 1.00);
-                        GetXYLocation(x-numXSectors+1, neighbors[z].to, loc1, loc2);
-                        map->GetOpenGLCoord((int)loc1, (int)loc2, xx2, yy2, zz2, rr2);
-                        if (draw) printf("Drawing to (%d, %d)\n", loc1, loc2);
-                            glVertex3f(xx2, yy2, zz2-5.1*rr2);
-                        break;
-                    case 5:
-                        glVertex3f(xx, yy, zz-5.1*rr);
-                        if ((int)x+numXSectors+1 == optimizationIndex)
-                            glColor3f(1.0, 0.0, 0.0);
-                        else
-                            glColor4f(0.2, 0.8, 0.2, 1.00);
-                        GetXYLocation(x+numXSectors+1, neighbors[z].to, loc1, loc2);
-                        map->GetOpenGLCoord((int)loc1, (int)loc2, xx2, yy2, zz2, rr2);
-                        if (draw) printf("Drawing to (%d, %d)\n", loc1, loc2);
-                            glVertex3f(xx2, yy2, zz2-5.1*rr2);
-                        break;
-                    default: 
-                        break; // otherwise we draw all edges twice
-                }
-            }
-            glEnd();
-        }
-    }
-    draw = false;
+	static bool draw = false;
+	static float lineScale = 0.5f;
+	//  this will draw the sectors for the map
+	double xx, yy, zz, rr;
+//	glColor4f(0.5, 0.0, 0.0, 0.5);
+	map->GetCoord(0, 0, xx, yy, zz, rr);
+	
+	// draw grid lines for sectors
+//	glLineWidth(2);
+//	glBegin(GL_LINES);
+	for (int y = 0; y <= numYSectors; y++)
+	{
+		display.DrawLine({static_cast<float>(xx-rr), static_cast<float>(yy-rr+2*y*rr*sectorSize), static_cast<float>(zz-1*rr)},
+						 {static_cast<float>(xx+2*numXSectors*rr*sectorSize), static_cast<float>(yy-rr+2*y*sectorSize*rr), static_cast<float>(zz-1*rr)},
+						 lineScale*rr, Colors::yellow);
+//		glVertex3f(xx-rr, yy-rr+2*y*rr*sectorSize, zz-1*rr);
+//		glVertex3f(xx+2*numXSectors*rr*sectorSize, yy-rr+2*y*sectorSize*rr, zz-1*rr);
+	}
+	for (int x = 0; x <= numXSectors; x++)
+	{
+		display.DrawLine({static_cast<float>(xx-rr+2*x*rr*sectorSize), static_cast<float>(yy-rr), static_cast<float>(zz-1*rr)},
+						 {static_cast<float>(xx-rr+2*x*rr*sectorSize), static_cast<float>(yy-rr+2*numYSectors*rr*sectorSize), static_cast<float>(zz-1*rr)},
+						 lineScale*rr, Colors::yellow);
+//		glVertex3f(xx-rr+2*x*rr*sectorSize, yy-rr, zz-1*rr);
+//		glVertex3f(xx-rr+2*x*rr*sectorSize, yy-rr+2*numYSectors*rr*sectorSize, zz-1*rr);
+	}
+//	glEnd();
+//	glLineWidth(1);
+	
+	rgbColor abstractionColor = Colors::bluegreen;
+	
+//	if (draw) printf("===BEGIN DRAW\n");
+	// now draw the abstraction itself
+	for (unsigned int x = 0; x < sectors.size(); x++)
+	{
+		for (unsigned int y = 0; y < sectors[x].numRegions; y++)
+		{
+//			if (draw) printf("===DRAW SECTOR %d region %d\n", x, y);
+			
+			unsigned int loc1, loc2;
+			std::vector<tempEdgeData> neighbors;
+			GetNeighbors(x, y, neighbors);
+			
+//			glBegin(GL_LINES);
+			GetXYLocation(x, y, loc1, loc2);
+			map->GetCoord((int)loc1, (int)loc2, xx, yy, zz, rr);
+			for (unsigned int z = 0; z < neighbors.size(); z++)
+			{
+				double xx2, yy2, zz2, rr2;
+				// only draw half of the directions, since edges are represented twice
+				switch (neighbors[z].direction)
+				{
+					case 0:
+//						glVertex3f(xx, yy, zz-5.1*rr);
+						GetXYLocation(x-numXSectors, neighbors[z].to, loc1, loc2);
+						map->GetCoord((int)loc1, (int)loc2, xx2, yy2, zz2, rr2);
+//						glVertex3f(xx2, yy2, zz2-5.1*rr2);
+						display.DrawLine({static_cast<float>(xx), static_cast<float>(yy), static_cast<float>(zz-5.1*rr)},
+										 {static_cast<float>(xx2), static_cast<float>(yy2), static_cast<float>(zz2-5.1*rr2)}, lineScale*rr2, abstractionColor);
+						break;
+					case 1:
+//						glVertex3f(xx, yy, zz-5.1*rr);
+						GetXYLocation(x+1, neighbors[z].to, loc1, loc2);
+						map->GetCoord((int)loc1, (int)loc2, xx2, yy2, zz2, rr2);
+//						glVertex3f(xx2, yy2, zz2-5.1*rr2);
+						display.DrawLine({static_cast<float>(xx), static_cast<float>(yy), static_cast<float>(zz-5.1*rr)},
+										 {static_cast<float>(xx2), static_cast<float>(yy2), static_cast<float>(zz2-5.1*rr2)}, lineScale*rr2, abstractionColor);
+						break;
+					case 2:
+					case 3: break;
+					case 4:
+//						glVertex3f(xx, yy, zz-5.1*rr);
+						GetXYLocation(x-numXSectors+1, neighbors[z].to, loc1, loc2);
+						map->GetCoord((int)loc1, (int)loc2, xx2, yy2, zz2, rr2);
+//						glVertex3f(xx2, yy2, zz2-5.1*rr2);
+						display.DrawLine({static_cast<float>(xx), static_cast<float>(yy), static_cast<float>(zz-5.1*rr)},
+										 {static_cast<float>(xx2), static_cast<float>(yy2), static_cast<float>(zz2-5.1*rr2)}, lineScale*rr2, abstractionColor);
+						break;
+					case 5:
+//						glVertex3f(xx, yy, zz-5.1*rr);
+						GetXYLocation(x+numXSectors+1, neighbors[z].to, loc1, loc2);
+						map->GetCoord((int)loc1, (int)loc2, xx2, yy2, zz2, rr2);
+//						glVertex3f(xx2, yy2, zz2-5.1*rr2);
+						display.DrawLine({static_cast<float>(xx), static_cast<float>(yy), static_cast<float>(zz-5.1*rr)},
+										 {static_cast<float>(xx2), static_cast<float>(yy2), static_cast<float>(zz2-5.1*rr2)}, lineScale*rr2, abstractionColor);
+						break;
+					default:
+						break; // otherwise we draw all edges twice
+				}
+			}
+//			glEnd();
+		}
+	}
+//	draw = false;
 }
 
 /**
@@ -569,7 +667,7 @@ void MinimalSectorAbstraction::OpenGLDraw()
 void MinimalSectorAbstraction::GetXYLocation(unsigned int sector,
                                              unsigned int region,
                                              unsigned int &x,
-                                             unsigned int &y)
+                                             unsigned int &y) const
 {
     uint8_t loc = memory[sectors[sector].memoryAddress+region*2];
     x = loc%sectorSize;
@@ -592,7 +690,7 @@ void MinimalSectorAbstraction::GetXYLocation(unsigned int sector,
  */
 void MinimalSectorAbstraction::GetNeighbors(unsigned int sector,
                                             unsigned int region,
-                                            std::vector<tempEdgeData> &edges)
+                                            std::vector<tempEdgeData> &edges) const
 {
     edges.resize(0);
     int sectorAddress = sectors[sector].memoryAddress;
@@ -1031,6 +1129,8 @@ double MinimalSectorAbstraction::GetRegionError(int fromSector, int fromRegion,
 //            return regionError[fromSector][fromRegion];
 //    }
 //    return regionError[fromSector][fromRegion];
+	assert(!"Commented out code here.");
+	return 0;
 }
 
 /**

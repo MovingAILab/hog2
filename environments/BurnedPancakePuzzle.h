@@ -52,16 +52,16 @@ public:
 
 	virtual uint64_t GetStateHash(const BurnedPancakePuzzleState &s) const;
 
-	double HCost(const BurnedPancakePuzzleState &state1, const BurnedPancakePuzzleState &state2);
-	double Memory_Free_HCost(const BurnedPancakePuzzleState &state1, std::vector<int> &goal_locs);
-	double HCost(const BurnedPancakePuzzleState &state1);
+	double HCost(const BurnedPancakePuzzleState &state1, const BurnedPancakePuzzleState &state2) const;
+	double Memory_Free_HCost(const BurnedPancakePuzzleState &state1, const std::vector<int> &goal_locs) const;
+	double HCost(const BurnedPancakePuzzleState &state1) const;
 
-	double GCost(const BurnedPancakePuzzleState &, const BurnedPancakePuzzleState &) {return 1.0;}
-	double GCost(const BurnedPancakePuzzleState &, const unsigned &) { return 1.0; }
+	double GCost(const BurnedPancakePuzzleState &, const BurnedPancakePuzzleState &) const {return 1.0;}
+	double GCost(const BurnedPancakePuzzleState &, const unsigned &) const { return 1.0; }
 
-	bool GoalTest(const BurnedPancakePuzzleState &state, const BurnedPancakePuzzleState &goal);
+	bool GoalTest(const BurnedPancakePuzzleState &state, const BurnedPancakePuzzleState &goal) const;
 
-	bool GoalTest(const BurnedPancakePuzzleState &s);
+	bool GoalTest(const BurnedPancakePuzzleState &s) const;
 
 	uint64_t GetActionHash(unsigned act) const;
 	void StoreGoal(BurnedPancakePuzzleState &); // stores the locations for the given goal state
@@ -71,7 +71,7 @@ public:
 
 	/** Returns stored goal state if it is stored.**/
 	BurnedPancakePuzzleState Get_Goal(){
-		if(!goal_stored) {
+		if (!goal_stored) {
 			fprintf(stderr, "ERROR: Call to Get_Goal when no goal stored\n");
 			exit(1);
 		}
@@ -80,7 +80,7 @@ public:
 
 	void ClearGoal(){} // clears the current stored information of the goal
 
-	bool IsGoalStored(){return goal_stored;} // returns if a goal is stored or not
+	bool IsGoalStored() const {return goal_stored;} // returns if a goal is stored or not
 
 	/**
 	Changes the ordering of operators to the new inputted order
@@ -88,10 +88,10 @@ public:
 	void Change_Op_Order(const std::vector<unsigned> op_order);
 
 	// currently not drawing anything
-	void OpenGLDraw() const{}
-	void OpenGLDraw(const BurnedPancakePuzzleState &) const {}
-	void OpenGLDraw(const BurnedPancakePuzzleState &, const unsigned &) const {}
-	void OpenGLDraw(const BurnedPancakePuzzleState&, const BurnedPancakePuzzleState&, float) const {}
+//	void OpenGLDraw() const{}
+//	void OpenGLDraw(const BurnedPancakePuzzleState &) const {}
+//	void OpenGLDraw(const BurnedPancakePuzzleState &, const unsigned &) const {}
+//	void OpenGLDraw(const BurnedPancakePuzzleState&, const BurnedPancakePuzzleState&, float) const {}
 
 	/**
 	**/
@@ -100,7 +100,7 @@ public:
 //	static int read_in_pancake_puzzles(const char *filename, bool first_counter, unsigned size, unsigned max_puzzles, std::vector<BurnedPancakePuzzleState> &puzzle_vector);
 //
 //	bool State_Check(const BurnedPancakePuzzleState &to_check) {
-//		if(to_check.puzzle.size() != size)
+//		if (to_check.puzzle.size() != size)
 //			return false;
 //
 //		return true;

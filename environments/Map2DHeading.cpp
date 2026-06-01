@@ -94,7 +94,7 @@ bool Map2DHeading::InvertAction(xyhAct &a) const
 	return false;
 }
 
-double Map2DHeading::HCost(const xyhLoc &l1, const xyhLoc &l2)
+double Map2DHeading::HCost(const xyhLoc &l1, const xyhLoc &l2) const
 {
 	double h1;
 	double a = ((l1.x>l2.x)?(l1.x-l2.x):(l2.x-l1.x));
@@ -106,7 +106,7 @@ double Map2DHeading::HCost(const xyhLoc &l1, const xyhLoc &l2)
 	return h1;
 }
 
-double Map2DHeading::GetCost(const xyhLoc &a, const xyhLoc &b, double P, double D)
+double Map2DHeading::GetCost(const xyhLoc &a, const xyhLoc &b, double P, double D) const
 {
 	if (a.x == b.x && a.y == b.y)
 	{
@@ -137,18 +137,20 @@ double Map2DHeading::GetCost(const xyhLoc &a, const xyhLoc &b, double P, double 
 	return 10*cost1/dist+cost2;//+((dist<16)?fabs(8.0-dist):0);
 }
 
-double Map2DHeading::GCost(const xyhLoc &node1, const xyhLoc &node2)
+double Map2DHeading::GCost(const xyhLoc &node1, const xyhLoc &node2) const
 {
 	if (node1.h != node2.h) // turn
 		return 1.0;
 	
 	double costModifier = 1.0;
 
-	for (CostTable::iterator it = costs.begin(); it != costs.end(); it++)
+	//for (CostTable::iterator it = costs.begin(); it != costs.end(); it++)
+	for (const auto &it : costs)
 	{
 		xyhLoc tmp;
-		GetStateFromHash(it->first, tmp);
-		costModifier += GetCost(node1, tmp, it->second.seen, it->second.dist);
+		//GetStateFromHash(it->first, tmp);
+		GetStateFromHash(it.first, tmp);
+		costModifier += GetCost(node1, tmp, it.second.seen, it.second.dist);
 	}
 //	CostTable::iterator iter = costs.find(GetStateHash(node1));
 //	if (iter != costs.end())
@@ -162,18 +164,19 @@ double Map2DHeading::GCost(const xyhLoc &node1, const xyhLoc &node2)
 	return DIAGONAL_COST*costModifier;
 }
 
-double Map2DHeading::GCost(const xyhLoc &node1, const xyhAct &act)
+double Map2DHeading::GCost(const xyhLoc &node1, const xyhAct &act) const
 {
 	if (act.oldHeading != act.newHeading)
 		return 1.0;
 
 	double costModifier = 1.0;
 	
-	for (CostTable::iterator it = costs.begin(); it != costs.end(); it++)
+	for (const auto &it : costs)
+		//for (CostTable::iterator it = costs.begin(); it != costs.end(); it++)
 	{
 		xyhLoc tmp;
-		GetStateFromHash(it->first, tmp);
-		costModifier += GetCost(node1, tmp, it->second.seen, it->second.dist);
+		GetStateFromHash(it.first, tmp);
+		costModifier += GetCost(node1, tmp, it.second.seen, it.second.dist);
 	}
 //	CostTable::iterator iter = costs.find(GetStateHash(node1));
 //	if (iter != costs.end())
@@ -194,7 +197,7 @@ bool Map2DHeading::LegalState(const xyhLoc &s)
 	return false;
 }
 
-bool Map2DHeading::GoalTest(const xyhLoc &node, const xyhLoc &goal)
+bool Map2DHeading::GoalTest(const xyhLoc &node, const xyhLoc &goal) const
 {
 	return (node == goal);
 }
@@ -222,134 +225,134 @@ uint64_t Map2DHeading::GetActionHash(xyhAct act) const
 	return (act.newHeading<<8)+act.oldHeading;
 }
 
-void Map2DHeading::OpenGLDraw() const
-{
-	map->OpenGLDraw();
-
-	SetColor(0.0, 1.0, 0.0);
-	if (!drawWeights)
-		return;
-	xyhLoc l;
-	for (CostTable::const_iterator it = costs.begin(); it != costs.end(); it++)
-	{
-		GetStateFromHash(it->first, l);
-		OpenGLDraw(l);
-	}
-
-}
-
-void Map2DHeading::OpenGLDraw(const xyhLoc &l) const
-{
-	GLdouble xx, yy, zz, rad;
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-	map->GetOpenGLCoord(l.x, l.y, xx, yy, zz, rad);
-	
-	GLdouble yoffset = mySin(l.h)*rad;//sin(TWOPI*rot/16)*rad;
-	GLdouble xoffset = myCos(l.h)*rad;//cos(TWOPI*rot/16)*rad;
-		
-	glBegin(GL_TRIANGLES);
-	recVec surfaceNormal;
-	surfaceNormal.x = (((-0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
-	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((0.5*yoffset) - (rad)));
-	surfaceNormal.z = (((0.5*yoffset) * (-2*yoffset)) - ((-0.5*xoffset) - (-2*xoffset)));
-	surfaceNormal.normalise();
-	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
-	
-	surfaceNormal.x = (((+0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
-	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((-0.5*yoffset) - (rad)));
-	surfaceNormal.z = (((-0.5*yoffset) * (-2*yoffset)) - ((+0.5*xoffset) - (-2*xoffset)));
-	surfaceNormal.normalise();
-	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
-	glEnd();
-
-}
-
-void Map2DHeading::OpenGLDraw(const xyhLoc &oldState, const xyhLoc &newState, float perc) const
-{
-	int DEG = 8;
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-	//printf("Drawing %f percent\n", perc);
-	//	std::cout << oldState << std::endl;
-	//	std::cout << newState << std::endl;
-	
-	GLdouble xx, yy, zz, rad;
-	
-	map->GetOpenGLCoord(perc*newState.x + (1-perc)*oldState.x, perc*newState.y + (1-perc)*oldState.y, xx, yy, zz, rad);
-	
-	float rot = (1-perc)*oldState.h+perc*newState.h;
-
-	if ((oldState.h >= DEG-2) && (newState.h <= 2))
-	{
-		rot = (1-perc)*oldState.h+perc*(newState.h+DEG);
-		if (rot >= DEG)
-			rot -= DEG;
-	}
-	else if ((newState.h >= DEG-2) && (oldState.h <= 2))
-	{
-		rot = (1-perc)*(oldState.h+DEG)+perc*(newState.h);
-		if (rot >= DEG)
-			rot -= DEG;
-	}
-
-	GLdouble yoffset = sin(TWOPI*rot/8.0)*rad;
-	GLdouble xoffset = cos(TWOPI*rot/8.0)*rad;
-		
-	glBegin(GL_TRIANGLES);
-	recVec surfaceNormal;
-	surfaceNormal.x = (((-0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
-	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((0.5*yoffset) - (rad)));
-	surfaceNormal.z = (((0.5*yoffset) * (-2*yoffset)) - ((-0.5*xoffset) - (-2*xoffset)));
-	surfaceNormal.normalise();
-	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
-	
-	surfaceNormal.x = (((+0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
-	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((-0.5*yoffset) - (rad)));
-	surfaceNormal.z = (((-0.5*yoffset) * (-2*yoffset)) - ((+0.5*xoffset) - (-2*xoffset)));
-	surfaceNormal.normalise();
-	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
-	glEnd();
-}
-
-void Map2DHeading::OpenGLDraw(const xyhLoc &, const xyhAct &) const
-{
-	
-}
-
-void Map2DHeading::GLLabelState(const xyhLoc &, const char *) const
-{
-	
-}
-
-void Map2DHeading::GLDrawLine(const xyhLoc &x, const xyhLoc &y) const
-{
-	
-}
+//void Map2DHeading::OpenGLDraw() const
+//{
+//	map->OpenGLDraw();
+//
+//	SetColor(0.0, 1.0, 0.0);
+//	if (!drawWeights)
+//		return;
+//	xyhLoc l;
+//	for (CostTable::const_iterator it = costs.begin(); it != costs.end(); it++)
+//	{
+//		GetStateFromHash(it->first, l);
+//		OpenGLDraw(l);
+//	}
+//
+//}
+//
+//void Map2DHeading::OpenGLDraw(const xyhLoc &l) const
+//{
+//	GLdouble xx, yy, zz, rad;
+//	GLfloat r, g, b, t;
+//	GetColor(r, g, b, t);
+//	map->GetCoord(l.x, l.y, xx, yy, zz, rad);
+//	
+//	GLdouble yoffset = mySin(l.h)*rad;//sin(TWOPI*rot/16)*rad;
+//	GLdouble xoffset = myCos(l.h)*rad;//cos(TWOPI*rot/16)*rad;
+//		
+//	glBegin(GL_TRIANGLES);
+//	Graphics::point surfaceNormal;
+//	surfaceNormal.x = (((-0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
+//	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((0.5*yoffset) - (rad)));
+//	surfaceNormal.z = (((0.5*yoffset) * (-2*yoffset)) - ((-0.5*xoffset) - (-2*xoffset)));
+//	surfaceNormal.normalise();
+//	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
+//	
+//	surfaceNormal.x = (((+0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
+//	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((-0.5*yoffset) - (rad)));
+//	surfaceNormal.z = (((-0.5*yoffset) * (-2*yoffset)) - ((+0.5*xoffset) - (-2*xoffset)));
+//	surfaceNormal.normalise();
+//	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
+//	glEnd();
+//
+//}
+//
+//void Map2DHeading::OpenGLDraw(const xyhLoc &oldState, const xyhLoc &newState, float perc) const
+//{
+//	int DEG = 8;
+//	GLfloat r, g, b, t;
+//	GetColor(r, g, b, t);
+//	//printf("Drawing %f percent\n", perc);
+//	//	std::cout << oldState << std::endl;
+//	//	std::cout << newState << std::endl;
+//	
+//	GLdouble xx, yy, zz, rad;
+//	
+//	map->GetCoord(perc*newState.x + (1-perc)*oldState.x, perc*newState.y + (1-perc)*oldState.y, xx, yy, zz, rad);
+//	
+//	float rot = (1-perc)*oldState.h+perc*newState.h;
+//
+//	if ((oldState.h >= DEG-2) && (newState.h <= 2))
+//	{
+//		rot = (1-perc)*oldState.h+perc*(newState.h+DEG);
+//		if (rot >= DEG)
+//			rot -= DEG;
+//	}
+//	else if ((newState.h >= DEG-2) && (oldState.h <= 2))
+//	{
+//		rot = (1-perc)*(oldState.h+DEG)+perc*(newState.h);
+//		if (rot >= DEG)
+//			rot -= DEG;
+//	}
+//
+//	GLdouble yoffset = sin(TWOPI*rot/8.0)*rad;
+//	GLdouble xoffset = cos(TWOPI*rot/8.0)*rad;
+//		
+//	glBegin(GL_TRIANGLES);
+//	Graphics::point surfaceNormal;
+//	surfaceNormal.x = (((-0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
+//	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((0.5*yoffset) - (rad)));
+//	surfaceNormal.z = (((0.5*yoffset) * (-2*yoffset)) - ((-0.5*xoffset) - (-2*xoffset)));
+//	surfaceNormal.normalise();
+//	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
+//	
+//	surfaceNormal.x = (((+0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
+//	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((-0.5*yoffset) - (rad)));
+//	surfaceNormal.z = (((-0.5*yoffset) * (-2*yoffset)) - ((+0.5*xoffset) - (-2*xoffset)));
+//	surfaceNormal.normalise();
+//	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
+//	glEnd();
+//}
+//
+//void Map2DHeading::OpenGLDraw(const xyhLoc &, const xyhAct &) const
+//{
+//	
+//}
+//
+//void Map2DHeading::GLLabelState(const xyhLoc &, const char *) const
+//{
+//	
+//}
+//
+//void Map2DHeading::GLDrawLine(const xyhLoc &x, const xyhLoc &y) const
+//{
+//	
+//}
 
 
 void Map2DHeading::GetNextState(const xyhLoc &currents, xyhAct dir, xyhLoc &news) const

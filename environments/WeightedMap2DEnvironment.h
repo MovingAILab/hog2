@@ -34,8 +34,8 @@
 #include "BitVector.h"
 #include "OccupancyInterface.h"
 #include "Graph.h"
-#include <ext/hash_map>
 #include <cmath>
+#include <unordered_map>
 
 class Vector2D {
 	public:
@@ -80,7 +80,7 @@ class Vector2D {
 		
 		void Normalize()
 		{
-			if((x==0)&&(y==0))
+			if ((x==0)&&(y==0))
 				return;
 			float magnitude = sqrt(x*x + y*y);
 			x /= magnitude;
@@ -107,7 +107,7 @@ namespace AngleUtil {
 		size_t operator()(const AngleSearchNode &x) const
 		{ return (size_t)(x.hashKey); } };
 	
-	 typedef __gnu_cxx::hash_map<AngleUtil::AngleSearchNode,Vector2D, AngleUtil::SearchNodeHash, AngleUtil::SearchNodeEqual> AngleLookupTable;
+	 typedef std::unordered_map<AngleUtil::AngleSearchNode,Vector2D, AngleUtil::SearchNodeHash, AngleUtil::SearchNodeEqual> AngleLookupTable;
 };
 
 /** Edge labels */
@@ -117,22 +117,22 @@ enum {
 };
 
 
-class WeightedMap2DEnvironment : public AbsMapEnvironment 
+class WeightedMap2DEnvironment : public AbsMapEnvironment
 {
 public:
 	WeightedMap2DEnvironment(MapAbstraction *ma);
 	WeightedMap2DEnvironment(AbsMapEnvironment *ame);
 	virtual ~WeightedMap2DEnvironment();
 	void ApplyAction(xyLoc &s, tDirection dir) const;
-	virtual double GCost(const xyLoc &node1, const xyLoc &node2);
-	virtual double GCost(const xyLoc &node1, const tDirection &act) { return AbsMapEnvironment::GCost(node1, act); }
+	virtual double GCost(const xyLoc &node1, const xyLoc &node2) const;
+	virtual double GCost(const xyLoc &node1, const tDirection &act) const { return AbsMapEnvironment::GCost(node1, act); }
 	//virtual BaseMapOccupancyInterface* GetOccupancyInterface(){std::cout<<"Returning "<<oi<<std::endl;return oi;}
 	virtual BaseMapOccupancyInterface* GetOccupancyInfo(){return oi;}
-	void OpenGLDraw() const;
-	void OpenGLDraw(const xyLoc &l)  const{ AbsMapEnvironment::OpenGLDraw(l); }
-	void OpenGLDraw(const xyLoc& s, const tDirection &dir) const;
-	void OpenGLDraw(const xyLoc &l1, const xyLoc &l2, float v) const { MapEnvironment::OpenGLDraw(l1, l2, v); }
-	void DrawEdge(const edge* e) const;
+//	void OpenGLDraw() const;
+//	void OpenGLDraw(const xyLoc &l)  const{ AbsMapEnvironment::OpenGLDraw(l); }
+//	void OpenGLDraw(const xyLoc& s, const tDirection &dir) const;
+//	void OpenGLDraw(const xyLoc &l1, const xyLoc &l2, float v) const { MapEnvironment::OpenGLDraw(l1, l2, v); }
+//	void DrawEdge(const edge* e) const;
 	
 	void UpdateAngle(const xyLoc &old, const xyLoc &s, double t);
 	
@@ -162,12 +162,13 @@ public:
 	void UsePerceptron(double lr) { usePerceptron = true; learningRate = lr; }
 	
 	double ComputeArrowMetric(bool timed=false,double time=0, bool DoNormalize=false, double maxtime=0);
-	Vector2D GetAngleFromDirection(tDirection dir);
+	Vector2D GetAngleFromDirection(tDirection dir) const;
 
 private:
 	BaseMapOccupancyInterface* oi;
 	
-	typedef __gnu_cxx::hash_map<AngleUtil::AngleSearchNode,Vector2D, AngleUtil::SearchNodeHash, AngleUtil::SearchNodeEqual> AngleLookupTable;
+	//typedef std::unordered_map<AngleUtil::AngleSearchNode,Vector2D, AngleUtil::SearchNodeHash, AngleUtil::SearchNodeEqual>
+	typedef std::unordered_map<AngleUtil::AngleSearchNode,Vector2D, AngleUtil::SearchNodeHash, AngleUtil::SearchNodeEqual> AngleLookupTable;
 	AngleLookupTable angleLookup;
 	
 	void UpdateAngle(const xyLoc &old, const xyLoc &s, double prop, double t);
@@ -200,4 +201,3 @@ typedef UnitSimulation<xyLoc, tDirection, WeightedMap2DEnvironment> UnitWeighted
 
 
 #endif
-

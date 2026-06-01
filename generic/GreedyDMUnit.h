@@ -28,7 +28,7 @@ class GreedyDMUnit : public Unit<xyLoc,tDirection,environment>
 			Vector2D nodeVec = wme->GetAngle(loc);
 		
 			// if no angle stored, pick random
-			if(nodeVec.x == 0 && nodeVec.y == 0)
+			if (nodeVec.x == 0 && nodeVec.y == 0)
 			{ 	
 				a = directions[random()%directions.size()];
 				return true;
@@ -45,7 +45,7 @@ class GreedyDMUnit : public Unit<xyLoc,tDirection,environment>
 			{	 		
 				xyLoc nextThisDir;
 				wme->GetNextState(loc,directions[i],nextThisDir);
-				//if(prevLoc == nextThisDir)
+				//if (prevLoc == nextThisDir)
 				//	continue;	
 				if (theEnv->GetMap()->CanStep(loc.x, loc.y, nextThisDir.x, nextThisDir.y))
 				{
@@ -66,7 +66,7 @@ class GreedyDMUnit : public Unit<xyLoc,tDirection,environment>
 					
 					if (dotProd >= bestDotProd)
 					{
-						//if(abs(bestDotProd-dotProd) < 0.1)
+						//if (abs(bestDotProd-dotProd) < 0.1)
 						secondBest = bestDir;
 						secondBestValue = bestDotProd;
 						bestDotProd = dotProd;
@@ -85,7 +85,7 @@ class GreedyDMUnit : public Unit<xyLoc,tDirection,environment>
 // 			wme->GetNextState(loc, bestDir, next);
 // 			
 // 			//std::cout<<"loc "<<loc<<" next "<<next<<std::endl;
-// 			if(!(env->GetMap()->CanStep(loc.x, loc.y, next.x, next.y))) // make best possible move
+// 			if (!(env->GetMap()->CanStep(loc.x, loc.y, next.x, next.y))) // make best possible move
 // 			{
 // 				
 // 				//std::cout<<"can't go here - random\n";
@@ -94,11 +94,11 @@ class GreedyDMUnit : public Unit<xyLoc,tDirection,environment>
 // 			else
 	
 	
-			if(secondBest == kStay)
+			if (secondBest == kStay)
 				a = bestDir;
 			else
 			{
-				if((bestDotProd - secondBestValue < 0.1) && (random()%4 == 1))
+				if ((bestDotProd - secondBestValue < 0.1) && (random()%4 == 1))
 					a = secondBest;
 				else
 					a = bestDir;
@@ -122,8 +122,8 @@ class GreedyDMUnit : public Unit<xyLoc,tDirection,environment>
 		virtual void GetLocation(xyLoc &l)
 		{ l = loc; }
 	
-		virtual void OpenGLDraw(const environment *theEnv, const SimulationInfo<xyLoc,tDirection,environment> *) const
-		{ theEnv->OpenGLDraw(loc); }
+//		virtual void OpenGLDraw(const environment *theEnv, const SimulationInfo<xyLoc,tDirection,environment> *) const
+//		{ theEnv->OpenGLDraw(loc); }
 		
 		virtual void GetGoal(xyLoc &s)
 		{ s = loc; }

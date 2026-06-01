@@ -15,7 +15,7 @@
 #include "FPUtil.h"
 #include <deque>
 #include <vector>
-#include <ext/hash_map>
+#include <unordered_map>
 #include "TemplateAStar.h"
 #include "Timer.h"
 #include "vectorCache.h"
@@ -310,16 +310,24 @@ namespace FLRTA {
 			stateData[env->GetStateHash(where)].hCost = tmp;
 			stateData[env->GetStateHash(where)].theState = where;
 		}
-		double HCost(environment *env, const state &from, const state &to)
+		double HCost(environment *env, const state &from, const state &to) const
 		{
-			//std::cout << "Hashing state:6 " << std::endl << from << std::endl;
-			if (stateData.find(env->GetStateHash(from)) != stateData.end())
+			auto val = stateData.find(env->GetStateHash(from));
+			if (val != stateData.end())
 			{
-				return stateData[env->GetStateHash(from)].hCost+env->HCost(from, to);
+				return val->second.hCost+env->HCost(from, to);
 			}
 			return env->HCost(from, to);
+
+			
+//			//std::cout << "Hashing state:6 " << std::endl << from << std::endl;
+//			if (stateData.find(env->GetStateHash(from)) != stateData.end())
+//			{
+//				return stateData[env->GetStateHash(from)].hCost+env->HCost(from, to);
+//			}
+//			return env->HCost(from, to);
 		}
-		double HCost(const state &from, const state &to)
+		double HCost(const state &from, const state &to) const
 		{ return HCost(m_pEnv, from, to); }
 		
 		void TryToKill(const state &where, const state &goal)
@@ -451,11 +459,11 @@ namespace FLRTA {
 		virtual void LogFinalStats(StatCollection *s) { s->AddStat("TotalLearning", GetName(),fAmountLearned); }
 		
 		double GetAmountLearned() { return fAmountLearned; }
-		void OpenGLDraw() const {}
-		void OpenGLDraw(const environment *env) const;
+//		void OpenGLDraw() const {}
+//		void OpenGLDraw(const environment *env) const;
 	private:
-		typedef __gnu_cxx::hash_map<uint64_t, learnedStateData<state>, Hash64 > LearnedStateData;
-		typedef __gnu_cxx::hash_map<uint64_t, bool, Hash64 > ClosedList;
+		typedef std::unordered_map<uint64_t, learnedStateData<state>, Hash64 > LearnedStateData;
+		typedef std::unordered_map<uint64_t, bool, Hash64 > ClosedList;
 		void ExtractBestPath(environment *env, const state &from, const state &to, std::vector<state> &thePath);
 		void MakeTrappedMove(environment *env, const state &from, std::vector<state> &thePath);
 		
@@ -938,66 +946,66 @@ namespace FLRTA {
 		}
 	}
 	
-	template <class state, class action, class environment>
-	void FLRTAStar<state, action, environment>::OpenGLDraw(const environment *e) const
-	{
-//		if (astar.GetNodesExpanded() > 0)
-//		astar.OpenGLDraw();
-		char str[32];
-		
-		double learned = 0;
-		for (typename LearnedStateData::const_iterator it = stateData.begin(); it != stateData.end(); it++)
-		{
-			double thisState = (*it).second.hCost;
-			if (learned < thisState)
-				learned = thisState;
-		}
-		for (typename LearnedStateData::const_iterator it = stateData.begin(); it != stateData.end(); it++)
-		{
-			uint64_t node;
-			dataLocation loc = (aoc.Lookup(m_pEnv->GetStateHash((*it).second.theState), node));
-			//if (loc != kOpenList) continue;
-
-			for (int x = 0; x < (*it).second.children->size(); x++)
-			{
-				m_pEnv->GLDrawLine((*it).second.theState, (*it).second.children->at(x));
-			}
-			for (int x = 0; x < (*it).second.parents->size(); x++)
-			{
-				m_pEnv->GLDrawLine((*it).second.theState, (*it).second.parents->at(x));
-			}
-			
-			if (loc == kOpenList)
-			{
-				if ((*it).second.dead)
-					sprintf(str, " %1.1f", (*it).second.gCost);
-				else
-					sprintf(str, "%1.1f %1.1f", (*it).second.gCost, (*it).second.hCost+m_pEnv->HCost((*it).second.theState, theEnd));
-				e->SetColor(0.9, 0.9, 0.9, 1);
-				e->GLLabelState((*it).second.theState, str);
-			}
-
-			if ((*it).second.dead)
-			{
-				e->SetColor(0.0, 0.0+((loc==kOpenList)?0.5:0.0), 0.0, 1);
-				e->OpenGLDraw((*it).second.theState);
-			}
-			else
-			{
-				double r = (*it).second.hCost;
-				if (r > 0)
-				{
-					e->SetColor(0.5+0.5*r/learned, ((loc==kOpenList)?0.5:0.0), 0, 0.1+0.8*r/learned);
-					e->OpenGLDraw((*it).second.theState);
-				}
-				else if (loc == kOpenList)
-				{
-					e->SetColor(0.0, 0.5, 0.0, 1);
-					e->OpenGLDraw((*it).second.theState);
-				}
-			}
-		}
-	}
+//	template <class state, class action, class environment>
+//	void FLRTAStar<state, action, environment>::OpenGLDraw(const environment *e) const
+//	{
+////		if (astar.GetNodesExpanded() > 0)
+////		astar.OpenGLDraw();
+//		char str[32];
+//		
+//		double learned = 0;
+//		for (typename LearnedStateData::const_iterator it = stateData.begin(); it != stateData.end(); it++)
+//		{
+//			double thisState = (*it).second.hCost;
+//			if (learned < thisState)
+//				learned = thisState;
+//		}
+//		for (typename LearnedStateData::const_iterator it = stateData.begin(); it != stateData.end(); it++)
+//		{
+//			uint64_t node;
+//			dataLocation loc = (aoc.Lookup(m_pEnv->GetStateHash((*it).second.theState), node));
+//			//if (loc != kOpenList) continue;
+//
+//			for (size_t x = 0; x < (*it).second.children->size(); x++)
+//			{
+//				m_pEnv->GLDrawLine((*it).second.theState, (*it).second.children->at(x));
+//			}
+//			for (size_t x = 0; x < (*it).second.parents->size(); x++)
+//			{
+//				m_pEnv->GLDrawLine((*it).second.theState, (*it).second.parents->at(x));
+//			}
+//			
+//			if (loc == kOpenList)
+//			{
+//				if ((*it).second.dead)
+//					sprintf(str, " %1.1f", (*it).second.gCost);
+//				else
+//					sprintf(str, "%1.1f %1.1f", (*it).second.gCost, (*it).second.hCost+m_pEnv->HCost((*it).second.theState, theEnd));
+//				e->SetColor(0.9, 0.9, 0.9, 1);
+//				e->GLLabelState((*it).second.theState, str);
+//			}
+//
+//			if ((*it).second.dead)
+//			{
+//				e->SetColor(0.0, 0.0+((loc==kOpenList)?0.5:0.0), 0.0, 1);
+//				e->OpenGLDraw((*it).second.theState);
+//			}
+//			else
+//			{
+//				double r = (*it).second.hCost;
+//				if (r > 0)
+//				{
+//					e->SetColor(0.5+0.5*r/learned, ((loc==kOpenList)?0.5:0.0), 0, 0.1+0.8*r/learned);
+//					e->OpenGLDraw((*it).second.theState);
+//				}
+//				else if (loc == kOpenList)
+//				{
+//					e->SetColor(0.0, 0.5, 0.0, 1);
+//					e->OpenGLDraw((*it).second.theState);
+//				}
+//			}
+//		}
+//	}
 	
 }
 							

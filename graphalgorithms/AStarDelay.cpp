@@ -37,7 +37,7 @@ void AStarDelay::GetPath(GraphEnvironment *_env, Graph* _g, graphState from, gra
 
 //	double usedtime = t1.tv_sec-t0.tv_sec + (t1.tv_usec-t0.tv_usec)/1000000.0;
 	
-	//if(thePath.size() > 0)
+	//if (thePath.size() > 0)
 	//	printf("\nNodes expanded=%ld, Nodes touched=%ld, Reopenings=%ld.\n",GetNodesExpanded(),GetNodesTouched(),GetNodesReopened());
 
 	//printf("Algorithm AStarDelay, time used=%lf sec, N/sec=%lf, solution cost=%lf, solution edges=%d.\n",usedtime, GetNodesExpanded()/usedtime,solutionCost,pathSize);
@@ -165,7 +165,7 @@ bool AStarDelay::DoSingleStep(SearchNode &topNode,
 {
 	nodesExpanded += 1;
 
-	//if(topNode.rxp)
+	//if (topNode.rxp)
 	//	nReExp++;
 	//else
 	//	nNewExp++;
@@ -197,15 +197,15 @@ bool AStarDelay::DoSingleStep(SearchNode &topNode,
 	bool doBPMX = false;
 	int ichild = 0;
 _BPMX:
-	if(bpmxLevel >= 1)
-		if(doBPMX) {
+	if (bpmxLevel >= 1)
+		if (doBPMX) {
 			ReversePropX1(topNode);
 
 			// counting supplement
-			//if(nodesExpanded%2) {
+			//if (nodesExpanded%2) {
 			//	nodesExpanded += 1;
 
-			//	if(topNode.rxp)
+			//	if (topNode.rxp)
 			//		nReExp++;
 			//	else
 			//		nNewExp++;
@@ -225,11 +225,11 @@ _BPMX:
 		
 		double cost;
 		
-		if(bpmxLevel >= 1) {
+		if (bpmxLevel >= 1) {
 			cost = HandleNeighborX(neighbors[x], topNode);
-			if(cost == 0) {
+			if (cost == 0) {
 
-				//if(topNode.rxp) {
+				//if (topNode.rxp) {
 				//	tickReExp += clock() - tickStart + tickGen;
 				//	tickGen = 0;
 				//}
@@ -249,7 +249,7 @@ _BPMX:
 		}
 	}
 
-	//if(topNode.rxp) {
+	//if (topNode.rxp) {
 	//	tickReExp += clock() - tickStart + tickGen;
 	//}
 	//else {
@@ -257,13 +257,13 @@ _BPMX:
 	//}
 
 	// path max rule (i or ii?)  // this is Mero rule (b), min rule -- allen
-	if(bpmxLevel >= 1)
+	if (bpmxLevel >= 1)
 		if (fless(topNode.fCost-topNode.gCost, minCost))
 			topNode.fCost = topNode.gCost+minCost;
 	closedList[topNode.currNode] = topNode;
 
-	if(bpmxLevel >= 1)
-		if(fifo.size() > 0) {
+	if (bpmxLevel >= 1)
+		if (fifo.size() > 0) {
 			Broadcast(1,fifo.size()); // (level, levelcount)
 		}
 
@@ -276,26 +276,26 @@ void AStarDelay::ReversePropX1(SearchNode& topNode)
 	//tickStart = clock();
 
 	double maxh = topNode.fCost - topNode.gCost;
-	for(unsigned int x=0;x<neighbors.size();x++) 
+	for (unsigned int x=0;x<neighbors.size();x++) 
 	{
 		graphState neighbor = neighbors[x];
 		SearchNode neighborNode = openQueue.find(SearchNode(neighbor));
-		if(neighborNode.currNode == neighbor) {
+		if (neighborNode.currNode == neighbor) {
 			maxh = max(maxh, (neighborNode.fCost - neighborNode.gCost) - env->GCost(topNode.currNode,neighbor));
 		}
 		else {
 			neighborNode = delayQueue.find(SearchNode(neighbor));
-			if(neighborNode.currNode == neighbor) {
+			if (neighborNode.currNode == neighbor) {
 				maxh = max(maxh, (neighborNode.fCost - neighborNode.gCost) - env->GCost(topNode.currNode, neighbor));
 			}
 			else {
 				NodeLookupTable::iterator iter = closedList.find(neighbor);
-				if(iter != closedList.end()) {
+				if (iter != closedList.end()) {
 					neighborNode = iter->second;
 					double oh = maxh;
 					maxh = max(maxh, (neighborNode.fCost - neighborNode.gCost) - env->GCost(topNode.currNode,neighbor));
 
-					if(bpmxLevel > 1 && oh < maxh) {
+					if (bpmxLevel > 1 && oh < maxh) {
 						fifo.push_back(neighbor);
 					}
 				}
@@ -324,14 +324,14 @@ void AStarDelay::Broadcast(int level, int levelcount)
 	SearchNode frontNode;
 	//tickStart = clock();
 
-	for(int i=0;i<levelcount;i++) {
+	for (int i=0;i<levelcount;i++) {
 		graphState front = fifo.front();
 		fifo.pop_front();
 
 		iter = closedList.find(front);
-		if(iter == closedList.end()) {
+		if (iter == closedList.end()) {
 			frontNode = delayQueue.find(SearchNode(front));
-			if(frontNode.currNode != front)
+			if (frontNode.currNode != front)
 				continue;
 		}
 		else
@@ -346,13 +346,13 @@ void AStarDelay::Broadcast(int level, int levelcount)
 		{
 			graphState neighbor = myneighbors[x];
 			 iter = closedList.find(neighbor);
-			if(iter != closedList.end()) {
+			if (iter != closedList.end()) {
 				double edgeWeight = env->GCost(front,neighbor);
 				SearchNode neighborNode = iter->second;
 
 				double neighborH = neighborNode.fCost - neighborNode.gCost;
 				
-				if(fgreater(neighborH - edgeWeight, frontH)) {
+				if (fgreater(neighborH - edgeWeight, frontH)) {
 					frontH = neighborH - edgeWeight;
 					frontNode.fCost = frontNode.gCost + frontH;
 					fifo.push_back(neighbor);
@@ -360,24 +360,24 @@ void AStarDelay::Broadcast(int level, int levelcount)
 			}
 			else {
 				SearchNode neighborNode = openQueue.find(SearchNode(neighbor));
-				if(neighborNode.currNode == neighbor) {
+				if (neighborNode.currNode == neighbor) {
 					double edgeWeight = env->GCost(front,neighbor);
 
 					double neighborH = neighborNode.fCost - neighborNode.gCost;
 					
-					if(fgreater(neighborH - edgeWeight, frontH)) {
+					if (fgreater(neighborH - edgeWeight, frontH)) {
 						frontH = neighborH - edgeWeight;
 						frontNode.fCost = frontNode.gCost + frontH;
 					}
 				}
 				else {
 					neighborNode = delayQueue.find(SearchNode(neighbor));
-					if(neighborNode.currNode == neighbor) {
+					if (neighborNode.currNode == neighbor) {
 						double edgeWeight = env->GCost(front,neighbor);
 
 						double neighborH = neighborNode.fCost - neighborNode.gCost;
 						
-						if(fgreater(neighborH - edgeWeight, frontH)) {
+						if (fgreater(neighborH - edgeWeight, frontH)) {
 							frontH = neighborH - edgeWeight;
 							frontNode.fCost = frontNode.gCost + frontH;
 							fifo.push_back(neighbor);
@@ -401,7 +401,7 @@ void AStarDelay::Broadcast(int level, int levelcount)
 
 				double neighborH = neighborNode.fCost - neighborNode.gCost;
 				
-				if(fgreater(frontH - edgeWeight, neighborH)) {
+				if (fgreater(frontH - edgeWeight, neighborH)) {
 					neighborNode.fCost = neighborNode.gCost + frontH - edgeWeight;  // store neighborNode
 					closedList[neighbor] = neighborNode;
 					fifo.push_back(neighbor);
@@ -409,24 +409,24 @@ void AStarDelay::Broadcast(int level, int levelcount)
 			}
 			else {
 				SearchNode neighborNode = openQueue.find(SearchNode(neighbor));
-				if(neighborNode.currNode == neighbor) {
+				if (neighborNode.currNode == neighbor) {
 					double edgeWeight = env->GCost(front,neighbor);
 
 					double neighborH = neighborNode.fCost - neighborNode.gCost;
 					
-					if(fgreater(frontH - edgeWeight, neighborH)) {
+					if (fgreater(frontH - edgeWeight, neighborH)) {
 						neighborNode.fCost = neighborNode.gCost + frontH - edgeWeight;
 						openQueue.IncreaseKey(neighborNode);
 					}
 				}
 				else {
 					neighborNode = delayQueue.find(SearchNode(neighbor));
-					if(neighborNode.currNode == neighbor) {
+					if (neighborNode.currNode == neighbor) {
 						double edgeWeight = env->GCost(front,neighbor);
 
 						double neighborH = neighborNode.fCost - neighborNode.gCost;
 						
-						if(fgreater(frontH - edgeWeight, neighborH)) {
+						if (fgreater(frontH - edgeWeight, neighborH)) {
 							neighborNode.fCost = neighborNode.gCost + frontH - edgeWeight;
 							delayQueue.IncreaseKey(neighborNode);
 							fifo.push_back(neighbor);
@@ -445,7 +445,7 @@ void AStarDelay::Broadcast(int level, int levelcount)
 	nodesTouched += 2*levelcount;
 
 	level++;
-	if(level < bpmxLevel && fifo.size() > 0)
+	if (level < bpmxLevel && fifo.size() > 0)
 		Broadcast(level, fifo.size());
 }
 
@@ -482,7 +482,7 @@ double AStarDelay::HandleNeighborX(graphState neighbor, SearchNode &topNode)
 
 	if ((neighborNode = openQueue.find(SearchNode(neighbor))).currNode == neighbor) // in OPEN
 	{
-		if(fgreater(neighborNode.fCost - neighborNode.gCost - edge , hTop)) {
+		if (fgreater(neighborNode.fCost - neighborNode.gCost - edge , hTop)) {
 			return 0;
 		}
 
@@ -491,7 +491,7 @@ double AStarDelay::HandleNeighborX(graphState neighbor, SearchNode &topNode)
 	else if ((iter = closedList.find(neighbor)) != closedList.end()) // in CLOSED
 	{
 		neighborNode = iter->second;
-		if(fgreater(neighborNode.fCost - neighborNode.gCost - edge , hTop)) {
+		if (fgreater(neighborNode.fCost - neighborNode.gCost - edge , hTop)) {
 			return 0;
 		}
 
@@ -499,7 +499,7 @@ double AStarDelay::HandleNeighborX(graphState neighbor, SearchNode &topNode)
 	} 
 	else if ((neighborNode = delayQueue.find(SearchNode(neighbor))).currNode == neighbor) // in DELAY
 	{
-		if(fgreater(neighborNode.fCost - neighborNode.gCost - edge , hTop)) {
+		if (fgreater(neighborNode.fCost - neighborNode.gCost - edge , hTop)) {
 			return 0;
 		}
 
@@ -510,7 +510,7 @@ double AStarDelay::HandleNeighborX(graphState neighbor, SearchNode &topNode)
 //		return UpdateLowGNode(neighbor, topNode);
 //	}
 	else { // not opened yet
-		if(fgreater( env->HCost(neighbor,goal) - edge , hTop)) {
+		if (fgreater( env->HCost(neighbor,goal) - edge , hTop)) {
 			return 0;
 		}
 
@@ -549,7 +549,7 @@ double AStarDelay::UpdateOpenNode(graphState neighbor, SearchNode &topNode)
 	double edgeCost = env->GCost(topNode.currNode, neighbor);
 
 	double oldf = n.fCost;
-	if(bpmxLevel >= 1)
+	if (bpmxLevel >= 1)
 		n.fCost = max(n.fCost , topNode.fCost - topNode.gCost - edgeCost + n.gCost);
 
 	if (fless(topNode.gCost+edgeCost, n.gCost))
@@ -558,12 +558,12 @@ double AStarDelay::UpdateOpenNode(graphState neighbor, SearchNode &topNode)
 		n.gCost = topNode.gCost+edgeCost;
 		n.fCost += n.gCost;
 		n.prevNode = topNode.currNode;
-		if(n.fCost < oldf)
+		if (n.fCost < oldf)
 			openQueue.DecreaseKey(n);
 		else
 			openQueue.IncreaseKey(n);
 	}
-	else if(n.fCost > oldf) 
+	else if (n.fCost > oldf) 
 		openQueue.IncreaseKey(n);
 	
 	// return value for pathmax
@@ -583,7 +583,7 @@ double AStarDelay::UpdateClosedNode(graphState neighbor, SearchNode &topNode)
 		n.gCost = topNode.gCost+edgeCost;
 
 		// do pathmax here -- update child-h to parent-h - edge cost
-		if(bpmxLevel >= 1)
+		if (bpmxLevel >= 1)
 			hCost = max(topNode.fCost-topNode.gCost-edgeCost, hCost);
 
 		n.fCost = n.gCost + hCost;
@@ -596,14 +596,14 @@ double AStarDelay::UpdateClosedNode(graphState neighbor, SearchNode &topNode)
 		delayQueue.Add(n); // add to delay list
 		//openQueue.Add(n);
 	}
-	else if(bpmxLevel >= 1)
+	else if (bpmxLevel >= 1)
 		if (fgreater(topNode.fCost-topNode.gCost-edgeCost, n.fCost-n.gCost)) // pathmax
 		{
 			n.fCost = topNode.fCost-topNode.gCost-edgeCost;
 			n.fCost += n.gCost;
 			closedList[neighbor] = n;
 
-			if(bpmxLevel > 1) {
+			if (bpmxLevel > 1) {
 				fifo.push_back(neighbor);
 			}
 		}
@@ -620,7 +620,7 @@ double AStarDelay::UpdateDelayedNode(graphState neighbor, SearchNode &topNode)
 	double edgeCost = env->GCost(topNode.currNode, neighbor);
 
 	double oldf = n.fCost;
-	if(bpmxLevel >= 1)
+	if (bpmxLevel >= 1)
 		n.fCost = max(n.fCost , topNode.fCost - topNode.gCost - edgeCost + n.gCost);
 
 	if (fless(topNode.gCost+edgeCost, n.gCost))
@@ -629,12 +629,12 @@ double AStarDelay::UpdateDelayedNode(graphState neighbor, SearchNode &topNode)
 		n.gCost = topNode.gCost+edgeCost;
 		n.fCost += n.gCost;
 		n.prevNode = topNode.currNode;
-		//if(n.fCost < oldf)
+		//if (n.fCost < oldf)
 			delayQueue.DecreaseKey(n);
 		//else
 		//	delayQueue.IncreaseKey(n);
 	}
-	else if(n.fCost > oldf)
+	else if (n.fCost > oldf)
 		delayQueue.IncreaseKey(n);
 	
 	// return value for pathmax
@@ -674,8 +674,8 @@ void AStarDelay::ExtractPathToStart(graphState goalNode, std::vector<graphState>
 //	OpenGLDraw();
 //}
 
-void AStarDelay::OpenGLDraw() const
-{
+//void AStarDelay::OpenGLDraw() const
+//{
 //	//float r,gcost,b;
 //	double x,y,z;
 //	SearchNode sn;
@@ -685,7 +685,7 @@ void AStarDelay::OpenGLDraw() const
 //
 //	// draw nodes
 //	node_iterator ni = g->getNodeIter();
-//	for(node* n = g->nodeIterNext(ni); n; n = g->nodeIterNext(ni))
+//	for (node* n = g->nodeIterNext(ni); n; n = g->nodeIterNext(ni))
 //	{
 //		x = n->GetLabelF(kXCoordinate);
 //		y = n->GetLabelF(kYCoordinate);
@@ -746,57 +746,57 @@ void AStarDelay::OpenGLDraw() const
 //
 //// draw edges
 //	edge_iterator ei = g->getEdgeIter();
-//	for(edge* e = g->edgeIterNext(ei); e; e = g->edgeIterNext(ei))
+//	for (edge* e = g->edgeIterNext(ei); e; e = g->edgeIterNext(ei))
 //	{
 //		DrawEdge(e->getFrom(), e->getTo(), e->GetWeight());
 //	}
-}
+//}
 
-void AStarDelay::DrawText(double x, double y, double z, float r, float gg, float b, char* str)
-{
-	//glPushMatrix();
-	// rotate ?
-
-	glPushMatrix();
-	glColor3f(r,gg,b);
-	glTranslatef(x,y,z);
-	glScalef(1.0/(20*120.0), 1.0/(20*120.0), 1);
-	glRotatef(180, 0.0, 0.0, 1.0);
-	glRotatef(180, 0.0, 1.0, 0.0);
-	
-	int i=0;
-	while(str[i]) 
-	{
-		glutStrokeCharacter(GLUT_STROKE_ROMAN,str[i]);
-		i++;
-	}
-	glPopMatrix();
-}
-
-void AStarDelay::DrawEdge(unsigned int from, unsigned int to, double weight)
-{
-	double x1,y1,z1;
-	double x2,y2,z2;
-	char buf[100] = {0};
-
-	node* nfrom = g->GetNode(from);
-	node* nto = g->GetNode(to);
-
-	x1 = nfrom->GetLabelF(kXCoordinate);
-	y1 = nfrom->GetLabelF(kYCoordinate);
-	z1 = nfrom->GetLabelF(kZCoordinate);
-	x2 = nto->GetLabelF(kXCoordinate);
-	y2 = nto->GetLabelF(kYCoordinate);
-	z2 = nto->GetLabelF(kZCoordinate);
-
-	// draw line segment
-	glBegin(GL_LINES);
-	glColor3f(1,1,0); // yellow
-	glVertex3f(x1,y1,z1);
-	glVertex3f(x2,y2,z2);
-	glEnd();
-
-	// draw weight info
-	sprintf(buf,"%ld",(long)weight);
-	DrawText((x1+x2)/2, (y1+y2)/2, (z1+z2)/2 + 0.05, 1, 0, 0, buf); // in red
-}
+//void AStarDelay::DrawText(double x, double y, double z, float r, float gg, float b, char* str)
+//{
+//	//glPushMatrix();
+//	// rotate ?
+//
+//	glPushMatrix();
+//	glColor3f(r,gg,b);
+//	glTranslatef(x,y,z);
+//	glScalef(1.0/(20*120.0), 1.0/(20*120.0), 1);
+//	glRotatef(180, 0.0, 0.0, 1.0);
+//	glRotatef(180, 0.0, 1.0, 0.0);
+//	
+//	int i=0;
+//	while(str[i]) 
+//	{
+////		glutStrokeCharacter(GLUT_STROKE_ROMAN,str[i]);
+//		i++;
+//	}
+//	glPopMatrix();
+//}
+//
+//void AStarDelay::DrawEdge(unsigned int from, unsigned int to, double weight)
+//{
+//	double x1,y1,z1;
+//	double x2,y2,z2;
+//	char buf[100] = {0};
+//
+//	node* nfrom = g->GetNode(from);
+//	node* nto = g->GetNode(to);
+//
+//	x1 = nfrom->GetLabelF(kXCoordinate);
+//	y1 = nfrom->GetLabelF(kYCoordinate);
+//	z1 = nfrom->GetLabelF(kZCoordinate);
+//	x2 = nto->GetLabelF(kXCoordinate);
+//	y2 = nto->GetLabelF(kYCoordinate);
+//	z2 = nto->GetLabelF(kZCoordinate);
+//
+//	// draw line segment
+//	glBegin(GL_LINES);
+//	glColor3f(1,1,0); // yellow
+//	glVertex3f(x1,y1,z1);
+//	glVertex3f(x2,y2,z2);
+//	glEnd();
+//
+//	// draw weight info
+//	sprintf(buf,"%ld",(long)weight);
+//	DrawText((x1+x2)/2, (y1+y2)/2, (z1+z2)/2 + 0.05, 1, 0, 0, buf); // in red
+//}

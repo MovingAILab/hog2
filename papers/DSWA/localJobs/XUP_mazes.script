@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./XUP_mazesJob0.script
+./XUP_mazesJob1.script
+./XUP_mazesJob2.script
+./XUP_mazesJob3.script
+./XUP_mazesJob4.script
+./XUP_mazesJob5.script
+./XUP_mazesJob6.script
+./XUP_mazesJob7.script
+./XUP_mazesJob8.script
+./XUP_mazesJob9.script

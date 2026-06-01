@@ -63,7 +63,7 @@ path *IRDijkstra::DoOneSearchStep()
 		else {
 			closedList[gNext->GetNum()] = GNode(gNext);
 			path *p = ExtractAndRefinePath();
-			if(done)
+			if (done)
 			{
 				//std::cout<<"finished" << std::endl;
 				//printf("%d refined nodes %d expanded nodes with pathlength %u \n", nodesRefined, nodesExpanded, p->length() );

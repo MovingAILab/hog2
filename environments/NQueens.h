@@ -49,6 +49,10 @@ static std::ostream &operator<<(std::ostream &out, const NQueenAction &a)
 	return out;
 }
 
+static bool operator==(const NQueenAction &l1, const NQueenAction &l2)
+{
+	return l1.loc == l2.loc && l1.value == l2.value;
+}
 class NQueens : public SearchEnvironment<NQueenState, NQueenAction>
 {
 public:
@@ -65,19 +69,19 @@ public:
 	virtual bool InvertAction(NQueenAction &a) const { return false; }
 	
 	/** Heuristic value between two arbitrary nodes. **/
-	virtual double HCost(const NQueenState &node1, const NQueenState &node2) { return 0; }
+	virtual double HCost(const NQueenState &node1, const NQueenState &node2) const { return 0; }
 	
 	/** Heuristic value between node and the stored goal. Asserts that the
 	 goal is stored **/
-	virtual double HCost(const NQueenState &node)
+	virtual double HCost(const NQueenState &node) const
 	{ return 0; }
 	
-	virtual double GCost(const NQueenState &node1, const NQueenState &node2) { return 1.0; }
-	virtual double GCost(const NQueenState &node, const NQueenAction &act) { return 1.0; }
-	virtual bool GoalTest(const NQueenState &node, const NQueenState &goal) { return GoalTest(node); }
+	virtual double GCost(const NQueenState &node1, const NQueenState &node2) const { return 1.0; }
+	virtual double GCost(const NQueenState &node, const NQueenAction &act) const { return 1.0; }
+	virtual bool GoalTest(const NQueenState &node, const NQueenState &goal) const { return GoalTest(node); }
 	
 	/** Goal Test if the goal is stored **/
-	virtual bool GoalTest(const NQueenState &node);
+	virtual bool GoalTest(const NQueenState &node) const;
 	
 	virtual uint64_t GetStateHash(const NQueenState &node) const { return 0; }
 	virtual uint64_t GetActionHash(NQueenAction act) const { return 0; }
@@ -88,16 +92,16 @@ public:
 
 	//virtual double GetPathLength(std::vector<NQueenState> &neighbors);
 	
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const NQueenState&) const;
-	/** Draw the transition at some percentage 0...1 between two states */
-	virtual void OpenGLDraw(const NQueenState&, const NQueenState&, float) const;
-	virtual void OpenGLDraw(const NQueenState&, const NQueenAction&) const;
-	void GLLabelState(const NQueenState &s, int x, int y, int number) const;
-
-	void OpenGLDrawBackground(float r, float g, float b);
-	void OpenGLDrawBackground(const NQueenState&, float r, float g, float b, int firstRow, int lastRow);
-	void OpenGLDrawConflicts(const NQueenState&s) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const NQueenState&) const;
+//	/** Draw the transition at some percentage 0...1 between two states */
+//	virtual void OpenGLDraw(const NQueenState&, const NQueenState&, float) const;
+//	virtual void OpenGLDraw(const NQueenState&, const NQueenAction&) const;
+//	void GLLabelState(const NQueenState &s, int x, int y, int number) const;
+//
+//	void OpenGLDrawBackground(float r, float g, float b);
+//	void OpenGLDrawBackground(const NQueenState&, float r, float g, float b, int firstRow, int lastRow);
+//	void OpenGLDrawConflicts(const NQueenState&s) const;
 
 private:
 };

@@ -13,7 +13,7 @@
 #include "FPUtil.h"
 #include <deque>
 #include <vector>
-#include <ext/hash_map>
+#include <unordered_map>
 #include "TemplateAStar.h"
 #include "Timer.h"
 #include <queue>
@@ -70,14 +70,20 @@ namespace GridLRTA {
 			heur[env->GetStateHash(where)].theState = where;
 #endif
 		}
-		double HCost(MapEnvironment *env, const xyLoc &from, const xyLoc &to)
+		double HCost(MapEnvironment *env, const xyLoc &from, const xyLoc &to) const
 		{
-			if (heur.find(env->GetStateHash(from)) != heur.end())
-				return heur[env->GetStateHash(from)].theHeuristic+
-				env->HCost(from, to);
+			auto val = heur.find(env->GetStateHash(from));
+			if (val != heur.end())
+			{
+				return val->second.theHeuristic+env->HCost(from, to);
+			}
 			return env->HCost(from, to);
+//			if (heur.find(env->GetStateHash(from)) != heur.end())
+//				return heur[env->GetStateHash(from)].theHeuristic+
+//				env->HCost(from, to);
+//			return env->HCost(from, to);
 		}
-		double HCost(const xyLoc &from, const xyLoc &to)
+		double HCost(const xyLoc &from, const xyLoc &to) const
 		{
 			assert(m_pEnv != 0);
 			return HCost(m_pEnv, from, to);
@@ -103,12 +109,12 @@ namespace GridLRTA {
 		{ s->AddStat("TotalLearning", GetName(),fAmountLearned); }
 		
 		double GetAmountLearned() { return fAmountLearned; }
-		void OpenGLDraw() const {}
-		void OpenGLDraw(const MapEnvironment *env) const;
+	  //void OpenGLDraw() const {}
+	  //void OpenGLDraw(const MapEnvironment *env) const;
 	private:
 		typedef std::priority_queue<borderData,std::vector<borderData >,compareBorderData > pQueue;
-		typedef __gnu_cxx::hash_map<uint64_t, lssLearnedData, Hash64 > LearnedHeuristic;
-		typedef __gnu_cxx::hash_map<uint64_t, bool, Hash64 > ClosedList;
+		typedef std::unordered_map<uint64_t, lssLearnedData, Hash64 > LearnedHeuristic;
+		typedef std::unordered_map<uint64_t, bool, Hash64 > ClosedList;
 		
 		
 		void ExpandLSS(MapEnvironment *env, const xyLoc &from, const xyLoc &to, std::vector<xyLoc> &thePath);
@@ -418,7 +424,7 @@ namespace GridLRTA {
 		}
 		return false;
 	}
-	
+  /*	
 	void GridLRTAStar::OpenGLDraw(const MapEnvironment *e) const
 	{
 #ifndef NO_OPENGL
@@ -429,21 +435,21 @@ namespace GridLRTA {
 			if (IsDead(e, data.data))
 			{
 				e->SetColor(1.0, 0.0, 1.0);
-				e->OpenGLDraw(data.data);
+				//e->OpenGLDraw(data.data);
 			}
 			else if (data.where == kOpenList)
 			{
 				e->SetColor(0.0, 1.0, 0.0);
-				e->OpenGLDraw(data.data);
+				//e->OpenGLDraw(data.data);
 			}
 			else if (data.where == kClosedList)
 			{
 				e->SetColor(0.0, 0.0, 1.0);
-				e->OpenGLDraw(data.data);
+				//e->OpenGLDraw(data.data);
 			}
 			else {
 				e->SetColor(1.0, 1.0, 0.0);
-				e->OpenGLDraw(data.data);
+				//e->OpenGLDraw(data.data);
 			}
 		}
 		//return;
@@ -465,17 +471,17 @@ namespace GridLRTA {
 			if ((*it).second.dead)
 			{
 				e->SetColor(0.0, 0.0, 0.0);
-				e->OpenGLDraw((*it).second.theState);
+				//e->OpenGLDraw((*it).second.theState);
 			}
 			else if (r > 0)
 			{
 				e->SetColor(0.5+0.5*r/learned, 0.0, 0.0, 0.2+0.5*r/learned);
-				e->OpenGLDraw((*it).second.theState);
+				//e->OpenGLDraw((*it).second.theState);
 			}
 		}
 #endif
 	}
-	
+  */	
 }
 
 

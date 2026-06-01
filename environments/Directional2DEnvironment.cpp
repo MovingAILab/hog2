@@ -14,6 +14,7 @@
 #define TABLE_SIZE 15
 #define ROW_SIZE (2*TABLE_SIZE+1)
 
+#pragma message("ABS functions might have been removed; need to verify to make sure they weren't needed")
 Directional2DEnvironment::Directional2DEnvironment(Map *_m, model envType, heuristicType heuristic)
 {
 	motionModel = envType;//kHumanoid;
@@ -482,7 +483,7 @@ void Directional2DEnvironment::UndoAction(xySpeedHeading &s, deltaSpeedHeading d
 	}
 }
 
-double Directional2DEnvironment::HCost(const xySpeedHeading &l1, const xySpeedHeading &l2)
+double Directional2DEnvironment::HCost(const xySpeedHeading &l1, const xySpeedHeading &l2) const
 {
 	float dist = sqrt((l1.x-l2.x)*(l1.x-l2.x)+(l1.y-l2.y)*(l1.y-l2.y));
 	if (motionModel == kHumanoid)
@@ -519,7 +520,7 @@ bool Directional2DEnvironment::Legal(const xySpeedHeading &node1, const deltaSpe
 	}
 }
 
-double Directional2DEnvironment::GCost(const xySpeedHeading &a, const deltaSpeedHeading &b)
+double Directional2DEnvironment::GCost(const xySpeedHeading &a, const deltaSpeedHeading &b) const
 {
 	if ((motionModel != kTank) && (motionModel != kBetterTank))
 	{
@@ -558,11 +559,11 @@ double Directional2DEnvironment::GCost(const xySpeedHeading &a, const deltaSpeed
 	
 	if (fequal(a.speed+b.speed, 0))
 		return 1.0;
-	return 1.4/fabs(a.speed+b.speed);
+	return 1.4/std::abs(a.speed+b.speed);
 //	return 1.0/fabs(val);
 }
 
-double Directional2DEnvironment::GCost(const xySpeedHeading &a, const xySpeedHeading &b)
+double Directional2DEnvironment::GCost(const xySpeedHeading &a, const xySpeedHeading &b) const
 {
 	if ((motionModel != kTank) && (motionModel != kBetterTank))
 	{
@@ -572,7 +573,7 @@ double Directional2DEnvironment::GCost(const xySpeedHeading &a, const xySpeedHea
 	//	float dist[4] = {1.0f, 2.24f, 1.42f, 2.24f};
 		double dist[4] = {1.0, 2.24, 1.42, 2.24};
 	//	double dist[4] = {1.0, 1.5, 1.42, 1.5};
-		double ret = dist[(b.rotation)%4]/fabs(b.speed);
+		double ret = dist[(b.rotation)%4]/std::abs(b.speed);
 	//	printf("rot: %d; speed: %d; val: %f\n", b.rotation, b.speed, ret);
 		return ret;
 	}
@@ -584,7 +585,7 @@ double Directional2DEnvironment::GCost(const xySpeedHeading &a, const xySpeedHea
 		double dist[6] = {1.0, 3.16, 3.61, 1.42, 3.61, 3.16};
 		double ret;
 		//		if (b.speed > 0)
-		ret = dist[(b.rotation)%6]/fabs(b.speed);
+		ret = dist[(b.rotation)%6]/std::abs(b.speed);
 		//		else
 		//			ret = dist[(b.rotation)%6]/(fabs(b.speed)*0.9);
 		//	printf("rot: %d; speed: %d; val: %f\n", b.rotation, b.speed, ret);
@@ -607,7 +608,7 @@ double Directional2DEnvironment::GCost(const xySpeedHeading &a, const xySpeedHea
 	return 0;
 }
 
-bool Directional2DEnvironment::GoalTest(const xySpeedHeading &node, const xySpeedHeading &goal)
+bool Directional2DEnvironment::GoalTest(const xySpeedHeading &node, const xySpeedHeading &goal) const
 {
 	if (test && test->goalTest(node))
 		return true;
@@ -635,127 +636,127 @@ uint64_t Directional2DEnvironment::GetActionHash(deltaSpeedHeading act) const
 	return ((act.turn+4)<<8)+(act.speed+4);
 }
 
-void Directional2DEnvironment::OpenGLDraw() const
-{
-//	std::cout<<"drawing\n";
-	map->OpenGLDraw();
-}
-
-
-void Directional2DEnvironment::OpenGLDraw(const xySpeedHeading& oldState, const xySpeedHeading &newState, float perc) const
-{
-	int DEG = 16;
-	if ((motionModel == kTank) || (motionModel == kBetterTank))
-		DEG = 24;
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-
-	GLdouble xx, yy, zz, rad;
-	map->GetOpenGLCoord(perc*newState.x + (1-perc)*oldState.x, perc*newState.y + (1-perc)*oldState.y, xx, yy, zz, rad);
-	
-	float rot = (1-perc)*oldState.rotation+perc*newState.rotation;
-	if ((oldState.rotation >= DEG-4) && (newState.rotation <= 5))
-	{
-		rot = (1-perc)*oldState.rotation+perc*(newState.rotation+DEG);
-		if (rot >= DEG)
-			rot -= DEG;
-	}
-	else if ((newState.rotation >= DEG-4) && (oldState.rotation <= 5))
-	{
-		rot = (1-perc)*(oldState.rotation+DEG)+perc*(newState.rotation);
-		if (rot >= DEG)
-			rot -= DEG;
-	}
-	GLdouble yoffset = sin(TWOPI*rot/DEG)*rad;
-	GLdouble xoffset = cos(TWOPI*rot/DEG)*rad;
-
-	glBegin(GL_TRIANGLES);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
-	
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
-	glEnd();
-}
-
-
-void Directional2DEnvironment::OpenGLDraw(const xySpeedHeading &l) const
-{
-	GLdouble xx, yy, zz, rad;
-	GLfloat r, g, b, t;
-	GetColor(r, g, b, t);
-	map->GetOpenGLCoord(l.x, l.y, xx, yy, zz, rad);
-
-	GLdouble yoffset = mySin(l.rotation)*rad;//sin(TWOPI*rot/16)*rad;
-	GLdouble xoffset = myCos(l.rotation)*rad;//cos(TWOPI*rot/16)*rad;
-
-//	glColor3f(0, 0, 1.0);
-//	glBegin(GL_LINE_STRIP);
-//	glVertex3f(xx-rad, yy-rad, zz-rad);
-//	glVertex3f(xx-rad, yy-rad, zz);
+//void Directional2DEnvironment::OpenGLDraw() const
+//{
+////	std::cout<<"drawing\n";
+//	map->OpenGLDraw();
+//}
+//
+//
+//void Directional2DEnvironment::OpenGLDraw(const xySpeedHeading& oldState, const xySpeedHeading &newState, float perc) const
+//{
+//	int DEG = 16;
+//	if ((motionModel == kTank) || (motionModel == kBetterTank))
+//		DEG = 24;
+//	GLfloat r, g, b, t;
+//	GetColor(r, g, b, t);
+//
+//	GLdouble xx, yy, zz, rad;
+//	map->GetCoord(perc*newState.x + (1-perc)*oldState.x, perc*newState.y + (1-perc)*oldState.y, xx, yy, zz, rad);
+//	
+//	float rot = (1-perc)*oldState.rotation+perc*newState.rotation;
+//	if ((oldState.rotation >= DEG-4) && (newState.rotation <= 5))
+//	{
+//		rot = (1-perc)*oldState.rotation+perc*(newState.rotation+DEG);
+//		if (rot >= DEG)
+//			rot -= DEG;
+//	}
+//	else if ((newState.rotation >= DEG-4) && (oldState.rotation <= 5))
+//	{
+//		rot = (1-perc)*(oldState.rotation+DEG)+perc*(newState.rotation);
+//		if (rot >= DEG)
+//			rot -= DEG;
+//	}
+//	GLdouble yoffset = sin(TWOPI*rot/DEG)*rad;
+//	GLdouble xoffset = cos(TWOPI*rot/DEG)*rad;
+//
+//	glBegin(GL_TRIANGLES);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
+//	
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
 //	glEnd();
-	
-	glBegin(GL_TRIANGLES);
-	recVec surfaceNormal;
-	surfaceNormal.x = (((-0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
-	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((0.5*yoffset) - (rad)));
-	surfaceNormal.z = (((0.5*yoffset) * (-2*yoffset)) - ((-0.5*xoffset) - (-2*xoffset)));
-	surfaceNormal.normalise();
-	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
-	
-	surfaceNormal.x = (((+0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
-	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((-0.5*yoffset) - (rad)));
-	surfaceNormal.z = (((-0.5*yoffset) * (-2*yoffset)) - ((+0.5*xoffset) - (-2*xoffset)));
-	surfaceNormal.normalise();
-	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx+xoffset, yy+yoffset, zz);
-	glColor4f(r, g, b/2, t);
-	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
-	glColor4f(r, g/2, b, t);
-	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
-	glEnd();	
-}
-
-
-void Directional2DEnvironment::OpenGLDraw(const xySpeedHeading& l, const deltaSpeedHeading &) const
-{
-	GLdouble xx, yy, zz, rad;
-	map->GetOpenGLCoord(l.x, l.y, xx, yy, zz, rad);
-	glColor3f(0.5f, 0.5f, 0.5);
-	DrawSphere(xx-rad+l.x, yy-rad+l.y, zz, rad);
-}
-
-
-void Directional2DEnvironment::GLDrawLine(const xySpeedHeading &a, const xySpeedHeading &b) const
-{
-	GLdouble xx, yy, zz, rad;
-	map->GetOpenGLCoord(a.x, a.y, xx, yy, zz, rad);
-	
-	GLfloat rr, gg, bb, t;
-	GetColor(rr, gg, bb, t);
-	glColor4f(rr, gg, bb, t);
-	
-	glBegin(GL_LINES);
-	glVertex3f(xx, yy, zz-rad/2);
-	map->GetOpenGLCoord(b.x, b.y, xx, yy, zz, rad);
-	glVertex3f(xx, yy, zz-rad/2);
-	glEnd();
-}
+//}
+//
+//
+//void Directional2DEnvironment::OpenGLDraw(const xySpeedHeading &l) const
+//{
+//	GLdouble xx, yy, zz, rad;
+//	GLfloat r, g, b, t;
+//	GetColor(r, g, b, t);
+//	map->GetCoord(l.x, l.y, xx, yy, zz, rad);
+//
+//	GLdouble yoffset = mySin(l.rotation)*rad;//sin(TWOPI*rot/16)*rad;
+//	GLdouble xoffset = myCos(l.rotation)*rad;//cos(TWOPI*rot/16)*rad;
+//
+////	glColor3f(0, 0, 1.0);
+////	glBegin(GL_LINE_STRIP);
+////	glVertex3f(xx-rad, yy-rad, zz-rad);
+////	glVertex3f(xx-rad, yy-rad, zz);
+////	glEnd();
+//	
+//	glBegin(GL_TRIANGLES);
+//	Graphics::point surfaceNormal;
+//	surfaceNormal.x = (((-0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
+//	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((0.5*yoffset) - (rad)));
+//	surfaceNormal.z = (((0.5*yoffset) * (-2*yoffset)) - ((-0.5*xoffset) - (-2*xoffset)));
+//	surfaceNormal.normalise();
+//	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset+0.5*yoffset, yy-yoffset-0.5*xoffset, zz);
+//	
+//	surfaceNormal.x = (((+0.5*xoffset) * (-rad)) - ((+rad) - (-2*yoffset)));
+//	surfaceNormal.y = (((rad) * (-2*xoffset)) - ((-0.5*yoffset) - (rad)));
+//	surfaceNormal.z = (((-0.5*yoffset) * (-2*yoffset)) - ((+0.5*xoffset) - (-2*xoffset)));
+//	surfaceNormal.normalise();
+//	glNormal3f(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx+xoffset, yy+yoffset, zz);
+//	glColor4f(r, g, b/2, t);
+//	glVertex3f(xx-xoffset, yy-yoffset, zz-rad);
+//	glColor4f(r, g/2, b, t);
+//	glVertex3f(xx-xoffset-0.5*yoffset, yy-yoffset+0.5*xoffset, zz);
+//	glEnd();	
+//}
+//
+//
+//void Directional2DEnvironment::OpenGLDraw(const xySpeedHeading& l, const deltaSpeedHeading &) const
+//{
+//	GLdouble xx, yy, zz, rad;
+//	map->GetCoord(l.x, l.y, xx, yy, zz, rad);
+//	glColor3f(0.5f, 0.5f, 0.5);
+//	DrawSphere(xx-rad+l.x, yy-rad+l.y, zz, rad);
+//}
+//
+//
+//void Directional2DEnvironment::GLDrawLine(const xySpeedHeading &a, const xySpeedHeading &b) const
+//{
+//	GLdouble xx, yy, zz, rad;
+//	map->GetCoord(a.x, a.y, xx, yy, zz, rad);
+//	
+//	GLfloat rr, gg, bb, t;
+//	GetColor(rr, gg, bb, t);
+//	glColor4f(rr, gg, bb, t);
+//	
+//	glBegin(GL_LINES);
+//	glVertex3f(xx, yy, zz-rad/2);
+//	map->GetCoord(b.x, b.y, xx, yy, zz, rad);
+//	glVertex3f(xx, yy, zz-rad/2);
+//	glEnd();
+//}
 
 void Directional2DEnvironment::GetNextState(const xySpeedHeading &, deltaSpeedHeading , xySpeedHeading &) const
 {
@@ -887,7 +888,7 @@ void Directional2DEnvironment::BuildHTable(dirHeuristicTable &t)
 }
 
 bool Directional2DEnvironment::LookupStateHashIndex(const xySpeedHeading &s,
-													int &index1, int &index2)
+													int &index1, int &index2) const
 {
 	const int speeds[4] = {0, 1, 1, 1}; // offset to make all speeds positive
 	const int angles[4] = {16, 16, 24, 24};
@@ -904,7 +905,7 @@ bool Directional2DEnvironment::LookupStateHashIndex(const xySpeedHeading &s,
 	return true;
 }
 
-float Directional2DEnvironment::LookupStateHash(const xySpeedHeading &s, dirHeuristicTable &t)
+float Directional2DEnvironment::LookupStateHash(const xySpeedHeading &s, const dirHeuristicTable &t) const
 {
 	const int speeds[4] = {0, 1, 1, 1}; // offset to make all speeds positive
 	const int angles[4] = {16, 16, 24, 24};
@@ -923,7 +924,7 @@ float Directional2DEnvironment::LookupStateHash(const xySpeedHeading &s, dirHeur
 	return t.hTable[index1][index2];
 }
 
-float Directional2DEnvironment::LookupStateHeuristic(const xySpeedHeading &s1, const xySpeedHeading &s2)
+float Directional2DEnvironment::LookupStateHeuristic(const xySpeedHeading &s1, const xySpeedHeading &s2) const
 {
 	const int angles[4] = {16, 16, 24, 24};
 	const int angles90[4] = {4, 4, 6, 6};
@@ -966,31 +967,17 @@ float Directional2DEnvironment::LookupStateHeuristic(const xySpeedHeading &s1, c
 	}
 	if (whichHeuristic == -1)
 	{
-		int which = heuristics.size();
-		heuristics.resize(which+1);
-		// build new heuristic
-		heuristics[which].speed = 0;
-		heuristics[which].rotation = s2.rotation;
-		BuildHTable(heuristics[which]);
-		whichHeuristic = which;
+		assert(!"No heuristic built");
+		return 0;
+//		// old code that breaks const correctness
+//		int which = heuristics.size();
+//		heuristics.resize(which+1);
+//		// build new heuristic
+//		heuristics[which].speed = 0;
+//		heuristics[which].rotation = s2.rotation;
+//		BuildHTable(heuristics[which]);
+//		whichHeuristic = which;
 		
-//		if (heuristics.size() > 0)
-//		{
-//			int rotation = -heuristics[0].rotation+s2.rotation;
-//			if (rotation < 0)
-//				rotation += angles[motionModel];
-////			printf("Table rotation: %d; goal rotation: %d; rotating CCW %d\n",
-////				   heuristics[0].rotation, s2.rotation, rotation);
-////			std::cout << "Before rotation: " << s3 << std::endl;
-//			RotateCCW(s3, rotation);
-////			std::cout << "After rotation: " << s3 << std::endl;
-//			//assert(heuristics[x].rotation == s3.rotation);
-//			whichHeuristic = 0;
-//		}
-//		else {
-//			printf("Found no match\n");
-//			return 0;
-//		}
 	}
 	
 //	std::cout << "Heuristic looking up: " << s3 << std::endl;

@@ -33,14 +33,22 @@
 #include "FrontierBFS.h"
 
 #include "RoboticArm.h"
-
+#include "FileUtil.h"
+#include "SVGUtil.h"
 
 //#define RUN_RANDOM_TESTS
 //#define HEURISTIC_TABLES
 //#define MAX_DIST_HEUR_TABLES
 #define FIXED_RANDOM_NUMBER_SEED 7
 
-
+int activeArm = 0;
+bool redrawBackground = true;
+enum armMouseMode {
+	kAddObstacle,
+	kSetTarget,
+	kManualMoveArm
+};
+armMouseMode mode = kAddObstacle;
 const int numArms = 2;
 RoboticArm *r = 0;
 armAngles config;
@@ -59,9 +67,10 @@ void Build4ArmDH();
 bool mouseTracking;
 int px1, py1, px2, py2;
 int absType = 0;
+int stepsPerFrame = 100;
 
 std::vector<std::vector<bool> > configSpace;
-void BuildConfigSpace();
+void BuildConfigSpace(bool fast = false);
 
 bool recording = false;
 
@@ -70,8 +79,9 @@ bool recording = false;
 int main(int argc, char* argv[])
 {
 	InstallHandlers();
-	setlinebuf( stdout );
+	setvbuf(stdout, NULL, _IONBF, 0);
 	RunHOGGUI(argc, argv, 1024, 512);
+	return 0;
 }
 
 
@@ -97,10 +107,27 @@ void CreateSimulation(int)
 	r->AddObstacle(line2d(recVec(0.54, 0, 0), recVec(0.52, -0.02, 0)));
 	r->AddObstacle(line2d(recVec(0.52, -0.02, 0), recVec(0.50, 0, 0)));
 #endif
+	
+#if 0
+	line2d l1({-0.37, -1.14, 0}, {-0.99, -0.11, 0});
+	r->AddObstacle(l1);
+	line2d l2({1.18, -0.47, 0}, {0.45, -0.02, 0});
+	r->AddObstacle(l2);
+	line2d l3({0.45, -0.02, 0}, {1.14, 0.40, 0});
+	r->AddObstacle(l3);
+	line2d l4({-1.13, 0.36, 0}, {-0.50, 1.13, 0});
+	r->AddObstacle(l4);
+	line2d l5({0.37, -0.74, 0}, {0.64, -1.16, 0});
+	r->AddObstacle(l5);
+	line2d l6({0.37, -0.74, 0}, {0.11, -1.13, 0});
+	r->AddObstacle(l6);
+	BuildConfigSpace();
+#endif
+	
 
 	config.SetNumArms( numArms );
 	for (int x = 0; x < numArms; x++)
-		config.SetAngle( x, 512 );
+		config.SetAngle( x, 2 );
 }
 
 /**
@@ -108,24 +135,27 @@ void CreateSimulation(int)
  */
 void InstallHandlers()
 {
-	//InstallKeyboardHandler(MyDisplayHandler, "Toggle Abstraction", "Toggle display of the ith level of the abstraction", kAnyModifier, '0', '9');
-	InstallKeyboardHandler(MyDisplayHandler, "Cycle Abs. Display", "Cycle which group abstraction is drawn", kAnyModifier, '\t');
-	InstallKeyboardHandler(MyDisplayHandler, "Pause Simulation", "Pause simulation execution.", kNoModifier, 'p');
-	InstallKeyboardHandler(MyDisplayHandler, "Step Simulation", "If the simulation is paused, step forward .1 sec.", kNoModifier, 'o');
-	InstallKeyboardHandler(MyDisplayHandler, "Step History", "If the simulation is paused, step forward .1 sec in history", kAnyModifier, '}');
-	InstallKeyboardHandler(MyDisplayHandler, "Step History", "If the simulation is paused, step back .1 sec in history", kAnyModifier, '{');
-	InstallKeyboardHandler(MyDisplayHandler, "Step Abs Type", "Increase abstraction type", kAnyModifier, ']');
-	InstallKeyboardHandler(MyDisplayHandler, "Step Abs Type", "Decrease abstraction type", kAnyModifier, '[');
+	InstallKeyboardHandler(MyDisplayHandler, "Faster", "Increase search speed", kAnyModifier, ']');
+	InstallKeyboardHandler(MyDisplayHandler, "Slower", "Decrease search speed", kAnyModifier, '[');
 	
 	InstallKeyboardHandler(MyKeyHandler, "Config", "Build Configuration Space", kNoModifier, 'c');
-	InstallKeyboardHandler(MyKeyHandler, "Record", "Start recording frames to a file", kNoModifier, 'r');
+	InstallKeyboardHandler(MyKeyHandler, "Remove Last", "Remove last obstacle from config space", kNoModifier, '|');
+	InstallKeyboardHandler(MyKeyHandler, "Reset", "Reset to initial position", kNoModifier, 'r');
+//	InstallKeyboardHandler(MyKeyHandler, "Save", "Save a screen capture", kNoModifier, '&');
 	InstallKeyboardHandler(MyKeyHandler, "0-9", "select segment", kNoModifier, '0', '9');
 	InstallKeyboardHandler(MyKeyHandler, "Rotate segment", "rotate segment CW", kNoModifier, 'a');
 	InstallKeyboardHandler(MyKeyHandler, "Rotate segment", "rotate segment CCW", kNoModifier, 's');
-	InstallKeyboardHandler(MyKeyHandler, "Build Heuristic", "Build differential heuristic", kNoModifier, 'b');
-	InstallKeyboardHandler(MyKeyHandler, "Test Heuristic", "Build & test differential heuristic", kNoModifier, 't');
-	
-	InstallCommandLineHandler(MyCLHandler, "-map", "-map filename", "Selects the default map to be loaded.");
+
+	InstallKeyboardHandler(MyKeyHandler, "Use PWXD(1.5)", "", kNoModifier, 'z');
+	InstallKeyboardHandler(MyKeyHandler, "Use XDP(1.5)", "", kNoModifier, 'x');
+	InstallKeyboardHandler(MyKeyHandler, "Use Weighted A*(1.5)", "", kNoModifier, 'w');
+	InstallKeyboardHandler(MyKeyHandler, "Use A*", "", kNoModifier, 'd');
+
+	InstallKeyboardHandler(MyKeyHandler, "Target", "Set target", kNoModifier, 't');
+	InstallKeyboardHandler(MyKeyHandler, "Obstacle", "Add obstacle", kNoModifier, 'o');
+	InstallKeyboardHandler(MyKeyHandler, "Move Arm", "Manually move arm", kNoModifier, 'm');
+//	InstallKeyboardHandler(MyKeyHandler, "JPS", "Build & test jps", kNoModifier, 'j');
+//	InstallCommandLineHandler(MyCLHandler, "-map", "-map filename", "Selects the default map to be loaded.");
 	
 	InstallWindowHandler(MyWindowHandler);
 	
@@ -144,29 +174,38 @@ void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
 		printf("Window %ld created\n", windowID);
 		InstallFrameHandler(MyFrameHandler, windowID, 0);
 		CreateSimulation(windowID);
-		SetNumPorts(windowID, 1);
+		ReinitViewports(windowID, {-1, -1, 0, 1}, kScaleToSquare);
+		AddViewport(windowID, {0, -1, 1, 1}, kScaleToSquare);
+		setTextBufferVisibility(false);
 	}
 }
 
 void MyFrameHandler(unsigned long id, unsigned int viewport, void *)
 {
+	Graphics::Display &display = GetContext(id)->display;
 	if (viewport == 0)
 	{
 		static int currFrame = 0;
 		currFrame++;
-
-		r->OpenGLDraw();
+		r->Draw(display);
 		if (!validSearch)
 		{
 			if (ourPath.size() == 0)
-				r->OpenGLDraw(config);
-			else
-				r->OpenGLDraw(ourPath[(pathLoc++)%ourPath.size()]);
+			{
+				//r->OpenGLDraw(config);
+				r->Draw(display, config);
+				if (mode == kManualMoveArm)
+					r->Draw(display, config, activeArm, Colors::lightblue);
+			}
+			else {
+				r->Draw(display,ourPath[(pathLoc++)%ourPath.size()]);
+				//r->OpenGLDraw(ourPath[(pathLoc++)%ourPath.size()]);
+			}
 		}
 		else {
 			Timer t;
 			t.StartTimer();
-			for (int x = 0; x < 100; x++)
+			for (int x = 0; x < stepsPerFrame; x++)
 			{
 				if (astar.DoSingleSearchStep(ourPath))
 				{
@@ -192,70 +231,115 @@ void MyFrameHandler(unsigned long id, unsigned int viewport, void *)
 			if (validSearch)
 			{
 				armAngles next = astar.CheckNextNode();
-				r->OpenGLDraw(next);
-				r->OpenGLDraw(goal);
+				r->Draw(display, next);
+				r->Draw(display, goal);
+//				r->OpenGLDraw(next);
+//				r->OpenGLDraw(goal);
 			}
 			//astar.GetPath(r, config, goal, ourPath);
 		}
+		if (mode == kAddObstacle)
+			display.DrawText("Click to Add Obstacle", {-1, -1}, Colors::yellow, 0.05f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+		if (mode == kSetTarget)
+			display.DrawText("Click to Set Target", {-1, -1}, Colors::yellow, 0.05f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+		if (mode == kManualMoveArm)
+		{
+			static char text[] = "Moving arm segment X";
+			text[19] = '0'+activeArm;
+			display.DrawText(text, {-1, -1}, Colors::yellow, 0.05f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+		}
+		display.DrawText("Work space ", {1, -1}, Colors::lightblue, 0.05f, Graphics::textAlignRight, Graphics::textBaselineTop);
 	}
 	if (viewport == 1)
 	{
-		float ratio = 2.0/512.0;
-		float size = 2.0/512.0;
-		if (configSpace.size() == 512)
+		rgbColor c;
+
+		if (redrawBackground)
 		{
-			for (int x = 0; x < 512; x++)
+			display.StartBackground();
+			// TODO: draw into background when config space changes
+			display.FillRect({-1, -1, 1, 1}, Colors::black);
+			if (configSpace.size() != 0)
 			{
-				glBegin(GL_QUADS);
-				for (int y = 0; y < 512; y++)
+				float ratio = 2.0/configSpace.size();
+				float size = 2.0/configSpace.size();
+				for (int x = 0; x < configSpace.size(); x++)
 				{
-					bool draw = false;
-					bool big = false;
-					if (!validSearch && ourPath.size() == 0 && config.GetAngle(0) == x*2 && config.GetAngle(1) == y*2)
+					int start = -1;
+					for (int y = 0; y < configSpace[x].size(); y++)
 					{
-						glColor3f(1, 1, 1);
-						draw = true;
-						big = true;
+						if (configSpace[x][y] == false)
+						{
+							if (start == -1)
+								start = y;
+						}
+						else {
+							if (start != -1)
+							{
+								Graphics::rect r(-1+float(x)*size, -1+float(start)*size,
+												 -1+float(x+1)*size, -1+float(y+1)*size);
+								display.FillRect(r, Colors::red);
+							}
+							start = -1;
+						}
 					}
-					if (!validSearch && ourPath.size() != 0 && ourPath[(pathLoc)%ourPath.size()].GetAngle(0) == x*2 && ourPath[(pathLoc)%ourPath.size()].GetAngle(1) == y*2)
+					if (start != -1)
 					{
-						glColor3f(1, 1, 1);
-						draw = true;
-						big = true;
-					}
-					if (validSearch && astar.CheckNextNode().GetAngle(0) == x*2 && astar.CheckNextNode().GetAngle(1) == y*2)
-					{
-						glColor3f(0, 1, 0);
-						draw = true;
-						big = true;
-					}
-					else if (!configSpace[x][y])
-					{
-						glColor3f(1, 0, 0);
-						draw = true;
-					}
-					if (draw)
-					{
-						float currSize = size;
-						if (big) currSize*=4;
-						glVertex3f(-1+float(x)*ratio, -1+float(y)*ratio, big?-0.01:0);
-						glVertex3f(-1+float(x)*ratio+currSize, -1+float(y)*ratio, big?-0.01:0);
-						glVertex3f(-1+float(x)*ratio+currSize, -1+float(y)*ratio+currSize, big?-0.01:0);
-						glVertex3f(-1+float(x)*ratio, -1+float(y)*ratio+currSize, big?-0.01:0);
+						Graphics::rect r(-1+float(x)*size, -1+float(start)*size,
+										 -1+float(x+1)*size, -1+float(configSpace[x].size()+1)*size);
+						display.FillRect(r, Colors::red);
 					}
 				}
-				glEnd();
 			}
+			display.EndBackground();
+			redrawBackground = false;
+		}
+		
+		// Draw cursors, etc
+		{
+			float size = 4.0f/512.0f;
+
+			{
+				double x, y;
+				if (validSearch)
+				{
+					x = 2*astar.CheckNextNode().GetAngle(0)/1024.0-1;
+					y = 2*astar.CheckNextNode().GetAngle(1)/1024.0-1;
+					c = Colors::lightgreen;
+				}
+				else {
+					if (ourPath.size() == 0)
+					{
+						x = 2*config.GetAngle(0)/1024.0-1;
+						y = 2*config.GetAngle(1)/1024.0-1;
+						c = Colors::white;
+					}
+					else {
+						x = 2*ourPath[(pathLoc)%ourPath.size()].GetAngle(0)/1024.0-1;
+						y = 2*ourPath[(pathLoc)%ourPath.size()].GetAngle(1)/1024.0-1;
+						c = Colors::green;
+					}
+				}
+				Graphics::rect rec(point3d(x, y), 1.5f*size);
+				display.FillRect(rec, c);
+				
+			}
+			// labeling axes (needs to be updated)
+			display.DrawText("Segment 2 angle", {-1, -1}, Colors::yellow, 0.05f, Graphics::textAlignLeft, Graphics::textBaselineTop);
+			display.DrawText("Segment 1 angle", {1, 1}, Colors::yellow, 0.05f, Graphics::textAlignRight, Graphics::textBaselineBottom);
+			display.DrawText("Config space ", {1, -1}, Colors::lightblue, 0.05f, Graphics::textAlignRight, Graphics::textBaselineTop);
 		}
 	}
-	if (recording && viewport == GetNumPorts((int)id)-1)
-	{
-		static int index = 0;
-		char fname[255];
-		sprintf(fname, "/Users/nathanst/Movies/tmp/robot-%d%d%d%d", index/1000, (index/100)%10, (index/10)%10, index%10);
-		SaveScreenshot((int)id, fname);
-		index++;
-	}
+//	if (recording && viewport == GetNumPorts((int)id)-1)
+//	{
+//		static int index = 0;
+//		char fname[255];
+//		sprintf(fname, "/Users/nathanst/Movies/tmp/robot-%d%d%d%d", index/1000, (index/100)%10, (index/10)%10, index%10);
+//		
+//		//SaveScreenshot((int)id, fname);
+//		printf("%s\n", fname);
+//		index++;
+//	}
 
 }
 
@@ -273,13 +357,13 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 	switch (key)
 	{
 		case '\t':
-			if (mod != kShiftDown)
-				SetActivePort(windowID, (GetActivePort(windowID)+1)%GetNumPorts(windowID));
-			else
-			{
-				SetNumPorts(windowID, 1+(GetNumPorts(windowID)%MAXPORTS));
-			}
-			break;
+//			if (mod != kShiftDown)
+//				SetActivePort(windowID, (GetActivePort(windowID)+1)%GetNumPorts(windowID));
+//			else
+//			{
+//				SetNumPorts(windowID, 1+(GetNumPorts(windowID)%MAXPORTS));
+//			}
+//			break;
 		case 'p': //unitSims[windowID]->SetPaused(!unitSims[windowID]->GetPaused()); break;
 		case 'o':
 //			if (unitSims[windowID]->GetPaused())
@@ -289,57 +373,122 @@ void MyDisplayHandler(unsigned long windowID, tKeyboardModifier mod, char key)
 //				unitSims[windowID]->SetPaused(true);
 //			}
 			break;
-		case ']': absType = (absType+1)%3; break;
-		case '[': absType = (absType+4)%3; break;
-			//		case '{': unitSim->setPaused(true); unitSim->offsetDisplayTime(-0.5); break;
-			//		case '}': unitSim->offsetDisplayTime(0.5); break;
+		case ']': stepsPerFrame *= 2; break;//absType = (absType+1)%3; break;
+		case '[': if (stepsPerFrame > 50) stepsPerFrame /= 2;
+			break;
 		default:
 			break;
 	}
 }
 
-void MyKeyHandler(unsigned long wid, tKeyboardModifier, char key)
+armAngles GetRandomState()
 {
-	static int which = 0;
-	if ((key >= '0') && (key <= '9'))
+	armAngles s, g;
+	s.SetNumArms(2);
+	s.SetAngle(0, random()%1024);
+	s.SetAngle(1, random()%1024);
+	return s;
+}
+
+armAngles GetRandomLegalState()
+{
+	armAngles s;
+	s.SetNumArms(2);
+	do {
+		s.SetAngle(0, random()%1024);
+		s.SetAngle(1, random()%1024);
+	} while (!r->LegalState(s));
+	return s;
+}
+
+void TestJPS()
+{
+	std::vector<armAngles> states;
+	srandom(1234);
+	const int totalStates = 10000;
+	// 1. Generate 10000 states
+	for (int x = 0; x < totalStates; x++)
 	{
-		which = key-'0';
+		states.push_back(GetRandomState());
+	}
+	Timer t;
+	// 2. Check validity of each
+	int numLegal = 0;
+	t.StartTimer();
+	for (int x = 0; x < totalStates; x++)
+		numLegal += r->LegalState(states[x])?1:0;
+	t.EndTimer();
+	printf("%f elapsed; %d of %d legal\n", t.GetElapsedTime(), numLegal, totalStates);
+
+	// 3. Add each to queue
+	AStarOpenClosed<armAngles, AStarCompare<armAngles> > openClosedList;
+	int numAdded = 0;
+	t.StartTimer();
+	for (int x = 0; x < totalStates; x++)
+	{
+		uint64_t objid;
+		if (openClosedList.Lookup(r->GetStateHash(states[x]), objid) != kOpenList)
+		{
+			numAdded++;
+			openClosedList.AddOpenNode(states[x], r->GetStateHash(states[x]), 0.0, 0.0);
+		}
+	}
+	t.EndTimer();
+	printf("%f elapsed added %d of %d to open\n", t.GetElapsedTime(), numAdded, totalStates);
+	
+//	t.StartTimer();
+//	astar.GetPath(r, s, g, ourPath);
+//	t.EndTimer();
+//	printf("Astar %f %llu %llu %1.2f\n", t.GetElapsedTime(), astar.GetNodesExpanded(), astar.GetNodesTouched(), r->GetPathLength(ourPath));
+	
+}
+
+void MyKeyHandler(unsigned long wid, tKeyboardModifier mod, char key)
+{
+	if ((key >= '0') && (key <= '1'))
+	{
+		activeArm = key-'0';
 		return;
 	}
 	if (key == 'c')
 	{
 		SetNumPorts((int)wid, 2);
 		BuildConfigSpace();
-		
+	}
+	if (key == '|')
+	{
+		r->PopObstacle();
+		//		SetNumPorts((int)wid, 2);
+		BuildConfigSpace();
+	}
+	if (key == '&')
+	{
+		int index = 0;
+		char fname[255];
+		while (1)
+		{
+			sprintf(fname, "/Users/nathanst/Pictures/SVG/robot-%d%d%d%d.svg", index/1000, (index/100)%10, (index/10)%10, index%10);
+			
+			if (!FileExists(fname))
+				break;
+			index++;
+		}
+		MakeSVG(GetContext(wid)->display, fname, 1024, 512, -1);
+		printf("Saved: '%s'\n", fname);
 	}
 	if (key == 'r')
 	{
-		recording = !recording;
+		for (int x = 0; x < numArms; x++)
+			config.SetAngle( x, 2 );
+		ourPath.clear();
+		//recording = !recording;
 	}
-	if (key == 'a')
-	{
-		std::vector<armRotations> actions;
-
-		armRotations rot;
-		rot.SetRotation(which, kRotateCW);
-		r->GetActions(config, actions);
-		for (unsigned int x = 0; x < actions.size(); x++)
-		{
-			if (rot == actions[x])
-			{
-				r->ApplyAction(config, rot);
-				ourPath.resize(0);
-			}
-			printf(" %d:%d", x, config.GetAngle(x));
-		}
-		printf("\n");
-	}
-	if (key == 's')
+	if (key == 'a' && mode == kManualMoveArm)
 	{
 		std::vector<armRotations> actions;
 		
 		armRotations rot;
-		rot.SetRotation(which, kRotateCCW);
+		rot.SetRotation(activeArm, kRotateCW);
 		r->GetActions(config, actions);
 		for (unsigned int x = 0; x < actions.size(); x++)
 		{
@@ -349,17 +498,51 @@ void MyKeyHandler(unsigned long wid, tKeyboardModifier, char key)
 				ourPath.resize(0);
 			}
 		}
-		for (int x = 0; x < numArms; x++)
-			printf(" %d:%d", x, config.GetAngle(x));
-		printf("\n");
+		//		for (int x = 0; x < numArms; x++)
+		//			printf(" %d:%d", x, config.GetAngle(x));
+		//		printf("\n");
+	}
+	if (key == 's' && mode == kManualMoveArm)
+	{
+		std::vector<armRotations> actions;
+		
+		armRotations rot;
+		rot.SetRotation(activeArm, kRotateCCW);
+		r->GetActions(config, actions);
+		for (unsigned int x = 0; x < actions.size(); x++)
+		{
+			if (rot == actions[x])
+			{
+				r->ApplyAction(config, rot);
+				ourPath.resize(0);
+			}
+		}
+		//		for (int x = 0; x < numArms; x++)
+		//			printf(" %d:%d", x, config.GetAngle(x));
+		//		printf("\n");
 	}
 	
 	if (key == 't')
 	{
-		BuildTipTables();
-		//TestArms();
-		TestArms2(true);
-		//TestArms2();
+		mode = kSetTarget;
+		ourPath.clear();
+	}
+	if (key == 'o')
+	{
+		mode = kAddObstacle;
+		ourPath.clear();
+	}
+	if (key == 'm')
+	{
+		mode = kManualMoveArm;
+		ourPath.clear();
+	}
+	if (key == 't')
+	{
+		//		BuildTipTables();
+		//		//TestArms();
+		//		TestArms2(true);
+		//		//TestArms2();
 	}
 	
 	if (key == 'b')
@@ -372,15 +555,41 @@ void MyKeyHandler(unsigned long wid, tKeyboardModifier, char key)
 		else
 			aa->AddDiffTable();
 	}
+	if (key == 'j')
+	{
+		TestJPS();
+	}
+	if (key == 'd')
+	{
+		astar.SetWeight(1.0);
+	}
+	if (key == 'w')
+	{
+		astar.SetWeight(1.5);
+	}
+	if (key == 'x')
+	{
+		float proveBound = 1.5;
+		astar.SetPhi([=](double x,double y){return (y+(2*proveBound-1)*x+sqrt((y-x)*(y-x)+4*proveBound*y*x))/(2*proveBound);});
+	}
+	if (key == 'z')
+	{
+		float proveBound = 1.5;
+		astar.SetPhi([=](double h,double g){return (h>g)?(g+h):(g/proveBound+h*(2*proveBound-1)/proveBound);});
+	}
 }
 
-bool drag = false;
-recVec s, e;
 
-bool MyClickHandler(unsigned long , int x, int y, point3d loc, tButtonType whichButton, tMouseEventType mouseEvent)
+bool drag = false;
+Graphics::point s, e;
+
+bool MyClickHandler(unsigned long , int viewport, int x, int y, point3d loc, tButtonType whichButton, tMouseEventType mouseEvent)
 {
-	printf("Hit %d/%d (%f, %f)\n", x, y, loc.x, loc.y);
-	if ((mouseEvent == kMouseDown) && (whichButton == kLeftButton))
+	if (viewport != 0)
+	{
+		return false;
+	}
+	if ((mouseEvent == kMouseDown) && mode == kAddObstacle)//(whichButton == kLeftButton))
 	{
 		validSearch = false;
 		s.x = loc.x;
@@ -390,9 +599,9 @@ bool MyClickHandler(unsigned long , int x, int y, point3d loc, tButtonType which
 		drag = true;
 		line2d l(s, e);
 		r->AddObstacle(l);
-		BuildConfigSpace();
+		BuildConfigSpace(true);
 	}
-	if ((mouseEvent == kMouseDrag) && (whichButton == kLeftButton) && drag)
+	if ((mouseEvent == kMouseDrag) && (mode == kAddObstacle) && drag)
 	{
 		r->PopObstacle();
 		e.x = loc.x;
@@ -400,9 +609,9 @@ bool MyClickHandler(unsigned long , int x, int y, point3d loc, tButtonType which
 		e.z = 0;
 		line2d l(s, e);
 		r->AddObstacle(l);
-		BuildConfigSpace();
+		BuildConfigSpace(true);
 	}
-	if ((mouseEvent == kMouseUp) && (whichButton == kLeftButton) && drag)
+	if ((mouseEvent == kMouseUp) && (mode == kAddObstacle) && drag)
 	{
 		r->PopObstacle();
 		e.x = loc.x;
@@ -411,14 +620,13 @@ bool MyClickHandler(unsigned long , int x, int y, point3d loc, tButtonType which
 		line2d l(s, e);
 		if (!(fequal(s.x, e.x) && fequal(s.y, e.y)))
 		{
-			printf("Adding obstacle\n");
+			printf("Adding obstacle (%1.2f, %1.2f) (%1.2f, %1.2f)\n", s.x, s.y, e.x, e.y);
 			r->AddObstacle(l);
 		}
 		BuildConfigSpace();
 	}
-	if ((mouseEvent == kMouseDown) && (whichButton == kRightButton))
+	if ((mouseEvent == kMouseDown) && (mode == kSetTarget))
 	{
-		
 		goal.SetGoal(loc.x, loc.y);
 		if (aa)
 		{
@@ -458,24 +666,32 @@ bool MyClickHandler(unsigned long , int x, int y, point3d loc, tButtonType which
 	return true;
 }
 
-void BuildConfigSpace()
+void BuildConfigSpace(bool fast)
 {
+	int resolution = 512;
+	if (fast)
+	{
+		resolution = 128;
+	}
+	int multiplier = 1024/resolution;
+
 	configSpace.resize(0);
-	configSpace.resize(512);
-	for (int x = 0; x < 512; x++)
-		configSpace[x].resize(512);
+	configSpace.resize(resolution);
+	for (int x = 0; x < resolution; x++)
+		configSpace[x].resize(resolution);
 
 	armAngles a;
 	a.SetNumArms(2);
-	for (int x = 0; x < 512; x++)
+	for (int x = 0; x < 1024; x+=multiplier)
 	{
-		a.SetAngle(0, x*2);
-		for (int y = 0; y < 512; y++)
+		a.SetAngle(0, x);
+		for (int y = 0; y < 1024; y+=multiplier)
 		{
-			a.SetAngle(1, y*2);
-			configSpace[x][y] = r->LegalState(a);
+			a.SetAngle(1, y);
+			configSpace[x/multiplier][y/multiplier] = r->LegalState(a);
 		}
 	}
+	redrawBackground = true;
 }
 
 
@@ -488,8 +704,8 @@ void AddToMinHeap( std::vector<armAngles> &heap, armAngles &arm,
 	// need to increase size, although we don't actually care
 	// about the new content yet
 	heap.push_back( arm );
-	for( i = heap.size(); i > 1; i >>= 1 ) {
-		if( ArmDistance( arm, distances )
+	for ( i = heap.size(); i > 1; i >>= 1 ) {
+		if ( ArmDistance( arm, distances )
 		    >= ArmDistance( heap[ ( i >> 1 ) - 1 ], distances ) ) {
 			break;
 		}
@@ -509,13 +725,13 @@ armAngles GetFromMinHeap( std::vector<armAngles> &heap, float *distances )
 	// must be pushed down if it is too large
 	c = 1 << 1;
 	while( c <= heap.size() - 1 ) {
-		if( c + 1 <= heap.size() - 1
+		if ( c + 1 <= heap.size() - 1
 		    && ArmDistance( heap[ c - 1 ], distances )
 		    > ArmDistance( heap[ c + 1 - 1 ], distances ) ) {
 			// child c is bigger than child c+1, so use c+1
 			++c;
 		}
-		if( ArmDistance( heap[ heap.size() - 1 ], distances )
+		if ( ArmDistance( heap[ heap.size() - 1 ], distances )
 		    <= ArmDistance( heap[ c - 1 ], distances ) ) {
 			// new root <= than child, so it stops moving down
 			break;
@@ -610,7 +826,7 @@ void TestArms()
 		for (unsigned int x = 0; x < starts.size(); x++)
 		{
 			armAngles theGoal;
-			double x1, y1;
+			float x1, y1;
 			goals[x].GetGoal(x1, y1);
 			const std::vector<armAngles> &pos = aa->GetTipPositions(x1, y1);
 			theGoal = pos[0];
@@ -973,7 +1189,7 @@ void WriteCache(int index, std::vector<armAngles> &values)
 	if (!f) assert(!"Couldn't open file!");
 	for (unsigned int x = 0; x < values.size(); x++)
 	{
-		for (unsigned int y = 0; y < values[x].GetNumArms(); y++)
+		for (int y = 0; y < values[x].GetNumArms(); y++)
 			fprintf(f, "%d ", values[x].GetAngle(y));
 		fprintf(f, "\n");
 	}

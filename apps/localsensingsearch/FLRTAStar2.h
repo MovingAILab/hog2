@@ -13,7 +13,7 @@
 #include "FPUtil.h"
 #include <deque>
 #include <vector>
-#include <ext/hash_map>
+#include <unordered_map>
 #include "TemplateAStar.h"
 #include "Timer.h"
 #include <queue>
@@ -74,15 +74,24 @@ namespace FLRTA2 {
 			heur[env->GetStateHash(where)].theState = where;
 #endif
 		}
-		double HCost(environment *env, const state &from, const state &to)
+		double HCost(environment *env, const state &from, const state &to) const
 		{
 			int ID = GetGoalID(to);
-			if (heur.find(env->GetStateHash(from)) != heur.end())
-				return heur[env->GetStateHash(from)].theHeuristic[ID]+
-				env->HCost(from, to);
+			auto val = heur.find(env->GetStateHash(from));
+			if (val != heur.end())
+			{
+				return val->second.theHeuristic[ID]+env->HCost(from, to);
+			}
 			return env->HCost(from, to);
+
+			
+//			int ID = GetGoalID(to);
+//			if (heur.find(env->GetStateHash(from)) != heur.end())
+//				return heur[env->GetStateHash(from)].theHeuristic[ID]+
+//				env->HCost(from, to);
+//			return env->HCost(from, to);
 		}
-		double HCost(const state &from, const state &to)
+		double HCost(const state &from, const state &to) const
 		{
 			assert(m_pEnv != 0);
 			return HCost(m_pEnv, from, to);
@@ -98,14 +107,14 @@ namespace FLRTA2 {
 		void OpenGLDraw(const environment *env) const;
 	private:
 		typedef std::priority_queue<borderData<state>,std::vector<borderData<state> >,compareBorderData<state> > pQueue;
-		typedef __gnu_cxx::hash_map<uint64_t, lssLearnedData<state>, Hash64 > LearnedHeuristic;
-		typedef __gnu_cxx::hash_map<uint64_t, bool, Hash64 > ClosedList;
+		typedef std::unordered_map<uint64_t, lssLearnedData<state>, Hash64 > LearnedHeuristic;
+		typedef std::unordered_map<uint64_t, bool, Hash64 > ClosedList;
 		
 
 		bool ExpandLSS(environment *env, const state &from, const state &to, std::vector<state> &thePath);
 		void BuildLSSQ(environment *env, pQueue &q, state &best, const state &target);
 		void LearnHeuristic(environment *env, pQueue &q, const state &to);
-		int GetGoalID(const state &which)
+		int GetGoalID(const state &which) const
 		{
 			for (unsigned int x = 0; x < goals.size(); x++)
 				if (goals[x] == which)
@@ -198,7 +207,7 @@ namespace FLRTA2 {
 		unsigned int openSize = astar.GetNumOpenItems();
 		for (unsigned int x = 0; x < openSize; x++)
 		{
-			const AStarOpenClosedData<state> data = astar.GetOpenItem(x);
+			const auto data = astar.GetOpenItem(x);
 			if ((bestF == -1) || (fless(data.g+data.h, bestF)))
 			{
 				bestF = data.g+data.h;

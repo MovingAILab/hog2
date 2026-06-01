@@ -29,7 +29,7 @@ public:
 
 	virtual bool InitializeSearch(GraphEnvironment *env, Graph* g, graphState from, graphState to, std::vector<graphState> &thePath) = 0;
 	virtual bool DoSingleSearchStep(std::vector<graphState> &thePath) = 0;
-	virtual void OpenGLDraw() const = 0;
+//	virtual void OpenGLDraw() const = 0;
 };
 
 #endif

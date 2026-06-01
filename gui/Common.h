@@ -1,155 +1,84 @@
 /*
- * $Id: common.h,v 1.20 2006/11/02 00:12:16 nathanst Exp $
+ *  Common.h
+ *  hog2
  *
+ *  Created by Nathan Sturtevant on 11/02/06.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * This file is part of HOG.
+ * This file has hog-specific functions for setting up hog events and setting up displays.
+ * This current version represents a refactor where all OpenGL dependencies have been removed.
  *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
+ *
  */ 
 
-//#include "Map.h"
-//#include "MapAbstraction.h"
-//#include "UnitSimulation.h"
-#include "GLUtil.h"
+#include "Graphics.h"
 #include <stdio.h>
 #include <cstring>
-//#include "StatCollection.h"
+#include <cinttypes>
 
 #ifndef COMMON_H
 #define COMMON_H
 
-enum
-{
-	kMainMenu = 500,
-	kCloseMenuItem = 2,
-	kInfoMenuItem = 4,
-	kAnimateMenuItem = 5,
-	kInfoState = 1,
-	kAnimateState = 0
-};
-
-enum {
-	kFSAAOff = 0,
-	kFSAAFast = 1,
-	kFSAANice = 2,
-	kSamples = 4
-};
-
-const int MAXPORTS = 4;
-// camera/context info
-//typedef struct {
-//	GLdouble x,y,z;
-//} recVec;
-
-typedef struct {
-	recVec viewPos; // View position
-	recVec viewDir; // View direction vector
-	recVec viewUp; // View up direction
-	recVec rotPoint; // Point to rotate about
-	GLdouble aperture; // camera aperture
-	GLint viewWidth,viewHeight; // current window/screen height and width
-	GLfloat viewOriginX, viewOriginY; // always 0 
-} recCamera;
-
-typedef struct {
-	GLfloat worldRotation[4];
-	GLfloat objectRotation[4];
-} recRotation;	
-
-typedef struct {
-	GLdouble left, right, top, bottom, near, far;
-} recFrustum;
+#define main hog_main
 
 // per view data
 struct recContext
 {
-#ifdef OS_MAC
-	AGLPixelFormat aglPixFmt;
-	AGLContext aglContext;
-	GLuint boldFontList;
-	GLuint regFontList;
-	EventLoopTimerRef timer;
-	//DMExtendedNotificationUPP  windowEDMUPP;
-	AbsoluteTime time;
-#endif
-
-	bool animate;
-	bool info;
-	bool drawHelp;
-	bool drawCaps;
-	bool polygons;
-	bool lines;
-	bool points;
-	bool showCredits;
-	long lighting;
-//	bool paused;
-	bool drawing;
-	
-	// spin
-//	GLfloat fRot[3];
-//	GLfloat fVel[3];
-//	GLfloat fAccel[3];
-	
-	// camera handling
-	recCamera globalCamera;
-	recCamera camera[MAXPORTS];
-	recRotation rotations[MAXPORTS];
-	recFrustum frust[MAXPORTS];
-	int numPorts, currPort;
-	GLfloat shapeSize;
-	bool moveAllPortsTogether;
+//	viewport viewports[MAXPORTS];
+//	int windowHeight, windowWidth;
 	
 	char message[256]; // buffer for message output
 	float msgTime; // message posting time for expiration
 	
-	char * names;
-	
-	long surface; 
-	long colorScheme;
-	unsigned long subdivisions;
-	unsigned long xyRatio;
-	
-	long modeFSAA;
+	Graphics::Display display;
 	unsigned long windowID;
 };
 typedef struct recContext recContext;
 typedef struct recContext * pRecContext;
 
-// single set of interaction flags and states
-extern GLfloat gTrackBallRotation [4];
-extern pRecContext gTrackingContextInfo;
-
 void updateProjection(pRecContext pContextInfo, int viewPort = -1);
 void drawGL(pRecContext pContextInfo, bool swap);
-#ifdef OS_MAC
-pRecContext GetCurrentContextInfo (WindowRef window);
-#endif
 
 bool DoKeyboardCommand(pRecContext pContextInfo, unsigned char keyHit, bool shift, bool cntrl, bool alt);
-void SetLighting(unsigned int mode);
 void initialConditions(pRecContext pContextInfo);
-void resetCamera(recCamera * pCamera);
+
 
 void ProcessCommandLineArgs(int argc, char *argv[]);
 
 extern char gDefaultMap[1024];
 
+/* Window Viewports */
 void SetNumPorts(unsigned long windowID, int count);
 int GetNumPorts(unsigned long windowID);
-void SetActivePort(unsigned long windowID, int which);
-int GetActivePort(unsigned long windowID);
+
+/* Removes all active viewports and adds this one as the first.
+ * rect coordinates are in HOG coordinates.
+ */
+void ReinitViewports(unsigned long windowID, const Graphics::rect &r, viewportType v);
+/* Adds a new viewport to the existing viewports and
+ * returns the new viewport numbers
+ */
+int AddViewport(unsigned long windowID, const Graphics::rect &r, viewportType v);
+int AddViewport(unsigned long windowID, const Graphics::rect &initial, const Graphics::rect &fin, viewportType v);
+void MoveViewport(unsigned long windowID, int viewport, const Graphics::rect &newLocation, float duration = 1.5, Graphics::TweenFunc func = Graphics::Tween::Linear);
+
+/* Helper functions for converting coordinates between viewport and global hog coordinates */
+Graphics::point ViewportToGlobalHOG(pRecContext pContextInfo, Graphics::point where, int viewport);
+Graphics::rect  ViewportToGlobalHOG(pRecContext pContextInfo, const Graphics::rect &loc, int viewport);
+Graphics::point ViewportToGlobalHOG(pRecContext pContextInfo, const Graphics::viewport &v, Graphics::point where);
+float ViewportToGlobalHOGX(pRecContext pContextInfo, float x, int v);
+Graphics::point GlobalHOGToViewport(pRecContext pContextInfo, const Graphics::viewport &v, Graphics::point where);
+//Graphics::point GlobalHOGToViewport(Graphics::point where, int viewport);
+//Graphics::rect GlobalHOGToViewport(const Graphics::rect &loc, int viewport);
+//float GlobalHOGToViewportX(float x, int v);
+
+/** Events **/
+
+const char kLeftArrow  = 0x11;
+const char kRightArrow = 0x12;
+const char kUpArrow    = 0x13;
+const char kDownArrow  = 0x14;
 
 enum tKeyboardModifier {
 	kNoModifier,
@@ -162,13 +91,15 @@ enum tKeyboardModifier {
 enum tButtonType {
 	kLeftButton,
 	kRightButton,
-	kMiddleButton // option on the mac
+	kMiddleButton, // option on the mac
+	kNoButton
 };
 
-enum tMouseEventType {
-	kMouseDown,
-	kMouseUp,
-	kMouseDrag // option on the mac
+enum tMouseEventType : int {
+	kMouseDown = 0x1,
+	kMouseUp = 0x2,
+	kMouseDrag = 0x4, // option on the mac
+	kMouseMove = 0x8
 };
 
 enum tWindowEventType {
@@ -200,6 +131,11 @@ typedef void (*JoystickCallback)(unsigned long windowID, double offsetX, double 
  * returns true if the click/movement was handled; false if ignored
  */
 typedef bool (*MouseCallback)(unsigned long windowID, int x, int y, point3d loc, tButtonType, tMouseEventType);
+/**
+ * the new callback handler also passes the viewport frame in which the click occured.
+ * The loc is relative to the frame which was clicked
+ */
+typedef bool (*MouseCallback2)(unsigned long windowID, int viewport, int x, int y, point3d loc, tButtonType, tMouseEventType);
 
 /**
  * a keyboard callback handler is passed the current unit simulation, the key
@@ -215,6 +151,15 @@ typedef void (*KeyboardCallback)(unsigned long windowID, tKeyboardModifier, char
  * of arguments it processed.
  */
 typedef int (*CommandLineCallback)(char**, int);
+
+///**
+// * A data callback handler is called when new data is available from the GUI.
+// * The handler can then read as much data as it wants.
+// *
+// * Implementation postponed for now:
+// *   in some situations can use the text buffer for this purpose
+// */
+//typedef int (*DataCallback)(char**, int);
 
 class commandLineCallbackData {
 public:
@@ -256,10 +201,20 @@ public:
 
 class mouseCallbackData {
 public:
-	mouseCallbackData(MouseCallback _mC)
-	:mC(_mC)
+	mouseCallbackData(MouseCallback _mC, tMouseEventType _which)
+	:mC(_mC), which(_which)
 	{}
 	MouseCallback mC;
+	tMouseEventType which;
+};
+
+class mouseCallbackData2 {
+public:
+	mouseCallbackData2(MouseCallback2 _mC, tMouseEventType _which)
+	:mC(_mC), which(_which)
+	{}
+	MouseCallback2 mC;
+	tMouseEventType which;
 };
 
 class windowCallbackData {
@@ -290,9 +245,44 @@ void InstallJoystickHandler(JoystickCallback jC, void *userdata);
 void RemoveJoystickHandler(JoystickCallback jC, void *userdata);
 void HandleJoystickMovement(pRecContext pContextInfo, double panX, double panY);
 
-void InstallMouseClickHandler(MouseCallback mC);
+void InstallMouseClickHandler(MouseCallback mC, tMouseEventType which = static_cast<tMouseEventType>(kMouseDown|kMouseUp|kMouseDrag));
+void InstallMouseClickHandler(MouseCallback2 mC, tMouseEventType which = static_cast<tMouseEventType>(kMouseDown|kMouseUp|kMouseDrag));
 void RemoveMouseClickHandler(MouseCallback mC);
+void RemoveMouseClickHandler(MouseCallback2 mC);
+bool HandleMouse(pRecContext pContextInfo, point3d where, tButtonType button, tMouseEventType mouse);
+bool HandleMouse(pRecContext pContextInfo, int xWindow, int yWindow, point3d where, tButtonType button, tMouseEventType mouse);
 bool HandleMouseClick(pRecContext pContextInfo, int x, int y, point3d where, tButtonType, tMouseEventType);
+bool HandleMouseClick(pRecContext pContextInfo, int viewport, int x, int y, point3d where, tButtonType, tMouseEventType);
+
+struct buttonData
+{
+	bool valid;
+	bool hilighted;
+	bool tracking;
+	bool active;
+	// todo - allow buttons to be inactivated
+	unsigned long windowID;
+	int viewport;
+	Graphics::roundedRect r;
+	std::string text;
+	char hit;
+	float borderSize;
+	rgbColor textColor;
+	rgbColor borderColor;
+	rgbColor fillColor;
+	rgbColor fillHitColor;
+	rgbColor inactiveBorderColor;
+};
+
+void DrawButtons(unsigned long windowID, int viewport);
+int CreateButton(unsigned long windowID, int viewport,
+				 Graphics::roundedRect r, const char *txt, char hit, float borderSize,
+				 rgbColor textColor, rgbColor lineColor, rgbColor fillColor,
+				 rgbColor fillHitColor, rgbColor inactiveLineColor);
+void SetButtonFillColor(int, rgbColor);
+void SetButtonActive(bool, int);
+void ShowButton(int identifier);
+void HideButton(int identifier);
 
 void InstallWindowHandler(WindowCallback wC);
 void RemoveWindowHandler(WindowCallback wC);
@@ -300,30 +290,27 @@ void HandleWindowEvent(pRecContext pContextInfo, tWindowEventType);
 
 void InstallKeyboardHandler(KeyboardCallback kf, const char *title, const char *description,
 														tKeyboardModifier mod, unsigned char firstKey, unsigned char lastKey = 0);
+void GetKeyAssignments(std::vector<char> &keys);
+void GetKeyAssignmentDescriptions(std::vector<std::string> &keys);
 void PrintKeyboardAssignments();
 void InstallCommandLineHandler(CommandLineCallback, const char *, const char *, const char *);
 void PrintCommandLineArguments();
-
 void ProcessCommandLineArgs(int argc, char *argv[]);
 
 void RunHOGGUI(int argc, char* argv[], int windowDimension = 1000);
 void RunHOGGUI(int argc, char* argv[], int xDimension, int yDimension);
-void SaveScreenshot(int windowID, const char *filename);
-void SetZoom(int windowID, float amount);
 
 void submitTextToBuffer(const char *val);
-void appendTextToBuffer(char *);
-pRecContext getCurrentContext();
-pRecContext GetContext(unsigned int windowID);
-void updateModelView(pRecContext pContextInfo, int currPort);
-void cameraLookAt(GLfloat, GLfloat, GLfloat, float cameraSpeed = 0.1, int port = -1);
-recVec cameraLookingAt(int port = -1);
-void cameraMoveTo(GLfloat x, GLfloat y, GLfloat z, float cameraSpeed = 0.1, int port = -1);
-void resetCamera();
-point3d GetOGLPos(pRecContext pContextInfo, int x, int y);
+void appendTextToBuffer(const char *);
+const char *getTextBuffer();
+void setTextBufferVisibility(bool);
+bool getTextBufferVisibility();
 
-void setPortCamera(pRecContext pContextInfo, int currPort);
-void setViewport(pRecContext pContextInfo, int currPort);
-void rotateObject();
+/** Each window has an associated context. This gets the context currently being used. **/
+// Note that this has not been well-tested recently.
+pRecContext getCurrentContext();
+pRecContext GetContext(unsigned long windowID);
+
+
 
 #endif

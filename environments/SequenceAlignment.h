@@ -32,28 +32,28 @@ public:
 	virtual bool InvertAction(SequenceAlignmentAction &a) const;	
 	
 	/** Heuristic value between two arbitrary nodes. **/
-	virtual double HCost(const SequenceAlignmentState &node1, const SequenceAlignmentState &node2);
+	virtual double HCost(const SequenceAlignmentState &node1, const SequenceAlignmentState &node2) const;
 	
 	/** Heuristic value between node and the stored goal. Asserts that the
 	 goal is stored **/
-	virtual double HCost(const SequenceAlignmentState &node)
+	virtual double HCost(const SequenceAlignmentState &node) const
 	{ assert(bValidSearchGoal); return HCost(node, searchGoal); }
 	
-	virtual double GCost(const SequenceAlignmentState &node1, const SequenceAlignmentState &node2);
-	virtual double GCost(const SequenceAlignmentState &node, const SequenceAlignmentAction &act);
-	virtual bool GoalTest(const SequenceAlignmentState &node, const SequenceAlignmentState &goal);
+	virtual double GCost(const SequenceAlignmentState &node1, const SequenceAlignmentState &node2) const;
+	virtual double GCost(const SequenceAlignmentState &node, const SequenceAlignmentAction &act) const;
+	virtual bool GoalTest(const SequenceAlignmentState &node, const SequenceAlignmentState &goal) const;
 	
 	/** Goal Test if the goal is stored **/
-	virtual bool GoalTest(const SequenceAlignmentState &node)
+	virtual bool GoalTest(const SequenceAlignmentState &node) const
 	{ return bValidSearchGoal&&(node == searchGoal); }
 	
 	virtual uint64_t GetStateHash(const SequenceAlignmentState &node) const;
 	virtual uint64_t GetActionHash(SequenceAlignmentAction act) const;
 	
-	virtual void OpenGLDraw() const { }
-	virtual void OpenGLDraw(const SequenceAlignmentState&) const { }
-	virtual void OpenGLDraw(const SequenceAlignmentState&, const SequenceAlignmentState&, float) const { }
-	virtual void OpenGLDraw(const SequenceAlignmentState&, const SequenceAlignmentAction&) const { }
+//	virtual void OpenGLDraw() const { }
+//	virtual void OpenGLDraw(const SequenceAlignmentState&) const { }
+//	virtual void OpenGLDraw(const SequenceAlignmentState&, const SequenceAlignmentState&, float) const { }
+//	virtual void OpenGLDraw(const SequenceAlignmentState&, const SequenceAlignmentAction&) const { }
 private:
 	int d;
 };

@@ -62,26 +62,26 @@ public:
 //	void SetUseBidirectional(bool use) { swap = use; }
 	
 	OccupancyInterface<pancakeStatePair, pancakeMovePair> *GetOccupancyInfo() { return 0; }
-	virtual double HCost(const pancakeStatePair &state1, const pancakeStatePair &state2);
-	virtual double GCost(const pancakeStatePair &state1, const pancakeStatePair &state2);
-	virtual double GCost(const pancakeStatePair &state1, const pancakeMovePair &state2);
-	virtual bool GoalTest(const pancakeStatePair &state, const pancakeStatePair &goal);
+	virtual double HCost(const pancakeStatePair &state1, const pancakeStatePair &state2) const;
+	virtual double GCost(const pancakeStatePair &state1, const pancakeStatePair &state2) const;
+	virtual double GCost(const pancakeStatePair &state1, const pancakeMovePair &state2) const;
+	virtual bool GoalTest(const pancakeStatePair &state, const pancakeStatePair &goal) const;
 	virtual uint64_t GetStateHash(const pancakeStatePair &state) const;
 	virtual uint64_t GetActionHash(pancakeMovePair act) const;
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const pancakeStatePair &s) const;
-	virtual void OpenGLDraw(const pancakeStatePair &s, const pancakeMovePair &gm) const;
-	virtual void OpenGLDraw(const pancakeStatePair &s, const pancakeStatePair&, float) const { OpenGLDraw(s); }
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const pancakeStatePair &s) const;
+//	virtual void OpenGLDraw(const pancakeStatePair &s, const pancakeMovePair &gm) const;
+//	virtual void OpenGLDraw(const pancakeStatePair &s, const pancakeStatePair&, float) const { OpenGLDraw(s); }
 	
 	virtual void StoreGoal(pancakeStatePair &) {}
 	virtual void ClearGoal() {}
-	virtual bool IsGoalStored() {return false;}
+	virtual bool IsGoalStored() const {return false;}
 	
-	virtual double HCost(const pancakeStatePair &) {
+	virtual double HCost(const pancakeStatePair &) const {
 		fprintf(stderr, "ERROR: Single State HCost not implemented for SFBDPancakeEnvironment\n");
 		exit(1); return -1.0;}
 	
-	virtual bool GoalTest(const pancakeStatePair &){
+	virtual bool GoalTest(const pancakeStatePair &) const {
 		fprintf(stderr, "ERROR: Single State Goal Test not implemented for SFBDPancakeEnvironment\n");
 		exit(1); return false;
 	}

@@ -1,0 +1,10 @@
+#!/bin/tcsh
+
+echo "Heuristic & Avg Time & Avg H \\"
+grep " FM " $1.txt | awk 'BEGIN {} { time += $1; h += $9; cnt++ } END { printf("FM & %1.2f\t&%'"'"'d\t\\\\\n", time/cnt, h/cnt) }'
+grep " FMDH " $1.txt | awk 'BEGIN {} { time += $1; h += $9; cnt++ } END { printf("FMDH & %1.2f\t&%'"'"'d\t\\\\\n", time/cnt, h/cnt) }'
+grep " DH " $1.txt | awk 'BEGIN {} { time += $1; h += $9; cnt++ } END { printf("DH & %1.2f\t&%'"'"'d\\\\\n", time/cnt, h/cnt) }'
+
+foreach x ( FM FMDH DH )
+grep " ${x} " $1.txt | datamash -t " " mean 1 median 1 count 1 sstdev 1 -R 1 | awk '{printf("'${x}' & %'"'"'d & %'"'"'d & %'"'"'d & %'"'"'d & \n", $2, $1, 1.96*$4/sqrt($3), $3)}'
+end

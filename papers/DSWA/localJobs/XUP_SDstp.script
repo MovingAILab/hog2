@@ -1,0 +1,8 @@
+#!/bin/tcsh
+
+./XUP_SDstpJob0.script
+./XUP_SDstpJob1.script
+./XUP_SDstpJob2.script
+./XUP_SDstpJob3.script
+./XUP_SDstpJob4.script
+

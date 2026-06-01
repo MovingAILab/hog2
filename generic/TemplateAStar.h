@@ -1,28 +1,11 @@
 /**
  * @file TemplateAStar.h
  * @package hog2
- * @brief A templated version of the original HOG's genericAstar.h
+ * @brief A templated version of A*. This code assumes all states have unique hashes to reduce storage.
  * @author Nathan Sturtevant
  * SearchEnvironment
  * @date 3/22/06, modified 06/13/2007
  *
- * This file is part of HOG2.
- * HOG : http://www.cs.ualberta.ca/~nathanst/hog.html
- * HOG2: http://code.google.com/p/hog2/
- *
- * HOG2 is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG2 is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG2; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #ifndef TemplateAStar_H
@@ -38,57 +21,87 @@
 #endif
 
 
-
+#include <iostream>
+#include "Constraint.h"
 #include "FPUtil.h"
-#include <ext/hash_map>
+#include <unordered_map>
+#include "Graphics.h"
 #include "AStarOpenClosed.h"
 #include "BucketOpenClosed.h"
 //#include "SearchEnvironment.h" // for the SearchEnvironment class
 #include "float.h"
+#include <limits>
 
 #include <algorithm> // for vector reverse
 
 #include "GenericSearchAlgorithm.h"
-static double lastF = 0;
+//static double lastF = 0;
+
+//typedef double (*phi)(double, double);
+// note, this should be consteval when C++20 is widespread
+//constexpr auto phi_astar = [](double h, double g) -> double { return g+h; };
+
+template <class state>
+struct AStarCompareWithF {
+	// returns true if i2 is preferred over i1
+	bool operator()(const AStarOpenClosedDataWithF<state> &i1, const AStarOpenClosedDataWithF<state> &i2) const
+	{
+		if (fequal(i1.f, i2.f))
+		{
+			return (fless(i1.g, i2.g));
+		}
+		return fgreater(i1.f, i2.f);
+	}
+};
 
 template <class state>
 struct AStarCompare {
+	// returns true if i2 is preferred over i1
 	bool operator()(const AStarOpenClosedData<state> &i1, const AStarOpenClosedData<state> &i2) const
 	{
 		if (fequal(i1.g+i1.h, i2.g+i2.h))
 		{
 			return (fless(i1.g, i2.g));
 		}
-		return (fgreater(i1.g+i1.h, i2.g+i2.h));
+		return fgreater(i1.g+i1.h, i2.g+i2.h);
 	}
 };
 
 /**
  * A templated version of A*, based on HOG genericAStar
  */
-template <class state, class action, class environment>
+template <class state, class action, class environment, class openList = AStarOpenClosed<state, AStarCompareWithF<state>, AStarOpenClosedDataWithF<state>> >
 class TemplateAStar : public GenericSearchAlgorithm<state,action,environment> {
 public:
-	TemplateAStar() { ResetNodeCount(); env = 0; useBPMX = 0; radius = 4.0; stopAfterGoal = true; weight=1; useRadius=false; useOccupancyInfo=false; radEnv = 0; reopenNodes = false; theHeuristic = 0; }
+	TemplateAStar() {
+		ResetNodeCount(); env = 0; useBPMX = 0; stopAfterGoal = true; weight=1; reopenNodes = false; theHeuristic = 0; directed = false;
+		theConstraint = 0;
+		heuristicSet = false;
+		phi = [](double h, double g){ return g+h; };
+	}
 	virtual ~TemplateAStar() {}
+	void Reset();
 	void GetPath(environment *env, const state& from, const state& to, std::vector<state> &thePath);
+	void GetPath(environment *, const state&, const state&, std::vector<action> & );
 	
-	void GetPath(environment *, const state& , const state& , std::vector<action> & ) { assert(false); };
-	
-	AStarOpenClosed<state, AStarCompare<state> > openClosedList;
-	//BucketOpenClosed<state, AStarCompare<state> > openClosedList;
+	openList openClosedList;
 	state goal, start;
 	
 	bool InitializeSearch(environment *env, const state& from, const state& to, std::vector<state> &thePath);
 	bool DoSingleSearchStep(std::vector<state> &thePath);
-	void AddAdditionalStartState(state& newState);
-	void AddAdditionalStartState(state& newState, double cost);
+	void AddAdditionalStartState(const state& newState);
+	void AddAdditionalStartState(const state& newState, double cost);
 	
 	state CheckNextNode();
 	void ExtractPathToStart(state &node, std::vector<state> &thePath)
-	{ uint64_t theID; openClosedList.Lookup(env->GetStateHash(node), theID); ExtractPathToStartFromID(theID, thePath); }
+	{
+		thePath.clear();
+		uint64_t theID;
+		if (openClosedList.Lookup(env->GetStateHash(node), theID) != kNotFound)
+			ExtractPathToStartFromID(theID, thePath);
+	}
 	void ExtractPathToStartFromID(uint64_t node, std::vector<state> &thePath);
-	void DoAbstractSearch(){useOccupancyInfo = false; useRadius = false;}
+	const state &GetParent(const state &s);
 	virtual const char *GetName();
 	
 	void PrintStats();
@@ -97,46 +110,62 @@ public:
 	int GetMemoryUsage();
 	
 	bool GetClosedListGCost(const state &val, double &gCost) const;
+	bool GetOpenListGCost(const state &val, double &gCost) const;
+	bool GetHCost(const state &val, double &hCost) const;
+	bool GetClosedItem(const state &s, AStarOpenClosedDataWithF<state> &);
 	unsigned int GetNumOpenItems() { return openClosedList.OpenSize(); }
-	inline const AStarOpenClosedData<state> &GetOpenItem(unsigned int which) { return openClosedList.Lookat(openClosedList.GetOpenItem(which)); }
+	inline const AStarOpenClosedDataWithF<state> &GetOpenItem(unsigned int which) { return openClosedList.Lookat(openClosedList.GetOpenItem(which)); }
 	inline const int GetNumItems() { return openClosedList.size(); }
-	inline const AStarOpenClosedData<state> &GetItem(unsigned int which) { return openClosedList.Lookat(which); }
+	inline const AStarOpenClosedDataWithF<state> &GetItem(unsigned int which) { return openClosedList.Lookat(which); }
 	bool HaveExpandedState(const state &val)
 	{ uint64_t key; return openClosedList.Lookup(env->GetStateHash(val), key) != kNotFound; }
+	dataLocation GetStateLocation(const state &val)
+	{ uint64_t key; return openClosedList.Lookup(env->GetStateHash(val), key); }
 	
 	void SetUseBPMX(int depth) { useBPMX = depth; if (depth) reopenNodes = true; }
 	int GetUsingBPMX() { return useBPMX; }
 
 	void SetReopenNodes(bool re) { reopenNodes = re; }
 	bool GetReopenNodes() { return reopenNodes; }
+
+	// Only necessary for BPMX computation
+	void SetDirected(bool d) { directed = d; }
 	
-	void SetHeuristic(Heuristic<state> *h) { theHeuristic = h; }
-	
+	void SetHeuristic(Heuristic<state> *h) { theHeuristic = h; if (h) heuristicSet = true; else heuristicSet = false; }
+	void SetConstraint(Constraint<state> *c) { theConstraint = c; }
+
 	uint64_t GetNodesExpanded() const { return nodesExpanded; }
 	uint64_t GetNodesTouched() const { return nodesTouched; }
-	
+	uint64_t GetNecessaryExpansions() const;
 	void LogFinalStats(StatCollection *) {}
-	
-	void SetRadius(double rad) {radius = rad;}
-	double GetRadius() { return radius; }
-	
-	void SetRadiusEnvironment(environment *e) {radEnv = e;}
 	
 	void SetStopAfterGoal(bool val) { stopAfterGoal = val; }
 	bool GetStopAfterGoal() { return stopAfterGoal; }
 	
 	void FullBPMX(uint64_t nodeID, int distance);
 	
-	void OpenGLDraw() const;
+	void Draw(Graphics::Display &disp) const;
+	void DrawSuboptimality(Graphics::Display &disp) const;
+	std::string SVGDraw() const;
+	std::string SVGDrawDetailed() const;
 	
-	void SetWeight(double w) {weight = w;}
+	/** Setting this function */
+	void SetPhi(std::function<double(double, double)> p)
+	{
+		phi = p;
+	}
+	double Phi(double h, double g) const
+	{
+		return phi(h, g);
+	}
+	void SetWeight(double w)
+	{
+		weight = w;
+		phi = [=](double h, double g){ return g+weight*h; };
+	}
+	double GetWeight() { return weight; }
 private:
 	uint64_t nodesTouched, nodesExpanded;
-//	bool GetNextNode(state &next);
-//	//state Node();
-//	void UpdateClosedNode(environment *env, state& currOpenNode, state& neighbor);
-//	void UpdateWeight(environment *env, state& currOpenNode, state& neighbor);
-//	void AddToOpenList(environment *env, state& currOpenNode, state& neighbor);
 	
 	std::vector<state> neighbors;
 	std::vector<uint64_t> neighborID;
@@ -145,19 +174,18 @@ private:
 	environment *env;
 	bool stopAfterGoal;
 	
-	double radius; // how far around do we consider other agents?
-	double weight; 
-	
-	bool useOccupancyInfo;// = false;
-	bool useRadius;// = false;
+	double goalFCost;
+	double weight;
+	std::function<double(double, double)> phi;
+	bool directed;
 	int useBPMX;
 	bool reopenNodes;
 	uint64_t uniqueNodesExpanded;
 	environment *radEnv;
 	Heuristic<state> *theHeuristic;
+	bool heuristicSet; // used to know if it should be cleared / reset
+	Constraint<state> *theConstraint;
 };
-
-//static const bool verbose = false;
 
 /**
  * Return the name of the algorithm. 
@@ -167,8 +195,8 @@ private:
  * @return The name of the algorithm
  */
 
-template <class state, class action, class environment>
-const char *TemplateAStar<state,action,environment>::GetName()
+template <class state, class action, class environment, class openList>
+const char *TemplateAStar<state,action,environment,openList>::GetName()
 {
 	static char name[32];
 	sprintf(name, "TemplateAStar[]");
@@ -186,23 +214,52 @@ const char *TemplateAStar<state,action,environment>::GetName()
  * @param thePath A vector of states which will contain an optimal path 
  * between from and to when the function returns, if one exists. 
  */
-template <class state, class action, class environment>
-void TemplateAStar<state,action,environment>::GetPath(environment *_env, const state& from, const state& to, std::vector<state> &thePath)
+template <class state, class action, class environment, class openList>
+void TemplateAStar<state,action,environment,openList>::GetPath(environment *_env, const state& from, const state& to, std::vector<state> &thePath)
 {
-	//discardcount=0;
-  	if (!InitializeSearch(_env, from, to, thePath))
+	if (!InitializeSearch(_env, from, to, thePath))
   	{	
   		return;
   	}
   	while (!DoSingleSearchStep(thePath))
 	{
 //		if (0 == nodesExpanded%100000)
-//			printf("%llu nodes expanded\n", nodesExpanded);
+//			printf("%" PRId64 " nodes expanded, %" PRId64 " generated\n", nodesExpanded, nodesTouched);
+	}
+}
+
+template <class state, class action, class environment, class openList>
+void TemplateAStar<state,action,environment,openList>::GetPath(environment *_env, const state& from, const state& to, std::vector<action> &path)
+{
+	std::vector<state> thePath;
+	if (!InitializeSearch(_env, from, to, thePath))
+	{
+		return;
+	}
+	path.resize(0);
+	while (!DoSingleSearchStep(thePath))
+	{
+	}
+	for (size_t x = 0; x < thePath.size()-1; x++)
+	{
+		path.push_back(_env->GetAction(thePath[x], thePath[x+1]));
 	}
 }
 
 /**
- * Initialize the A* search 
+ * Reset data structures for the A* search
+ * @author Nathan Sturtevant
+ * @date 04/3/24
+ */
+template <class state, class action, class environment, class openList>
+void TemplateAStar<state,action,environment,openList>::Reset()
+{
+	openClosedList.Reset(0);
+	ResetNodeCount();
+}
+
+/**
+ * Initialize the A* search
  * @author Nathan Sturtevant	
  * @date 03/22/06
  * 
@@ -211,24 +268,14 @@ void TemplateAStar<state,action,environment>::GetPath(environment *_env, const s
  * @param to The goal state
  * @return TRUE if initialization was successful, FALSE otherwise
  */
-template <class state, class action, class environment>
-bool TemplateAStar<state,action,environment>::InitializeSearch(environment *_env, const state& from, const state& to, std::vector<state> &thePath)
+template <class state, class action, class environment, class openList>
+bool TemplateAStar<state,action,environment,openList>::InitializeSearch(environment *_env, const state& from, const state& to, std::vector<state> &thePath)
 {
-	lastF = 0;
-	
-	if (theHeuristic == 0)
+	if (theHeuristic == 0 || !heuristicSet)
 		theHeuristic = _env;
 	thePath.resize(0);
-	//if(useRadius)
-	//std::cout<<"Using radius\n";
 	env = _env;
-	if(!radEnv)
-		radEnv = _env;
-	//	closedList.clear();
-	//	openQueue.reset();
-	//	assert(openQueue.size() == 0);
-	//	assert(closedList.size() == 0);
-	openClosedList.Reset();
+	openClosedList.Reset(env->GetMaxHash());
 	ResetNodeCount();
 	start = from;
 	goal = to;
@@ -238,7 +285,8 @@ bool TemplateAStar<state,action,environment>::InitializeSearch(environment *_env
 		return false;
 	}
 	
-	openClosedList.AddOpenNode(start, env->GetStateHash(start), 0, weight*theHeuristic->HCost(start, goal));
+	double h = theHeuristic->HCost(start, goal);
+	openClosedList.AddOpenNode(start, env->GetStateHash(start), phi(h, 0), 0, h);
 	
 	return true;
 }
@@ -248,10 +296,11 @@ bool TemplateAStar<state,action,environment>::InitializeSearch(environment *_env
  * @author Nathan Sturtevant
  * @date 01/06/08
  */
-template <class state, class action, class environment>
-void TemplateAStar<state,action,environment>::AddAdditionalStartState(state& newState)
+template <class state, class action, class environment, class openList>
+void TemplateAStar<state,action,environment,openList>::AddAdditionalStartState(const state& newState)
 {
-	openClosedList.AddOpenNode(newState, env->GetStateHash(newState), 0, weight*theHeuristic->HCost(start, goal));
+	double h = theHeuristic->HCost(newState, goal);
+	openClosedList.AddOpenNode(newState, env->GetStateHash(newState), phi(h, 0), 0, h);
 }
 
 /**
@@ -259,10 +308,11 @@ void TemplateAStar<state,action,environment>::AddAdditionalStartState(state& new
  * @author Nathan Sturtevant
  * @date 09/25/10
  */
-template <class state, class action, class environment>
-void TemplateAStar<state,action,environment>::AddAdditionalStartState(state& newState, double cost)
+template <class state, class action, class environment, class openList>
+void TemplateAStar<state,action,environment,openList>::AddAdditionalStartState(const state& newState, double cost)
 {
-	openClosedList.AddOpenNode(newState, env->GetStateHash(newState), cost, weight*theHeuristic->HCost(start, goal));
+	double h = theHeuristic->HCost(newState, goal);
+	openClosedList.AddOpenNode(newState, env->GetStateHash(newState), phi(h, cost), cost, h);
 }
 
 /**
@@ -275,8 +325,8 @@ void TemplateAStar<state,action,environment>::AddAdditionalStartState(state& new
  * @return TRUE if there is no path or if we have found the goal, FALSE
  * otherwise
  */
-template <class state, class action, class environment>
-bool TemplateAStar<state,action,environment>::DoSingleSearchStep(std::vector<state> &thePath)
+template <class state, class action, class environment, class openList>
+bool TemplateAStar<state,action,environment,openList>::DoSingleSearchStep(std::vector<state> &thePath)
 {
 	if (openClosedList.OpenSize() == 0)
 	{
@@ -285,10 +335,10 @@ bool TemplateAStar<state,action,environment>::DoSingleSearchStep(std::vector<sta
 		return true;
 	}
 	uint64_t nodeid = openClosedList.Close();
-	if (openClosedList.Lookup(nodeid).g+openClosedList.Lookup(nodeid).h > lastF)
-	{ lastF = openClosedList.Lookup(nodeid).g+openClosedList.Lookup(nodeid).h;
-		//printf("Updated limit to %f\n", lastF);
-	}
+//	if (openClosedList.Lookup(nodeid).g+openClosedList.Lookup(nodeid).h > lastF)
+//	{ lastF = openClosedList.Lookup(nodeid).g+openClosedList.Lookup(nodeid).h;
+//		//printf("Updated limit to %f\n", lastF);
+//	}
 	if (!openClosedList.Lookup(nodeid).reopened)
 		uniqueNodesExpanded++;
 	nodesExpanded++;
@@ -298,6 +348,7 @@ bool TemplateAStar<state,action,environment>::DoSingleSearchStep(std::vector<sta
 		ExtractPathToStartFromID(nodeid, thePath);
 		// Path is backwards - reverse
 		reverse(thePath.begin(), thePath.end()); 
+		goalFCost = openClosedList.Lookup(nodeid).f;// + openClosedList.Lookup(nodeid).h;
 		return true;
 	}
 	
@@ -306,11 +357,12 @@ bool TemplateAStar<state,action,environment>::DoSingleSearchStep(std::vector<sta
 	neighborID.resize(0);
 	neighborLoc.resize(0);
 	
-//	std::cout << "Expanding: " << openClosedList.Lookup(nodeid).data << " with f:";
-//	std::cout << openClosedList.Lookup(nodeid).g+openClosedList.Lookup(nodeid).h << std::endl;
+	//std::cout << "Expanding: " << env->GetStateHash(openClosedList.Lookup(nodeid).data) << " with f:";
+	//std::cout << openClosedList.Lookup(nodeid).g+openClosedList.Lookup(nodeid).h << std::endl;
 	
  	env->GetSuccessors(openClosedList.Lookup(nodeid).data, neighbors);
-	double bestH = 0;
+	double bestH = openClosedList.Lookup(nodeid).h;
+	double lowHC = DBL_MAX;
 	// 1. load all the children
 	for (unsigned int x = 0; x < neighbors.size(); x++)
 	{
@@ -318,35 +370,51 @@ bool TemplateAStar<state,action,environment>::DoSingleSearchStep(std::vector<sta
 		neighborLoc.push_back(openClosedList.Lookup(env->GetStateHash(neighbors[x]), theID));
 		neighborID.push_back(theID);
 		edgeCosts.push_back(env->GCost(openClosedList.Lookup(nodeid).data, neighbors[x]));
-		if (useBPMX && (neighborLoc.back() != kNotFound))
+		if (useBPMX)
 		{
-			// get best child h-cost
-			bestH = std::max(bestH, openClosedList.Lookup(theID).h-edgeCosts.back());
+			if (neighborLoc.back() != kNotFound)
+			{
+				if (!directed)
+					bestH = std::max(bestH, openClosedList.Lookup(theID).h-edgeCosts.back());
+				lowHC = std::min(lowHC, openClosedList.Lookup(theID).h+edgeCosts.back());
+			}
+			else {
+				double tmpH = theHeuristic->HCost(neighbors[x], goal);
+				if (!directed)
+					bestH = std::max(bestH, tmpH-edgeCosts.back());
+				lowHC = std::min(lowHC, tmpH+edgeCosts.back());
+			}
 		}
 	}
 	
 	if (useBPMX) // propagate best child to parent
 	{
-		openClosedList.Lookup(nodeid).h = std::max(openClosedList.Lookup(nodeid).h, bestH); 
+		if (!directed)
+			openClosedList.Lookup(nodeid).h = std::max(openClosedList.Lookup(nodeid).h, bestH);
+		openClosedList.Lookup(nodeid).h = std::max(openClosedList.Lookup(nodeid).h, lowHC);
+		openClosedList.Lookup(nodeid).f = phi(openClosedList.Lookup(nodeid).h, openClosedList.Lookup(nodeid).g);
 	}
 	
 	// iterate again updating costs and writing out to memory
-	for (int x = 0; x < neighbors.size(); x++)
+	for (size_t x = 0; x < neighbors.size(); x++)
 	{
 		nodesTouched++;
-		//double edgeCost;
-//		std::cout << "Checking neighbor: " << neighbors[x];
+		//std::cout << "looking at child with hash : " << env->GetStateHash(neighbors[x]) << "and g-cost"<<openClosedList.Lookup(nodeid).g+edgeCosts[x]<<std::endl;
+		if (theConstraint &&
+			theConstraint->ShouldNotGenerate(start, openClosedList.Lookup(nodeid).data, neighbors[x],
+											 openClosedList.Lookup(nodeid).g+edgeCosts[x], goal))
+			continue;
 
 		switch (neighborLoc[x])
 		{
 			case kClosedList:
-				//edgeCost = env->GCost(openClosedList.Lookup(nodeid).data, neighbors[x]);
-//				std::cout << "Already closed\n";
-				if (useBPMX) // propagate best child to parent - do this before potentially re-opening
+				if (useBPMX) // propagate parent to child - do this before potentially re-opening
 				{
 					if (fless(openClosedList.Lookup(neighborID[x]).h, bestH-edgeCosts[x]))
 					{
-						openClosedList.Lookup(neighborID[x]).h = bestH-edgeCosts[x]; 
+						auto &i = openClosedList.Lookup(neighborID[x]);
+						i.h = bestH-edgeCosts[x];
+						i.f = phi(i.h, i.g);
 						if (useBPMX > 1) FullBPMX(neighborID[x], useBPMX-1);
 					}
 				}
@@ -354,13 +422,15 @@ bool TemplateAStar<state,action,environment>::DoSingleSearchStep(std::vector<sta
 				{
 					if (fless(openClosedList.Lookup(nodeid).g+edgeCosts[x], openClosedList.Lookup(neighborID[x]).g))
 					{
-						openClosedList.Lookup(neighborID[x]).parentID = nodeid;
-						openClosedList.Lookup(neighborID[x]).g = openClosedList.Lookup(nodeid).g+edgeCosts[x];
+						auto &i = openClosedList.Lookup(neighborID[x]);
+						i.parentID = nodeid;
+						i.g = openClosedList.Lookup(nodeid).g+edgeCosts[x];
+						i.f = phi(i.h, i.g);
 						openClosedList.Reopen(neighborID[x]);
 						// This line isn't normally needed, but in some state spaces we might have
 						// equality but different meta information, so we need to make sure that the
 						// meta information is also copied, since this is the most generic A* implementation
-						openClosedList.Lookup(neighborID[x]).data = neighbors[x];
+						i.data = neighbors[x];
 					}
 				}
 				break;
@@ -368,12 +438,14 @@ bool TemplateAStar<state,action,environment>::DoSingleSearchStep(std::vector<sta
 				//edgeCost = env->GCost(openClosedList.Lookup(nodeid).data, neighbors[x]);
 				if (fless(openClosedList.Lookup(nodeid).g+edgeCosts[x], openClosedList.Lookup(neighborID[x]).g))
 				{
-					openClosedList.Lookup(neighborID[x]).parentID = nodeid;
-					openClosedList.Lookup(neighborID[x]).g = openClosedList.Lookup(nodeid).g+edgeCosts[x];
+					auto &i = openClosedList.Lookup(neighborID[x]);
+					i.parentID = nodeid;
+					i.g = openClosedList.Lookup(nodeid).g+edgeCosts[x];
+					i.f = phi(i.h, i.g);
 					// This line isn't normally needed, but in some state spaces we might have
 					// equality but different meta information, so we need to make sure that the
 					// meta information is also copied, since this is the most generic A* implementation
-					openClosedList.Lookup(neighborID[x]).data = neighbors[x];
+					i.data = neighbors[x];
 					openClosedList.KeyChanged(neighborID[x]);
 //					std::cout << " Reducing cost to " << openClosedList.Lookup(nodeid).g+edgeCosts[x] << "\n";
 					// TODO: unify the KeyChanged calls.
@@ -385,40 +457,36 @@ bool TemplateAStar<state,action,environment>::DoSingleSearchStep(std::vector<sta
 				{
 					if (fgreater(bestH-edgeCosts[x], openClosedList.Lookup(neighborID[x]).h))
 					{
-						openClosedList.Lookup(neighborID[x]).h = std::max(openClosedList.Lookup(neighborID[x]).h, bestH-edgeCosts[x]); 
+						auto &i = openClosedList.Lookup(neighborID[x]);
+						i.h = std::max(i.h, bestH-edgeCosts[x]);
+						i.f = phi(i.h, i.g);
 						openClosedList.KeyChanged(neighborID[x]);
 					}
 				}
 				break;
 			case kNotFound:
-				// node is occupied; just mark it closed
-				if (useRadius && useOccupancyInfo && env->GetOccupancyInfo() && radEnv && (radEnv->HCost(start, neighbors[x]) < radius) &&(env->GetOccupancyInfo()->GetStateOccupied(neighbors[x])) && ((!(radEnv->GoalTest(neighbors[x], goal)))))
-				{
-					//double edgeCost = env->GCost(openClosedList.Lookup(nodeid).data, neighbors[x]);
-					openClosedList.AddClosedNode(neighbors[x],
-												 env->GetStateHash(neighbors[x]),
-												 openClosedList.Lookup(nodeid).g+edgeCosts[x],
-												 std::max(theHeuristic->HCost(neighbors[x], goal), openClosedList.Lookup(nodeid).h-edgeCosts[x]),
-												 nodeid);
-				}
-				else { // add node to open list
+				{ // add node to open list
 					//double edgeCost = env->GCost(openClosedList.Lookup(nodeid).data, neighbors[x]);
 //					std::cout << " adding to open ";
 //					std::cout << double(theHeuristic->HCost(neighbors[x], goal)+openClosedList.Lookup(nodeid).g+edgeCosts[x]);
 //					std::cout << " \n";
+					double h = theHeuristic->HCost(neighbors[x], goal);
 					if (useBPMX)
 					{
+						h = std::max(h, openClosedList.Lookup(nodeid).h-edgeCosts[x]);
 						openClosedList.AddOpenNode(neighbors[x],
 												   env->GetStateHash(neighbors[x]),
+												   phi(std::max(h, openClosedList.Lookup(nodeid).h-edgeCosts[x]), openClosedList.Lookup(nodeid).g+edgeCosts[x]),
 												   openClosedList.Lookup(nodeid).g+edgeCosts[x],
-												   std::max(weight*theHeuristic->HCost(neighbors[x], goal), openClosedList.Lookup(nodeid).h-edgeCosts[x]),
+												   h,
 												   nodeid);
 					}
 					else {
 						openClosedList.AddOpenNode(neighbors[x],
 												   env->GetStateHash(neighbors[x]),
+												   phi(h, openClosedList.Lookup(nodeid).g+edgeCosts[x]),
 												   openClosedList.Lookup(nodeid).g+edgeCosts[x],
-												   weight*theHeuristic->HCost(neighbors[x], goal),
+												   h,
 												   nodeid);
 					}
 //					if (loc == -1)
@@ -440,8 +508,8 @@ bool TemplateAStar<state,action,environment>::DoSingleSearchStep(std::vector<sta
  * 
  * @return The first state in the open list. 
  */
-template <class state, class action, class environment>
-state TemplateAStar<state, action,environment>::CheckNextNode()
+template <class state, class action, class environment, class openList>
+state TemplateAStar<state, action,environment,openList>::CheckNextNode()
 {
 	uint64_t key = openClosedList.Peek();
 	return openClosedList.Lookup(key).data;
@@ -456,8 +524,8 @@ state TemplateAStar<state, action,environment>::CheckNextNode()
  * 
  * @return The first state in the open list. 
  */
-template <class state, class action, class environment>
-void TemplateAStar<state, action,environment>::FullBPMX(uint64_t nodeID, int distance)
+template <class state, class action, class environment, class openList>
+void TemplateAStar<state, action,environment,openList>::FullBPMX(uint64_t nodeID, int distance)
 {
 	if (distance <= 0)
 		return;
@@ -507,8 +575,8 @@ void TemplateAStar<state, action,environment>::FullBPMX(uint64_t nodeID, int dis
  * @param goalNode the goal state
  * @param thePath will contain the path from goalNode to the start state
  */
-template <class state, class action,class environment>
-void TemplateAStar<state, action,environment>::ExtractPathToStartFromID(uint64_t node,
+template <class state, class action,class environment,class openList>
+void TemplateAStar<state, action,environment,openList>::ExtractPathToStartFromID(uint64_t node,
 																	 std::vector<state> &thePath)
 {
 	do {
@@ -518,14 +586,37 @@ void TemplateAStar<state, action,environment>::ExtractPathToStartFromID(uint64_t
 	thePath.push_back(openClosedList.Lookup(node).data);
 }
 
+template <class state, class action,class environment,class openList>
+const state &TemplateAStar<state, action,environment,openList>::GetParent(const state &s)
+{
+	uint64_t theID;
+	openClosedList.Lookup(env->GetStateHash(s), theID);
+	theID = openClosedList.Lookup(theID).parentID;
+	return openClosedList.Lookup(theID).data;
+}
+
+template <class state, class action, class environment, class openList>
+uint64_t TemplateAStar<state, action,environment,openList>::GetNecessaryExpansions() const
+{
+	uint64_t n = 0;
+	for (unsigned int x = 0; x < openClosedList.size(); x++)
+	{
+		const auto &data = openClosedList.Lookat(x);
+		if (fless(data.g + data.h, goalFCost))
+			n++;
+	}
+	return n;
+}
+
+
 /**
  * A function that prints the number of states in the closed list and open
  * queue. 
  * @author Nathan Sturtevant
  * @date 03/22/06
  */
-template <class state, class action, class environment>
-void TemplateAStar<state, action,environment>::PrintStats()
+template <class state, class action, class environment, class openList>
+void TemplateAStar<state, action,environment,openList>::PrintStats()
 {
 	printf("%u items in closed list\n", (unsigned int)openClosedList.ClosedSize());
 	printf("%u items in open queue\n", (unsigned int)openClosedList.OpenSize());
@@ -538,8 +629,8 @@ void TemplateAStar<state, action,environment>::PrintStats()
  * 
  * @return The combined number of elements in the closed list and open queue
  */
-template <class state, class action, class environment>
-int TemplateAStar<state, action,environment>::GetMemoryUsage()
+template <class state, class action, class environment, class openList>
+int TemplateAStar<state, action,environment,openList>::GetMemoryUsage()
 {
 	return openClosedList.size();
 }
@@ -552,10 +643,10 @@ int TemplateAStar<state, action,environment>::GetMemoryUsage()
  * @param val The state to lookup in the closed list
  * @gCost The g-cost of the node in the closed list
  * @return success Whether we found the value or not
- * more states
+ * the states
  */
-template <class state, class action, class environment>
-bool TemplateAStar<state, action,environment>::GetClosedListGCost(const state &val, double &gCost) const
+template <class state, class action, class environment, class openList>
+bool TemplateAStar<state, action,environment,openList>::GetClosedListGCost(const state &val, double &gCost) const
 {
 	uint64_t theID;
 	dataLocation loc = openClosedList.Lookup(env->GetStateHash(val), theID);
@@ -567,68 +658,251 @@ bool TemplateAStar<state, action,environment>::GetClosedListGCost(const state &v
 	return false;
 }
 
+template <class state, class action, class environment, class openList>
+bool TemplateAStar<state, action,environment,openList>::GetOpenListGCost(const state &val, double &gCost) const
+{
+	uint64_t theID;
+	dataLocation loc = openClosedList.Lookup(env->GetStateHash(val), theID);
+	if (loc == kOpenList)
+	{
+		gCost = openClosedList.Lookat(theID).g;
+		return true;
+	}
+	return false;
+}
+
+template <class state, class action, class environment, class openList>
+bool TemplateAStar<state, action,environment,openList>::GetHCost(const state &val, double &hCost) const
+{
+	uint64_t theID;
+	dataLocation loc = openClosedList.Lookup(env->GetStateHash(val), theID);
+	if (loc != kNotFound)
+	{
+		hCost = openClosedList.Lookat(theID).h;
+		return true;
+	}
+	return false;
+}
+
+template <class state, class action, class environment, class openList>
+bool TemplateAStar<state, action,environment,openList>::GetClosedItem(const state &s, AStarOpenClosedDataWithF<state> &result)
+{
+	uint64_t theID;
+	dataLocation loc = openClosedList.Lookup(env->GetStateHash(s), theID);
+	if (loc == kClosedList)
+	{
+		result = openClosedList.Lookat(theID);
+		return true;
+	}
+	return false;
+
+}
+
 /**
  * Draw the open/closed list
  * @author Nathan Sturtevant
- * @date 03/12/09
- * 
+ * @date 7/12/16
+ *
  */
-template <class state, class action, class environment>
-void TemplateAStar<state, action,environment>::OpenGLDraw() const
+template <class state, class action, class environment, class openList>
+void TemplateAStar<state, action,environment,openList>::Draw(Graphics::Display &disp) const
 {
 	double transparency = 1.0;
 	if (openClosedList.size() == 0)
 		return;
 	uint64_t top = -1;
-//	double minf = 1e9, maxf = 0;
+	//	double minf = 1e9, maxf = 0;
 	if (openClosedList.OpenSize() > 0)
 	{
 		top = openClosedList.Peek();
 	}
-//	for (unsigned int x = 0; x < openClosedList.size(); x++)
-//	{
-//		const AStarOpenClosedData<state> &data = openClosedList.Lookat(x);
-//		double f = data.g+data.h;
-//		if (f > maxf)
-//			maxf = f;
-//		if (f < minf)
-//			minf = f;
-//	}
 	for (unsigned int x = 0; x < openClosedList.size(); x++)
 	{
-		const AStarOpenClosedData<state> &data = openClosedList.Lookat(x);
+		const auto &data = openClosedList.Lookat(x);
 		if (x == top)
 		{
-			env->SetColor(1.0, 1.0, 0.0, transparency);
-			env->OpenGLDraw(data.data);
+			env->SetColor(1.0, 1.0, 0.0);
+			env->Draw(disp, data.data);
 		}
-		if ((data.where == kOpenList) && (data.reopened))
+		else if ((data.where == kOpenList) && (data.reopened))
 		{
-			env->SetColor(0.0, 0.5, 0.5, transparency);
-			env->OpenGLDraw(data.data);
+			env->SetColor(0.0, 0.5, 0.5);
+			env->Draw(disp, data.data);
 		}
-		else if (data.where == kOpenList) 
+		else if (data.where == kOpenList)
 		{
-			env->SetColor(0.0, 1.0, 0.0, transparency);
-			env->OpenGLDraw(data.data);
+			env->SetColor(Colors::green);
+			env->Draw(disp, data.data);
 		}
 		else if ((data.where == kClosedList) && (data.reopened))
 		{
-			env->SetColor(0.5, 0.0, 0.5, transparency);
-			env->OpenGLDraw(data.data);
+			env->SetColor(0.5, 0.0, 0.5);
+			env->Draw(disp, data.data);
 		}
 		else if (data.where == kClosedList)
 		{
-//			if (top != -1)
-//			{
-//				env->SetColor((data.g+data.h-minf)/(maxf-minf), 0.0, 0.0, transparency);
-//			}
-//			else {
-			env->SetColor(1.0, 0.0, 0.0, transparency);
-//			}
-			env->OpenGLDraw(data.data);
+			if (data.parentID == x) // Start state
+				env->SetColor(1.0, 0.5, 0.5);
+			else
+				env->SetColor(rgbColor(1.0,0.35,0.35)); // for better color-blind
+			env->Draw(disp, data.data);
 		}
 	}
+	env->SetColor(1.0, 0.5, 1.0, 0.5);
+	env->Draw(disp, goal);
 }
+
+/**
+ * Draw the open/closed list according to the estimated suboptimality allowed at that state
+ * @author Nathan Sturtevant
+ * @date 7/12/16
+ *
+ */
+template <class state, class action, class environment, class openList>
+void TemplateAStar<state, action,environment,openList>::DrawSuboptimality(Graphics::Display &disp) const
+{
+	if (openClosedList.size() == 0)
+		return;
+	float delta = 0.001;
+
+	float minw = std::numeric_limits<float>::max(), maxw = 0;
+	for (unsigned int x = 0; x < openClosedList.size(); x++)
+	{
+		const auto &data = openClosedList.Lookat(x);
+		float p0 = Phi(data.h, data.g);
+		float p1 = Phi(data.h-delta, data.g);
+		float p2 = Phi(data.h, data.g+delta);
+		//		p*p1 + (1-p)*p2 = p0;
+		//		p*p1 + - p*p2 = p0-p2;
+		float p = (p0-p2)/(p1-p2);
+		float run = p*(data.h-delta) + (1-p)*data.h - data.h;
+		float rise = p*(data.g) + (1-p)*(data.g-delta) - data.g;
+//		printf("[%f] Predicted weight: %f/%f = %f\n", p, rise, run, rise/run);
+		float w = rise/run;
+		minw = std::min(minw, w);
+		maxw = std::max(maxw, w);
+	}
+	// smooth estimates
+	float avg = (minw+maxw)*0.5f;
+	minw = std::min(minw, avg-0.5f);
+	maxw = std::max(maxw, avg+0.5f);
+	maxw -= minw;
+//	printf("Max: %f, min: %f\n", maxw, minw);
+	for (unsigned int x = 0; x < openClosedList.size(); x++)
+	{
+		const auto &data = openClosedList.Lookat(x);
+		float p0 = Phi(data.h, data.g);
+		float p1 = Phi(data.h-delta, data.g);
+		float p2 = Phi(data.h, data.g+delta);
+		float p = (p0-p2)/(p1-p2);
+		float run = p*(data.h-delta) + (1-p)*data.h - data.h;
+		float rise = p*(data.g) + (1-p)*(data.g-delta) - data.g;
+		float w = rise/run-minw;
+		env->SetColor(w/maxw, 0.0, 1-w/maxw);
+		env->Draw(disp, data.data);
+	}
+}
+
+
+template <class state, class action, class environment, class openList>
+std::string TemplateAStar<state, action,environment,openList>::SVGDraw() const
+{
+	std::string s;
+	double transparency = 1.0;
+	if (openClosedList.size() == 0)
+		return s;
+	uint64_t top = -1;
+	
+	if (openClosedList.OpenSize() > 0)
+	{
+		top = openClosedList.Peek();
+	}
+	for (unsigned int x = 0; x < openClosedList.size(); x++)
+	{
+		const auto &data = openClosedList.Lookat(x);
+		
+		if (x == top)
+		{
+			env->SetColor(Colors::yellow);
+			s+=env->SVGDraw(data.data);
+		}
+		else if ((data.where == kOpenList) && (data.reopened))
+		{
+			env->SetColor(0.0, 0.5, 0.5);
+			s+=env->SVGDraw(data.data);
+		}
+		else if (data.where == kOpenList)
+		{
+			env->SetColor(Colors::green);
+			s+=env->SVGDraw(data.data);
+		}
+		else if ((data.where == kClosedList) && (data.reopened))
+		{
+			env->SetColor(0.5, 0.0, 0.5);
+			s+=env->SVGDraw(data.data);
+		}
+		else if (data.where == kClosedList)
+		{
+			env->SetColor(Colors::gray); // swapped from red to gray for better color-blind contrast
+			s+=env->SVGDraw(data.data);
+		}
+	}
+	return s;
+}
+
+template <class state, class action, class environment, class openList>
+std::string TemplateAStar<state, action,environment,openList>::SVGDrawDetailed() const
+{
+	std::string s;
+	//double transparency = 1.0;
+	if (openClosedList.size() == 0)
+		return s;
+	uint64_t top = -1;
+	
+	if (openClosedList.OpenSize() > 0)
+	{
+		top = openClosedList.Peek();
+	}
+	for (unsigned int x = 0; x < openClosedList.size(); x++)
+	{
+		const auto &data = openClosedList.Lookat(x);
+		
+//		if (x == top)
+//		{
+//			env->SetColor(1.0, 1.0, 0.0);
+//			s+=env->SVGDraw(data.data);
+//		}
+//		else if ((data.where == kOpenList) && (data.reopened))
+//		{
+//			env->SetColor(0.0, 0.5, 0.5);
+//			s+=env->SVGDraw(data.data);
+//		}
+//		else if (data.where == kOpenList)
+//		{
+//			env->SetColor(0.0, 1.0, 0.0);
+//			s+=env->SVGDraw(data.data);
+//		}
+//		else if ((data.where == kClosedList) && (data.reopened))
+//		{
+//			env->SetColor(0.5, 0.0, 0.5);
+//			s+=env->SVGDraw(data.data);
+//		}
+//		else if (data.where == kClosedList)
+//		{
+//			env->SetColor(1.0, 0.0, 0.0);
+//			s+=env->SVGDraw(data.data);
+//		}
+		env->SetColor(0.0, 0.0, 0.0);
+		char d[32];
+		sprintf(d, "%1.1f", data.g+data.h);
+		s+=env->SVGLabelState(data.data, d, 0.35, -0.6, -1.1);
+		sprintf(d, "g:%1.1f", data.g);
+		s+=env->SVGLabelState(data.data, d, 0.25, -0.6,  -0.75);
+		sprintf(d, "h:%1.1f", data.h);
+		s+=env->SVGLabelState(data.data, d, 0.25, -0.6,  -0.48);
+	}
+	return s;
+}
+
 
 #endif

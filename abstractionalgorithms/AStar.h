@@ -1,27 +1,11 @@
 /*
- * $Id: aStar.h,v 1.8 2007/03/07 21:58:08 nathanst Exp $
- *
- *  aStar3.h
- *  hog
+ *  $Id: aStar.h
+ *  hog2
  *
  *  Created by Nathan Sturtevant on 3/22/06.
- *  Copyright 2006 Nathan Sturtevant. All rights reserved.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * This file is part of HOG.
- *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
  *
  */
 
@@ -33,8 +17,9 @@
 #include "Path.h"
 #include "GraphAbstraction.h"
 #include "FPUtil.h"
-#include <ext/hash_map>
 #include "OpenClosedList.h"
+
+#include <unordered_map>
 
 namespace AStar3Util
 {
@@ -86,10 +71,10 @@ public:
 	typedef OpenClosedList<AStar3Util::SearchNode, AStar3Util::SearchNodeHash,
 		AStar3Util::SearchNodeEqual, AStar3Util::SearchNodeCompare> PQueue;
 	
-	typedef __gnu_cxx::hash_map<node*, AStar3Util::SearchNode,
+	typedef std::unordered_map<node*, AStar3Util::SearchNode,
 		AStar3Util::NodeHash, AStar3Util::NodeEqual > NodeLookupTable;
 	
-	typedef __gnu_cxx::hash_map<node*, bool,
+	typedef std::unordered_map<node*, bool,
 		AStar3Util::NodeHash, AStar3Util::NodeEqual > Corridor;
 }
 

@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+foreach scen ( ../../scenarios/$1/*.scen )
+foreach weight ( 1.25 1.5 2 3 5 9 )
+foreach alg (0 1 3 4 5) #`seq 0 3`
+set x = `echo $scen | sed 's/.*\///g'`
+set map = `echo $x | sed 's/.scen//'`
+echo "ALG " $alg " weight " $weight " map " $map
+../../bin/release/DSDWA -map ../../maps/$1/$map $scen $alg $weight >> ${1}-map-results.txt
+end
+end
+end

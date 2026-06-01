@@ -42,6 +42,12 @@ public:
 	float dv, dh;
 };
 
+static bool operator==(const steeringAction &l1, const steeringAction &l2)
+{
+	return ((fequal(l1.dv, l2.dv)) &&
+			(fequal(l1.dh, l2.dh)));
+}
+
 extern float maxSpeed;
 extern float worldRadius;
 
@@ -60,19 +66,19 @@ public:
 	virtual bool InvertAction(steeringAction &a) const;	
 	
 	/** Heuristic value between two arbitrary nodes. **/
-	virtual double HCost(const steeringState &node1, const steeringState &node2);
+	virtual double HCost(const steeringState &node1, const steeringState &node2) const;
 	
 	/** Heuristic value between node and the stored goal. Asserts that the
 	 goal is stored **/
-	virtual double HCost(const steeringState &node)
+	virtual double HCost(const steeringState &node) const
 	{ assert(bValidSearchGoal); return HCost(node, searchGoal); }
 	
-	virtual double GCost(const steeringState &node1, const steeringState &node2);
-	virtual double GCost(const steeringState &node, const steeringAction &act);
-	virtual bool GoalTest(const steeringState &node, const steeringState &goal);
+	virtual double GCost(const steeringState &node1, const steeringState &node2) const;
+	virtual double GCost(const steeringState &node, const steeringAction &act) const;
+	virtual bool GoalTest(const steeringState &node, const steeringState &goal) const;
 	
 	/** Goal Test if the goal is stored **/
-	virtual bool GoalTest(const steeringState &node)
+	virtual bool GoalTest(const steeringState &node) const
 	{ return bValidSearchGoal&&(node == searchGoal); }
 	
 	virtual uint64_t GetStateHash(const steeringState &node) const;
@@ -80,11 +86,11 @@ public:
 	
 	//virtual double GetPathLength(std::vector<steeringState> &neighbors);
 	
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const steeringState&) const;
-	/** Draw the transition at some percentage 0...1 between two states */
-	virtual void OpenGLDraw(const steeringState&, const steeringState&, float) const;
-	virtual void OpenGLDraw(const steeringState&, const steeringAction&) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const steeringState&) const;
+//	/** Draw the transition at some percentage 0...1 between two states */
+//	virtual void OpenGLDraw(const steeringState&, const steeringState&, float) const;
+//	virtual void OpenGLDraw(const steeringState&, const steeringAction&) const;
 private:
 };
 

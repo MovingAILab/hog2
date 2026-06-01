@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./XDP_RaceTrackJob0.script
+./XDP_RaceTrackJob1.script
+./XDP_RaceTrackJob2.script
+./XDP_RaceTrackJob3.script
+./XDP_RaceTrackJob4.script
+./XDP_RaceTrackJob5.script
+./XDP_RaceTrackJob6.script
+./XDP_RaceTrackJob7.script
+./XDP_RaceTrackJob8.script
+./XDP_RaceTrackJob9.script

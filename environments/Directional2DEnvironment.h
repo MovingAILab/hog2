@@ -124,22 +124,22 @@ public:
 
 	virtual bool InvertAction(deltaSpeedHeading &a) const;
 	
-	virtual double HCost(const xySpeedHeading &node1, const xySpeedHeading &node2);
-	virtual double HCost(const xySpeedHeading &) { assert(false); return 0; }
-	virtual double GCost(const xySpeedHeading &node1, const xySpeedHeading &node2);
-	virtual double GCost(const xySpeedHeading &node1, const deltaSpeedHeading &act);
+	virtual double HCost(const xySpeedHeading &node1, const xySpeedHeading &node2) const;
+	virtual double HCost(const xySpeedHeading &)  const { assert(false); return 0; }
+	virtual double GCost(const xySpeedHeading &node1, const xySpeedHeading &node2) const;
+	virtual double GCost(const xySpeedHeading &node1, const deltaSpeedHeading &act) const;
 
 	int GetNumAngles();
 	
 	void SetGoalTest(GoalTester *t) {test = t;}
-	bool GoalTest(const xySpeedHeading &node, const xySpeedHeading &goal);
-	bool GoalTest(const xySpeedHeading &) { assert(false); return false; }
+	bool GoalTest(const xySpeedHeading &node, const xySpeedHeading &goal) const;
+	bool GoalTest(const xySpeedHeading &) const { assert(false); return false; }
 	uint64_t GetStateHash(const xySpeedHeading &node) const;
 	uint64_t GetActionHash(deltaSpeedHeading act) const;
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const xySpeedHeading &l) const;
-	virtual void OpenGLDraw(const xySpeedHeading& oldState, const xySpeedHeading &newState, float perc) const;
-	virtual void OpenGLDraw(const xySpeedHeading &, const deltaSpeedHeading &) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const xySpeedHeading &l) const;
+//	virtual void OpenGLDraw(const xySpeedHeading& oldState, const xySpeedHeading &newState, float perc) const;
+//	virtual void OpenGLDraw(const xySpeedHeading &, const deltaSpeedHeading &) const;
 	void GLDrawLine(const xySpeedHeading &a, const xySpeedHeading &b) const;
 
 	Map* GetMap() { return map; }
@@ -153,9 +153,9 @@ private:
 	void BuildAngleTables();
 	float mySin(int dir) const;
 	float myCos(int dir) const;
-	float LookupStateHash(const xySpeedHeading &s, dirHeuristicTable &t);
-	bool LookupStateHashIndex(const xySpeedHeading &s, int &index1, int &index2);
-	float LookupStateHeuristic(const xySpeedHeading &s1, const xySpeedHeading &s2);
+	float LookupStateHash(const xySpeedHeading &s, const dirHeuristicTable &t) const;
+	bool LookupStateHashIndex(const xySpeedHeading &s, int &index1, int &index2) const;
+	float LookupStateHeuristic(const xySpeedHeading &s1, const xySpeedHeading &s2) const;
 	void RotateCCW(xySpeedHeading &s, unsigned int rotation) const;
 	bool checkLegal;
 	GoalTester *test;

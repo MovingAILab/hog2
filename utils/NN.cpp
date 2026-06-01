@@ -2,7 +2,9 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <cassert>
 #include "NN.h"
+
 
 /*
  class NN
@@ -22,7 +24,6 @@ NN::NN(int _inputs, int _hiddens, int _outputs, double learnrate)
 {
 	outputActivation = kExponential;
 	rate = learnrate;
-	momentum = 0.0;
 	allocateMemory();
 }
 
@@ -39,7 +40,6 @@ NN::NN(NN *nn)
 	rate = nn->rate;
 	outputActivation = nn->outputActivation;
 	
-	momentum = nn->momentum;
 	allocateMemory();
 }
 
@@ -57,25 +57,27 @@ NN::NN(FunctionApproximator *fa)
 	outputs = nn->outputs;
 	rate = nn->rate;
 	outputActivation = nn->outputActivation;	
-	momentum = nn->momentum;
 	allocateMemory();
 }
 
 void NN::allocateMemory(const NN *nn)
 {
-	hidden.resize(hiddens);// = new double[hiddens];
-	output.resize(outputs);// = new double[outputs];
+	hidden.resize(hiddens);
+	output.resize(outputs);
 	
 		
-	weights.resize(2); // = new double**[2];
+	weights.resize(2);
+	updatedweights.resize(2);
 	errors.resize(2);// = new double**[2];
 	
-	weights[0].resize(hiddens);// = (double**)new double[hiddens];
-	errors[0].resize(hiddens);// = (double **)new double[hiddens];
+	weights[0].resize(hiddens);
+	updatedweights[0].resize(hiddens);
+	errors[0].resize(hiddens);
 	for (int x = 0; x < hiddens; x++)
 	{
-		weights[0][x].resize(inputs+1);// = new double[inputs+1];
-		errors[0][x].resize(inputs+1);// = new double[inputs+1];
+		weights[0][x].resize(inputs+1);
+		updatedweights[0][x].resize(inputs+1);
+		errors[0][x].resize(inputs+1);
 	}
 	
 	for (int x = 0; x < hiddens; x++)
@@ -83,17 +85,22 @@ void NN::allocateMemory(const NN *nn)
 		for (int y = 0; y < inputs+1; y++)
 		{
 			if (nn)
+			{
 				weights[0][x][y] = nn->weights[0][x][y];
-			else
+			}
+			else {
 				weights[0][x][y] = ((double)2*random()/RAND_MAX-1)/3;
+			}
 			errors[0][x][y] = 0;
 		}
 	}
-	weights[1].resize(outputs);// = new double*[outputs];
+	weights[1].resize(outputs);
+	updatedweights[1].resize(outputs);
 	errors[1].resize(outputs);// = new double*[outputs];
 	for (int x = 0; x < outputs; x++)
 	{
-		weights[1][x].resize(hiddens+1);// = new double[hiddens+1];
+		weights[1][x].resize(hiddens+1);
+		updatedweights[1][x].resize(hiddens+1);
 		errors[1][x].resize(hiddens+1);// = new double[hiddens+1];
 	}
 	for (int x = 0; x < outputs; x++)
@@ -282,16 +289,6 @@ void NN::save(FILE *f)
 	//printf("Done...with external\n");
 }
 
-void NN::setMomentum(double _momentum)
-{
-	momentum = _momentum;
-}
-
-double NN::getMomentum()
-{
-	return momentum;
-}
-
 double NN::g(double a)
 {
 	return (1/(1+exp(-a)));
@@ -299,12 +296,11 @@ double NN::g(double a)
 
 double NN::dg(double a)
 {
-	double g_a = g(a);
+	double g_a = a;
 	return g_a*(1-g_a);
-//	return a*(1-a);
 }
 
-double NN::outputerr(std::vector<double> &out, std::vector<double> &expected, int which)
+double NN::outputerr(const std::vector<double> &out, const std::vector<double> &expected, int which)
 {
 	double err = (expected[which]-out[which]);
 	if (outputActivation == kExponential)
@@ -313,7 +309,7 @@ double NN::outputerr(std::vector<double> &out, std::vector<double> &expected, in
 	return err;
 }
 
-double NN::internalerr(std::vector<double> &out, std::vector<double> &expected, int which)
+double NN::internalerr(const std::vector<double> &out, const std::vector<double> &expected, int which)
 {
 	double answer = 0;
 
@@ -324,64 +320,74 @@ double NN::internalerr(std::vector<double> &out, std::vector<double> &expected, 
 	return answer;
 }
 
-double NN::error(std::vector<double> &output2)
+double NN::internalinputerr(const std::vector<double> &out, const std::vector<double> &expected, int which)
+{
+	double answer = 0;
+	
+	for (int x = 0; x < outputs; x++)
+		answer+=hidden[which]*outputerr(out, expected, x)*dg(weights[1][x][which]);
+	
+	return answer;
+}
+
+double NN::error(const std::vector<double> &target)
 {
 	double answer = 0, t;
 	for (int x = 0; x < outputs; x++) // output.length
 	{
-		t = (output[x]-output2[x]);
+		t = (output[x]-target[x]);
 		answer += t*t;
 	}
 	return answer;
 }
 
-double NN::train(std::vector<double> &input, std::vector<double> &output2)
+double NN::train(std::vector<double> &input, std::vector<double> &target)
 {
 	test(input);
 
 	// calulate error in output layer
 	for (int x = 0; x < outputs; x++) // weights[1].length
 	{
-		double xoutputerror = rate*outputerr(output, output2, x);
-		errors[1][x][0] = errors[1][x][0]*momentum+xoutputerror;
-		weights[1][x][0] += errors[1][x][0];
-		for (int y = 0; y < hiddens; y++) // weights[1][x].length-1
+		double xoutputerror = rate*outputerr(output, target, x);
+		errors[1][x][0] = xoutputerror;
+		updatedweights[1][x][0] = weights[1][x][0] + errors[1][x][0];
+		for (int y = 0; y < hiddens; y++)
 		{
-			// we add 1/2 the prev. value for "momentum"
-			errors[1][x][y+1] = errors[1][x][y+1]*momentum + hidden[y]*xoutputerror;
-			weights[1][x][y+1] += errors[1][x][y+1];
+			errors[1][x][y+1] = hidden[y]*xoutputerror;
+			updatedweights[1][x][y+1] = weights[1][x][y+1]+errors[1][x][y+1];
 		}
 	}
 
 	// calulate error in hidden layer
 	for (int x = 0; x < hiddens; x++) // weights[0].length
 	{
-		double xinternalerror = rate*internalerr(output, output2, x);
-		errors[0][x][0] = errors[0][x][0]*momentum + xinternalerror;
-		weights[0][x][0] += errors[0][x][0];
-		for (int y = 0; y < inputs; y++) //w[0][x].length-1
+		double xinternalerror = rate*internalerr(output, target, x);
+		errors[0][x][0] = xinternalerror;
+		updatedweights[0][x][0] = weights[0][x][0]+errors[0][x][0];
+		for (int y = 0; y < inputs; y++)
 		{
-			errors[0][x][y+1] = errors[0][x][y+1]*momentum + input[y]*xinternalerror;
-			weights[0][x][y+1] += errors[0][x][y+1];
+			errors[0][x][y+1] = input[y]*xinternalerror;
+			updatedweights[0][x][y+1] = weights[0][x][y+1]+errors[0][x][y+1];
 		} 
 	}
-	return error(output2);
+	updatedweights.swap(weights);
+	return error(target);
 }
 
-double NN::train(std::vector<unsigned int> &input, std::vector<double> &output2)
+double NN::train(std::vector<unsigned int> &input, std::vector<double> &target)
 {
+	assert(!"Code needs updating");
 	test(input);
 	
 	// calulate error in output layer
 	for (int x = 0; x < outputs; x++) // weights[1].length
 	{
-		double xoutputerror = rate*outputerr(output, output2, x);
-		errors[1][x][0] = errors[1][x][0]*momentum+xoutputerror;
+		double xoutputerror = rate*outputerr(output, target, x);
+		errors[1][x][0] = xoutputerror;
 		weights[1][x][0] += errors[1][x][0];
 		for (int y = 0; y < hiddens; y++) // weights[1][x].length-1
 		{
-			// we add 1/2 the prev. value for "momentum"
-			errors[1][x][y+1] = errors[1][x][y+1]*momentum + hidden[y]*xoutputerror;
+			errors[1][x][y+1] = hidden[y]*xoutputerror;
 			weights[1][x][y+1] += errors[1][x][y+1];
 		}
 	}
@@ -389,16 +395,35 @@ double NN::train(std::vector<unsigned int> &input, std::vector<double> &output2)
 	// calulate error in hidden layer
 	for (int x = 0; x < hiddens; x++) // weights[0].length
 	{
-		double xinternalerror = rate*internalerr(output, output2, x);
-		errors[0][x][0] = errors[0][x][0]*momentum + xinternalerror;
+		double xinternalerror = rate*internalerr(output, target, x);
+		errors[0][x][0] = xinternalerror;
 		weights[0][x][0] += errors[0][x][0];
 		for (unsigned int y = 0; y < input.size(); y++) //w[0][x].length-1
 		{
-			errors[0][x][input[y]+1] = errors[0][x][input[y]+1]*momentum + (1)*xinternalerror;
+			errors[0][x][input[y]+1] = (1)*xinternalerror;
 			weights[0][x][input[y]+1] += errors[0][x][input[y]+1];
 		} 
 	}
-	return error(output2);
+	return error(target);
+}
+
+/*
+ * Given the target output, find input that would maximize this classification
+ */
+double NN::GetInput(std::vector<double> &input, const std::vector<double> &target)
+{
+	test(input);
+	
+	// calulate error in hidden layer
+	for (int x = 0; x < hiddens; x++) // weights[0].length
+	{
+		double xinternalerror = internalinputerr(output, target, x);
+		for (int y = 0; y < inputs; y++)
+		{
+			input[y] += weights[0][x][y+1]*xinternalerror;
+		}
+	}
+	return error(target);
 }
 
 double *NN::test(const std::vector<double> &input)

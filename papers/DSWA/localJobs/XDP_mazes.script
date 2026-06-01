@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./XDP_mazesJob0.script
+./XDP_mazesJob1.script
+./XDP_mazesJob2.script
+./XDP_mazesJob3.script
+./XDP_mazesJob4.script
+./XDP_mazesJob5.script
+./XDP_mazesJob6.script
+./XDP_mazesJob7.script
+./XDP_mazesJob8.script
+./XDP_mazesJob9.script

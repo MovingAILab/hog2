@@ -12,6 +12,8 @@
 #include <limits>
 #include "MinBloom.h"
 #include <string.h>
+#include <stdio.h>
+#include <cinttypes>
 
 // [8 possible hashes][16x 4-bit segments][16 values for 4 bits]
 static uint64_t salt[8] = {0x6B8B4567327B23C6ull, 0x643C986966334873ull, 0x74B0DC5119495CFFull, 0x2AE8944A625558ECull, 0x238E1F2946E87CCDull, 0x3D1B58BA507ED7ABull, 0x2EB141F241B71EFBull, 0x79E2A9E37545E146ull};
@@ -45,7 +47,7 @@ MinBloomFilter::MinBloomFilter(uint64_t filterSize, int numHash, const char *loa
 	saveAtExit = false;
 	
 	char name[127];
-	sprintf(name, "%smin-bloom-%llu-%d.dat", loadPrefix, filterSize, numHash);
+	sprintf(name, "%smin-bloom-%" PRId64 "-%d.dat", loadPrefix, filterSize, numHash);
 	printf("Loading '%s'\n", name);
 	bits->Read(name);
 }
@@ -75,7 +77,7 @@ MinBloomFilter::MinBloomFilter(uint64_t numItems, double targetFalseRate, bool s
 	if (0)
 	{
 		//		char name[127];
-		//		sprintf(name, "/tmp/bloom-%llu-%d.dat", filterSize, numHash);
+		//		sprintf(name, "/tmp/bloom-%" PRId64 "-%d.dat", filterSize, numHash);
 		//		bits = new BitVector(filterSize, name, zero);
 	}
 	else {
@@ -88,7 +90,7 @@ MinBloomFilter::~MinBloomFilter()
 	if (saveAtExit)
 	{
 		char name[127];
-		sprintf(name, "min-bloom-%llu-%d.dat", filterSize, numHash);
+		sprintf(name, "min-bloom-%" PRId64 "-%d.dat", filterSize, numHash);
 		printf("Writing to '%s'\n", name);
 		bits->Write(name);
 	}
@@ -105,14 +107,14 @@ void MinBloomFilter::Analyze()
 		if (bits->Get(x) != 0xF)
 			setEntries++;
 	}
-	printf("%llu of %llu entries set. (%1.2f%%)\n", setEntries, entries, 100.0*double(setEntries)/double(entries));
+	printf("%" PRId64 " of %" PRId64 " entries set. (%1.2f%%)\n", setEntries, entries, 100.0*double(setEntries)/double(entries));
 }
 
 void MinBloomFilter::Load()
 {
 	saveAtExit = false;
 	char name[127];
-	sprintf(name, "bloom-%llu-%d.dat", filterSize, numHash);
+	sprintf(name, "bloom-%" PRId64 "-%d.dat", filterSize, numHash);
 	bits->Read(name);
 }
 

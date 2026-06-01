@@ -1,0 +1,20 @@
+#!/bin/tcsh
+
+foreach scen (./../scenarios/random/*-10-4.map.scen)
+
+set alg = `echo 2`
+set TSPP = `echo 30`
+set Hness = `echo 2.0`
+set exper = `echo 8`
+
+foreach weight (1.50 2.00 3.00 4.00 5.00 6.00 7.00 8.00 9.00 10.00)
+
+set x = `echo $scen | sed 's/.*\///g'`
+set map = `echo $x | sed 's/.scen//'`
+echo "ALG " $alg " weight " $weight " map " $map
+
+./../bin/release/DSDWA -gridBaseLines ./../maps/random/$map $scen $alg $weight $TSPP $Hness $exper >> PWXU_DWRandom10_4-results.txt
+
+end
+#end
+end

@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./MAP_DWmazesJob0.script
+./MAP_DWmazesJob1.script
+./MAP_DWmazesJob2.script
+./MAP_DWmazesJob3.script
+./MAP_DWmazesJob4.script
+./MAP_DWmazesJob5.script
+./MAP_DWmazesJob6.script
+./MAP_DWmazesJob7.script
+./MAP_DWmazesJob8.script
+./MAP_DWmazesJob9.script

@@ -39,12 +39,14 @@ public:
 	virtual ~GenericSearchAlgorithm() {};
 	virtual void GetPath(environment *env, const state &from, const state &to, std::vector<state> &path) = 0;
 	virtual void GetPath(environment *env, const state &from, const state &to, std::vector<action> &path) = 0;
+	virtual bool InitializeSearch(environment *env, const state& from, const state& to, std::vector<state> &thePath) { assert(false); return false; }
+	virtual bool DoSingleSearchStep(std::vector<state> &thePath) { assert(false); return false; }
 	virtual const char *GetName() = 0;
 	virtual uint64_t GetNodesExpanded() const = 0;
 	virtual uint64_t GetNodesTouched() const = 0;
 	virtual void LogFinalStats(StatCollection *stats) = 0; 
-	virtual void OpenGLDraw() const {}
-	virtual void OpenGLDraw(const environment *env) const {}
+//	virtual void OpenGLDraw() const {}
+//	virtual void OpenGLDraw(const environment *env) const {}
 };
 
 

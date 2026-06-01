@@ -11,10 +11,11 @@
 #ifndef GENERICIDASTAR_H
 #define GENERICIDASTAR_H
 
-#include <ext/hash_map>
 #include "OldSearchEnvironment.h" // for the SearchEnvironment class
 
-typedef __gnu_cxx::hash_map<uint32_t, double> NodeHashTable;
+#include <unordered_map>
+
+typedef std::unordered_map<uint32_t, double> NodeHashTable;
 
 class GenericIDAStar {
 public:

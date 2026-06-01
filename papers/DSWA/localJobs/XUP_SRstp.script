@@ -1,0 +1,7 @@
+#!/bin/tcsh
+
+./XUP_SRstpJob0.script
+./XUP_SRstpJob1.script
+./XUP_SRstpJob2.script
+./XUP_SRstpJob3.script
+./XUP_SRstpJob4.script

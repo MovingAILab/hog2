@@ -13,7 +13,7 @@
 #include "GraphAlgorithm.h"
 #include "SearchEnvironment.h"
 #include "GraphEnvironment.h"
-#include <ext/hash_map>
+#include <unordered_map>
 #include "FPUtil.h"
 #include "OpenClosedList.h"
 
@@ -27,7 +27,7 @@
 #define MB_B 2
 #define MB_BP 3
 
-//typedef __gnu_cxx::hash_map<uint64_t, double> NodeHashTable;
+//typedef std::unordered_map<uint64_t, double> NodeHashTable;
 
 namespace MeroBUtil
 {
@@ -115,7 +115,7 @@ namespace MeroBUtil
 
 			// add nodes
 			
-			for(unsigned int nodeID = 0; nodeID <= N; nodeID++)
+			for (unsigned int nodeID = 0; nodeID <= N; nodeID++)
 			{
 				node *n = new node("");
 				if (nodeID == 0 || nodeID == 1)
@@ -133,7 +133,7 @@ namespace MeroBUtil
 				}
 				g->AddNode(n); // the real nodeID is assigned here
 
-				if(nodeID == 0)
+				if (nodeID == 0)
 				{
 					SetLoc(n,-1,-1,0);
 				}
@@ -236,7 +236,7 @@ namespace MeroBUtil
 	typedef OpenClosedList<MeroBUtil::SearchNode, MeroBUtil::SearchNodeHash,
 		MeroBUtil::SearchNodeEqual, MeroBUtil::SearchNodeCompare> PQueue;
 
-	typedef __gnu_cxx::hash_map<graphState, MeroBUtil::SearchNode > NodeLookupTable;
+	typedef std::unordered_map<graphState, MeroBUtil::SearchNode > NodeLookupTable;
 
 	typedef OpenClosedList<MeroBUtil::SearchNode, MeroBUtil::SearchNodeHash,
 		MeroBUtil::SearchNodeEqual, MeroBUtil::GGreater> GQueue;
@@ -244,13 +244,20 @@ namespace MeroBUtil
 
 class MeroB : public GraphAlgorithm {
 public:
-	MeroB() { verID = MB_A;}
+	MeroB() { verID = MB_A; heuristic = 0; }
 	MeroB(unsigned int v) { verID = v; }
+	void SetVersion(unsigned int v) {verID = v;}
 	virtual ~MeroB() {}
 	void GetPath(GraphEnvironment *env, Graph* _g, graphState from, graphState to, std::vector<graphState> &thePath);
+	void SetHeuristic(Heuristic<graphState> *heur) {heuristic = heur; }
+	virtual double GetSolutionCost() { return 0; }
+	virtual const char* GetName() { return "MeroB"; }
+	virtual int GetSolutionEdges() { return 0; }
+
 	
 	uint64_t GetNodesExpanded() { return nodesExpanded; }
 	uint64_t GetNodesTouched() { return nodesTouched; }
+	uint64_t GetNodesReopened() { return -1; }
 
 	bool InitializeSearch(GraphEnvironment *env, Graph* g, graphState from, graphState to, std::vector<graphState> &thePath);
 	bool DoSingleSearchStep(std::vector<graphState> &thePath);
@@ -258,12 +265,13 @@ public:
 	bool DoSingleStepB(std::vector<graphState> &thePath);
 	bool DoSingleStepBP(std::vector<graphState> &thePath);
 	void ExtractPathToStart(graphState goalNode, std::vector<graphState> &thePath);
-	void OpenGLDraw() const;
+//	void OpenGLDraw() const;
 	//void OpenGLDraw() const;
 	void DrawText(double x, double y, double z, float r, float g, float b, char* str);
 	void DrawEdge(unsigned int from, unsigned int to, double weight);
 
 private:
+	Heuristic<graphState> *heuristic;
 	unsigned int verID;
 	double F;
 	uint64_t nodesExpanded, nodesTouched;

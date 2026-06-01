@@ -14,7 +14,7 @@
 #include "GraphAlgorithm.h"
 #include "SearchEnvironment.h"
 #include "GraphEnvironment.h"
-#include <ext/hash_map>
+#include <unordered_map>
 #include "FPUtil.h"
 #include "OpenListB.h"
 #include <deque>
@@ -32,7 +32,7 @@
 #define D_SQRT 6
 //const double pi = 3.141592654;
 
-//typedef __gnu_cxx::hash_map<uint64_t, double> NodeHashTable;
+//typedef std::unordered_map<uint64_t, double> NodeHashTable;
 
 namespace AStarDelayUtil
 {
@@ -72,9 +72,9 @@ namespace AStarDelayUtil
 		{
 			if (fequal(i1.fCost, i2.fCost))
 			{
-				if(i2.isGoal) // always prefer a goal node in tie
+				if (i2.isGoal) // always prefer a goal node in tie
 					return true;
-				if(i1.isGoal)
+				if (i1.isGoal)
 					return false;
 				return (fless(i1.gCost, i2.gCost));
 			}
@@ -85,10 +85,10 @@ namespace AStarDelayUtil
 	struct GGreater {
 		bool operator()(const SearchNode &i1, const SearchNode &i2) const
 	  {
-			if(fequal(i1.gCost,i2.gCost)) {
-				//if(i2.isGoal) // always prefer a goal node in tie
+			if (fequal(i1.gCost,i2.gCost)) {
+				//if (i2.isGoal) // always prefer a goal node in tie
 				//	return true;
-				//if(i1.isGoal)
+				//if (i1.isGoal)
 				//	return false;
 
 				return fgreater(i1.fCost,i2.fCost);
@@ -112,7 +112,7 @@ namespace AStarDelayUtil
 	typedef OpenListB<AStarDelayUtil::SearchNode, AStarDelayUtil::SearchNodeHash,
 		AStarDelayUtil::SearchNodeEqual, AStarDelayUtil::SearchNodeCompare, AStarDelayUtil::GGreater, AStarDelayUtil::FExtract> PQueue;
 
-	typedef __gnu_cxx::hash_map<graphState, AStarDelayUtil::SearchNode > NodeLookupTable;
+	typedef std::unordered_map<graphState, AStarDelayUtil::SearchNode > NodeLookupTable;
 
 	typedef OpenListB<AStarDelayUtil::SearchNode, AStarDelayUtil::SearchNodeHash,
 		AStarDelayUtil::SearchNodeEqual, AStarDelayUtil::GGreater, AStarDelayUtil::GGreater, AStarDelayUtil::FExtract> GQueue;
@@ -137,9 +137,9 @@ public:
 
 	void ExtractPathToStart(graphState goalNode, std::vector<graphState> &thePath);
 	//void OpenGLDraw() const;
-	void OpenGLDraw() const;
-	void DrawText(double x, double y, double z, float r, float g, float b, char* str);
-	void DrawEdge(unsigned int from, unsigned int to, double weight);
+//	void OpenGLDraw() const;
+//	void DrawText(double x, double y, double z, float r, float g, float b, char* str);
+//	void DrawEdge(unsigned int from, unsigned int to, double weight);
 
 	double GetSolutionCost() {return solutionCost;}
 	const char* GetName() {return "AStarDelay";}

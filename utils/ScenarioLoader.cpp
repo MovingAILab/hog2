@@ -9,7 +9,7 @@
 #include <fstream>
 using std::ifstream;
 using std::ofstream;
-
+#include <iomanip>
 #include "ScenarioLoader.h"
 #include <assert.h>
 
@@ -26,7 +26,7 @@ ScenarioLoader::ScenarioLoader(const char* fname)
   sfile>>first;
 
   // Check if a version number is given
-  if(first != "version"){
+  if (first != "version"){
     ver = 0.0;
     sfile.seekg(0,std::ios::beg);
   }
@@ -47,7 +47,7 @@ ScenarioLoader::ScenarioLoader(const char* fname)
       experiments.push_back(exp);
     }
   }
-  else if(ver==1.0){
+  else if (ver==1.0){
     while(sfile>>bucket>>map>>sizeX>>sizeY>>xs>>ys>>xg>>yg>>dist){
       Experiment exp(xs,ys,xg,yg,sizeX,sizeY,bucket,dist,map);
       experiments.push_back(exp);
@@ -66,8 +66,8 @@ void ScenarioLoader::Save(const char *fname)
 	
 	float ver = 1.0;
 	ofile<<"version "<<ver<<std::endl;
-	
-	
+	ofile << std::setprecision(8);
+	ofile << std::fixed;
 	for (unsigned int x = 0; x < experiments.size(); x++)
 	{
 		ofile<<experiments[x].bucket<<"\t"<<experiments[x].map<<"\t"<<experiments[x].scaleX<<"\t";

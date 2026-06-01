@@ -55,8 +55,8 @@ path *IRAStar::DoOneSearchStep()
 
 #ifdef PATHMAX
 	// PATHMAX: Check for and corrects Inconsistencies 
-	if( caching == IRAStarConstants::OPTIMAL_PATH_CACHING )
-		if( Inconsistent(gNext) )
+	if ( caching == IRAStarConstants::OPTIMAL_PATH_CACHING )
+		if ( Inconsistent(gNext) )
 		{
 			// Do not expand, just put back on open list with new h value
 			q.Add(GNode(gNext));
@@ -80,7 +80,7 @@ path *IRAStar::DoOneSearchStep()
 			//SetCachedHCost(gNext, GetGCost(gNext));
 			closedList[gNext->GetNum()] = GNode(gNext);
 			path *p = ExtractAndRefinePath();
-			if(done)
+			if (done)
 			{
 				//printf("%d refined nodes %d expanded nodes with pathlength %u \n", nodesRefined, nodesExpanded, p->length() );
 				assert(p);
@@ -207,7 +207,7 @@ bool IRAStar::Inconsistent(node *gNode)
 		{
 			SetHCost( gNeighbor, GetHCost(gNode)-e->GetWeight());
 			// remove from queue and add in again (with new priority)
-			if( q.IsIn(GNode(gNeighbor)) )
+			if ( q.IsIn(GNode(gNeighbor)) )
 				q.DecreaseKey(GNode(gNeighbor));
 		}
 		// Correct the heuristic value of node
@@ -260,7 +260,7 @@ void IRAStar::ExpandNeighbors(node *gNode)
 		{
 			// when using an INCONSISTENT HEURISTIC, we might have closed a node with the wrong g-value.
 			// if this is the case, re-open the node
-			if( caching == IRAStarConstants::OPTIMAL_PATH_CACHING )
+			if ( caching == IRAStarConstants::OPTIMAL_PATH_CACHING )
 				if (fless(GetGCost(gNode)+e->GetWeight(), GetGCost(gNeighbor) ))
 				{
 					//printf("Re-opening neighbor with g=%f to g=%f\n", GetGCost(gNeighbor), GetGCost(gNode)+e->GetWeight());
@@ -284,7 +284,7 @@ path *IRAStar::ExtractAndRefinePath()
 
 	path *p = GetSolution(gGoal);
 
-	if( caching == IRAStarConstants::P_G_CACHING )
+	if ( caching == IRAStarConstants::P_G_CACHING )
 		SetHValues( p->length() - 1 );		// set heuristic values for all nodes on closed list
 							// path p contains all nodes (not the edges), so the number of edges is slightly less.
 
@@ -296,8 +296,8 @@ path *IRAStar::ExtractAndRefinePath()
 			done = false;
 		}
 		
-		if( caching == IRAStarConstants::OPTIMAL_PATH_CACHING )
-			if( i->n != gGoal )
+		if ( caching == IRAStarConstants::OPTIMAL_PATH_CACHING )
+			if ( i->n != gGoal )
 				SetHCost( i->n, p->length()-1 - GetGCost(i->n) );
 	}
 	if (done)
@@ -316,7 +316,7 @@ path *IRAStar::ExtractAndRefinePath()
 
 	currentIteration++;
 //	// never switch search directions
-//	//if( gStart->GetLabelL(kAbstractionLevel)%2 == 0 )  // Always switch diretions on base level
+//	//if ( gStart->GetLabelL(kAbstractionLevel)%2 == 0 )  // Always switch diretions on base level
 //	{
 //		node *tmp = gStart;
 //		gStart = gGoal;
@@ -599,9 +599,9 @@ void IRAStar::OpenGLDraw() const
 void IRAStar::SetHValues( int f )
 {
 	NodeLookupTable::iterator ni ;
-	//typedef __gnu_cxx::hash_map<uint32_t, GNode> NodeLookupTable;
+	//typedef std::unordered_map<uint32_t, GNode> NodeLookupTable;
 	
-	for( ni = closedList.begin(); ni != closedList.end(); ni++ )
+	for ( ni = closedList.begin(); ni != closedList.end(); ni++ )
 	{
 		node * n = ni->second.n;
 		//node* n = closedList[gNeighbor->GetNum()].n; // silly!
@@ -636,7 +636,7 @@ void IRAStar::SetHCost(node *n, double val)
 //	double val = 0;
 //	val = n->GetLabelF(kCachedHCost1);	// one search direction
 ///*
-//	if( gStart->GetLabelL(kAbstractionLevel)%2 == 0 )  // Always switch diretions on base level
+//	if ( gStart->GetLabelL(kAbstractionLevel)%2 == 0 )  // Always switch diretions on base level
 //		val = n->GetLabelF(kCachedHCost2);
 //	else
 //		val = n->GetLabelF(kCachedHCost1);
@@ -647,7 +647,7 @@ void IRAStar::SetHCost(node *n, double val)
 //{
 //	n->SetLabelF(kCachedHCost1, val);	// one search direction
 //
-///*	if( gStart->GetLabelL(kAbstractionLevel)%2 == 0 )  // Always switch diretions on base level
+///*	if ( gStart->GetLabelL(kAbstractionLevel)%2 == 0 )  // Always switch diretions on base level
 //		n->SetLabelF(kCachedHCost1, val);
 //	else
 //		n->SetLabelF(kCachedHCost2, val);

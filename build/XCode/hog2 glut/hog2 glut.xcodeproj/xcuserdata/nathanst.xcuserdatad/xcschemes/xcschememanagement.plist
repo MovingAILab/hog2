@@ -9,20 +9,50 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>Airplane.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>24</integer>
+		</dict>
+		<key>Canonical Graphs.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>23</integer>
+		</dict>
 		<key>Canonical Grids.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
+			<integer>18</integer>
+		</dict>
+		<key>Delta.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
 			<integer>21</integer>
+		</dict>
+		<key>Dynamic Weighted Abstraction.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>27</integer>
+		</dict>
+		<key>IBEX.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>26</integer>
 		</dict>
 		<key>MAPF.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>5</integer>
 		</dict>
-		<key>Pancake.xcscheme</key>
+		<key>PDB.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>17</integer>
+			<integer>28</integer>
+		</dict>
+		<key>Roads.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>22</integer>
 		</dict>
 		<key>Robotic Arm.xcscheme</key>
 		<dict>
@@ -32,22 +62,42 @@
 		<key>Sliding Tile Puzzle.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>18</integer>
+			<integer>15</integer>
+		</dict>
+		<key>Snake Bird.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>30</integer>
 		</dict>
 		<key>Supervised Learning.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>6</integer>
 		</dict>
-		<key>TopSpin.xcscheme</key>
+		<key>TOH.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>16</integer>
+			<integer>20</integer>
+		</dict>
+		<key>Unit Test.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>19</integer>
+		</dict>
+		<key>Witness Editor.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>29</integer>
+		</dict>
+		<key>Witness.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>25</integer>
 		</dict>
 		<key>bidirectional.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>20</integer>
+			<integer>17</integer>
 		</dict>
 		<key>directional.xcscheme</key>
 		<dict>
@@ -77,7 +127,7 @@
 		<key>ga.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>15</integer>
+			<integer>14</integer>
 		</dict>
 		<key>localsearch.xcscheme</key>
 		<dict>
@@ -88,11 +138,6 @@
 		<dict>
 			<key>orderHint</key>
 			<integer>1</integer>
-		</dict>
-		<key>mc-movement.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>14</integer>
 		</dict>
 		<key>prediction.xcscheme</key>
 		<dict>
@@ -112,7 +157,7 @@
 		<key>voxel.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>19</integer>
+			<integer>16</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
@@ -123,6 +168,11 @@
 			<true/>
 		</dict>
 		<key>C4146D621830F66100745331</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C41848981CDACC30008057D1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -142,6 +192,16 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>C438EA401CBA228B00BBDA21</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C4456AE01BBB49D40065CA5A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>C447F54A146790A600D6D581</key>
 		<dict>
 			<key>primary</key>
@@ -152,12 +212,42 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>C46B6C4B1BD7644F00B10296</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C472A42421CED55F00A1B41E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C4765C181BFD57960040E996</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>C47BDBCE17440B5900DD0928</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>C47DFC891A5FACCD00C3961B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C48E6E5123A99F8C0024D214</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C48E6EB623A99FE50024D214</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C48FE6852343EAD6008864D2</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -187,6 +277,16 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>C4AA9A9A228DAB7F00C93F6B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C4B9412823DF534E0091C825</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>C4B973861426FA4F00758D0D</key>
 		<dict>
 			<key>primary</key>
@@ -207,12 +307,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>C4CCF3252170678E00FF5BA4</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>C4D074491A83F32E00DAFFCD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>C4D60A5314B22E10007594CD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C4E7E6BB1C3DB97D0049D117</key>
 		<dict>
 			<key>primary</key>
 			<true/>

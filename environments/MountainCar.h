@@ -42,28 +42,28 @@ public:
 	virtual bool InvertAction(MountainCarAction &a) const;	
 	
 	/** Heuristic value between two arbitrary nodes. **/
-	virtual double HCost(const MountainCarState &node1, const MountainCarState &node2);
+	virtual double HCost(const MountainCarState &node1, const MountainCarState &node2) const;
 	
 	/** Heuristic value between node and the stored goal. Asserts that the
 	 goal is stored **/
-	virtual double HCost(const MountainCarState &node)
+	virtual double HCost(const MountainCarState &node) const
 	{ assert(bValidSearchGoal); return HCost(node, searchGoal); }
 	
-	virtual double GCost(const MountainCarState &node1, const MountainCarState &node2);
-	virtual double GCost(const MountainCarState &node, const MountainCarAction &act);
-	virtual bool GoalTest(const MountainCarState &node, const MountainCarState &goal);
+	virtual double GCost(const MountainCarState &node1, const MountainCarState &node2) const;
+	virtual double GCost(const MountainCarState &node, const MountainCarAction &act) const;
+	virtual bool GoalTest(const MountainCarState &node, const MountainCarState &goal) const;
 	
 	/** Goal Test if the goal is stored **/
-	virtual bool GoalTest(const MountainCarState &node)
+	virtual bool GoalTest(const MountainCarState &node) const
 	{ return bValidSearchGoal&&(node == searchGoal); }
 	
 	virtual uint64_t GetStateHash(const MountainCarState &node) const;
 	virtual uint64_t GetActionHash(MountainCarAction act) const;
 	
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const MountainCarState&) const;
-	virtual void OpenGLDraw(const MountainCarState&, const MountainCarState&, float) const;
-	virtual void OpenGLDraw(const MountainCarState&, const MountainCarAction&) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const MountainCarState&) const;
+//	virtual void OpenGLDraw(const MountainCarState&, const MountainCarState&, float) const;
+//	virtual void OpenGLDraw(const MountainCarState&, const MountainCarAction&) const;
 private:
 	double GetHeightAtPosition(double queryPosition) const;
 	double GetSlope(double queryPosition) const;

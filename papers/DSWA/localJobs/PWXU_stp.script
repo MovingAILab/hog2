@@ -1,0 +1,7 @@
+#!/bin/tcsh
+
+./PWXU_stpJob0.script
+./PWXU_stpJob1.script
+./PWXU_stpJob2.script
+./PWXU_stpJob3.script
+./PWXU_stpJob4.script

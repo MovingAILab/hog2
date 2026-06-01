@@ -1,21 +1,12 @@
 /*
- * $Id: Graph.cpp,v 1.10 2006/10/24 18:23:20 nathanst Exp $
+ *  $Id: Graph.cpp
+ *  hog2
  *
- * This file is part of HOG.
+ *  Created by Nathan Sturtevant on 10/24/06.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
+ *
  */ 
 
 // HOG File
@@ -48,6 +39,11 @@ Graph::Graph()
 Graph::~Graph()
 {
 	//	cout << "destructor got called" << endl;
+	Reset();
+}
+
+void Graph::Reset()
+{
 	node_iterator ni;
 	edge_iterator ei;
 	ni = getNodeIter();
@@ -74,6 +70,8 @@ Graph::~Graph()
 		} else
 			break;
 	}
+	_nodes.clear();
+	_edges.clear();
 }
 
 graph_object *Graph::Clone() const
@@ -151,15 +149,21 @@ int Graph::AddNode(node *n)
 	return -1;
 }
 
-node *Graph::GetNode(unsigned int num)
+node *Graph::GetNode(unsigned long num)
 {
-	if (num >=0 && num < _nodes.size()) return _nodes[num];
+	if (num < _nodes.size()) return _nodes[num];
 	return 0;
 }
 
-edge *Graph::GetEdge(unsigned int num)
+const node *Graph::GetNode(unsigned long num) const
 {
-	if (num >=0 && num < _edges.size()) return _edges[num];
+	if (num < _nodes.size()) return _nodes[num];
+	return 0;
+}
+
+edge *Graph::GetEdge(unsigned long num)
+{
+	if (num < _edges.size()) return _edges[num];
 	return 0;
 }
 
@@ -197,9 +201,38 @@ edge *Graph::findDirectedEdge(unsigned int from, unsigned int to)
 	return 0;
 }
 
+const edge *Graph::FindEdge(unsigned int from, unsigned int to) const
+{
+	const node *n = GetNode(from);
+	const node *t = GetNode(to);
+	if (n->_allEdges.size() > t->_allEdges.size())
+		n = t;
+	if (n)
+	{
+		edge_iterator ei = n->getEdgeIter();
+		while (1)
+		{
+			edge *e = n->edgeIterNext(ei);
+			if (e == 0) break;
+			if (((e->getTo() == to) && (e->getFrom() == from)) ||
+				((e->getFrom() == to) && (e->getTo() == from)))
+				return e;
+		}
+	}
+	return 0;
+}
+
+/**
+ * Finds an edge between nodes with ids from and to, no matter which direction
+ *
+ * \return the edge found or null if no edge is found
+ */
 edge *Graph::FindEdge(unsigned int from, unsigned int to)
 {
 	node *n = GetNode(from);
+	node *t = GetNode(to);
+	if (n->_allEdges.size() > t->_allEdges.size())
+		n = t;
 	if (n)
 	{
 		edge_iterator ei = n->getEdgeIter();

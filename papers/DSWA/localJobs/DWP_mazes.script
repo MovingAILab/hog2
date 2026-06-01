@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./DWP_mazesJob0.script
+./DWP_mazesJob1.script
+./DWP_mazesJob2.script
+./DWP_mazesJob3.script
+./DWP_mazesJob4.script
+./DWP_mazesJob5.script
+./DWP_mazesJob6.script
+./DWP_mazesJob7.script
+./DWP_mazesJob8.script
+./DWP_mazesJob9.script

@@ -12,7 +12,7 @@
 
 #include <iostream>
 #include "SearchEnvironment.h"
-#include <ext/hash_map>
+#include <unordered_map>
 #include "FPUtil.h"
 
 template <class state, class action>
@@ -28,7 +28,7 @@ public:
 	uint64_t GetNodesExpanded() { return nodesExpanded; }
 	uint64_t GetNodesTouched() { return nodesTouched; }
 private:
-	typedef __gnu_cxx::hash_map<uint64_t, state, Hash64> BFSClosedList;
+	typedef std::unordered_map<uint64_t, state, Hash64> BFSClosedList;
 
 	bool ExtractPath(SearchEnvironment<state, action> *env,
 					 std::vector<state> &thePath);

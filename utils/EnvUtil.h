@@ -14,6 +14,7 @@
 #include <cassert>
 #include <stdint.h>
 #include <cstdio>
+#include <cinttypes>
 
 const int openSize = 256;
 const int numBuckets = 2;
@@ -208,7 +209,7 @@ uint64_t GetMaxBucketSize(bool print)
 	State s;
 	Environment cc;
 	int64_t maxRank = cc.getMaxSinglePlayerRank();
-	int64_t maxVal2 = cc.getMaxSinglePlayerRank2();
+	//int64_t maxVal2 = cc.getMaxSinglePlayerRank2();
 	uint64_t statesLeft = 0;
 	
 	// count total states left to solve
@@ -229,7 +230,7 @@ uint64_t GetMaxBucketSize(bool print)
 	//	maxBucketSize *= 3;
 	if (print)
 	{
-		printf("%llu total states. Using 2 buckets, each with about %llu entries\n",
+		printf("%" PRId64 " total states. Using 2 buckets, each with about %" PRId64 " entries\n",
 			   statesLeft, maxBucketSize);
 	}
 	return maxBucketSize;

@@ -102,19 +102,19 @@ public:
 	virtual bool InvertAction(tAgentAction &a) const;	
 	
 	/** Heuristic value between two arbitrary nodes. **/
-	virtual double HCost(const MNAgentPuzzleState &node1, const MNAgentPuzzleState &node2);
+	virtual double HCost(const MNAgentPuzzleState &node1, const MNAgentPuzzleState &node2) const;
 	
 	/** Heuristic value between node and the stored goal. Asserts that the
 	 goal is stored **/
-	virtual double HCost(const MNAgentPuzzleState &node)
+	virtual double HCost(const MNAgentPuzzleState &node) const
 	{ assert(bValidSearchGoal); return HCost(node, searchGoal); }
 	
-	virtual double GCost(const MNAgentPuzzleState &node1, const MNAgentPuzzleState &node2);
-	virtual double GCost(const MNAgentPuzzleState &node, const tAgentAction &act);
-	virtual bool GoalTest(const MNAgentPuzzleState &node, const MNAgentPuzzleState &goal);
+	virtual double GCost(const MNAgentPuzzleState &node1, const MNAgentPuzzleState &node2) const;
+	virtual double GCost(const MNAgentPuzzleState &node, const tAgentAction &act) const;
+	virtual bool GoalTest(const MNAgentPuzzleState &node, const MNAgentPuzzleState &goal) const;
 	
 	/** Goal Test if the goal is stored **/
-	virtual bool GoalTest(const MNAgentPuzzleState &node)
+	virtual bool GoalTest(const MNAgentPuzzleState &node) const
 	{ return bValidSearchGoal&&(node == searchGoal); }
 	
 	void SetDomainAbstractionSize(int val) { domainAbstractionSize = val; }
@@ -123,11 +123,11 @@ public:
 	
 	//virtual double GetPathLength(std::vector<MNAgentPuzzleState> &neighbors);
 		
-	virtual void OpenGLDraw() const;
-	virtual void OpenGLDraw(const MNAgentPuzzleState&) const;
-	/** Draw the transition at some percentage 0...1 between two states */
-	virtual void OpenGLDraw(const MNAgentPuzzleState&, const MNAgentPuzzleState&, float) const;
-	virtual void OpenGLDraw(const MNAgentPuzzleState&, const tAgentAction&) const;
+//	virtual void OpenGLDraw() const;
+//	virtual void OpenGLDraw(const MNAgentPuzzleState&) const;
+//	/** Draw the transition at some percentage 0...1 between two states */
+//	virtual void OpenGLDraw(const MNAgentPuzzleState&, const MNAgentPuzzleState&, float) const;
+//	virtual void OpenGLDraw(const MNAgentPuzzleState&, const tAgentAction&) const;
 private:
 	void FindLegalMoves(MNAgentPuzzleState &s,
 						tAgentAction &curr,

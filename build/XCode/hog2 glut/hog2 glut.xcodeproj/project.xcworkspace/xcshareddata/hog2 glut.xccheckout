@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>8F0F3307-91B0-4629-B481-85AF741E5F7A</string>
+	<key>IDESourceControlProjectName</key>
+	<string>hog2 glut</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>B8BC11CFD0BBB30A97475BE125230FA18FB94945</key>
+		<string>https://github.com/nathansttt/hog2</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>build/XCode/hog2 glut/hog2 glut.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>B8BC11CFD0BBB30A97475BE125230FA18FB94945</key>
+		<string>../../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/nathansttt/hog2</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>B8BC11CFD0BBB30A97475BE125230FA18FB94945</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>B8BC11CFD0BBB30A97475BE125230FA18FB94945</string>
+			<key>IDESourceControlWCCName</key>
+			<string>hog2</string>
+		</dict>
+	</array>
+</dict>
+</plist>

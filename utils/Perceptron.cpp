@@ -1,5 +1,5 @@
 /*
- *  perceptron.cpp
+ *  Perceptron.cpp
  *  games
  *
  *  Created by Nathan Sturtevant on 3/2/05.
@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-#include "perceptron.h"
+#include "Perceptron.h"
 
 static const float VERSION = 1.0;
 
@@ -227,11 +227,9 @@ void perceptron::save(FILE *f)
 ////	return a*(1-a);
 //}
 
-double perceptron::outputerr(std::vector<double> &out, std::vector<double> &expected, int which)
+double perceptron::outputerr(const std::vector<double> &out, const std::vector<double> &expected, int which)
 {
 	double err = (out[which]-expected[which]);
-//	if(	outputActivation == kExponential)
-//		err *= dg(output[which]);
 
 	return err;
 }

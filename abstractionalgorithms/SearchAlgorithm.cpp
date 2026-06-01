@@ -1,26 +1,11 @@
 /*
- * $Id: SearchAlgorithm.cpp,v 1.5 2006/10/24 18:18:45 nathanst Exp $
- *
- *  Hierarchical Open Graph File
+ *  $Id: SearchAlgorithm.cpp
+ *  hog2
  *
  *  Created by Nathan Sturtevant on 9/28/04.
- *  Copyright 2004 Nathan Sturtevant. All rights reserved.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * This file is part of HOG.
- *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
  *
  */
 
@@ -32,6 +17,7 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <stdint.h>
+#include "Timer.h"
 
 using namespace GraphAbstractionConstants;
 using namespace std;
@@ -77,15 +63,8 @@ void DoRandomPath(GraphAbstraction *aMap, SearchAlgorithm *sa, bool repeat)
 	
 	// ignoring return value! Leaking memory!
 	
-#ifdef OS_MAC
-	AbsoluteTime startTime = UpTime();
-#else
-	clock_t startTime, endTime;
-	long double duration;
-	startTime = clock();
-	
-#endif
-	
+	Timer t;
+	t.StartTimer();
 	
 	path *p;
 	
@@ -100,16 +79,7 @@ void DoRandomPath(GraphAbstraction *aMap, SearchAlgorithm *sa, bool repeat)
 	//	//			r1 = getPathStep(r1, r2);
 	
 	
-#ifdef OS_MAC
-	AbsoluteTime stopTime = UpTime();
-	Nanoseconds diff = AbsoluteDeltaToNanoseconds(stopTime, startTime);
-	uint64_t nanosecs = UnsignedWideToUInt64(diff);
-	//cout << nanosecs << " ns elapsed (" << (double)nanosecs/1000000.0 << " ms)" << endl;
-#else
-	endTime = clock();
-	duration=(long double)(endTime-startTime)/CLOCKS_PER_SEC;
-	//cout << duration << " seconds elapsed" << endl;
-#endif
+	t.EndTimer();
 	
 	int cnt = 0;
 	double length = 0;
@@ -125,18 +95,17 @@ void DoRandomPath(GraphAbstraction *aMap, SearchAlgorithm *sa, bool repeat)
 		cnt++;
 	}
 	
-#ifdef OS_MAC
-	cout << "Steps: " << cnt << ", len: " << length << ", time: " << (double)nanosecs/1000000.0
-		;//<< ",  time/step: " << (double)nanosecs/(1000*cnt) << ", time/unit: " << (double)nanosecs/(1000*length);
+	cout << "Steps: " << cnt << ", len: " << length << ", time: " << t.GetElapsedTime();
+	//<< ",  time/step: " << (double)nanosecs/(1000*cnt) << ", time/unit: " << (double)nanosecs/(1000*length);
 		cout << "ms, h() = " << aMap->h(r1, r2) << ", nodes: " << sa->GetNodesExpanded() << endl;
 		
 		//cout << "DATA\t" << nanosecs << "\t" << length << endl;
 		if (!repeat)
 		{
 			lastLength = length;
-			lastTime = (double)nanosecs;
+			lastTime = t.GetElapsedTime();
 		} else {
-			cout << "Comparison: " << lastLength/length << "x longer; but " << (double)nanosecs/lastTime << "x faster." << endl;
+			cout << "Comparison: " << lastLength/length << "x longer; but " << t.GetElapsedTime()/lastTime << "x faster." << endl;
 		}
 #endif	
 		

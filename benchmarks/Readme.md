@@ -1,0 +1,1 @@
+Maps and benchmarks have been moved out of the hog2 code base and into a separate repository. Run the install script here to download them into this directory.

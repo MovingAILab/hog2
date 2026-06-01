@@ -29,6 +29,13 @@ bool RHRUnit::MakeMove(MapEnvironment *, OccupancyInterface<xyLoc, tDirection> *
  */
 void RHRUnit::UpdateLocation(MapEnvironment *, xyLoc &l, bool success, MapSimulationInfo *)
 {
+	loc = l;
+	if (initial && success)
+	{
+		return;
+	}
+	else if (initial && !success)
+		initial = false;
 	if (success)
 	{ // I moved successfully
 		lastIndex = (lastIndex+2)%8;
@@ -36,5 +43,4 @@ void RHRUnit::UpdateLocation(MapEnvironment *, xyLoc &l, bool success, MapSimula
 	else {
 		lastIndex = (lastIndex+6)%8;
 	}
-	loc = l;
 }

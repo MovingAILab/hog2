@@ -1,0 +1,13 @@
+#!/bin/tcsh
+
+./DWP_RaceTrackJob0.script
+./DWP_RaceTrackJob1.script
+./DWP_RaceTrackJob2.script
+./DWP_RaceTrackJob3.script
+./DWP_RaceTrackJob4.script
+./DWP_RaceTrackJob5.script
+./DWP_RaceTrackJob6.script
+./DWP_RaceTrackJob7.script
+./DWP_RaceTrackJob8.script
+./DWP_RaceTrackJob9.script
+

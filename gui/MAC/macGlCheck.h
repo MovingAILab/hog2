@@ -1,11 +1,10 @@
 /*
- * $Id: macGlCheck.h,v 1.2 2006/10/18 23:53:10 nathanst Exp $
+ *  $Id: macGlCheck.h
+ *  hog2
  *
- *  glCheck.h
- *  Carbon OpenGL
+ *  Created by Geoff Stahl on 01/24/03.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- *  Created by Geoff Stahl on Fri Jan 24 2003.
-
 	Copyright:	Copyright 2003 Apple Computer, Inc., All Rights Reserved
 
 	Disclaimer:	IMPORTANT:  This Apple software is supplied to you by Apple Computer, Inc.

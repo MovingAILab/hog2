@@ -3,7 +3,7 @@
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
-PROJECT_NAME           = HOG
+PROJECT_NAME           = HOG2
 PROJECT_NUMBER         = 
 OUTPUT_DIRECTORY       = ./html/
 OUTPUT_LANGUAGE        = English
@@ -67,15 +67,20 @@ INPUT                  = ../absmapalgorithms \
 			 ../algorithms \
 			 ../apps/pathsample \
 			 ../environments \
+       ../envutil \
 			 ../generic \
 			 ../graph \
 			 ../graphalgorithms \
 			 ../gui \
+       ../learning \
 			 ../mapalgorithms \
+       ../search \
 			 ../shared \
 			 ../simulation \
-			 ../util \
-			 ../docs/hog.dox
+			 ../utils \
+			 ../docs/hog.dox \
+       ../docs/apps.dox \
+       ../docs/demos.dox
 
 FILE_PATTERNS          = *.c \
                          *.cc \
@@ -114,7 +119,7 @@ FILE_PATTERNS          = *.c \
                          *.PHP \
                          *.PHP3 \
                          *.M \
-                         *.MM
+                         *.MM 
 RECURSIVE              = NO
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO
@@ -133,7 +138,7 @@ INLINE_SOURCES         = NO
 STRIP_CODE_COMMENTS    = YES
 REFERENCED_BY_RELATION = YES
 REFERENCES_RELATION    = YES
-VERBATIM_HEADERS       = NO
+VERBATIM_HEADERS       = YES
 #---------------------------------------------------------------------------
 # configuration options related to the alphabetical class index
 #---------------------------------------------------------------------------
@@ -146,9 +151,9 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = .
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = 
-HTML_FOOTER            = 
-HTML_STYLESHEET        = 
+HTML_HEADER            = header.html
+HTML_FOOTER            = footer.html
+HTML_STYLESHEET        = doxygen.css
 HTML_ALIGN_MEMBERS     = YES
 GENERATE_HTMLHELP      = NO
 CHM_FILE               = 

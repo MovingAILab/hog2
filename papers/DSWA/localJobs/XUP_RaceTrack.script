@@ -1,0 +1,12 @@
+#!/bin/tcsh
+
+./XUP_RaceTrackJob0.script
+./XUP_RaceTrackJob1.script
+./XUP_RaceTrackJob2.script
+./XUP_RaceTrackJob3.script
+./XUP_RaceTrackJob4.script
+./XUP_RaceTrackJob5.script
+./XUP_RaceTrackJob6.script
+./XUP_RaceTrackJob7.script
+./XUP_RaceTrackJob8.script
+./XUP_RaceTrackJob9.script

@@ -1,26 +1,11 @@
 /*
- * $Id: OpenClosedList.h,v 1.9 2006/11/27 23:21:37 nathanst Exp $
- *
- *  hog
+ *  $Id: OpenClosedList.h
+ *  hog2
  *
  *  Created by Nathan Sturtevant on 1/14/06.
- *  Copyright 2006 Nathan Sturtevant. All rights reserved.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * This file is part of HOG.
- *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
  *
  */
 
@@ -29,9 +14,9 @@
 
 #include <cassert>
 #include <vector>
-#include <ext/hash_map>
 #include <stdio.h>
 #include <stdint.h>
+#include <unordered_map>
 
 /**
 * A simple Heap class.
@@ -60,7 +45,7 @@ private:
 	std::vector<OBJ> _elts;
 	void HeapifyUp(unsigned int index);
 	void HeapifyDown(unsigned int index);
-	typedef __gnu_cxx::hash_map<OBJ, unsigned int, HashKey, EqKey > IndexTable;
+	typedef std::unordered_map<OBJ, unsigned int, HashKey, EqKey > IndexTable;
 	IndexTable table;
 };
 
@@ -136,7 +121,7 @@ template<typename OBJ, class HashKey, class EqKey, class CmpKey>
 bool OpenClosedList<OBJ, HashKey, EqKey, CmpKey>::IsIn(const OBJ val) const
 {
 	EqKey eq;
-	//	typedef __gnu_cxx::hash_map<OBJ, unsigned int, HashKey, EqKey > IndexTable;
+	//	typedef std::unordered_map<OBJ, unsigned int, HashKey, EqKey > IndexTable;
 	typename IndexTable::const_iterator it;
 	it = table.find(val);
 	if (it != table.end())

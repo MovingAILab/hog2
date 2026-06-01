@@ -26,7 +26,7 @@ WeightedMap2DEnvironment::WeightedMap2DEnvironment(MapAbstraction *mapAbs)
 	
 	updateSurrounding = false;
 	surroundingProportion = 0.9;
-	//for(edge* e = g->edgeIterNext(ei); e; e = g->edgeIterNext(ei))
+	//for (edge* e = g->edgeIterNext(ei); e; e = g->edgeIterNext(ei))
 	//{
 	//	// Reset the counters
 	//	e->SetLabelL(kForwardCount, 0);
@@ -104,7 +104,7 @@ void WeightedMap2DEnvironment::ApplyAction(xyLoc &s, tDirection dir) const
 // 		node* to = ma->GetNodeFromMap(s.x, s.y);
 // 		edge* e = ma->GetAbstractGraph(0)->FindEdge(from->GetNum(),to->GetNum());
 // 		
-// 		if(e->getFrom() == from->GetNum())
+// 		if (e->getFrom() == from->GetNum())
 // 			e->SetLabelL(kForwardCount, e->GetLabelL(kForwardCount) + 1);
 // 		else
 // 			e->SetLabelL(kBackwardCount, e->GetLabelL(kBackwardCount)+1);
@@ -116,7 +116,7 @@ void WeightedMap2DEnvironment::ApplyAction(xyLoc &s, tDirection dir) const
 		
 		// Update angle on new location
 		AngleUtil::AngleSearchNode sn(s,GetStateHash(s));
-		if(angleLookup.find(sn) == angleLookup.end())
+		if (angleLookup.find(sn) == angleLookup.end())
 		{
 			angleLookup[sn] = angle;
 		}
@@ -128,7 +128,7 @@ void WeightedMap2DEnvironment::ApplyAction(xyLoc &s, tDirection dir) const
 		
 		// Update angle on old location
 		AngleUtil::AngleSearchNode sn2(old,GetStateHash(old));
-		if(angleLookup.find(sn2) == angleLookup.end())
+		if (angleLookup.find(sn2) == angleLookup.end())
 		{
 			angleLookup[sn2] = angle;
 		}
@@ -149,7 +149,7 @@ void WeightedMap2DEnvironment::ApplyAction(xyLoc &s, tDirection dir) const
 
 void WeightedMap2DEnvironment::UpdateAngle(const xyLoc &old, const xyLoc &s, double oldProp, double t)
 {
-	if(old == s) 
+	if (old == s) 
 		return;
 	tDirection dir = GetAction(old, s);
 	Vector2D angle;
@@ -169,13 +169,13 @@ void WeightedMap2DEnvironment::UpdateAngle(const xyLoc &old, const xyLoc &s, dou
 	angle.Normalize(); //<-- otherwise diagonal ones are messed up
 	double newProportion = 1 - oldProp;
 		
-	if(updateSurrounding)
+	if (updateSurrounding)
 	{
 		//Update new location
 		AngleUtil::AngleSearchNode sn(s,GetStateHash(s));
-		if(angleLookup.find(sn) == angleLookup.end())
+		if (angleLookup.find(sn) == angleLookup.end())
 		{
-			if(usePerceptron)
+			if (usePerceptron)
 			{
 				Vector2D v = learningRate * angle;
 				v.SetUpdateTime(t); 
@@ -191,7 +191,7 @@ void WeightedMap2DEnvironment::UpdateAngle(const xyLoc &old, const xyLoc &s, dou
 		}
 		else
 		{
-			if(usePerceptron)
+			if (usePerceptron)
 			{
 				Vector2D oldAngle = angleLookup[sn];
 				
@@ -200,7 +200,7 @@ void WeightedMap2DEnvironment::UpdateAngle(const xyLoc &old, const xyLoc &s, dou
 				
 				Vector2D	newAngle(x,y);
 // 				std::cout<<sqrt(x*x + y*y)<<std::endl;
-				if(sqrt(x*x + y*y) > 1)
+				if (sqrt(x*x + y*y) > 1)
 					newAngle.Normalize();
 					
 				newAngle.SetUpdateTime(t);
@@ -225,12 +225,12 @@ void WeightedMap2DEnvironment::UpdateAngle(const xyLoc &old, const xyLoc &s, dou
 		//oldProp = surroundingProportion;
 		//newProportion = 1 - oldProp;
 		
-		for(unsigned int i=0; i<neighbours.size(); i++)
+		for (unsigned int i=0; i<neighbours.size(); i++)
 		{
 			AngleUtil::AngleSearchNode searchNode(neighbours[i],GetStateHash(neighbours[i]));
-			if(angleLookup.find(searchNode) == angleLookup.end())
+			if (angleLookup.find(searchNode) == angleLookup.end())
 			{
-				if(usePerceptron)
+				if (usePerceptron)
 				{
 					Vector2D v = surroundingProportion * angle;
 					v.SetUpdateTime(t);
@@ -245,7 +245,7 @@ void WeightedMap2DEnvironment::UpdateAngle(const xyLoc &old, const xyLoc &s, dou
 			}
 			else
 			{
-				if(usePerceptron)
+				if (usePerceptron)
 				{
 					Vector2D oldAngle = angleLookup[searchNode];
 					
@@ -254,7 +254,7 @@ void WeightedMap2DEnvironment::UpdateAngle(const xyLoc &old, const xyLoc &s, dou
 				
 					Vector2D	newAngle(x,y);
 // 					std::cout<<sqrt(x*x + y*y)<<std::endl;
-					if(sqrt(x*x + y*y) > 1)
+					if (sqrt(x*x + y*y) > 1)
 						newAngle.Normalize();
 					newAngle.SetUpdateTime(t);
 					angleLookup[searchNode] = newAngle;
@@ -269,14 +269,14 @@ void WeightedMap2DEnvironment::UpdateAngle(const xyLoc &old, const xyLoc &s, dou
 				}
 			}
 		}
-	} // end if(updateSurrounding)
+	} // end if (updateSurrounding)
 	else
 	{
 		// Update angle on new location
 		AngleUtil::AngleSearchNode searchNode(s,GetStateHash(s));
-		if(angleLookup.find(searchNode) == angleLookup.end())
+		if (angleLookup.find(searchNode) == angleLookup.end())
 		{
-			if(usePerceptron)
+			if (usePerceptron)
 			{
 				Vector2D v = learningRate * angle;
 				v.SetUpdateTime(t);
@@ -291,7 +291,7 @@ void WeightedMap2DEnvironment::UpdateAngle(const xyLoc &old, const xyLoc &s, dou
 		}
 		else
 		{
-			if(usePerceptron)
+			if (usePerceptron)
 			{
 				Vector2D oldAngle = angleLookup[searchNode];
 				
@@ -300,7 +300,7 @@ void WeightedMap2DEnvironment::UpdateAngle(const xyLoc &old, const xyLoc &s, dou
 				
 				Vector2D	newAngle(x,y);
 // 				std::cout<<sqrt(x*x + y*y)<<std::endl;
-				if(sqrt(x*x + y*y) > 1)
+				if (sqrt(x*x + y*y) > 1)
 					newAngle.Normalize();
 				
 				newAngle.SetUpdateTime(t);
@@ -318,9 +318,9 @@ void WeightedMap2DEnvironment::UpdateAngle(const xyLoc &old, const xyLoc &s, dou
 	
 		// Update angle on old location
 		AngleUtil::AngleSearchNode searchNode2(old,GetStateHash(old));
-		if(angleLookup.find(searchNode2) == angleLookup.end())
+		if (angleLookup.find(searchNode2) == angleLookup.end())
 		{
-			if(usePerceptron)
+			if (usePerceptron)
 			{
 				Vector2D v = learningRate * angle;
 				v.SetUpdateTime(t);
@@ -335,7 +335,7 @@ void WeightedMap2DEnvironment::UpdateAngle(const xyLoc &old, const xyLoc &s, dou
 		}
 		else
 		{
-			if(usePerceptron)
+			if (usePerceptron)
 			{
 				Vector2D oldAngle = angleLookup[searchNode];
 				
@@ -344,7 +344,7 @@ void WeightedMap2DEnvironment::UpdateAngle(const xyLoc &old, const xyLoc &s, dou
 				
 				Vector2D	newAngle(x,y);
 // 				std::cout<<sqrt(x*x + y*y)<<std::endl;
-				if(sqrt(x*x + y*y) > 1)
+				if (sqrt(x*x + y*y) > 1)
 					newAngle.Normalize();
 					
 				newAngle.SetUpdateTime(t);	
@@ -376,23 +376,23 @@ void WeightedMap2DEnvironment::UpdateAngle(const xyLoc &old, const xyLoc &s, dou
 * @return The weighted G-cost between l1 and l2, if there exists
 * an edge between the two locations, DBL_MAX otherwise. 
 */
-double WeightedMap2DEnvironment::GCost(const xyLoc &l1, const xyLoc &l2)
+double WeightedMap2DEnvironment::GCost(const xyLoc &l1, const xyLoc &l2) const
 {
 	// Update angles 
- 	if(updateOnQuery)
- 	{
- 		UpdateAngle(l1,l2,queryOldProportion);
- 	}
- 	
+// 	if (updateOnQuery)
+// 	{
+// 		UpdateAngle(l1,l2,queryOldProportion);
+// 	}
+	
 	
 	//std::cou<t<"l1 "<<l1<<" l2 "<<l2<<std::endl;
 	double hCost = HCost(l1, l2);
 	
-	if(noWeighting)
+	if (noWeighting)
 		return hCost;
 	
 	// No weighting if we're using the window and we're outside the window
-	if(useWindow && ( (HCost(windowCenter,l1) > windowSize) || 
+	if (useWindow && ( (HCost(windowCenter,l1) > windowSize) || 
 							(HCost(windowCenter, l2) > windowSize)))
 	{
 		return hCost; 
@@ -408,14 +408,15 @@ double WeightedMap2DEnvironment::GCost(const xyLoc &l1, const xyLoc &l2)
 	AngleUtil::AngleSearchNode sn(l1,GetStateHash(l1));
 	
 	double weight1 = 0; double weight2 = 0;
-	if(angleLookup.find(sn) != angleLookup.end())
-		{
-			Vector2D old = angleLookup[sn];
+	auto loc = angleLookup.find(sn);
+	if (loc != angleLookup.end())
+	{
+		Vector2D old = loc->second;//angleLookup[sn];
 			
 			//double returnme = h + ( ((old.x-angle.x)*(old.x-angle.x)+(old.y-angle.y)*(old.y-angle.y)));
 			
 			weight1 = diffWeight * ((1 - ((old.x * angle.x)+(old.y * angle.y)))/2);
-/*			if(old == angle)
+/*			if (old == angle)
 			{
 				return h;
 			}
@@ -425,16 +426,17 @@ double WeightedMap2DEnvironment::GCost(const xyLoc &l1, const xyLoc &l2)
 			}*/
 		}
 		
-		AngleUtil::AngleSearchNode sn2(l2,GetStateHash(l2));
-		if(angleLookup.find(sn) != angleLookup.end())
-		{
-			Vector2D old = angleLookup[sn2];
-			weight2 = diffWeight * ((1 - ((old.x * angle.x)+(old.y * angle.y)))/2);
-		}
+	AngleUtil::AngleSearchNode sn2(l2,GetStateHash(l2));
+	auto loc2 = angleLookup.find(sn);
+	if (loc2 != angleLookup.end())
+	{
+		Vector2D old = loc2->second;//angleLookup[sn2];
+		weight2 = diffWeight * ((1 - ((old.x * angle.x)+(old.y * angle.y)))/2);
+	}
 		
-		return hCost + (0.5 * weight1 + 0.5 * weight2);
+	return hCost + (0.5 * weight1 + 0.5 * weight2);
 	
-/*	if(l1 == l2)
+/*	if (l1 == l2)
 		return 0;	
 	// Get the edge between the two locations
 	Graph* g = ma->GetAbstractGraph(0);
@@ -445,9 +447,9 @@ double WeightedMap2DEnvironment::GCost(const xyLoc &l1, const xyLoc &l2)
 	double weight = 0; 
 	
 	// add weight -- 1 / (# units that have passed in the other direction)
-	if(e->getFrom() == from->GetNum())
+	if (e->getFrom() == from->GetNum())
 		{
-			if(e->GetLabelL(kBackwardCount) > e->GetLabelL(kForwardCount))
+			if (e->GetLabelL(kBackwardCount) > e->GetLabelL(kForwardCount))
 			{
 				weight = 1.0-(1.0 / (e->GetLabelL(kBackwardCount) - e->GetLabelL(kForwardCount)));
 			}
@@ -457,7 +459,7 @@ double WeightedMap2DEnvironment::GCost(const xyLoc &l1, const xyLoc &l2)
 		}
 	else
 		{
-			if(e->GetLabelL(kBackwardCount) < e->GetLabelL(kForwardCount))
+			if (e->GetLabelL(kBackwardCount) < e->GetLabelL(kForwardCount))
 			{
 				weight = 1.0 - (1.0 / (e->GetLabelL(kForwardCount) - e->GetLabelL(kBackwardCount)));
 			}
@@ -468,153 +470,153 @@ double WeightedMap2DEnvironment::GCost(const xyLoc &l1, const xyLoc &l2)
 
 }
 
-void WeightedMap2DEnvironment::OpenGLDraw() const
-{	
-//	return;
-	// Draw the map
-	//AbsMapEnvironment::OpenGLDraw();
-	
-	// Draw direction for all nodes
-	
-	Graph *g = ma->GetAbstractGraph(0);
-	node_iterator ni = g->getNodeIter();
-	
-	xyLoc s;
-	
-	if (1)
-	for(node *n = g->nodeIterNext(ni); n; n = g->nodeIterNext(ni))
-	{
-			
-		s.x = n->GetLabelL(kFirstData);
-		s.y = n->GetLabelL(kFirstData+1);
-		
-		AngleUtil::AngleSearchNode sn(s,GetStateHash(s));
-
-		if(angleLookup.find(sn) != angleLookup.end())
-		{
-			const Vector2D old = (*angleLookup.find(sn)).second;
-			//const Vector2D old = angleLookup[sn];
-			
-			// Reduce length to 40%
-			GLdouble xx, yy, zz, rad;	
-			//glColor3f(1.0, 0,0);
-			glColor3f(0,0,0);
-			map->GetOpenGLCoord(s.x, s.y, xx, yy, zz, rad);
-			//glLineWidth(2);
-			glBegin(GL_LINE_STRIP);
-			glVertex3f(xx-old.x*rad, yy-old.y*rad, zz-rad/2);
-			
-			//glColor3f(0.0, 0, 0);
-			glVertex3f(xx+old.x*rad, yy+old.y*rad, zz-rad/2);	
-			glEnd();
-			
-			double percOffset=0.5;
-			double lengthOffset=0.5*rad;
-			glBegin(GL_LINE_STRIP);
-			glVertex3f(xx+percOffset*old.x*rad-old.y*lengthOffset,
-							yy+percOffset*old.y*rad+old.x*lengthOffset, zz-rad/2);
-			glVertex3f(xx+old.x*rad, yy+old.y*rad, zz-rad/2);	
-							
-			glVertex3f(xx+percOffset*old.x*rad+old.y*lengthOffset,
-							yy+percOffset*old.y*rad-old.x*lengthOffset, zz-rad/2);
-			glEnd();
-			
-		}
-		
-	}
-	
-	
-	// Draw all edges
-//  	Graph* g = ma->GetAbstractGraph(0);
-//  	
-//  	edge_iterator ei = g->getEdgeIter();
-//  	for (edge *e = g->edgeIterNext(ei); e; e = g->edgeIterNext(ei))
-//  	{
-//  		DrawEdge(window, e);
-//  	}
-// 	
-}
-
-void WeightedMap2DEnvironment::DrawEdge(const edge* e) const
-{
-	Graph* g = ma->GetAbstractGraph(0);
-	node* from = g->GetNode(e->getFrom());
-	node* to = g->GetNode(e->getTo());
-		
-	GLdouble xx, yy, zz, rad;	
-	if(e->GetLabelL(kBackwardCount) == e->GetLabelL(kForwardCount))
-	{
-		// whole edge should be same colour - white
-		
-		glColor3f(1.0, 1.0, 1.0);
-		
-		map->GetOpenGLCoord((int)from->GetLabelL(kFirstData), (int)from->GetLabelL(kFirstData+1), xx, yy, zz, rad);
-		glBegin(GL_LINE_STRIP);
-		glVertex3f(xx, yy, zz-rad/2);	
-	
-		map->GetOpenGLCoord((int)to->GetLabelL(kFirstData), (int)to->GetLabelL(kFirstData+1), xx, yy, zz, rad);
-		glVertex3f(xx, yy, zz-rad/2);
-		glEnd();
-	}
-	else if(e->GetLabelL(kForwardCount) > e->GetLabelL(kBackwardCount))
-	{
-		// white on "from" side, blue on "to" side
-		glColor3f(1.0, 1.0, 1.0);
-		
-				map->GetOpenGLCoord((int)from->GetLabelL(kFirstData), (int)from->GetLabelL(kFirstData+1), xx, yy, zz, rad);
-		glBegin(GL_LINE_STRIP);
-		glVertex3f(xx, yy, zz-rad/2);	
-	
-		glColor3f(0,0,1.0);
-		map->GetOpenGLCoord((int)to->GetLabelL(kFirstData), (int)to->GetLabelL(kFirstData+1), xx, yy, zz, rad);
-		glVertex3f(xx, yy, zz-rad/2);
-		glEnd();
-	}
-	else
-	{
-		// blue on "from" side, white on "to" side
-		glColor3f(0,0,1.0);
-				map->GetOpenGLCoord((int)from->GetLabelL(kFirstData), (int)from->GetLabelL(kFirstData+1), xx, yy, zz, rad);
-		glBegin(GL_LINE_STRIP);
-		glVertex3f(xx, yy, zz-rad/2);	
-		
-		
-		glColor3f(1.0, 1.0, 1.0);
-		map->GetOpenGLCoord((int)to->GetLabelL(kFirstData), (int)to->GetLabelL(kFirstData+1), xx, yy, zz, rad);
-		glVertex3f(xx, yy, zz-rad/2);
-		glEnd();
-	}
-}
-
-void WeightedMap2DEnvironment::OpenGLDraw(const xyLoc& initial, const tDirection &dir) const
-{
-	// Figure out which edge this corresponds to
-	// Figure out which direction is preferred
-	//   if none, then keep one colour
-		
-	xyLoc s = initial;
-	
-	switch (dir)
-	{
-		case kN: s.y-=1; break;
-		case kS: s.y+=1; break;
-		case kE: s.x+=1; break;
-		case kW: s.x-=1; break;
-		case kNW: s.y-=1; s.x-=1; break;
-		case kSW: s.y+=1; s.x-=1; break;
-		case kNE: s.y-=1; s.x+=1; break;
-		case kSE: s.y+=1; s.x+=1; break;
-		default: break;
-	}
-		
-	Graph* g = ma->GetAbstractGraph(0);
-	node* from = ma->GetNodeFromMap(initial.x, initial.y);
-	node* to = ma->GetNodeFromMap(s.x, s.y);
-	edge* e = g->FindEdge(from->GetNum(),to->GetNum());	
-		
-	DrawEdge(e);
-	
-}
+//void WeightedMap2DEnvironment::OpenGLDraw() const
+//{	
+////	return;
+//	// Draw the map
+//	//AbsMapEnvironment::OpenGLDraw();
+//	
+//	// Draw direction for all nodes
+//	
+//	Graph *g = ma->GetAbstractGraph(0);
+//	node_iterator ni = g->getNodeIter();
+//	
+//	xyLoc s;
+//	
+//	if (1)
+//	for (node *n = g->nodeIterNext(ni); n; n = g->nodeIterNext(ni))
+//	{
+//			
+//		s.x = n->GetLabelL(kFirstData);
+//		s.y = n->GetLabelL(kFirstData+1);
+//		
+//		AngleUtil::AngleSearchNode sn(s,GetStateHash(s));
+//
+//		if (angleLookup.find(sn) != angleLookup.end())
+//		{
+//			const Vector2D old = (*angleLookup.find(sn)).second;
+//			//const Vector2D old = angleLookup[sn];
+//			
+//			// Reduce length to 40%
+//			GLdouble xx, yy, zz, rad;	
+//			//glColor3f(1.0, 0,0);
+//			glColor3f(0,0,0);
+//			map->GetCoord(s.x, s.y, xx, yy, zz, rad);
+//			//glLineWidth(2);
+//			glBegin(GL_LINE_STRIP);
+//			glVertex3f(xx-old.x*rad, yy-old.y*rad, zz-rad/2);
+//			
+//			//glColor3f(0.0, 0, 0);
+//			glVertex3f(xx+old.x*rad, yy+old.y*rad, zz-rad/2);	
+//			glEnd();
+//			
+//			double percOffset=0.5;
+//			double lengthOffset=0.5*rad;
+//			glBegin(GL_LINE_STRIP);
+//			glVertex3f(xx+percOffset*old.x*rad-old.y*lengthOffset,
+//							yy+percOffset*old.y*rad+old.x*lengthOffset, zz-rad/2);
+//			glVertex3f(xx+old.x*rad, yy+old.y*rad, zz-rad/2);	
+//							
+//			glVertex3f(xx+percOffset*old.x*rad+old.y*lengthOffset,
+//							yy+percOffset*old.y*rad-old.x*lengthOffset, zz-rad/2);
+//			glEnd();
+//			
+//		}
+//		
+//	}
+//	
+//	
+//	// Draw all edges
+////  	Graph* g = ma->GetAbstractGraph(0);
+////  	
+////  	edge_iterator ei = g->getEdgeIter();
+////  	for (edge *e = g->edgeIterNext(ei); e; e = g->edgeIterNext(ei))
+////  	{
+////  		DrawEdge(window, e);
+////  	}
+//// 	
+//}
+//
+//void WeightedMap2DEnvironment::DrawEdge(const edge* e) const
+//{
+//	Graph* g = ma->GetAbstractGraph(0);
+//	node* from = g->GetNode(e->getFrom());
+//	node* to = g->GetNode(e->getTo());
+//		
+//	GLdouble xx, yy, zz, rad;	
+//	if (e->GetLabelL(kBackwardCount) == e->GetLabelL(kForwardCount))
+//	{
+//		// whole edge should be same colour - white
+//		
+//		glColor3f(1.0, 1.0, 1.0);
+//		
+//		map->GetCoord((int)from->GetLabelL(kFirstData), (int)from->GetLabelL(kFirstData+1), xx, yy, zz, rad);
+//		glBegin(GL_LINE_STRIP);
+//		glVertex3f(xx, yy, zz-rad/2);	
+//	
+//		map->GetCoord((int)to->GetLabelL(kFirstData), (int)to->GetLabelL(kFirstData+1), xx, yy, zz, rad);
+//		glVertex3f(xx, yy, zz-rad/2);
+//		glEnd();
+//	}
+//	else if (e->GetLabelL(kForwardCount) > e->GetLabelL(kBackwardCount))
+//	{
+//		// white on "from" side, blue on "to" side
+//		glColor3f(1.0, 1.0, 1.0);
+//		
+//				map->GetCoord((int)from->GetLabelL(kFirstData), (int)from->GetLabelL(kFirstData+1), xx, yy, zz, rad);
+//		glBegin(GL_LINE_STRIP);
+//		glVertex3f(xx, yy, zz-rad/2);	
+//	
+//		glColor3f(0,0,1.0);
+//		map->GetCoord((int)to->GetLabelL(kFirstData), (int)to->GetLabelL(kFirstData+1), xx, yy, zz, rad);
+//		glVertex3f(xx, yy, zz-rad/2);
+//		glEnd();
+//	}
+//	else
+//	{
+//		// blue on "from" side, white on "to" side
+//		glColor3f(0,0,1.0);
+//				map->GetCoord((int)from->GetLabelL(kFirstData), (int)from->GetLabelL(kFirstData+1), xx, yy, zz, rad);
+//		glBegin(GL_LINE_STRIP);
+//		glVertex3f(xx, yy, zz-rad/2);	
+//		
+//		
+//		glColor3f(1.0, 1.0, 1.0);
+//		map->GetCoord((int)to->GetLabelL(kFirstData), (int)to->GetLabelL(kFirstData+1), xx, yy, zz, rad);
+//		glVertex3f(xx, yy, zz-rad/2);
+//		glEnd();
+//	}
+//}
+//
+//void WeightedMap2DEnvironment::OpenGLDraw(const xyLoc& initial, const tDirection &dir) const
+//{
+//	// Figure out which edge this corresponds to
+//	// Figure out which direction is preferred
+//	//   if none, then keep one colour
+//		
+//	xyLoc s = initial;
+//	
+//	switch (dir)
+//	{
+//		case kN: s.y-=1; break;
+//		case kS: s.y+=1; break;
+//		case kE: s.x+=1; break;
+//		case kW: s.x-=1; break;
+//		case kNW: s.y-=1; s.x-=1; break;
+//		case kSW: s.y+=1; s.x-=1; break;
+//		case kNE: s.y-=1; s.x+=1; break;
+//		case kSE: s.y+=1; s.x+=1; break;
+//		default: break;
+//	}
+//		
+//	Graph* g = ma->GetAbstractGraph(0);
+//	node* from = ma->GetNodeFromMap(initial.x, initial.y);
+//	node* to = ma->GetNodeFromMap(s.x, s.y);
+//	edge* e = g->FindEdge(from->GetNum(),to->GetNum());	
+//		
+//	DrawEdge(e);
+//	
+//}
 
 void WeightedMap2DEnvironment::SetAngle(xyLoc &l, Vector2D angle)
 {
@@ -625,7 +627,7 @@ void WeightedMap2DEnvironment::SetAngle(xyLoc &l, Vector2D angle)
 Vector2D WeightedMap2DEnvironment::GetAngle(xyLoc &l)
 {
 	AngleUtil::AngleSearchNode sn(l,GetStateHash(l));
-	if(angleLookup.find(sn) != angleLookup.end())
+	if (angleLookup.find(sn) != angleLookup.end())
 		return angleLookup[sn];
 	else 
 	{
@@ -653,7 +655,7 @@ double WeightedMap2DEnvironment::ComputeArrowMetric(bool timed, double time, boo
 	int numDotProducts = 0;
 	double totalDotProducts = 0;
 	
-	for(node *n=g->nodeIterNext(ni); n; n=g->nodeIterNext(ni))
+	for (node *n=g->nodeIterNext(ni); n; n=g->nodeIterNext(ni))
 	{
 		
 		
@@ -663,47 +665,47 @@ double WeightedMap2DEnvironment::ComputeArrowMetric(bool timed, double time, boo
 				
 		Vector2D nodeVec = GetAngle(current);
 		
-		if(!timed || (time-nodeVec.GetUpdateTime() < maxtime))
+		if (!timed || (time-nodeVec.GetUpdateTime() < maxtime))
 		{
-			if(nodeVec.x == 0 && nodeVec.y == 0) // check if there's no angle stored here
+			if (nodeVec.x == 0 && nodeVec.y == 0) // check if there's no angle stored here
 				continue;
 					
-			//if(sqrt(nodeVec.x	*nodeVec.x + nodeVec.y*nodeVec.y) < 0.5)
+			//if (sqrt(nodeVec.x	*nodeVec.x + nodeVec.y*nodeVec.y) < 0.5)
 			//	continue;		
 					
 			double bestDotProd = -2;
 			tDirection bestDir = kStay;
 				
-			for(unsigned int i=0; i<directions.size(); i++)
+			for (unsigned int i=0; i<directions.size(); i++)
 			{
 				xyLoc nextThisDir;
 				GetNextState(current, directions[i], nextThisDir);
 
-				if(!GetMap()->CanStep(current.x, current.y, nextThisDir.x, nextThisDir.y))
+				if (!GetMap()->CanStep(current.x, current.y, nextThisDir.x, nextThisDir.y))
 					continue;
 				
 				Vector2D dirVec = GetAngleFromDirection(directions[i]);
 			
 				double dotProd = (nodeVec.x * dirVec.x) + (nodeVec.y * dirVec.y);
 			
-				if(dotProd > bestDotProd)
+				if (dotProd > bestDotProd)
 				{
 					bestDotProd = dotProd;
 					bestDir = directions[i];
 				}	
 			}
 		
-			if(bestDotProd == -2) continue;
+			if (bestDotProd == -2) continue;
 		
 			// Now that we know the closest direction, find out if there's a node there 
 			xyLoc next;
 			GetNextState(current, bestDir, next);
 			
-			if(!(next==current))
+			if (!(next==current))
 			{
 				numDotProducts++;
 				Vector2D nextNodeVec = GetAngle(next);
-				if(DoNormalize)
+				if (DoNormalize)
 				{
 					nodeVec.Normalize();
 					nextNodeVec.Normalize();
@@ -720,7 +722,7 @@ double WeightedMap2DEnvironment::ComputeArrowMetric(bool timed, double time, boo
 	return (totalDotProducts / (double)(numDotProducts));
 }
 
-Vector2D WeightedMap2DEnvironment::GetAngleFromDirection(tDirection dir)
+Vector2D WeightedMap2DEnvironment::GetAngleFromDirection(tDirection dir) const
 {
 	Vector2D angle;
 	

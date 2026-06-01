@@ -1,21 +1,12 @@
 /*
- * $Id: Graph.h,v 1.9 2006/09/18 06:20:15 nathanst Exp $
+ *  $Id: Graph.h
+ *  hog2
  *
- * This file is part of HOG.
+ *  Created by Nathan Sturtevant on 09/18/06.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
+ *
  */ 
 
 // HOG File
@@ -78,15 +69,21 @@ public:
 	~Graph();
 	graph_object *Clone() const; // clones just the nodes
 	Graph *cloneAll() const;     // clones everything
+	void Reset();
+
+	void Save(const char *file);
+	void Load(const char *file);
 	
 	void Export(const char *fname);
 	
 	int AddNode(node *);
-	node *GetNode(unsigned int num);
-	edge *GetEdge(unsigned int num);
+	node *GetNode(unsigned long num);
+	const node *GetNode(unsigned long num) const;
+	edge *GetEdge(unsigned long num);
 	void AddEdge(edge *);
 	edge *findDirectedEdge(unsigned int from, unsigned int to);
 	edge *FindEdge(unsigned int from, unsigned int to);
+	const edge *FindEdge(unsigned int from, unsigned int to) const;
 	
 	bool relax(edge *e, int weightIndex);
 	bool relaxReverseEdge(edge *e, int weightIndex);
@@ -209,16 +206,21 @@ public:
 	// chooses which label will be used as the key for
 	// priority queue
 	void SetKeyLabel(int which) { keyLabel = which; }
+	int GetKeyLabel() { return keyLabel; }
 	double GetKey() { return label[keyLabel].fval; }
 	
 	// set/get various labels for each node
 	void SetLabelF(unsigned int index, double val) const;
 	void SetLabelL(unsigned int index, long val) const;
 	inline double GetLabelF(unsigned int index) const {
-		if (index < label.size()) return label[index].fval; return MAXINT;
+		if (index < label.size())
+			return label[index].fval;
+		return MAXINT;
 	}
 	inline long GetLabelL(unsigned int index) const {
-		if (index < label.size()) return label[index].lval; return MAXINT;
+		if (index < label.size())
+			return label[index].lval;
+		return MAXINT;
 	}
 	
 	// set/get marked edge for each node (limit 1)

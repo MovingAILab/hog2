@@ -1,0 +1,38 @@
+#!/bin/tcsh
+
+#foreach y ( 10 24 )
+
+set y = 10
+
+foreach x ( DH FM FMDH FMDH_e DH+FM DH+FMDH FMDH_e+DH DH+FMDH_e )
+echo " " | awk '{printf("'${x}${y}' ")}'
+foreach s ( dao sc1 random rooms mazes )
+grep "^${x} " ${s}-nodes*${y}*.txt | datamash -t " " mean 4 median 4 count 4 sstdev 4 -R 1 | awk '{printf(" & %'"'"'d & %'"'"'d & %'"'"'d", $2, $1, 1.96*$4/sqrt($3))}'
+end
+echo "\\"
+end
+#end
+
+set y = 24
+
+foreach x ( DH FM FMDH DH+FM DH+FMDH DH+FMDH_e FM2DH FM2DH_e )
+echo " " | awk '{printf("'${x}${y}' ")}'
+foreach s ( dao sc1 random rooms mazes )
+grep "^${x} " ${s}-nodes*${y}*.txt | datamash -t " " mean 4 median 4 count 4 sstdev 4 -R 1 | awk '{printf(" & %'"'"'d & %'"'"'d & %'"'"'d", $2, $1, 1.96*$4/sqrt($3))}'
+#grep "^${x} " ${1}-nodes*${y}*.txt | datamash -t " " mean 4 median 4 count 4 sstdev 4 -R 1 | awk '{printf("'${x}${y}' & %'"'"'d & %'"'"'d & %'"'"'d & %'"'"'d & \n", $2, $1, 1.96*$4/sqrt($3), $3)}'
+end
+echo "\\"
+end
+
+
+#grep "^FM " ${1}-nodes.txt | awk 'BEGIN {} { nodes += $4; cnt++ } END { printf("FM & %'"'"'d %d\\\\\n", nodes/cnt, cnt) }'
+#grep "^FM_e " ${1}-nodes.txt | awk 'BEGIN {} { nodes += $4; cnt++ } END { printf("FM_e & %'"'"'d %d\\\\\n", nodes/cnt, cnt) }'
+#grep "^FMDH " ${1}-nodes.txt | awk 'BEGIN {} { nodes += $4; cnt++ } END { printf("FMDH & %'"'"'d %d\\\\\n", nodes/cnt, cnt) }'
+#grep "^FMDH_e " ${1}-nodes.txt | awk 'BEGIN {} { nodes += $4; cnt++ } END { printf("FMDH_e & %'"'"'d %d\\\\\n", nodes/cnt, cnt) }'
+#grep "^DH " ${1}-nodes.txt | awk 'BEGIN {} { nodes += $4; cnt++ } END { printf("DH & %'"'"'d %d\\\\\n", nodes/cnt, cnt) }'
+
+
+#grep "^FM " ${1}-nodes*.txt | datamash -t " " mean 4 median 4 count 4 sstdev 4 -R 1 | awk '{printf("FM & %d & %d & %d & %d & \n", $2, $1, 1.96*$4/sqrt($3), $3)}'
+#grep "^FM_e " ${1}-nodes*.txt | datamash -t " " mean 4 median 4 count 4 sstdev 4 -R 1 | awk '{printf("FM_e & %d & %d & %d & %d & \n", $2, $1, 1.96*$4/sqrt($3), $3)}'
+#grep "^FMDH " ${1}-nodes*.txt | datamash -t " " mean 4 median 4 count 4 sstdev 4 -R 1 | awk '{printf("FMDH & %d & %d & %d & %d & \n", $2, $1, 1.96*$4/sqrt($3), $3)}'
+#grep "^FMDH_e " ${1}-nodes*.txt | datamash -t " " mean 4 median 4 count 4 sstdev 4 -R 1 | awk '{printf("FMDH_e & %d & %d & %d & %d & \n", $2, $1, 1.96*$4/sqrt($3), $3)}'

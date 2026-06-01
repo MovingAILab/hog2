@@ -1,10 +1,14 @@
 /*!
- * \mainpage HOG Documentation
+ * \mainpage HOG2 Documentation
  * 
- * HOG [Hierarchical Open Graph] is collection of classes and a
+ * \section Welcome  Welcome to HOG2's documentation!
+ *
+ * HOG2 [Hierarchical Open %Graph 2] is the second iteration of the HOG project
+ * which aims to provide users with an testing environment for grid based simulations.
+ * HOG2 comprises of a collection of classes and a
  * simulation which are designed as a simple model of RTS or other
  * clocked simulation environments. This page will give a simple
- * overview of how HOG works and how to get started using it.
+ * overview of how HOG2 works and how to get started using it.
  *
  * If you prefer just to dig into the code and get started,
  * \ref sample.cpp is a sample file showing how to create and
@@ -12,50 +16,252 @@
  * process command-line arguments.
  * 
  * Documentation contents:
- *
- * \ref Overview - Capabilities of HOG
- *
- * \ref Units - The basic world objects
- *
- * \ref Unit-Groups - Shared memory for units
- *
- * \ref Simulations - Simulating the world
- * 
- * \ref Abstractions - Spacial abstractions of maps
- *
- * \ref Starting - Putting it all together
- *
- * \ref Memory - Memory Management
- *
- * \ref CVS - Getting started with HOG and CVS
- *
+ * - \ref Introduction
+ *   - \ref Introduction "Introduction"
+ *   - \ref Install "Getting Started"
+ * - \ref GUI "HOG2 GUI overview"
+ * - \ref Development
+ * - \ref Code "Included Code"
+
  */
 
 ///////////////////////////////////////////////
 
-/*! \page Overview Overview of HOG capabilities
+/*! \page Introduction Introduction
 
-\section OVER Overview
+\section Overview Overview of HOG2's capabilities
 
-HOG is a tile-based simulation designed to provide a simple
-experiment environment useful for RTS and other games. Although
-it is based on a simple simulation model, it contains state-of-the-art
-algorithms for pathfinding and map abstraction.
+HOG2 is a rich environment for deterministic search algorithms. It
+supports running search algorithms across a large number of domains,
+and also supports simulating agents with domains.
 
-The heart of HOG is a clock-based simulation. An external program
-advances HOG's simulation clock and displays (via OpenGL) the current
-view of the world. It is not necessary to understand how the front
-end works or to understand openGL in order to use HOG. Instead, you
-can just create simple units which interact with their surroundings.
+Simulated agents are run in a clock-based simulation. An external program
+advances HOG2's simulation clock and displays the current
+view of the world. 
 
-Next page \ref Units
+\section Install Getting started
+
+To begin using HOG2, first install the dependancies to you machine:
+
+- Ubuntu:@code # apt install build-essential libglu1-mesa-dev freeglut3-dev@endcode
+- Debian:@code # apt install git libglu1-mesa-dev freeglut3-dev@endcode
+- Arch:@code # pacman -S git base-devel mesa glu freeglut@endcode
+- CentOS:@code # yum install git make gcc-c++ mesa-libGL-devel mesa-libGLU-devel freeglut-devel@endcode
+- MacOS: Install XCode
+
+then clone the git repo from [github](https://github.com/nathansttt/hog2) with: @code $ git clone https://github.com/nathansttt/hog2.git@endcode
+
+Finally move to the hog2/build/gmake directory and run@code $ make@endcode
+
+One the Mac there are also XCode projects in build/XCode.
+
+If you wish to deploy to the web, you must install emscripten, and then you can build from build/web
+
+Next: \ref Usage
 */
 
 ///////////////////////////////////////////////
 
-/*! \page Units Basic World Objects
+/*! \page Code Included Code
 
-\section U_TYPES Types of units
+After the code base has been compiled, there will be a verity of executable binaries that can
+be run to see the capabilities of HOG2. These binaries are compiled into @code bin/release/@endcode
+and are described below.
+
+\section Apps
+- \ref APPS_3D_MAPS "3dmaps" (map3d?)
+- \ref APPS_AIRPLANE "airplane"
+- \ref APPS_ARM "arm"
+- \ref APPS_BIDIRECTIONAL "bidirectional"
+- \ref APPS_CANONICAL_GRAPHS "canonicalGraphs" (not compiled)
+- \ref APPS_CANONICAL_GRIDS "canonicalGrids"
+- \ref APPS_DELTA "delta"
+- \ref APPS_DIRECTIONAL "directional" (not compiled)
+- \ref APPS_DRAGONAGE "dragonage" (not compiled)
+- \ref APPS_EMOTION "emotion" (not compiled)
+- \ref APPS_FLING "fling"
+- \ref APPS_GA "ga" (not compiled)
+- \ref APPS_INCONSISTANCY "inconsistancy" (not compiled)
+- \ref APPS_LOCAL_SEARCH "localsearch" (not compiled)
+- \ref APPS_LOCAL_SENSING_SEARCH "localsensingsearch"
+- \ref APPS_MAPF "MAPF" (not compiled)
+- \ref APPS_MAP_UTILS "mapUtils"
+- \ref APPS_MULTI_AGENT "multiagent" (not compiled)
+- \ref APPS_PATH_SAMPLE "pathsample"
+- \ref APPS_PDB "PDB"
+- \ref APPS_PREDICTION "prediction" (not compiled)
+- \ref APPS_PUZZLE_SAMPLE "puzzlesample"
+- \ref APPS_ROADS "roads"
+- \ref APPS_RUBIK "rubik"
+- \ref APPS_SIMPLE_MOVEMENT "simpleMovement" (not compiled)
+- \ref APPS_SNAKEBIRD "snakebird"
+- \ref APPS_STP "stp"
+- \ref APPS_SUPERVISED_LEARNING "supervisedLearning" (not compiled)
+- \ref APPS_TEST "test" (not compiled)
+- \ref APPS_TOH "TOH" (not compiled)
+- \ref APPS_VOXEL "voxel"
+- \ref APPS_WITNESS "witness" (not compiled)
+
+\section Demos
+- \ref DEMOS_ASTAR "astar"
+- \ref DEMOS_ASTAR_MAP "astar-map" (in web build)
+- \ref DEMOS_BB "bb" (in web build)
+- \ref DEMOS_BIDIR "bidir" (in web build)
+- \ref DEMOS_BIDIR_NECESSARY "bidirnecessary" (in web build)
+- \ref DEMOS_CANONICAL_DIJKSTRA "canonical-dijkstra" (in web build)
+- \ref DEMOS_CANONICAL_MAPS "canonical-maps" (in web build)
+- \ref DEMOS_DFID "DFID"
+- \ref DEMOS_DH "dh" (in web build)
+- \ref DEMOS_DH_PLACE "dh-place" (in web build)
+- \ref DEMOS_DIJKSTRA "dijkstra"
+- \ref DEMOS_FASTMAP "fastmap" (in web build)
+- \ref DEMOS_GMX "GMX" (in web build)
+- \ref DEMOS_GRID_ABSTRACTION "gridabstraction" (in web build)
+- \ref DEMOS_ID_ASTAR "idaastar"
+- \ref DEMOS_INCONSISTENCY_GRAPH "inconsistency-graph" (in web build)
+- \ref DEMOS_JPS "JPS" (in web build)
+- \ref DEMOS_KMEANS "kmeans" (in web build)
+- \ref DEMOS_MM_GRAPH "mm-graph" (in web build)
+- \ref DEMOS_MNIST "mnist" (in web build)
+- \ref DEMOS_NBS "nbs" (in web build)
+- \ref DEMOS_REACH "reach" (in web build)
+- \ref DEMOS_SIMPLE_AGENT "simple-agent" (in web build)
+- \ref DEMOS_STP "STP" (in web build)
+- \ref DEMOS_SUBOPTIMA_MAP "suboptima-map" (in web build)
+- \ref DEMOS_TRANIST_ROUTING_MAPS "transit-routing-maps" (in web build)
+- \ref DEMOS_WITNESS "witness" (in web build)
+- \ref DEMOS_WITNESS3 "witness3" (in web build)
+
+Prev: \ref Introduction Next: \ref Development 
+*/
+
+///////////////////////////////////////////////
+
+/*! \page GUI HOG2 GUI
+
+\section Building a HOG2 app
+
+HOG2 uses an event-based GUI, which is described here.
+First you should install handlers for any events that you would like to receive.
+Then, you hand control over to HOG2:
+
+int main(int argc, char* argv[])
+{
+	InstallHandlers();
+	RunHOGGUI(argc, argv, 640, 640);
+	return 0;
+}
+
+\ref createSimulation
+
+\ref initializeKeyboardHandlers
+
+\ref initializeCommandLineHandlers
+
+\subsection CLH Command-Line Handlers
+
+The first thing you need to be concerned with is installing command line handlers.
+These handles will allow you to process command-line arguments. By installing
+handlers with text descriptions, it is possible to have the application automatically
+print help for all command line arguments when it can't process them correctly.
+
+Here is an example of a comand-line handler:
+
+installCommandLineHandler(myCLHandler, "-map", "-map <filename>", "Selects the default map to be loaded.");
+
+A command-line handler looks something like this. It gets a pointer to the current argument list, where
+the first argument is the parameter for the handler. The handler then processes as many arguments as
+it wants, and returns how many arguments were processed.
+
+int myCLHandler(char *argument[], int maxNumArgs)
+{
+	if (maxNumArgs <= 1)
+		return 0;
+	strncpy(gDefaultMap, argument[1], 1024);
+	return 2;
+}
+
+Multiple handlers can be defined for the same argument. They will each get called in turn (no
+order guarantees) until one of the handlers returns a value greater than 0. Given the command-line
+arguments, you probably want to use a global variable to store any parameters that were set.
+
+Given proper command-line arguments, you could just allocate your own simulation, run it,
+and then exit the program, although you may want to do this in createSimulation, after all
+command-line arguments have been handled, unless you can guarantee that a particular command-line
+argument will always be last.
+
+\subsection Creating a window
+
+You will be notified when a window is created via the window handler.
+
+void MyWindowHandler(unsigned long windowID, tWindowEventType eType)
+
+You install a window handler using the following code:
+
+InstallWindowHandler(MyWindowHandler);
+
+A window handler receives events (kWindowDestroyed, kWindowCreated) when windows are created
+or destroyed, and should setup any variables associated with that window. The windowID is a
+unique identifier that is used in other functions to identify that window.
+
+A window handler should typically install a frame handler to be able to draw into the window
+each frame.
+
+\subsection Frame Handlers
+
+Frame handlers are used for drawing each frame of the GUI.
+
+InstallFrameHandler(MyFrameHandler, windowID, 0);
+
+A frame handler function looks like this:
+
+void MyFrameHandler(unsigned long windowID, unsigned int viewport, void *)
+
+It is passed the window being drawn, the viewport of the window, and a (void *) which can pass
+any data.
+
+You can call GetContext(windowID) to get contextual information about a window. In particular,
+a virtual display can be retrieved and drawn into:
+
+Graphics::Display &d = GetContext(windowID)->display;
+d.FillRect({-1, -1, 1, 1}, Colors::lightgray);
+
+
+\subsection KBH Keyboard Handlers
+
+Keyboard handlers are similar to command-line handlers, in that you install any handlers to
+allow your application to respond to keyboard events. By installing handlers, the program
+can print out all legal key combinations it accepts. \ref initializeKeyboardHandlers might
+look something like this:
+
+void initializeKeyboardHandlers()
+{
+installKeyboardHandler(myDisplayHandler, "Toggle Abstraction", "Toggle display of the ith level of the abstraction", kAnyModifier, '0', '9');
+}
+
+In this case, any keys in the range 0..9 will be sent to the function myDisplayHandler, regardless of
+any modifier keys that are down. It is important to note that modifier keys such as SHIFT can often
+change the ASCII value that is passed to the keyboard handler. Keyboard handlers will be called with
+the lowercase equivalent of the key that was pressed, but SHIFT-1 will be reported
+as SHIFT-!, and so will not trigger this handler. Here is an example handler which implements
+the above functionality.
+
+void myDisplayHandler(unitSimulation *unitSim, tKeyboardModifier mod, char key)
+{
+  if (unitSim->getMapAbstractionDisplay())
+    unitSim->getMapAbstractionDisplay()->toggleDrawAbstraction(((mod == kControlDown)?10:0)+(key-'0'));
+}
+
+
+
+///////////////////////////////////////////////
+
+/*! \page Development
+
+Note: This is older documentation for simulating agents. It is still accurate, but
+a majority of projects involve other environments besides agent-based environments.
+
+\section Units Basic World Objects
 
 There are two basic types of units that can exist in the world, display units
 and world units. Display units are drawn into the world, and can be used as
@@ -65,39 +271,39 @@ A world unit is the basic type of unit that can move around the world, which
 will be described in more detail in the next section.
 
 The unit type is specified from the result returned by the function
-\ref getObjectType.
+\ref getObjectType (No longer exits! TODO: Update).
 
-\section U_MOVING Moving in the world
+\subsection U_MOVING Moving in the world
 
-The unit is the most basic object in the world. At each time step in the world
+The Unit is the most basic object in the world. At each time step in the world
 a unit is asked which direction it wants to move via the function
-\ref makeMove. For a moment we'll ignore the parameters to makeMove, and focus
+\ref Unit::MakeMove "MakeMove". For a moment we'll ignore the parameters to \ref Unit::MakeMove "MakeMove", and focus
 on the calling conventions. When asked to make a move, a unit must
-return the direction it would like to move, one of:
+return the \ref tDirection "direction" it would like to move, one of:
 kN, kNE, kE, kSE, kS, kSW, kW, kNW. Additionally, if the unit does not wish
 to move, it can return kStay. And, if the unit is allowed to teleport, it
 can return kTeleport.
 
-After returing a value from makeMove, the unit simulation verifies that the move
-is legal, and then calls updateLocation on the unit, informing the unit of its
+After returing a value from \ref Unit::MakeMove "MakeMove", the unit simulation verifies that the move
+is legal, and then calls \ref Unit::UpdateLocation "UpdateLocation" on the unit, informing the unit of its
 current location and whether the previous move was successful or not.
-If a unit returns kTeleport the simulation will call \ref getLocation on the
+If a unit returns kTeleport the simulation will call \ref Unit::GetLocation "GetLocation" on the
 unit and move the unit directly to the returned location.
 
 The unit simulation measures the amount of thinking time used by each unit in
-both the makeMove and setLocation functions. Details of how these measurements are
+both the \ref Unit::MakeMove "MakeMove" and \ref Unit::SetLocation "SetLocation" functions. Details of how these measurements are
 used can be found in \ref Simulations.
 
-\section PROVIDERS Map and Reservation providers
+\subsection PROVIDERS Map and Reservation providers
 
-When a unit is asked to move it is provided with a map provider and a reservation
-provider. A map provider can return both a map of the world and an abstract map
+When a unit is asked to move it is provided with a mapProvider (No longer exists! TODO: Update) and a reservationProvider.
+A map provider can return both a map of the world and an abstract map
 of the world. The unit can locate itself on the map and use that information to
 do any planning in the map world. The maps are not guaranteed to be exact
 representations of the world. For instance, if a unit is exploring the world
 the map may change as new parts of the world are explored.
 
-Similarly, a reservation provider can provide information about the other
+Similarly, a reservationProvider can provide information about the other
 units in the world and make reservations for paths the unit would like to
 travel. But, like the maps, the information provided by the reservation provider
 may not be completely accurate. A unit, for instance, may only know about
@@ -105,7 +311,7 @@ the other units in his vicinity, or reservations may only be shared by a select
 group of units. There is no default implementation for reservations, so
 units will always successfully make their reservations.
 
-\section UNIT_IMP Provided unit implementations
+\subsection UNIT_IMP Provided unit implementations
 
 The file \ref unit.h declares the basic unit class, as well as a few simple
 implementations: a teleporting unit, a randomly moving unit, and a unit that
@@ -117,14 +323,12 @@ search unit takes a search algorithm as a parameter. This unit asks the search
 algorithm to plan a path for the unit, and then caches the path returned
 by the unit, executing it one step at a time in the world.
 
-Prev: \ref Overview Next: \ref Unit-Groups
-*/
 
-///////////////////////////////////////////////
 
-/*! \page Unit-Groups Shared memory for units
 
-\section UG Unit-Groups: Shared memory for units
+
+\section Unit-Groups Shared memory for units
+
 
 By itself a single unit has only limited usefulness for experiments. In practice
 we may want many units to share a view of the world, or to cooperate in building
@@ -147,14 +351,11 @@ as a map provider.
 For each step in the unit simulation, a unit group has the chance to do its
 own processing via the \ref think function.
 
-Prev: \ref Units Next: \ref Simulations
-*/
 
-///////////////////////////////////////////////
 
-/*! \page Simulations Simulating the world
 
-\section SIM Simulating the world
+
+\section Simulations Simulating the world
 
 The unitSimulation is in charge of allowing units to move around the world,
 enforcing limits on where units can move. The unitSimulation also maintains
@@ -172,14 +373,9 @@ parameters. See the \ref unitSimulation documentation for more details on these.
 A unit simulation can be paused. If paused, all calls to stepTime will be
 ignored until the simulation is unpaused.
 
-Prev: \ref Unit-Groups Next: \ref Abstractions
-*/
 
-///////////////////////////////////////////////
 
-/*! \page Abstractions Spacial abstractions of maps
-
-\section ABS Spacial abstractions of maps
+\section Abstractions Spacial abstractions of maps
 
 The point of this document is not to completely explain spacial abstractions,
 but to give an overview of how they work. Technical reserach papers are available
@@ -187,7 +383,7 @@ which give a more in-depth overview of the concepts involved. See:
 
 http://www.cs.ualberta.ca/~nathanst/papers.html
 
-That being said, map abstractions are used widely within the HOG environment.
+That being said, map abstractions are used widely within the HOG2 environment.
 The \ref mapAbstraction class contains the relevant functions for converting between
 map coordinates (getNodeFromMap) and extracting information about the abstractions
 available.
@@ -221,124 +417,10 @@ value. The labels are as follows:
                     no guarantee it will be preserved if nodes are deleted out of the graph.
 
 
-Prev: \ref Simulations Next: \ref Starting
-*/
-
-///////////////////////////////////////////////
-
-/*! \page Starting Putting everything together
-
-\section ALL Putting it all together
-
-To define a new application, you can create a new directory in the apps/ folder.
-To compile this applciation, type "make x" where "x" is the name of the folder you
-created. In the folder you can put an .cpp and .h files that you want for your
-application, but you must define the following functions somewhere inside this
-directory:
-
-\ref processStats
-
-\ref createSimulation
-
-\ref initializeKeyboardHandlers
-
-\ref initializeCommandLineHandlers
-
-The definitions for these functions are in "common.h", so you need to include that
-file as well.
-
-\section CLH Command-Line Handlers
-
-The first thing you need to be concerned with is installing command line handlers.
-These handles will allow you to process command-line arguments. By installing
-handlers with text descriptions, it is possible to have the application automatically
-print help for all command line arguments when it can't process them correctly.
-
-Inside initializeCommandLineHandlers you really only need to call the function
-\ref installCommandLineHanders. Here is an example:
-
-installCommandLineHandler(myCLHandler, "-map", "-map <filename>", "Selects the default map to be loaded.");
-
-A command-line handler looks something like this. It gets a pointer to the current argument list, where
-the first argument is the parameter for the handler. The handler then processes as many arguments as
-it wants, and returns how many arguments were processed.
-
-int myCLHandler(char *argument[], int maxNumArgs)
-{
-	if (maxNumArgs <= 1)
-		return 0;
-	strncpy(gDefaultMap, argument[1], 1024);
-	return 2;
-}
-
-Multiple handlers can be defined for the same argument. They will each get called in turn (no
-order guarantees) until one of the handlers returns a value greater than 0. Given the command-line
-arguments, you probably want to use a global variable to store any parameters that were set.
-
-Given proper command-line arguments, you could just allocate your own simulation, run it,
-and then exit the program, although you may want to do this in createSimulation, after all
-command-line arguments have been handled, unless you can guarantee that a particular command-line
-argument will always be last.
-
-\section CS Creating the Simulation
-
-The function \ref createSimulation is where you need to allocate a unit simulation. This is
-where you can also set any of the parameters set from the command-line arguments. The simulation
-will start running immediately. If you don't want it to start running, you can pause it here.
-
-Here is a sample implementation:
-
-void createSimulation(unitSimulation * &unitSim)
-{
-	Map *map;
-	if (gDefaultMap[0] == 0)
-		map = new Map(64, 64);
-	else
-		map = new Map(gDefaultMap);
-	unitSim = new unitSimulation(new mapCliqueAbstraction(map));
-}
 
 
-\section KBH Keyboard Handlers
 
-Keyboard handlers are similar to command-line handlers, in that you install any handlers to
-allow your application to respond to keyboard events. By installing handlers, the program
-can print out all legal key combinations it accepts. \ref initializeKeyboardHandlers might
-look something like this:
-
-void initializeKeyboardHandlers()
-{
-installKeyboardHandler(myDisplayHandler, "Toggle Abstraction", "Toggle display of the ith level of the abstraction", kAnyModifier, '0', '9');
-}
-
-In this case, any keys in the range 0..9 will be sent to the function myDisplayHandler, regardless of
-any modifier keys that are down. It is important to note that modifier keys such as SHIFT can often
-change the ASCII value that is passed to the keyboard handler. Keyboard handlers will be called with
-the lowercase equivalent of the key that was pressed, but SHIFT-1 will be reported
-as SHIFT-!, and so will not trigger this handler. Here is an example handler which implements
-the above functionality.
-
-void myDisplayHandler(unitSimulation *unitSim, tKeyboardModifier mod, char key)
-{
-  if (unitSim->getMapAbstractionDisplay())
-    unitSim->getMapAbstractionDisplay()->toggleDrawAbstraction(((mod == kControlDown)?10:0)+(key-'0'));
-}
-
-
-\section PS Processing Stats
-
-Each time a unit simulation is de-allocated, processStats is called first to allow your application
-to save the stats or do any other processing on them.
-
-Prev: \ref Abstractions Next: Memory
-
-*/
-
-///////////////////////////////////////////////
-
-/*! \page Memory Memory Management
-
-\section MEMORY Memory
+\section Memory Memory Management
 
 It is important to use memory effienctly when building simulations that
 run over extended periods of time.
@@ -355,62 +437,7 @@ upon termination. Units and unitGroups are both added to each other, but they
 are also both added to the unit simulation, so the simulation is responsible
 for deallocating both of these objects.
 
-Prev: \ref Starting Next: \ref CVS
-*/
 
-///////////////////////////////////////////////
-
-/*! \page CVS Using HOG with CVS
-
-\section CVSUSAGE CVS
-
-These instructions are for CVS users with a University of Alberta account.
-HOG is currently not available to users outside the UofA.
-
-To begin using HOG, do the following:
-
-- First, request membership to the Unix group hog. To do this, e-mail Nathan
-Sturtevant [nathanst].
-
-- Set your CVSROOT shell variable to point to the hog CVS archive. Instructions
-assume that you are using csh or tcsh. (You can change your shell to tcsh using "ypchsh", entering your password, and then /bin/tcsh as your login shell.) Each of these <i>setenv</i> commands can and probably should be placed in your .cshrc.user file:
-
-setenv CVSROOT :ext:<i>login</i>\@games.cs.ualberta.ca:/usr/cvsroot
-
-Replace <i>login</i> with your login name
-
-- Set the access method to ssh: (This command should also appear in your .cshrc.user file so that it is set every time you log in.)
-
-setenv CVS_RSH ssh
-
-- [Optional] If you have a favorite editor, you can specify this:
-
-setenv CVSEDITOR emacs
-
-- Check out the the CVS archive:
-
-cvs co project_hog
-
-- After checking out the directory, you can change the root directory name to anything you want.
-
-- You can test that things work:
-
-make sample
-./bin/sample
-
-- To commit changes, you must first update your code to make sure there are no conflicts with
-any of the code already in the archive:
-
-cvs update -d -A
-
-- Then, you can commit any changes:
-
-cvs commit
-
-- Please make sure you leave meaningful comments about the changes you've made to the code, in case
-your changes need to be debugged later.
-
-
-Prev: \ref Memory
+Prev: \ref Usage
 */
 

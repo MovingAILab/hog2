@@ -1,26 +1,11 @@
 /*
- *  $Id: MapLineAbstraction.h,v 1.3 2007/04/02 23:39:13 nathanst Exp $
- *  MapLineAbstraction.h
- *  hog
+ *  $Id: MapLineAbstraction.h
+ *  hog2
  *
  *  Created by Nathan Sturtevant on 11/10/06.
- *  Copyright 2006 __MyCompanyName__. All rights reserved.
+ *  Modified by Nathan Sturtevant on 02/29/20.
  *
- * This file is part of HOG.
- *
- * HOG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * HOG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with HOG; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * This file is part of HOG2. See https://github.com/nathansttt/hog2 for licensing information.
  *
  */
 

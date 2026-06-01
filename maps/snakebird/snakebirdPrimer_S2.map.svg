@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width = "403" height = "403" viewBox = "-1 -1 402 402"  preserveAspectRatio = "none" shape-rendering="crispEdges">
+<rect x="0.000000" y="0.000000" width="400.00000000" height="400.00000000" style="fill:rgb(63,191,255);" /><rect x="0.000000" y="300.000000" width="400.00000000" height="100.00000000" style="fill:rgb(63,0,63);" /><g style="fill:rgb(127,63,0);">
+ <rect x="140.000000" y="240.000015" width="20.000000" height="19.999985"/>
+ <rect x="160.000000" y="240.000015" width="20.000000" height="19.999985"/>
+ <rect x="180.000000" y="240.000015" width="20.000000" height="19.999985"/>
+</g><rect x="180.000000" y="260.000000" width="20.00000000" height="20.00003052" style="fill:rgb(127,95,63);" /><rect x="200.000000" y="240.000015" width="20.00000000" height="19.99998474" style="fill:rgb(127,63,0);" /><rect x="200.000000" y="260.000000" width="20.00000000" height="20.00003052" style="fill:rgb(127,95,63);" /><g style="fill:rgb(127,63,0);">
+ <rect x="220.000000" y="240.000015" width="20.000015" height="19.999985"/>
+ <rect x="220.000000" y="260.000000" width="20.000015" height="20.000031"/>
+ <rect x="240.000015" y="100.000000" width="19.999985" height="20.000008"/>
+ <rect x="240.000015" y="120.000008" width="19.999985" height="20.000008"/>
+ <rect x="240.000015" y="140.000000" width="19.999985" height="20.000000"/>
+ <rect x="240.000015" y="160.000000" width="19.999985" height="20.000000"/>
+ <rect x="240.000015" y="240.000015" width="19.999985" height="19.999985"/>
+ <rect x="240.000015" y="260.000000" width="19.999985" height="20.000031"/>
+ <rect x="260.000000" y="100.000000" width="20.000031" height="20.000008"/>
+ <rect x="260.000000" y="120.000008" width="20.000031" height="20.000008"/>
+</g><g style="fill:rgb(51,89,0);">
+ <rect x="260.000000" y="140.000000" width="20.000031" height="20.000000"/>
+ <rect x="260.000000" y="160.000000" width="20.000031" height="20.000000"/>
+</g><rect x="260.000000" y="240.000015" width="20.00003052" height="19.99998474" style="fill:rgb(127,63,0);" /><rect x="280.000000" y="100.000000" width="20.00000000" height="20.00000763" style="fill:rgb(127,95,63);" /><rect x="280.000000" y="120.000008" width="20.00000000" height="20.00000763" style="fill:rgb(127,63,0);" /><rect x="280.000000" y="140.000000" width="20.00000000" height="20.00000000" style="fill:rgb(51,89,0);" /><rect x="280.000000" y="160.000000" width="20.00000000" height="20.00000000" style="fill:rgb(127,95,63);" /><rect x="280.000000" y="240.000015" width="20.00000000" height="19.99998474" style="fill:rgb(127,63,0);" /><g style="fill:rgb(255,0,0);">
+ <rect x="200.000000" y="227.500015" width="20.000000" height="4.999985"/>
+ <rect x="207.500000" y="220.000000" width="5.000000" height="20.000015"/>
+ <rect x="200.000000" y="220.000000" width="15.000015" height="14.999985"/>
+</g><circle cx="207.500000" cy="232.500005" r="7.500000" style="fill:rgb(255,0,0);stroke-width:1" /><rect x="205.000000" y="220.000000" width="15.00000000" height="14.99998474" style="fill:rgb(255,0,0);" /><circle cx="212.500000" cy="232.500005" r="7.500000" style="fill:rgb(255,0,0);stroke-width:1" /><g style="fill:rgb(204,0,0);">
+ <rect x="200.000000" y="207.500000" width="20.000000" height="5.000000"/>
+ <rect x="207.500000" y="200.000000" width="5.000000" height="20.000000"/>
+</g><circle cx="207.500000" cy="207.500000" r="7.500000" style="fill:rgb(204,0,0);stroke-width:1" /><rect x="200.000000" y="205.000000" width="15.00001526" height="15.00000000" style="fill:rgb(204,0,0);" /><circle cx="212.500000" cy="207.500000" r="7.500000" style="fill:rgb(204,0,0);stroke-width:1" /><rect x="205.000000" y="205.000000" width="15.00000000" height="15.00000000" style="fill:rgb(204,0,0);" /><circle cx="212.000000" cy="210.000000" r="2.000000" style="fill:rgb(255,255,255);stroke-width:1" /><circle cx="208.000001" cy="210.000000" r="2.000000" style="fill:rgb(255,255,255);stroke-width:1" /><circle cx="212.000000" cy="210.000000" r="1.000000" style="fill:rgb(0,0,0);stroke-width:1" /><circle cx="208.000001" cy="210.000000" r="1.000000" style="fill:rgb(0,0,0);stroke-width:1" /><polygon points="207.401909,213.500015 209.999985,218.000015 212.598061,213.500015 207.401909,213.500015 " style="fill:rgb(255,127,0)" /><g style="fill:rgb(0,0,255);">
+ <rect x="220.000000" y="207.500000" width="20.000015" height="5.000000"/>
+ <rect x="227.500015" y="200.000000" width="4.999985" height="20.000000"/>
+</g><circle cx="227.500004" cy="207.500000" r="7.500000" style="fill:rgb(0,0,255);stroke-width:1" /><circle cx="227.500004" cy="212.500000" r="7.500000" style="fill:rgb(0,0,255);stroke-width:1" /><g style="fill:rgb(0,0,255);">
+ <rect x="225.000000" y="200.000000" width="15.000015" height="15.000015"/>
+ <rect x="225.000000" y="205.000000" width="15.000015" height="15.000000"/>
+</g><g style="fill:rgb(0,0,204);">
+ <rect x="240.000015" y="207.500000" width="19.999985" height="5.000000"/>
+ <rect x="247.500015" y="200.000000" width="5.000000" height="20.000000"/>
+ <rect x="240.000015" y="200.000000" width="15.000000" height="15.000015"/>
+ <rect x="240.000015" y="205.000000" width="15.000000" height="15.000000"/>
+</g><circle cx="252.500010" cy="207.500000" r="7.499999" style="fill:rgb(0,0,204);stroke-width:1" /><circle cx="252.500010" cy="212.500000" r="7.499999" style="fill:rgb(0,0,204);stroke-width:1" /><circle cx="252.000010" cy="210.000000" r="2.399999" style="fill:rgb(0,0,102);stroke-width:1" /><circle cx="248.000014" cy="210.000000" r="2.400000" style="fill:rgb(0,0,102);stroke-width:1" /><polygon points="247.401924,213.500015 250.000000,218.000015 252.598076,213.500015 247.401924,213.500015 " style="fill:rgb(255,127,0)" /><g style="fill:rgb(0,255,0);">
+ <rect x="160.000000" y="227.500015" width="20.000000" height="4.999985"/>
+ <rect x="167.500000" y="220.000000" width="5.000000" height="20.000015"/>
+</g><circle cx="167.500001" cy="227.500004" r="7.500000" style="fill:rgb(0,255,0);stroke-width:1" /><circle cx="167.500001" cy="232.500005" r="7.500000" style="fill:rgb(0,255,0);stroke-width:1" /><g style="fill:rgb(0,255,0);">
+ <rect x="165.000015" y="220.000000" width="14.999985" height="14.999985"/>
+ <rect x="165.000015" y="225.000000" width="14.999985" height="15.000015"/>
+</g><g style="fill:rgb(0,204,0);">
+ <rect x="180.000000" y="227.500015" width="20.000000" height="4.999985"/>
+ <rect x="187.500015" y="220.000000" width="4.999985" height="20.000015"/>
+ <rect x="180.000000" y="220.000000" width="15.000000" height="14.999985"/>
+ <rect x="180.000000" y="225.000000" width="15.000000" height="15.000015"/>
+</g><circle cx="192.500007" cy="227.500004" r="7.500000" style="fill:rgb(0,204,0);stroke-width:1" /><circle cx="192.500007" cy="232.500005" r="7.500000" style="fill:rgb(0,204,0);stroke-width:1" /><circle cx="192.000008" cy="230.000004" r="2.800000" style="fill:rgb(0,102,0);stroke-width:1" /><circle cx="188.000008" cy="230.000004" r="2.800000" style="fill:rgb(0,102,0);stroke-width:1" /><polygon points="187.401939,233.500015 190.000015,238.000015 192.598091,233.500015 187.401939,233.500015 " style="fill:rgb(255,127,0)" /><g style="fill:rgb(255,255,0);">
+ <rect x="240.000015" y="227.500015" width="19.999985" height="4.999985"/>
+ <rect x="247.500015" y="220.000000" width="5.000000" height="20.000015"/>
+ <rect x="240.000015" y="220.000000" width="15.000000" height="14.999985"/>
+ <rect x="240.000015" y="225.000000" width="15.000000" height="15.000015"/>
+</g><circle cx="252.500010" cy="227.500004" r="7.499999" style="fill:rgb(255,255,0);stroke-width:1" /><circle cx="252.500010" cy="232.500005" r="7.499999" style="fill:rgb(255,255,0);stroke-width:1" /><g style="fill:rgb(204,204,0);">
+ <rect x="220.000000" y="227.500015" width="20.000015" height="4.999985"/>
+ <rect x="227.500015" y="220.000000" width="4.999985" height="20.000015"/>
+</g><circle cx="227.500004" cy="227.500004" r="7.500000" style="fill:rgb(204,204,0);stroke-width:1" /><circle cx="227.500004" cy="232.500005" r="7.500000" style="fill:rgb(204,204,0);stroke-width:1" /><g style="fill:rgb(204,204,0);">
+ <rect x="225.000000" y="220.000000" width="15.000015" height="14.999985"/>
+ <rect x="225.000000" y="225.000000" width="15.000015" height="15.000015"/>
+</g><circle cx="232.000005" cy="230.000004" r="3.200001" style="fill:rgb(102,102,0);stroke-width:1" /><circle cx="228.000006" cy="230.000004" r="3.200001" style="fill:rgb(102,102,0);stroke-width:1" /><polygon points="227.401939,233.500015 230.000015,238.000015 232.598091,233.500015 227.401939,233.500015 " style="fill:rgb(255,127,0)" /><polygon points="270.000031,219.499985 279.035067,212.935646 275.583990,202.314323 264.416071,202.314323 260.964994,212.935646 270.000031,219.499985 " style="fill:rgb(255,255,0)" /><polygon points="273.685444,215.072522 275.963155,208.062448 270.000031,203.729984 264.036906,208.062448 266.314617,215.072522 273.685444,215.072522 " style="fill:rgb(255,127,0)" /><polygon points="271.921446,211.395975 271.921446,208.603995 269.266115,207.741226 267.625031,209.999985 269.266115,212.258744 271.921446,211.395975 " style="fill:rgb(255,0,0)" /><circle cx="267.000020" cy="83.499992" r="1.650000" style="fill:rgb(0,0,0);stroke-width:1" /><circle cx="270.099849" cy="83.494997" r="1.650000" style="fill:rgb(107,0,214);stroke-width:1" /><circle cx="273.198688" cy="83.480060" r="1.650000" style="fill:rgb(115,0,231);stroke-width:1" /><circle cx="265.599847" cy="86.494994" r="1.650000" style="fill:rgb(107,0,214);stroke-width:1" /><circle cx="268.698686" cy="86.480057" r="1.650000" style="fill:rgb(115,0,231);stroke-width:1" /><circle cx="271.795535" cy="86.455321" r="1.650000" style="fill:rgb(17,0,35);stroke-width:1" /><circle cx="274.889433" cy="86.421049" r="1.650000" style="fill:rgb(-96,0,-192);stroke-width:1" /><circle cx="267.198688" cy="89.480066" r="1.650000" style="fill:rgb(115,0,231);stroke-width:1" /><circle cx="270.295537" cy="89.455330" r="1.650000" style="fill:rgb(17,0,35);stroke-width:1" /><circle cx="273.389441" cy="89.421058" r="1.650000" style="fill:rgb(-96,0,-192);stroke-width:1" /><circle cx="268.795538" cy="92.455328" r="1.650000" style="fill:rgb(17,0,35);stroke-width:1" /><circle cx="271.889436" cy="92.421055" r="1.650000" style="fill:rgb(-96,0,-192);stroke-width:1" /><circle cx="270.389438" cy="95.421052" r="1.650000" style="fill:rgb(-96,0,-192);stroke-width:1" />
+</svg>

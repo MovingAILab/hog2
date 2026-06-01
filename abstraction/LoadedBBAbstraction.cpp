@@ -26,7 +26,7 @@ const static int verbose = kMiscMessages;//kMiscMessages;//kRepairGraph;
 
 const double unknownPosition = -5.0;
 
-bool BoundingBox::pointInBox(double x, double y, double z)
+bool LoadedBBAbstraction::BoundingBox::pointInBox(double x, double y, double z)
 {
 //	printf("checking (%lf, %lf, %lf) in (%lf, %lf, %lf)<=>(%lf, %lf, %lf)\n",
 //				 x, y, z, x1, y1, z1, x2, y2, z2);
@@ -35,7 +35,7 @@ bool BoundingBox::pointInBox(double x, double y, double z)
 					((fless(z, z1) && (!fless(z, z2))) || (fless(z, z2) && (!fless(z, z1)))));
 }
 
-void BoundingBox::OpenGLDraw() const
+void LoadedBBAbstraction::BoundingBox::OpenGLDraw() const
 {
 	glBegin(GL_LINE_LOOP);
 	glVertex3f(x1, y1, z1);
