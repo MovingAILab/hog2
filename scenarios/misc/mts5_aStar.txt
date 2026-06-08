@@ -1,6 +1,0 @@
-version 1.1
-  60 maps/wc3maps/darkforest.map 131 101  94 127 51.2842710000   5276.0
-  70 maps/wc3maps/darkforest.map 120  31  55  35 69.1421360000   6816.0
-  80 maps/wc3maps/darkforest.map  43 109 102 140 79.1543290000   8385.0
-  90 maps/wc3maps/darkforest.map 140  75  63  69 81.9705630000  12425.0
- 100 maps/wc3maps/darkforest.map  34 105 108  58 95.8111830000  29816.0

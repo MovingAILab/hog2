@@ -1,0 +1,49 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "SFML backend (default)",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "HOG2_GUI_SFML": "ON"
+      }
+    },
+    {
+      "name": "stub",
+      "displayName": "STUB backend (headless / no dependencies)",
+      "binaryDir": "${sourceDir}/build-stub",
+      "cacheVariables": {
+        "HOG2_GUI_SFML": "OFF"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default"
+    },
+    {
+      "name": "stub",
+      "configurePreset": "stub"
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "default",
+      "displayName": "Configure, build, and install (SFML)",
+      "steps": [
+        { "type": "configure", "name": "default" },
+        { "type": "build",     "name": "default" }
+      ]
+    },
+    {
+      "name": "stub",
+      "displayName": "Configure, build, and install (STUB / headless)",
+      "steps": [
+        { "type": "configure", "name": "stub" },
+        { "type": "build",     "name": "stub" }
+      ]
+    }
+  ]
+}

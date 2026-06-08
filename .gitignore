@@ -5,11 +5,13 @@ objs_html/
 .DS_Store
 **/.DS_Store
 build/.DS_Store
+build/
+build_old/
 .idea/
 papers/FMDH/results/
 *~
+\.\#*
 
 *.pdb
 
 cmake-build-debug/
-CMakeLists.txt

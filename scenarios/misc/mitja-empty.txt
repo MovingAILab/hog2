@@ -1,2 +1,0 @@
- 30 maps/local/empty.map 12 20 38 20 26
- 30 maps/local/empty.map 12 30 38 30 26

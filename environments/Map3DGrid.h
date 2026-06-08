@@ -16,8 +16,6 @@
 #include <iostream>
 #include <cassert>
 #include "SearchEnvironment.h"
-#include "UnitSimulation.h"
-#include "ReservationProvider.h"
 #include "BitVector.h"
 #include "GraphEnvironment.h"
 

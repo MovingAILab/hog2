@@ -1,7 +1,0 @@
-#!/bin/tcsh
-
-./XDP_stpJob0.script
-./XDP_stpJob1.script
-./XDP_stpJob2.script
-./XDP_stpJob3.script
-./XDP_stpJob4.script

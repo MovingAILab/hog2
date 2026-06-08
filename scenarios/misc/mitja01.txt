@@ -1,2 +1,0 @@
- 30 maps/local/ijcai.map 0 0 17 9 23.7
- 60 maps/local/CSC2F.map 1 1 50 1 57.28

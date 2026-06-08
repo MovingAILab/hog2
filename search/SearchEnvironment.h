@@ -15,7 +15,6 @@
 //#include "ReservationProvider.h"
 #include <assert.h>
 #include "Heuristic.h"
-#include "OccupancyInterface.h"
 #include "Constants.h"
 #include "Graphics.h"
 
@@ -87,11 +86,6 @@ public:
 
 	virtual double GetPathLength(std::vector<state> &neighbors);
 	virtual double GetPathLength(const state &start, std::vector<action> &neighbors);
-
-	virtual OccupancyInterface<state,action> *GetOccupancyInfo()
-	{ return 0; }
-	virtual void SetOccupancyInfo(OccupancyInterface<state,action> *)
-	{ }
 
 //	virtual void OpenGLDraw() const {};
 //	virtual void OpenGLDraw(const state&) const {};

@@ -21,10 +21,6 @@ MapEnvironment::MapEnvironment(Map *_m, bool useOccupancy)
 	drawParams = kNoOptions;
 	DIAGONAL_COST = ROOT_TWO;
 	map = _m;
-	if (useOccupancy)
-		oi = new BaseMapOccupancyInterface(map);
-	else
-		oi = 0;
 	h = 0;
 	fourConnected = false;
 }
@@ -34,9 +30,6 @@ MapEnvironment::MapEnvironment(MapEnvironment *me)
 	drawParams = kNoOptions;
 	map = me->map->Clone();
 	h = 0;
-	if (me->oi)
-		oi = new BaseMapOccupancyInterface(map);
-	else oi = 0;
 	DIAGONAL_COST = me->DIAGONAL_COST;
 	fourConnected = me->fourConnected;
 }
@@ -44,7 +37,7 @@ MapEnvironment::MapEnvironment(MapEnvironment *me)
 MapEnvironment::~MapEnvironment()
 {
 //	delete map;
-	delete oi;
+//	delete oi;
 }
 
 GraphHeuristic *MapEnvironment::GetGraphHeuristic()
@@ -1560,7 +1553,7 @@ AbsMapEnvironment::~AbsMapEnvironment()
 * @date 08/22/2007
 *
 * @param m The map to which the occupancy interface applies
-*/
+*
 BaseMapOccupancyInterface::BaseMapOccupancyInterface(Map* m)
 {
  	mapWidth = m->GetMapWidth();
@@ -1572,19 +1565,19 @@ BaseMapOccupancyInterface::BaseMapOccupancyInterface(Map* m)
 //		for (int j=0; j<m->GetMapHeight(); j++)
 //			bitvec->Set(CalculateIndex(i,j), false);
 }
-
+*/
 
 /** Destructor for the BaseMapOccupancyInterface
 * 
 * @author Renee Jansen
 * @date 08/22/2007
-*/
+*
 BaseMapOccupancyInterface::~BaseMapOccupancyInterface()
 {
 //	delete bitvec;
 //	bitvec = 0;
 }
-
+*/
 /** Sets the occupancy of a state.
 * 
 * @author Renee Jansen
@@ -1592,16 +1585,16 @@ BaseMapOccupancyInterface::~BaseMapOccupancyInterface()
 *
 * @param s The state for which we want to set the occupancy
 * @param occupied Whether or not the state is occupied
-*/
+*
 void BaseMapOccupancyInterface::SetStateOccupied(const xyLoc &s, bool occupied)
 {
 	// Make sure the location is valid
 	// unsigned, so must be greater than 0
-	assert(/*(s.x>=0) &&*/ (s.x<mapWidth)/* && (s.y>=0)*/ && (s.y<mapHeight));
+	assert((s.x<mapWidth) && (s.y<mapHeight));
 //	bitvec->Set(CalculateIndex(s.x,s.y), occupied);
 	bitvec[CalculateIndex(s.x,s.y)] = occupied;
 }
-
+*/
 /** Returns the occupancy of a state.
 * 
 * @author Renee Jansen
@@ -1609,15 +1602,15 @@ void BaseMapOccupancyInterface::SetStateOccupied(const xyLoc &s, bool occupied)
 *
 * @param s The state for which we want to know the occupancy information
 * @return True if the state is occupied, false otherwise. 
-*/
+*
 bool BaseMapOccupancyInterface::GetStateOccupied(const xyLoc &s)
 {
 	// unsigned, so must be greater than 0
-	assert(/*s.x>=0 &&*/ s.x<=mapWidth && /*s.y>=0 && */s.y<=mapHeight);
+	assert( s.x<=mapWidth && s.y<=mapHeight);
 	//return bitvec->Get(CalculateIndex(s.x,s.y));
 	return bitvec[CalculateIndex(s.x,s.y)];
 }
-
+*/
 /** Gets the index into the bitvector. 
 *
 * Converts (x,y) locations to a position in the bitvector. 
@@ -1628,13 +1621,13 @@ bool BaseMapOccupancyInterface::GetStateOccupied(const xyLoc &s)
 * @param x The x-coordinate of the location
 * @param y The y-coordinate of the location
 * @return The index into the bit vector
-*/
+*
 //template <class state, class action>
 long BaseMapOccupancyInterface::CalculateIndex(uint16_t x, uint16_t y)
 {
 	return (y * mapWidth) + x;
 }
-
+*/
 /** Updates the occupancy interface when a unit moves
 *
 * Sets the old location to be not occupied, and the new location
@@ -1645,7 +1638,7 @@ long BaseMapOccupancyInterface::CalculateIndex(uint16_t x, uint16_t y)
 *
 * @param oldState The unit's previous state
 * @param newState The unit's new state
-*/
+*
 void BaseMapOccupancyInterface::MoveUnitOccupancy(const xyLoc &oldState, const xyLoc &newState)
 {
 	SetStateOccupied(oldState, false);
@@ -1664,3 +1657,4 @@ bool BaseMapOccupancyInterface::CanMove(const xyLoc &, const xyLoc &l2)
 	}
 	
 }
+*/

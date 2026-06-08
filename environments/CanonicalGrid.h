@@ -16,7 +16,6 @@
 #include <string.h>
 #include "Map.h"
 #include "SearchEnvironment.h"
-#include "UnitSimulation.h"
 #include <cassert>
 #include "Graphics.h"
 
@@ -124,7 +123,6 @@ namespace CanonicalGrid {
 		std::vector<bool> grid;
 	};
 	
-	typedef UnitSimulation<xyLoc, tDirection, CanonicalGrid> UnitMapSimulation;
 }
 
 

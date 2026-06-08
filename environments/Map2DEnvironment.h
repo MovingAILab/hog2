@@ -17,8 +17,6 @@
 #include "Map.h"
 //#include "MapAbstraction.h"
 #include "SearchEnvironment.h"
-#include "UnitSimulation.h"
-#include "ReservationProvider.h"
 #include "BitVector.h"
 #include "GraphEnvironment.h"
 #include "Graphics.h"
@@ -80,6 +78,7 @@ enum tDirection {
 	kSE=kS|kE, kSW=kS|kW, kStay=0, kTeleport=kSW|kNE, kAll = kSW|kNE
 };
 
+/*
 class BaseMapOccupancyInterface : public OccupancyInterface<xyLoc,tDirection>
 {
 public:
@@ -98,7 +97,7 @@ private:
 
 	long CalculateIndex(uint16_t x, uint16_t y);
 };
-
+*/
 
 const int numPrimitiveActions = 8;
 const int numActions = 10;
@@ -163,7 +162,7 @@ void SetTerrainCost(double costs[])
 	void GetActions(const xyLoc &nodeID, std::vector<tDirection> &actions) const;
 	tDirection GetAction(const xyLoc &s1, const xyLoc &s2) const;
 	virtual void ApplyAction(xyLoc &s, tDirection dir) const;
-	virtual BaseMapOccupancyInterface *GetOccupancyInfo() { return oi; }
+  //virtual BaseMapOccupancyInterface *GetOccupancyInfo() { return oi; }
 
 	virtual bool InvertAction(tDirection &a) const;
 	std::string GetName() { return std::string(map->GetMapName()); }
@@ -239,7 +238,7 @@ private:
 protected:
 	GraphHeuristic *h;
 	Map *map;
-	BaseMapOccupancyInterface *oi;
+  //BaseMapOccupancyInterface *oi;
 	double DIAGONAL_COST;
 	bool fourConnected;
 	drawOptions drawParams;
@@ -261,7 +260,6 @@ protected:
 	MapAbstraction *ma;
 };
 */
-typedef UnitSimulation<xyLoc, tDirection, MapEnvironment> UnitMapSimulation;
 //typedef UnitSimulation<xyLoc, tDirection, AbsMapEnvironment> UnitAbsMapSimulation;
 
 

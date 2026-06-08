@@ -1,6 +1,0 @@
-100 maps/wc3maps/darkforest.map 83 31 138 97 99.325902
-100 maps/wc3maps/divideandconquer.map 102 85 139 136 96.870058
-100 maps/wc3maps/thecrucible.map 102 47 90 136 98.698485
-100 maps/bgmaps/AR0012SR.map 77 130 93 54 94.669048
-100 maps/bgmaps/AR0013SR.map 15 72 86 78 90.012193
-100 maps/bgmaps/AR0014SR.map 99 115 64 40 91.497475

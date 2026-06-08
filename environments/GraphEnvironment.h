@@ -11,8 +11,8 @@
 #define GRAPHENVIRONMENT_H
 
 
+#include "Map.h"
 #include "SearchEnvironment.h"
-#include "UnitSimulation.h"
 #include "Graph.h"
 //#include "GraphAbstraction.h"
 #include "Constants.h"
@@ -302,7 +302,6 @@ public:
 
 	void SetDirected(bool b) { directed = b; }
 
-	OccupancyInterface<graphState, graphMove> *GetOccupancyInfo() { return 0; }
 	virtual double HCost(const graphState &state1, const graphState &state2) const;
 	virtual double GCost(const graphState &state1, const graphState &state2) const;
 	virtual double GCost(const graphState &state1, const graphMove &state2) const;
@@ -377,6 +376,6 @@ protected:
 	double graphscale;
 };
 */
-typedef UnitSimulation<graphState, graphMove, GraphEnvironment> GraphSimulation;
+//typedef UnitSimulation<graphState, graphMove, GraphEnvironment> GraphSimulation;
 
 #endif

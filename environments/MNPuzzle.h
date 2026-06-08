@@ -14,7 +14,6 @@
 #include <iostream>
 #include "SearchEnvironment.h"
 #include "PermutationPuzzleEnvironment.h"
-#include "UnitSimulation.h"
 #include "GraphEnvironment.h"
 #include "Graph.h"
 #include "GraphEnvironment.h"
@@ -157,7 +156,6 @@ public:
 	bool InvertAction(slideDir &a) const;
 	static unsigned GetParity(const MNPuzzleState<width, height> &state);
 
-	OccupancyInterface<MNPuzzleState<width, height>, slideDir> *GetOccupancyInfo() { return 0; }
 	double HCost(const MNPuzzleState<width, height> &state1, const MNPuzzleState<width, height> &state2) const;
 	double HCost(const MNPuzzleState<width, height> &state1) const;
 	double DefaultH(const MNPuzzleState<width, height> &s) const;

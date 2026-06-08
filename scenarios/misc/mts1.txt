@@ -1,4 +1,0 @@
-60 maps/local/bottleneck.map  25 15 5  5 12.92893219
-60 maps/local/bottleneck2.map  25 15 5  5 12.92893219
-60 maps/local/bottleneck3.map  25 15 5  5 12.92893219
-60 maps/local/bottleneck4.map  25 15 5  5 12.92893219

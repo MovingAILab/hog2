@@ -11,7 +11,6 @@
 #define STEERINGENVIRONMENT_H
 
 #include "SearchEnvironment.h"
-#include "UnitSimulation.h"
 #include "FPUtil.h"
 
 struct steeringState {
@@ -94,6 +93,5 @@ public:
 private:
 };
 
-typedef UnitSimulation<steeringState, steeringAction, SteeringEnvironment> UnitSteeringSimulation;
 
 #endif

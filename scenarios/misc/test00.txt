@@ -1,2 +1,0 @@
- 10 maps/local/ijcai.map 35 1 1 3 37.3
- 10 maps/local/ijcai.map 35 6 1 2 36.5

@@ -14,7 +14,6 @@
 #include <iostream>
 #include "SearchEnvironment.h"
 #include "PermutationPuzzleEnvironment.h"
-#include "UnitSimulation.h"
 #include "GraphEnvironment.h"
 #include "Graph.h"
 #include <sstream>
@@ -91,7 +90,6 @@ public:
 	void SetPattern(const std::vector<int> &pattern);
 	double AdditiveGCost(const TopSpinState<N> &s, const TopSpinAction &d);
 
-	OccupancyInterface<TopSpinState<N>, TopSpinAction> *GetOccupancyInfo() { return 0; }
 	double HCost(const TopSpinState<N> &state1, const TopSpinState<N> &state2) const;
 
 	double GCost(const TopSpinState<N> &state1, const TopSpinState<N> &state2) const;

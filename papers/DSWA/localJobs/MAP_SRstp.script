@@ -1,7 +1,0 @@
-#!/bin/tcsh
-
-./MAP_SRstpJob0.script
-./MAP_SRstpJob1.script
-./MAP_SRstpJob2.script
-./MAP_SRstpJob3.script
-./MAP_SRstpJob4.script

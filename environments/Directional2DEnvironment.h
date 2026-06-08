@@ -14,8 +14,6 @@
 #include <iostream>
 #include "Map.h"
 #include "SearchEnvironment.h"
-#include "UnitSimulation.h"
-#include "ReservationProvider.h"
 //#include "BitVector.h"
 
 #include <cassert>
@@ -120,7 +118,6 @@ public:
 	deltaSpeedHeading GetAction(const xySpeedHeading &s1, const xySpeedHeading &s2) const;
 	virtual void ApplyAction(xySpeedHeading &s, deltaSpeedHeading dir) const;
 	virtual void UndoAction(xySpeedHeading &s, deltaSpeedHeading dir) const;
-	virtual OccupancyInterface<xySpeedHeading,deltaSpeedHeading> *GetOccupancyInfo() { return 0; }
 
 	virtual bool InvertAction(deltaSpeedHeading &a) const;
 	
@@ -170,7 +167,6 @@ protected:
 	Map *map;
 };
 
-typedef UnitSimulation<xySpeedHeading, deltaSpeedHeading, Directional2DEnvironment> DirectionSimulation;
 
 static bool operator==(const xySpeedHeading &l1, const xySpeedHeading &l2)
 {

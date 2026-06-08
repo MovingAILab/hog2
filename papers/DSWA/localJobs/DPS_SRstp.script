@@ -1,7 +1,0 @@
-#!/bin/tcsh
-
-./DPS_SRstpJob0.script
-./DPS_SRstpJob1.script
-./DPS_SRstpJob2.script
-./DPS_SRstpJob3.script
-./DPS_SRstpJob4.script

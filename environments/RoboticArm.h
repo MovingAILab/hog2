@@ -16,8 +16,6 @@
 #include <cinttypes>
 #include "Map.h"
 #include "SearchEnvironment.h"
-#include "UnitSimulation.h"
-#include "ReservationProvider.h"
 #include "ConfigEnvironment.h"
 #include "FrontierBFS.h"
 #include "TemplateAStar.h"
