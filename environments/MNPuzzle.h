@@ -12,15 +12,15 @@
 
 #include <stdint.h>
 #include <iostream>
-#include "SearchEnvironment.h"
+#include "../search/SearchEnvironment.h"
 #include "PermutationPuzzleEnvironment.h"
-#include "UnitSimulation.h"
+#include "../simulation/UnitSimulation.h"
 #include "GraphEnvironment.h"
-#include "Graph.h"
+#include "../graph/Graph.h"
 #include "GraphEnvironment.h"
 #include <sstream>
 #include <array>
-#include "LexPermutationPDB.h"
+#include "../search/LexPermutationPDB.h"
 
 enum puzzleWeight {
     kDWSTP,
@@ -839,6 +839,7 @@ double MNPuzzle<width, height>::DCost(const MNPuzzleState<width, height> &state1
 		}
 	}
 	hval = std::max(hval, man_dist);
+	return hval;
 }
 
 template <int width, int height>
@@ -1012,8 +1013,11 @@ void MNPuzzle<width, height>::GetStateFromPDBHash(uint64_t hash, MNPuzzleState<w
 				dual[y]++;
 		}
 	}
-	s.puzzle.resize(count);
+	//std::array;
 	std::fill(s.puzzle.begin(), s.puzzle.end(), -1);
+	// הגנה (לא חובה): ודא/י שלא נחרוג מהגודל הקבוע
+	if (count > static_cast<int>(s.puzzle.size()))
+		count = static_cast<int>(s.puzzle.size());
 	for (int x = 0; x < dual.size(); x++)
 	{
 		s.puzzle[dual[x]] = pattern[x];

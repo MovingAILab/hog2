@@ -25,8 +25,8 @@ public:
 	virtual uint64_t GetPDBHash(const state &s, int threadID = 0) const;
 	virtual void GetStateFromPDBHash(uint64_t hash, state &s, int threadID = 0) const;
 	virtual uint64_t GetAbstractHash(const state &s, int threadID = 0) const { return GetPDBHash(s); }
-	virtual state GetStateFromAbstractState(state &s) { return s; }
-
+	virtual state GetStateFromAbstractState(state &s) const override { return s; }
+	
 	std::string GetFileName(const char *prefix);
 private:
 	using PermutationPDB<state, action, environment, bits>::example;
@@ -42,7 +42,7 @@ private:
 	mutable std::vector<std::vector<int> > locsCache;
 	mutable std::vector<std::vector<int> > tempCache;
 
-	state example;
+	state new_example;
 };
 
 inline int mylog2(int val)
