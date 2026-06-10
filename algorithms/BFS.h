@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <iostream>
 #include <unordered_map>
+#include <deque>
 
 template <class state, class action, class environment>
 class BFS {
