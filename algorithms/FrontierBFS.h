@@ -16,6 +16,7 @@
 #include "FPUtil.h"
 
 typedef std::unordered_map<uint64_t, bool, Hash64> FrontierBFSClosedList;
+#include <deque>
 
 template <class state, class action>
 class FrontierBFS {

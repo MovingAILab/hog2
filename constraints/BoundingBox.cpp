@@ -7,7 +7,7 @@
 //
 
 #include "BoundingBox.h"
-
+#include <deque>
 
 BoundingBox::BoundingBox(MapEnvironment *m, bool computeNow)
 {

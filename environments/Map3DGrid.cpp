@@ -8,6 +8,7 @@
  */
 
 #include "Map3DGrid.h"
+#include <deque>
 
 int gSectorSize = 16;
 //double gInvSectorSize = 1/16;

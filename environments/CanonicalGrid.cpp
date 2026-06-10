@@ -9,7 +9,8 @@
 #include "CanonicalGrid.h"
 #include "SVGUtil.h"
 #include "Graphics.h"
- #include <string.h>
+#include <string.h>
+#include <deque>
 
 namespace CanonicalGrid {
 	

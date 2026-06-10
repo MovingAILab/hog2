@@ -11,6 +11,7 @@
 #include "TemplateAStar.h"
 #include "Constants.h"
 #include <string.h>
+#include <deque>
 
 tRotation armRotations::GetRotation(int which) const
 {
