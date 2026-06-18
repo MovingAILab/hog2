@@ -2,6 +2,8 @@ bin/
 objs/
 html/
 objs_html/
+build/
+build_html/
 .DS_Store
 **/.DS_Store
 build/.DS_Store
