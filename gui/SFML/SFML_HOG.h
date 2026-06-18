@@ -55,7 +55,7 @@ static void mousePan (int x, int y, pRecContext pContextInfo);
 static void mouseDolly (int x, int y, pRecContext pContextInfo);
 void renderScene(void);
 void buildGL(int x, int y);
-void drawGL (pRecContext pContextInfo, sf::Window &window);
+void drawGL (pRecContext pContextInfo, sf::RenderWindow &window);
 void drawCStringGL (char * cstrOut, GLuint fontList);
 static void drawInfo (pRecContext pContextInfo);
 void resizeWindow(int x, int y);
