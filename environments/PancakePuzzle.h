@@ -761,7 +761,7 @@ void PancakePuzzle<N>::Draw(Graphics::Display &display) const
 {
 	// no baseline drawing
 	float v = 1.0f/(N-1.0f);
-	display.FillRect(Graphics::rect(-1, -0.5f+(N+1)*v, 1, -0.5f+N*v), Colors::darkgray);
+	display.FillRect(Graphics::rect(-1, -0.5f+(N)*v, 1, -0.5f+(N+1)*v), Colors::darkgray);
 }
 
 template <int N>
@@ -771,8 +771,8 @@ void PancakePuzzle<N>::Draw(Graphics::Display &display, const PancakePuzzleState
 	for (int x = 0; x < N; x++)
 	{
 		float t = 0.6*s.puzzle[x]/(N-1.0f)+0.1;
-		display.FillRect(Graphics::rect(-t, -0.5f+(x+1)*v, t, -0.5f+x*v), rgbColor(1, t, 0));
-		display.FrameRect(Graphics::rect(-t, -0.5f+(x+1)*v, t, -0.5f+x*v), Colors::black, v*0.1f);
+		display.FillRect(Graphics::rect(-t, -0.5f+(x)*v, t, -0.5f+(x+1)*v), rgbColor(1, t, 0));
+		display.FrameRect(Graphics::rect(-t, -0.5f+(x)*v, t, -0.5f+(x+1)*v), Colors::black, v*0.1f);
 	}
 }
 
