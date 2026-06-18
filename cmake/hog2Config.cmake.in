@@ -2,9 +2,9 @@
 
 include(CMakeFindDependencyMacro)
 
-# Re-find SFML if hog2 was built with the SFML backend
-set(HOG2_GUI_SFML @HOG2_GUI_SFML@)
-if(HOG2_GUI_SFML)
+# Re-find SFML/OpenGL in case the consumer links hog2::hog2-sfml
+set(HOG2_SFML_BUILT @HOG2_SFML_BUILT@)
+if(HOG2_SFML_BUILT)
     find_dependency(SFML 3 COMPONENTS Graphics Window System)
     find_dependency(OpenGL)
 endif()

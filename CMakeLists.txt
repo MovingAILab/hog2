@@ -11,26 +11,14 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         CACHE PATH "Install prefix (default: ~/.local)" FORCE)
 endif()
 
-# ── GUI backend ──────────────────────────────────────────────────────────────
-option(HOG2_GUI_SFML "Build GUI backend against SFML (default: ON; use OFF for headless servers)" ON)
+# ── Detect Emscripten toolchain ───────────────────────────────────────────────
+if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    set(HOG2_EMSCRIPTEN ON)
+else()
+    set(HOG2_EMSCRIPTEN OFF)
+endif()
 
-# ── Source directories ────────────────────────────────────────────────────────
-set(HOG2_INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/algorithms
-    ${CMAKE_CURRENT_SOURCE_DIR}/constraints
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures
-    ${CMAKE_CURRENT_SOURCE_DIR}/environments
-    ${CMAKE_CURRENT_SOURCE_DIR}/envutil
-    ${CMAKE_CURRENT_SOURCE_DIR}/graphalgorithms
-    ${CMAKE_CURRENT_SOURCE_DIR}/heuristics
-    ${CMAKE_CURRENT_SOURCE_DIR}/search
-    ${CMAKE_CURRENT_SOURCE_DIR}/simulation
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui
-    ${CMAKE_CURRENT_SOURCE_DIR}/grids
-    ${CMAKE_CURRENT_SOURCE_DIR}/mapalgorithms
-)
-
+# ── Common source files (all variants share these) ───────────────────────────
 file(GLOB ALGORITHMS_SRC     algorithms/*.cpp)
 file(GLOB CONSTRAINTS_SRC    constraints/*.cpp)
 file(GLOB DATASTRUCTURES_SRC datastructures/*.cpp)
@@ -42,32 +30,7 @@ file(GLOB UTILS_SRC          utils/*.cpp)
 file(GLOB GRIDS_SRC          grids/*.cpp)
 file(GLOB MAPALGORITHMS_SRC  mapalgorithms/*.cpp)
 
-set(GUI_COMMON_SRC
-    gui/Common.cpp
-    gui/Trackball.cpp
-)
-
-if(HOG2_GUI_SFML)
-    find_package(SFML 3 COMPONENTS Graphics Window System REQUIRED)
-    find_package(OpenGL REQUIRED)
-
-    set(GUI_BACKEND_SRC
-        gui/SFML/SFML_HOG.cpp
-        gui/SFML/TextBox.cpp
-        gui/SFML/GLUtil.cpp
-    )
-    set(GUI_BACKEND_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/gui/SFML)
-    set(GUI_BACKEND_LIBS SFML::Graphics SFML::Window SFML::System OpenGL::GL)
-else()
-    set(GUI_BACKEND_SRC
-        gui/STUB/STUB_HOG.cpp
-    )
-    set(GUI_BACKEND_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/gui/STUB)
-    set(GUI_BACKEND_LIBS "")
-endif()
-
-# ── Library target ────────────────────────────────────────────────────────────
-add_library(hog2 STATIC
+set(HOG2_COMMON_SRC
     ${ALGORITHMS_SRC}
     ${CONSTRAINTS_SRC}
     ${DATASTRUCTURES_SRC}
@@ -78,43 +41,119 @@ add_library(hog2 STATIC
     ${UTILS_SRC}
     ${GRIDS_SRC}
     ${MAPALGORITHMS_SRC}
-    ${GUI_COMMON_SRC}
-    ${GUI_BACKEND_SRC}
+    gui/Common.cpp
+    gui/Trackball.cpp
 )
 
-target_include_directories(hog2
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/algorithms>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/constraints>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/datastructures>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/environments>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/envutil>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/graphalgorithms>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/heuristics>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/search>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/simulation>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/utils>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/gui>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/grids>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/mapalgorithms>
-        $<BUILD_INTERFACE:${GUI_BACKEND_INCLUDES}>
-        $<INSTALL_INTERFACE:include/hog2>
+set(HOG2_COMMON_INCLUDES
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/algorithms>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/constraints>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/datastructures>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/environments>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/envutil>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/graphalgorithms>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/heuristics>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/search>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/simulation>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/utils>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/gui>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/grids>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/mapalgorithms>
+    $<INSTALL_INTERFACE:include/hog2>
 )
 
-if(GUI_BACKEND_LIBS)
-    target_link_libraries(hog2 PUBLIC ${GUI_BACKEND_LIBS})
+# ── Platform compile definitions ─────────────────────────────────────────────
+if(APPLE)
+    set(HOG2_PLATFORM_DEFS OS_MAC)
 endif()
 
-# Platform compile definitions
-if(APPLE)
-    target_compile_definitions(hog2 PUBLIC OS_MAC)
+# ── Helper: apply common settings to a variant target ────────────────────────
+function(hog2_configure_target target)
+    target_include_directories(${target} PUBLIC ${HOG2_COMMON_INCLUDES})
+    if(HOG2_PLATFORM_DEFS)
+        target_compile_definitions(${target} PUBLIC ${HOG2_PLATFORM_DEFS})
+    endif()
+    install(TARGETS ${target}
+        EXPORT hog2Targets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+endfunction()
+
+# ── Variant: hog2-stub (headless, no external deps, always built) ─────────────
+add_library(hog2-stub STATIC
+    ${HOG2_COMMON_SRC}
+    gui/STUB/STUB_HOG.cpp
+)
+set_target_properties(hog2-stub PROPERTIES OUTPUT_NAME hog2-stub)
+target_include_directories(hog2-stub PUBLIC
+    ${HOG2_COMMON_INCLUDES}
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/gui/STUB>
+)
+if(HOG2_PLATFORM_DEFS)
+    target_compile_definitions(hog2-stub PUBLIC ${HOG2_PLATFORM_DEFS})
+endif()
+install(TARGETS hog2-stub EXPORT hog2Targets ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+# ── Variant: hog2-sfml (SFML + OpenGL, built when SFML is found) ─────────────
+if(NOT HOG2_EMSCRIPTEN)
+    find_package(SFML 3 COMPONENTS Graphics Window System QUIET)
+    find_package(OpenGL QUIET)
+    if(SFML_FOUND AND OpenGL_FOUND)
+        add_library(hog2-sfml STATIC
+            ${HOG2_COMMON_SRC}
+            gui/SFML/SFML_HOG.cpp
+            gui/SFML/TextBox.cpp
+            gui/SFML/GLUtil.cpp
+        )
+        set_target_properties(hog2-sfml PROPERTIES OUTPUT_NAME hog2-sfml)
+        target_include_directories(hog2-sfml PUBLIC
+            ${HOG2_COMMON_INCLUDES}
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/gui/SFML>
+        )
+        if(HOG2_PLATFORM_DEFS)
+            target_compile_definitions(hog2-sfml PUBLIC ${HOG2_PLATFORM_DEFS})
+        endif()
+        target_link_libraries(hog2-sfml PUBLIC SFML::Graphics SFML::Window SFML::System OpenGL::GL)
+        install(TARGETS hog2-sfml EXPORT hog2Targets ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+        set(HOG2_SFML_BUILT ON)
+    else()
+        message(STATUS "hog2: SFML or OpenGL not found — skipping hog2-sfml variant")
+        set(HOG2_SFML_BUILT OFF)
+    endif()
+else()
+    set(HOG2_SFML_BUILT OFF)
+endif()
+
+# ── Variant: hog2-web (Emscripten/WebAssembly, built when emcmake is used) ───
+if(HOG2_EMSCRIPTEN)
+    add_library(hog2-web STATIC
+        ${HOG2_COMMON_SRC}
+        gui/web/html_hog.cpp
+    )
+    set_target_properties(hog2-web PROPERTIES OUTPUT_NAME hog2-web)
+    target_include_directories(hog2-web PUBLIC
+        ${HOG2_COMMON_INCLUDES}
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/gui/web>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/gui/STUB/GL>
+    )
+    target_compile_definitions(hog2-web PUBLIC NO_OPENGL)
+    target_compile_options(hog2-web PUBLIC -pthread)
+    target_link_options(hog2-web PUBLIC
+        -pthread
+        -sPTHREAD_POOL_SIZE=navigator.hardwareConcurrency
+        -sINITIAL_MEMORY=200MB
+        "-sEXPORTED_FUNCTIONS=['_InitHOG','_InitHOGArg','_DoFrame','_MouseEvent','_HitKey','_SetCanvasSize']"
+        "-sEXPORTED_RUNTIME_METHODS=['cwrap','stringToNewUTF8']"
+        -sASSERTIONS=1
+    )
+    install(TARGETS hog2-web EXPORT hog2Targets ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
 
 # ── Install rules ─────────────────────────────────────────────────────────────
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-# Headers – install each source directory flat into include/hog2/
+# Common headers
 foreach(_dir
     algorithms constraints datastructures environments envutil
     graphalgorithms grids heuristics mapalgorithms search simulation utils gui)
@@ -124,22 +163,23 @@ foreach(_dir
     )
 endforeach()
 
-if(HOG2_GUI_SFML)
+# Backend-specific headers
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/gui/STUB/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hog2
+    FILES_MATCHING PATTERN "*.h"
+)
+if(HOG2_SFML_BUILT)
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/gui/SFML/
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hog2
         FILES_MATCHING PATTERN "*.h"
     )
-else()
-    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/gui/STUB/
+endif()
+if(HOG2_EMSCRIPTEN)
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/gui/web/
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hog2
         FILES_MATCHING PATTERN "*.h"
     )
 endif()
-
-install(TARGETS hog2
-    EXPORT hog2Targets
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
 
 install(EXPORT hog2Targets
     FILE hog2Targets.cmake
