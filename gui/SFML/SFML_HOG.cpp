@@ -10,7 +10,9 @@
  */
 
 #include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
+#include "EmbeddedFont.h"
 #define GL_SILENCE_DEPRECATION
 
 extern "C" {
@@ -36,6 +38,9 @@ int main(int argc, char **argv)
 #include <cassert>
 #include "GLUtil.h"
 #include "MonoFont.h"
+
+static sf::Font gSFMLFont;
+static bool gFontLoaded = false;
 
 using namespace std;
 
@@ -64,6 +69,15 @@ Graphics::rect screenRect;
 Graphics::point WindowToHOG(const Graphics::point &p);
 MonoFont font;
 std::vector<Graphics::Display::lineInfo> textLines;
+
+void EnsureFontLoaded()
+{
+	if (!gFontLoaded)
+	{
+		gSFMLFont.openFromMemory(kEmbeddedFontData, kEmbeddedFontSize);
+		gFontLoaded = true;
+	}
+}
 
 void Line(Graphics::point p1, Graphics::point p2, float width, int viewport);
 
@@ -117,7 +131,7 @@ void RunHOGGUI(int argc, char* argv[], int xDimension, int yDimension)
 	ProcessCommandLineArgs(argc, argv);
 	pContextInfo = new recContext;
 	unsigned int xd = xDimension, yd = yDimension;
-	sf::Window window(sf::VideoMode({xd, yd}), "My window");
+	sf::RenderWindow window(sf::VideoMode({xd, yd}), "My window");
 	window.setFramerateLimit(30); // call it once, after creating the window
 	initialConditions(pContextInfo);
 	initCameras();
@@ -654,7 +668,7 @@ void BezierLine(const Graphics::point &p1a, const Graphics::point &p2a, const Gr
 }
 
 
-void DoDrawCommands(Graphics::Display &display, int port, sf::Window &window, std::vector<Graphics::Display::data> &commands)
+void DoDrawCommands(Graphics::Display &display, int port, sf::RenderWindow &window, std::vector<Graphics::Display::data> &commands)
 {
 	for (auto &i: commands)
 	{
@@ -890,7 +904,59 @@ void Line(Graphics::point p1, Graphics::point p2, float width, int viewport)
 	// glVertex3f(tmp2.x-ratio*yOff, tmp2.y-ratio*xOff, tmp1.z);
 }
 
-void DrawGraphics(Graphics::Display &display, int port, sf::Window &window)
+// Draw a single text item using the embedded SFML font.
+// loc, size, align, and base are in HOG viewport coordinates.
+void DrawTextSFML(sf::RenderWindow &window,
+				  Graphics::point loc, const char *text, float size,
+				  const rgbColor &c, int viewport,
+				  Graphics::textAlign align, Graphics::textBaseline base)
+{
+	EnsureFontLoaded();
+
+	// Convert HOG height to pixel height.
+	// ViewportToScreenX maps a delta in HOG units → NDC delta.
+	// Multiply by half the window height to get pixels.
+	float winW = (float)window.getSize().x;
+	float winH = (float)window.getSize().y;
+	float pixelHeight = std::max(1.0f, ViewportToScreenX(size, viewport) * winH);
+
+	sf::Text sfText(gSFMLFont, text, (unsigned int)pixelHeight);
+	sfText.setFillColor(sf::Color(
+		(uint8_t)(c.r * 255),
+		(uint8_t)(c.g * 255),
+		(uint8_t)(c.b * 255)));
+
+	// Convert HOG viewport position to NDC, then to pixel coords.
+	// NDC x ∈ [-screenRect.right, screenRect.right], y ∈ [-screenRect.bottom, screenRect.bottom]
+	// Pixel: x_px = (ndc_x / screenRect.right + 1) / 2 * winW
+	//         y_px = (1 - ndc_y / screenRect.bottom) / 2 * winH
+	Graphics::point ndc = ViewportToScreen(loc, viewport);
+	float xPx = (ndc.x / screenRect.right  + 1.0f) / 2.0f * winW;
+	float yPx = (1.0f - ndc.y / screenRect.bottom) / 2.0f * winH;
+
+	sf::FloatRect bounds = sfText.getLocalBounds();
+	float ox = 0.0f, oy = 0.0f;
+	switch (align)
+	{
+		case Graphics::textAlignCenter: ox = bounds.size.x / 2.0f; break;
+		case Graphics::textAlignRight:  ox = bounds.size.x;        break;
+		default:                        ox = 0.0f;                  break;
+	}
+	switch (base)
+	{
+		case Graphics::textBaselineTop:    oy = 0.0f;                  break;
+		case Graphics::textBaselineMiddle: oy = bounds.size.y / 2.0f;  break;
+		default: /* bottom */              oy = bounds.size.y;          break;
+	}
+	sfText.setPosition({xPx - ox, yPx - oy});
+
+	// SFML text requires suspending OpenGL state.
+	window.pushGLStates();
+	window.draw(sfText);
+	window.popGLStates();
+}
+
+void DrawGraphics(Graphics::Display &display, int port, sf::RenderWindow &window)
 {
 	for (auto &i : display.backgroundLineSegments)
 	{
@@ -919,14 +985,10 @@ void DrawGraphics(Graphics::Display &display, int port, sf::Window &window)
 		if (i.viewport != port)
 			continue;
 
-		font.GetTextLines(textLines,
-						  i.loc, i.s.c_str(), i.size,
-						  i.c,
-						  i.align, i.base);
-		DrawLines(textLines, i.viewport);
+		DrawTextSFML(window, i.loc, i.s.c_str(), i.size, i.c, i.viewport, i.align, i.base);
 	}
 
-	
+
 	for (auto &i : display.lineSegments)
 	{
 		if (i.viewport != port)
@@ -947,11 +1009,7 @@ void DrawGraphics(Graphics::Display &display, int port, sf::Window &window)
 		if (i.viewport != port)
 			continue;
 
-		font.GetTextLines(textLines,
-						  i.loc, i.s.c_str(), i.size,
-						  i.c,
-						  i.align, i.base);
-		DrawLines(textLines, i.viewport);
+		DrawTextSFML(window, i.loc, i.s.c_str(), i.size, i.c, i.viewport, i.align, i.base);
 	}
 
 }
@@ -959,7 +1017,7 @@ void DrawGraphics(Graphics::Display &display, int port, sf::Window &window)
 /**
  * Main OpenGL drawing function.
  */
-void drawGL (pRecContext pContextInfo, sf::Window &window)
+void drawGL (pRecContext pContextInfo, sf::RenderWindow &window)
 {
 	if (!pContextInfo)
 	 return;
