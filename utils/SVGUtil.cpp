@@ -668,6 +668,7 @@ std::string MakeSVG(const Graphics::Display &disp, int width, int height, int vi
 		const auto &i = disp.text[x];
 		if (i.viewport == viewport || viewport == -1)
 		{
+			SVG::svgBaseline b;
 			Graphics::point p;
 			float w;
 			if (viewport == -1)
@@ -680,23 +681,29 @@ std::string MakeSVG(const Graphics::Display &disp, int width, int height, int vi
 				w = i.size;
 			}
 			w = WidthToSVG(w, width, height);
+			switch (i.base)
+			{
+				case Graphics::textBaselineTop: b = SVG::kTop; break;
+				case Graphics::textBaselineMiddle: b = SVG::kMiddle; break;
+				case Graphics::textBaselineBottom: b = SVG::kBottom; break;
+			}
 			if (i.align == Graphics::textAlignLeft)
 			{
 				s += SVGDrawText(PointToSVG(p.x, width),
 								 PointToSVG(p.y, height), // TODO - size is not being converted properly
-								 i.s.c_str(), i.c, w, i.typeface.c_str(), SVG::kLeft);
+								 i.s.c_str(), i.c, w, i.typeface.c_str(), SVG::kLeft, b);
 				// was i.size*width/2.0
 			}
 			else if (i.align == Graphics::textAlignCenter)
 			{
 				s += SVGDrawText(PointToSVG(p.x, width),
 								 PointToSVG(p.y, height),
-								 i.s.c_str(), i.c, w, i.typeface.c_str(), SVG::kCenter);
+								 i.s.c_str(), i.c, w, i.typeface.c_str(), SVG::kCenter, b);
 			}
 			else {
 				s += SVGDrawText(PointToSVG(p.x, width),
 								 PointToSVG(p.y, height),
-								 i.s.c_str(), i.c, w, i.typeface.c_str(), SVG::kRight);
+								 i.s.c_str(), i.c, w, i.typeface.c_str(), SVG::kRight, b);
 			}
 			s += "\n";
 		}
