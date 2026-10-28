@@ -19,16 +19,28 @@ else()
 endif()
 
 # ── Common source files (all variants share these) ───────────────────────────
-file(GLOB ALGORITHMS_SRC     algorithms/*.cpp)
-file(GLOB CONSTRAINTS_SRC    constraints/*.cpp)
-file(GLOB DATASTRUCTURES_SRC datastructures/*.cpp)
-file(GLOB ENVIRONMENTS_SRC   environments/*.cpp)
-file(GLOB ENVUTIL_SRC        envutil/*.cpp)
-file(GLOB GRAPHALGORITHMS_SRC graphalgorithms/*.cpp)
-file(GLOB HEURISTICS_SRC     heuristics/*.cpp)
-file(GLOB UTILS_SRC          utils/*.cpp)
-file(GLOB GRIDS_SRC          grids/*.cpp)
-file(GLOB MAPALGORITHMS_SRC  mapalgorithms/*.cpp)
+file(GLOB ALGORITHMS_SRC     algorithms/*.cpp algorithms/*.h)
+file(GLOB CONSTRAINTS_SRC    constraints/*.cpp constraints/*.h)
+file(GLOB DATASTRUCTURES_SRC datastructures/*.cpp datastructures/*.h)
+file(GLOB ENVIRONMENTS_SRC   environments/*.cpp environments/*.h)
+file(GLOB ENVUTIL_SRC        envutil/*.cpp envutil/*.h)
+file(GLOB GRAPHALGORITHMS_SRC graphalgorithms/*.cpp graphalgorithms/*.h)
+file(GLOB HEURISTICS_SRC     heuristics/*.cpp heuristics/*.h)
+file(GLOB UTILS_SRC          utils/*.cpp utils/*.h)
+file(GLOB GRIDS_SRC          grids/*.cpp grids/*.h)
+file(GLOB MAPALGORITHMS_SRC  mapalgorithms/*.cpp mapalgorithms/*.h)
+
+source_group("Algorithms"     FILES ${ALGORITHMS_SRC})
+source_group("Constraints"     FILES ${CONSTRAINTS_SRC})
+source_group("Data Structures"     FILES ${DATASTRUCTURES_SRC})
+source_group("Environments"     FILES ${ENVIRONMENTS_SRC})
+source_group("Env Utils"     FILES ${ENVUTIL_SRC})
+source_group("Graphs"     FILES ${GRAPHALGORITHMS_SRC})
+source_group("Heuristics"     FILES ${HEURISTICS_SRC})
+source_group("Utils"     FILES ${UTILS_SRC})
+source_group("Grids"     FILES ${GRIDS_SRC})
+source_group("Maps"     FILES ${MAPALGORITHMS_SRC})
+
 
 set(HOG2_COMMON_SRC
     ${ALGORITHMS_SRC}
