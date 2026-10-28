@@ -65,6 +65,8 @@ void DrawBox(GLfloat x, GLfloat y, GLfloat z, GLfloat radius);
 void DrawBoxFrame(GLfloat xx, GLfloat yy, GLfloat zz, GLfloat rad);
 void DrawCircle(GLdouble _x, GLdouble _y, GLdouble tRadius, int segments = 32, float rotation = 0);
 void FrameCircle(GLdouble _x, GLdouble _y, GLdouble tRadius, GLdouble lineWidth, int segments = 32, float rotation = 0);
+void DrawOval(GLdouble _x, GLdouble _y, GLdouble width, GLdouble height, int segments = 32, float rotation = 0);
+void FrameOval(GLdouble _x, GLdouble _y, GLdouble width, GLdouble height, GLdouble lineWidth, int segments = 32, float rotation = 0);
 void DrawSphere(GLdouble _x, GLdouble _y, GLdouble _z, GLdouble tRadius);
 void DrawSquare(GLdouble _x, GLdouble _y, GLdouble _z, GLdouble tRadius);
 void DrawCylinder(GLfloat xx, GLfloat yy, GLfloat zz, GLfloat innerRad, GLfloat outerRad, GLfloat height);

@@ -267,6 +267,35 @@ void DrawCircle(GLdouble _x, GLdouble _y, GLdouble tRadius, int segments, float 
 	glEnd();
 }
 
+void FrameOval(GLdouble _x, GLdouble _y, GLdouble width, GLdouble height, GLdouble lineWidth, int segments, float rotation)
+{
+	double resolution = TWOPI/segments;
+	GLdouble rx = width;
+	GLdouble ry = height;
+	glBegin(GL_TRIANGLE_STRIP);
+	for (int x = 0; x <= segments; x++)
+	{
+		GLdouble s = sin(resolution*x+rotation*TWOPI/360.0);
+		GLdouble c = cos(resolution*x+rotation*TWOPI/360.0);
+		glVertex2f(_x+s*(rx-lineWidth/2), _y+c*(ry-lineWidth/2));
+		glVertex2f(_x+s*(rx+lineWidth/2), _y+c*(ry+lineWidth/2));
+	}
+	glEnd();
+}
+
+void DrawOval(GLdouble _x, GLdouble _y, GLdouble width, GLdouble height, int segments, float rotation)
+{
+	double resolution = TWOPI/segments;
+	GLdouble rx = width;
+	GLdouble ry = height;
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex2f(_x, _y);
+	for (int x = 0; x <= segments; x++)
+	{
+		glVertex2f(_x+sin(resolution*x+rotation*TWOPI/360.0)*rx, _y+cos(resolution*x+rotation*TWOPI/360.0)*ry);
+	}
+	glEnd();
+}
 void DrawSphere(GLdouble _x, GLdouble _y, GLdouble _z, GLdouble tRadius)
 {
 	static std::vector<double> px_cache;
