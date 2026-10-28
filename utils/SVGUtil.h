@@ -37,6 +37,8 @@ std::string SVGFrameCircle(double x, double y, double radius, double border, rgb
 std::string SVGDrawCircle(double x, double y, double radius, rgbColor c);
 std::string SVGDrawEllipse(double x, double y, double rx, double ry, rgbColor c);
 std::string SVGDrawEllipse(Graphics::rect &r, rgbColor c);
+std::string SVGFrameEllipse(double x, double y, double rx, double ry, double border, rgbColor c);
+std::string SVGFrameEllipse(Graphics::rect &r, double border, rgbColor c);
 
 std::string SVGFrameNGon(double x, double y, double radius, int segments, float rotation, int border, rgbColor c);
 std::string SVGDrawNGon(double x, double y, double radius, int segments, float rotation, rgbColor c);

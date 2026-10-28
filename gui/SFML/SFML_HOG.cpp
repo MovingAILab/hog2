@@ -785,7 +785,8 @@ void DoDrawCommands(Graphics::Display &display, int port, sf::RenderWindow &wind
 				//Graphics::rect tmp = ViewportToGlobalHOG(i.shape.r, i.viewport);
 				Graphics::rect tmp = ViewportToScreen(i.shape.r, i.viewport);
 				glColor3f(i.shape.c.r, i.shape.c.g, i.shape.c.b);
-				DrawCircle((tmp.right+tmp.left)/2, (tmp.top+tmp.bottom)/2, fabs(tmp.top-tmp.bottom)/2.0, 64);
+				//DrawCircle((tmp.right+tmp.left)/2, (tmp.top+tmp.bottom)/2, fabs(tmp.top-tmp.bottom)/2.0, 64);
+				DrawOval((tmp.right+tmp.left)/2, (tmp.top+tmp.bottom)/2, fabs(tmp.right-tmp.left)/2.0, fabs(tmp.top-tmp.bottom)/2.0, 64);
 				break;
 			}
 		case Graphics::Display::kFrameOval:
@@ -794,6 +795,8 @@ void DoDrawCommands(Graphics::Display &display, int port, sf::RenderWindow &wind
 				Graphics::rect tmp = ViewportToScreen(i.shape.r, i.viewport);
 				glColor3f(i.shape.c.r, i.shape.c.g, i.shape.c.b);
 				FrameCircle((tmp.right+tmp.left)/2, (tmp.top+tmp.bottom)/2, fabs(tmp.top-tmp.bottom)/2.0, ViewportToScreenX(i.shape.width, i.viewport), 64);
+				FrameOval((tmp.right+tmp.left)/2, (tmp.top+tmp.bottom)/2, fabs(tmp.right-tmp.left)/2.0, fabs(tmp.top-tmp.bottom)/2.0,
+					  ViewportToScreenX(i.shape.width, i.viewport), 64);
 				break;
 			}
 		case Graphics::Display::kFillNGon:

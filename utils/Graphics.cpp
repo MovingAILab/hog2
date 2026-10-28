@@ -255,7 +255,7 @@ void Display::FillRect(rect r, rgbColor c)
 		drawCommands.push_back({i, kFillRectangle, currViewport});
 }
 
-void Display::FrameCircle(rect r, rgbColor c, float lineWidth)
+void Display::FrameOval(rect r, rgbColor c, float lineWidth)
 {
 	drawInfo i = {r, c, lineWidth};
 	if (drawingBackground)
@@ -273,7 +273,7 @@ void Display::FrameCircle(point p, float radius, rgbColor c, float lineWidth)
 		drawCommands.push_back({i, kFrameOval, currViewport});
 }
 
-void Display::FillCircle(rect r, rgbColor c)
+void Display::FillOval(rect r, rgbColor c)
 {
 	drawInfo i = {r, c, 0};
 	if (drawingBackground)

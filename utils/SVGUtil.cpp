@@ -73,10 +73,23 @@ std::string SVGDrawEllipse(double x, double y, double rx, double ry, rgbColor c)
 	s += "\" ry=\""+to_string_with_precision(ry);
 	s += "\" style=\"fill:"+SVGGetRGB(c)+";stroke-width:1\" />";
 	return s;
+}
 
-//	s += "<circle cx=\"" + std::to_string(10*x);
-//	s += "\" cy=\"" + std::to_string(10*y);
-//	s += "\" r=\""+std::to_string(radius*10)+"\" style=\"fill:"+SVGGetRGB(c)+";stroke-width:1\" />";
+std::string SVGFrameEllipse(Graphics::rect &r, double border, rgbColor c)
+{
+  return SVGFrameEllipse((r.right+r.left)*0.5, (r.top+r.bottom)*0.5f, (r.right-r.left)*0.5f, (r.bottom-r.top)*0.5f, border, c);
+}
+
+std::string SVGFrameEllipse(double x, double y, double rx, double ry, double border, rgbColor c)
+{
+	//double epsilon = 0.5;
+	std::string s;
+	s += "<ellipse cx=\"" + to_string_with_precision(x);
+	s += "\" cy=\"" + to_string_with_precision(y);
+	s += "\" rx=\""+to_string_with_precision(rx);
+	s += "\" ry=\""+to_string_with_precision(ry);
+	s += "\" style=\"fill:none;stroke:"+SVGGetRGB(c)+";stroke-width:"+to_string_with_precision(border)+"\" />";
+	return s;
 }
 
 std::string SVGDrawCircle(double x, double y, double radius, rgbColor c)
@@ -537,8 +550,10 @@ void HandleCommand(const Graphics::Display &disp, const std::vector<Graphics::Di
 					r = disp.ViewportToGlobalHOG(r, drawCommands[x].viewport, width, height);
 					w = disp.ViewportToGlobalHOGX(w, drawCommands[x].viewport, width, height);
 				}
-				s += SVGFrameCircle(((r.left+r.right)/2.0+1)*width/2.0, ((r.top+r.bottom)/2.0+1)*height/2.0, width*(r.right-r.left)/4.0,
-									WidthToSVG(w, width, height), o.c);
+				RectToSVG(r, width, height);
+				s += SVGFrameEllipse(r, WidthToSVG(w, width, height), o.c);
+				//s += SVGFrameCircle(((r.left+r.right)/2.0+1)*width/2.0, ((r.top+r.bottom)/2.0+1)*height/2.0, width*(r.right-r.left)/4.0,
+				//WidthToSVG(w, width, height), o.c);
 				
 				break;
 			}

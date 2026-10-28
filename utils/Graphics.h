@@ -311,9 +311,9 @@ public:
 
 	void FrameSquare(point p, float radius, rgbColor c, float lineWidth);
 	void FillSquare(point p, float radius, rgbColor c);
-	void FrameCircle(rect r, rgbColor c, float lineWidth); // FIXME: Should be a point and a radius!
-	void FrameCircle(point r, float radius, rgbColor c, float lineWidth); // FIXME: Should be a point and a radius!
-	void FillCircle(rect r, rgbColor c);
+	void FrameOval(rect r, rgbColor c, float lineWidth); 
+	void FrameCircle(point r, float radius, rgbColor c, float lineWidth); 
+	void FillOval(rect r, rgbColor c);
 	void FillCircle(point p, float radius, rgbColor c);
 	void FillTriangle(const triangle &t, rgbColor c);
 	void FillTriangle(point p1, point p2, point p3, rgbColor c);
