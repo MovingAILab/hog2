@@ -863,17 +863,21 @@ static bool operator<(const RubikEdge::triangleColor &s1, const RubikEdge::trian
 //	)	return  > ;
 }
 
-void RubikEdge::Draw(Graphics::Display &display, const RubikEdgeState &s) const
+void RubikEdge::GetAllTriangles(const RubikEdgeState &s, std::vector<triangleColor> &result) const
 {
-	rgbColor colors[7] = {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}, {1.0, 1.0, 0.0}, {1.0, 0.75, 0.0},{1.0, 1.0, 1.0},};
 	triangles.resize(0);
-	// Get triangles
-	
-	
 	for (int x = 1; x <= 7; x+=2)
 		GetTriangles(s, x);
 	for (int x = 9; x <= 25; x+=2)
 		GetTriangles(s, x);
+	result = triangles;
+}
+
+void RubikEdge::Draw(Graphics::Display &display, const RubikEdgeState &s) const
+{
+	rgbColor colors[7] = {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}, {1.0, 1.0, 0.0}, {1.0, 0.75, 0.0},{1.0, 1.0, 1.0},};
+	// Get triangles
+	GetAllTriangles(s, triangles);
 
 	// Do transform
 	// Sort by z
@@ -2056,110 +2060,4 @@ uint64_t RubikEdgePDB::FactorialUpperK(int n, int k)
 //	}
 //	
 //	return value;
-}
-
-
-#pragma mark orientation pdb
-
-RubikEdgeOrientationPDB::RubikEdgeOrientationPDB(RubikEdge *e, const RubikEdgeState &s)
-:PDBHeuristic(e)
-{
-	SetGoal(s);
-}
-
-uint64_t RubikEdgeOrientationPDB::GetStateSpaceSize()
-{
-#pragma message("This code belongs in the RubikEdge, not in the PDB.")
-	return 2048ll;
-}
-
-uint64_t RubikEdgeOrientationPDB::GetStateHash(const RubikEdgeState &s)
-{
-	uint64_t hashVal = 0;
-	for (int x = 0; x < 11; x++)
-	{
-		hashVal = (hashVal<<1)+s.GetCubeOrientation(11-x);
-	}
-	return hashVal;
-}
-
-void RubikEdgeOrientationPDB::GetStateFromHash(RubikEdgeState &s, uint64_t hash)
-{
-	int cnt = 0;
-	for (int x = 10; x >= 0; x--)
-	{
-		s.SetCubeOrientation(11-x, hash&0x1);
-		cnt += hash & 0x1;
-		hash >>= 1;
-	}
-	if (1 == cnt%2)
-	{
-		s.SetCubeOrientation(0, true);
-	}
-	else {
-		s.SetCubeOrientation(0, false);
-	}
-}
-
-//
-
-uint64_t RubikEdgeOrientationPDB::GetPDBSize() const
-{
-	return 1<<11;
-}
-
-uint64_t RubikEdgeOrientationPDB::GetPDBHash(const RubikEdgeState &s, int threadID) const
-{
-	return GetStateHash(s);
-}
-
-void RubikEdgeOrientationPDB::GetStateFromPDBHash(uint64_t hash, RubikEdgeState &s, int threadID) const
-{
-	return GetStateFromHash(s, hash);
-}
-
-bool RubikEdgeOrientationPDB::Load(const char *prefix)
-{
-	FILE *f = fopen(GetFileName(prefix).c_str(), "rb");
-	if (f == 0)
-	{
-		perror("Opening RubiksEdgePDB file");
-		return false;
-	}
-	Save(f);
-	fclose(f);
-	return true;
-}
-
-void RubikEdgeOrientationPDB::Save(const char *prefix)
-{
-	FILE *f = fopen(GetFileName(prefix).c_str(), "w+");
-	if (f == 0)
-	{
-		perror("Opening RubiksEdgePDB file");
-		return;
-	}
-	Save(f);
-	fclose(f);
-}
-
-bool RubikEdgeOrientationPDB::Load(FILE *f)
-{
-	if (PDBHeuristic<RubikEdgeState, RubikEdgeAction, RubikEdge, RubikEdgeState, 4>::Load(f) != true)
-	{
-		return false;
-	}
-	return true;
-}
-
-void RubikEdgeOrientationPDB::Save(FILE *f)
-{
-	PDBHeuristic<RubikEdgeState, RubikEdgeAction, RubikEdge, RubikEdgeState, 4>::Save(f);
-}
-
-std::string RubikEdgeOrientationPDB::GetFileName(const char *prefix)
-{
-	std::string fileName;
-	fileName += "RC-E12-OR.pdb";
-	return fileName;
 }

@@ -173,11 +173,9 @@ public:
 //	FourBitArray &GetEdgePDB() { return edgePDB; }
 	//FourBitArray &GetEdge7PDB(bool min) { if (min) return edge7PDBmin; return edge7PDBint; }
 
-	virtual void Draw(Graphics::Display &display, const RubiksState &s) const
-	{ 
-//		c.Draw(display, s.corner);
-		e.Draw(display, s.edge);
-	}
+	virtual void Draw(Graphics::Display &display, const RubiksState &s) const;
+	/** Set the overall cube rotation used by Draw (radians): yaw is around the y axis, pitch around the x axis. **/
+	void SetRotation(float yawRadians, float pitchRadians) { yaw = yawRadians; pitch = pitchRadians; }
 
 //	virtual void OpenGLDraw() const;
 //	virtual void OpenGLDraw(const RubiksState&) const;
@@ -220,6 +218,8 @@ public:
 	std::vector<bucketData> buckets;
 
 	bool pruneSuccessors;
+private:
+	float yaw = 0.6f, pitch = 0.45f; // view rotation used by Draw
 };
 
 

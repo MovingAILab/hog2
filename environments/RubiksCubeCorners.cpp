@@ -753,12 +753,9 @@ bool operator<(const RubiksCorner::triangleColor &s1, const RubiksCorner::triang
 //	return std::min({s1.t.p1.z, s1.t.p2.z, s1.t.p3.z}) > std::min({s2.t.p1.z, s2.t.p2.z, s2.t.p3.z});
 //}
 
-void RubiksCorner::Draw(Graphics::Display &display, const RubiksCornerState &s) const
+void RubiksCorner::GetAllTriangles(const RubiksCornerState &s, std::vector<triangleColor> &result) const
 {
-	rgbColor colors[7] = {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}, {1.0, 1.0, 0.0}, {1.0, 0.75, 0.0},{1.0, 1.0, 1.0},};
 	triangles.resize(0);
-	// Get triangles
-	
 	GetTriangles(s, 0);
 	GetTriangles(s, 2);
 	GetTriangles(s, 6);
@@ -767,6 +764,14 @@ void RubiksCorner::Draw(Graphics::Display &display, const RubiksCornerState &s) 
 	GetTriangles(s, 20);
 	GetTriangles(s, 24);
 	GetTriangles(s, 26);
+	result = triangles;
+}
+
+void RubiksCorner::Draw(Graphics::Display &display, const RubiksCornerState &s) const
+{
+	rgbColor colors[7] = {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}, {1.0, 1.0, 0.0}, {1.0, 0.75, 0.0},{1.0, 1.0, 1.0},};
+	// Get triangles
+	GetAllTriangles(s, triangles);
 	
 	// Do transform
 	// Sort by z

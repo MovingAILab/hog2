@@ -201,6 +201,10 @@ public:
 		int color;
 	};
 private:
+	friend class RubiksCube;
+	/** Collect the (untransformed) triangles for all corner pieces in s. Used by Draw and by
+	 RubiksCube so that edge and corner triangles can be depth-sorted together. **/
+	void GetAllTriangles(const RubiksCornerState &s, std::vector<triangleColor> &result) const;
 	mutable std::vector<triangleColor> triangles;
 };
 

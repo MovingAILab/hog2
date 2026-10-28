@@ -201,6 +201,10 @@ public:
 		int color;
 	};
 private:
+	friend class RubiksCube;
+	/** Collect the (untransformed) triangles for all edge pieces in s. Used by Draw and by
+	 RubiksCube so that edge and corner triangles can be depth-sorted together. **/
+	void GetAllTriangles(const RubikEdgeState &s, std::vector<triangleColor> &result) const;
 	int piecesToRank;
 	mutable std::vector<triangleColor> triangles;
 
@@ -237,25 +241,6 @@ private:
 	mutable std::vector<std::vector<int> > puzzles;
 //	mutable std::vector<std::vector<int> > dual;
 //	mutable std::vector<std::vector<int> > locs;
-};
-
-class RubikEdgeOrientationPDB : public PDBHeuristic<RubikEdgeState, RubikEdgeAction, RubikEdge, RubikEdgeState, 4> {
-public:
-	RubikEdgeOrientationPDB(RubikEdge *e, const RubikEdgeState &s);
-	static uint64_t GetStateSpaceSize();
-	static uint64_t GetStateHash(const RubikEdgeState &s);
-	static void GetStateFromHash(RubikEdgeState &s, uint64_t hash);
-	uint64_t GetPDBSize() const;
-	uint64_t GetPDBHash(const RubikEdgeState &s, int threadID = 0) const;
-	virtual uint64_t GetAbstractHash(const RubikEdgeState &s, int threadID = 0) const { return GetPDBHash(s); }
-	void GetStateFromPDBHash(uint64_t hash, RubikEdgeState &s, int threadID = 0) const;
-	RubikEdgeState GetStateFromAbstractState(RubikEdgeState &s) const { return s; }
-	
-	bool Load(const char *prefix);
-	void Save(const char *prefix);
-	bool Load(FILE *f);
-	void Save(FILE *f);
-	std::string GetFileName(const char *prefix);
 };
 
 

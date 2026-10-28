@@ -10,6 +10,7 @@
 #include <cassert>
 #include <cstdio>
 #include <algorithm>
+#include <cmath>
 #include <string>
 
 void RubiksCube::GetSuccessors(const RubiksState &nodeID, std::vector<RubiksState> &neighbors) const
@@ -439,6 +440,56 @@ void RubiksCube::GetStateFromHash(uint64_t hash, RubiksState &node) const
 {
 	e.GetStateFromHash(hash%e.getMaxSinglePlayerRank(), node.edge);
 	c.GetStateFromHash(hash/e.getMaxSinglePlayerRank(), node.corner);
+}
+
+void RubiksCube::Draw(Graphics::Display &display, const RubiksState &s) const
+{
+	rgbColor colors[7] = {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}, {1.0, 1.0, 0.0}, {1.0, 0.75, 0.0},{1.0, 1.0, 1.0},};
+
+	// Gather the triangles from the edges and corners into a single list
+	std::vector<RubikEdge::triangleColor> triangles;
+	std::vector<RubiksCorner::triangleColor> cornerTriangles;
+	e.GetAllTriangles(s.edge, triangles);
+	c.GetAllTriangles(s.corner, cornerTriangles);
+	for (const auto &t : cornerTriangles)
+		triangles.push_back({t.t, t.color});
+
+	// Rotate every vertex in 3D: yaw around y, then pitch around x
+	const float cy = cos(yaw), sy = sin(yaw), cp = cos(pitch), sp = sin(pitch);
+	auto rotate = [=](const Graphics::point &p) {
+		float x1 =  p.x*cy + p.z*sy;
+		float z1 = -p.x*sy + p.z*cy;
+		float y2 =  p.y*cp - z1*sp;
+		float z2 =  p.y*sp + z1*cp;
+		return Graphics::point(x1, y2, z2);
+	};
+	for (auto &t : triangles)
+		t.t = Graphics::triangle(rotate(t.t.p1), rotate(t.t.p2), rotate(t.t.p3));
+
+	// Sort back to front on the rotated depth (largest z first), breaking ties on y and then x
+	std::sort(triangles.begin(), triangles.end(),
+			  [](const RubikEdge::triangleColor &s1, const RubikEdge::triangleColor &s2) {
+		float z1 = s1.t.p1.z+s1.t.p2.z+s1.t.p3.z;
+		float z2 = s2.t.p1.z+s2.t.p2.z+s2.t.p3.z;
+		if (z1 != z2)
+			return z1 > z2;
+		float y1 = s1.t.p1.y+s1.t.p2.y+s1.t.p3.y;
+		float y2 = s2.t.p1.y+s2.t.p2.y+s2.t.p3.y;
+		if (y1 != y2)
+			return y1 > y2;
+		float x1 = s1.t.p1.x+s1.t.p2.x+s1.t.p3.x;
+		float x2 = s2.t.p1.x+s2.t.p2.x+s2.t.p3.x;
+		return x1 > x2;
+	});
+
+	// Orthographic projection: drop z and draw
+	for (const auto &t : triangles)
+	{
+		display.FillTriangle(Graphics::point(t.t.p1.x, t.t.p1.y),
+							 Graphics::point(t.t.p2.x, t.t.p2.y),
+							 Graphics::point(t.t.p3.x, t.t.p3.y),
+							 colors[1+t.color]);
+	}
 }
 
 //void RubiksCube::OpenGLDraw() const
