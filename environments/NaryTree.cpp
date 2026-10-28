@@ -238,7 +238,7 @@ void NaryTree::Draw(Graphics::Display &display) const
 			display.FillTriangle({x1-r1*ctheta, y1-r1*stheta}, {x2-r2*ctheta, y2-r2*stheta}, {x1+r1*ctheta, y1+r1*stheta}, color);
 			display.FillTriangle({x1+r1*ctheta, y1+r1*stheta}, {x2-r2*ctheta, y2-r2*stheta}, {x2+r2*ctheta, y2+r2*stheta}, color);
 		}
-		display.FillCircle({x1-r1, y1-r1, x1+r1, y1+r1}, Colors::gray);
+		display.FillCircle({x1, y1}, r1, Colors::gray);
 	}
 }
 
@@ -257,7 +257,7 @@ void NaryTree::Draw(Graphics::Display &display, const NaryState &s) const
 //	float r1 = 2.0/nodesAtDepth[GetDepth(s)];
 //	float r2 = 0.1/d;
 	float r = std::max(0.01f, 3.0f*GetDepthRadius(GetDepth(s)));//std::min(r1, r2));
-	display.FillCircle({x1-r, y1-r, x1+r, y1+r}, color);
+	display.FillCircle({x1, y1}, r, color);
 }
 
 void NaryTree::DrawLine(Graphics::Display &display, const NaryState &f, const NaryState &t, float width) const

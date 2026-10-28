@@ -1115,7 +1115,7 @@ namespace CanonicalGrid {
 		r.right = v*r1.right+r2.right*(1-v);
 		r.top = v*r1.top+r2.top*(1-v);
 		r.bottom = v*r1.bottom+r2.bottom*(1-v);
-		disp.FrameCircle(r, c, 2);
+		disp.FrameOval(r, c, 2);
 	}
 	
 	
@@ -1136,7 +1136,7 @@ namespace CanonicalGrid {
 			r.right = px+rad;
 			r.bottom = py+rad;
 			
-			disp.FrameCircle(r, c, 2);
+			disp.FrameOval(r, c, 2);
 		}
 	}
 	

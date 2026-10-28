@@ -1331,7 +1331,7 @@ void MapEnvironment::Draw(Graphics::Display &disp, const xyLoc &l) const
 		r.bottom = py+rad;
 
 		//s += SVGDrawCircle(l.x+0.5+1, l.y+0.5+1, 0.5, c);
-		disp.FillCircle(r, c);
+		disp.FillOval(r, c);
 		//stroke-width="1" stroke="pink" />
 	}
 }
@@ -1371,7 +1371,7 @@ void MapEnvironment::Draw(Graphics::Display &disp, const xyLoc &l1, const xyLoc 
 	r.right = v*r1.right+r2.right*(1-v);
 	r.top = v*r1.top+r2.top*(1-v);
 	r.bottom = v*r1.bottom+r2.bottom*(1-v);
-	disp.FillCircle(r, c);
+	disp.FillOval(r, c);
 }
 
 void MapEnvironment::DrawAlternate(Graphics::Display &disp, const xyLoc &l) const
