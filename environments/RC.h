@@ -446,11 +446,18 @@ public:
 	uint64_t FactorialUpperK(int n, int k) const;
 };
 
+/** What an RCPDB records about each cubie */
+enum RCCubieAbstraction {
+	kRCIgnore,             // cubie is not part of the pattern
+	kRCLocation,           // record the location of the cubie
+	kRCLocationAndRotation // record the location and rotation of the cubie
+};
+
 class RCPDB : public PDBHeuristic<RCState, RCAction, RC, RCState, 4> {
 public:
 	RCPDB(RC *e,
-		  const std::array<bool, 12> &edgeRotations, const std::array<bool, 12> &edgeLocations,
-		  const std::array<bool, 8> &cornerRotations, const std::array<bool, 8> &cornerLocations);
+		  const std::array<RCCubieAbstraction, 12> &edges,
+		  const std::array<RCCubieAbstraction, 8> &corners);
 	uint64_t GetStateHash(const RCState &s) const;
 	void GetStateFromHash(RCState &s, uint64_t hash) const;
 	uint64_t GetPDBSize() const;

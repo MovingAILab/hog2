@@ -1756,27 +1756,47 @@ uint64_t RC::FactorialUpperK(int n, int k) const
 
 
 // PDB Class
-
 RCPDB::RCPDB(RC *e,
-			 const std::array<bool, 12> &edgeRotations, const std::array<bool, 12> &edgeLocations,
-			 const std::array<bool, 8> &cornerRotations, const std::array<bool, 8> &cornerLocations)
+			 const std::array<RCCubieAbstraction, 12> &edges,
+			 const std::array<RCCubieAbstraction, 8> &corners)
 :PDBHeuristic(e)
 {
 	for (int x = 0; x < 12; x++)
 	{
-		if (edgeRotations.at(x))
-			this->edgeRotations.push_back(x);
-		if (edgeLocations.at(x))
-			this->edgeLocations.push_back(x);
+		if (edges[x] == kRCLocation || edges[x] == kRCLocationAndRotation)
+			edgeLocations.push_back(x);
+		if (edges[x] == kRCLocationAndRotation)
+			edgeRotations.push_back(x);
 	}
 	for (int x = 0; x < 8; x++)
 	{
-		if (cornerRotations.at(x))
-			this->cornerRotations.push_back(x);
-		if (cornerLocations.at(x))
-			this->cornerLocations.push_back(x);
+		if (corners[x] == kRCLocation || corners[x] == kRCLocationAndRotation)
+			cornerLocations.push_back(x);
+		if (corners[x] == kRCLocationAndRotation)
+			cornerRotations.push_back(x);
 	}
 }
+
+//RCPDB::RCPDB(RC *e,
+//			 const std::array<bool, 12> &edgeRotations, const std::array<bool, 12> &edgeLocations,
+//			 const std::array<bool, 8> &cornerRotations, const std::array<bool, 8> &cornerLocations)
+//:PDBHeuristic(e)
+//{
+//	for (int x = 0; x < 12; x++)
+//	{
+//		if (edgeRotations.at(x))
+//			this->edgeRotations.push_back(x);
+//		if (edgeLocations.at(x))
+//			this->edgeLocations.push_back(x);
+//	}
+//	for (int x = 0; x < 8; x++)
+//	{
+//		if (cornerRotations.at(x))
+//			this->cornerRotations.push_back(x);
+//		if (cornerLocations.at(x))
+//			this->cornerLocations.push_back(x);
+//	}
+//}
 
 uint64_t RCPDB::GetStateHash(const RCState &s) const
 {
