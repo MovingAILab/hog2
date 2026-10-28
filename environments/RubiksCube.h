@@ -226,6 +226,10 @@ private:
 class RubikPDB : public PDBHeuristic<RubiksState, RubiksAction, RubiksCube, RubiksState, 4> {
 public:
 	RubikPDB(RubiksCube *e, const RubiksState &s, std::vector<int> distinctEdges, std::vector<int> distinctCorners);
+	/** Track piece locations and rotations separately; see RubikEdgePDB and RubikCornerPDB. **/
+	RubikPDB(RubiksCube *e, const RubiksState &s,
+			 const std::vector<int> &distinctEdgeLocations, const std::vector<int> &distinctEdgeRotations,
+			 const std::vector<int> &distinctCornerLocations, const std::vector<int> &distinctCornerRotations);
 	uint64_t GetStateHash(const RubiksState &s) const;
 	void GetStateFromHash(RubiksState &s, uint64_t hash) const;
 

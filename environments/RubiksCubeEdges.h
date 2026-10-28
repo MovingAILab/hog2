@@ -216,6 +216,11 @@ private:
 class RubikEdgePDB : public PDBHeuristic<RubikEdgeState, RubikEdgeAction, RubikEdge, RubikEdgeState, 4> {
 public:
 	RubikEdgePDB(RubikEdge *e, const RubikEdgeState &s, std::vector<int> &distinctEdges);
+	/** Track the locations of distinctEdgeLocations, but only the rotations of distinctEdgeRotations.
+	 Every edge in distinctEdgeRotations must also be in distinctEdgeLocations; if not, a warning
+	 is printed and the edge is added to the locations. **/
+	RubikEdgePDB(RubikEdge *e, const RubikEdgeState &s,
+				 const std::vector<int> &distinctEdgeLocations, const std::vector<int> &distinctEdgeRotations);
 	static uint64_t GetStateSpaceSize();
 	static uint64_t GetStateHash(const RubikEdgeState &s);
 	static void GetStateFromHash(RubikEdgeState &s, uint64_t hash);
@@ -233,7 +238,8 @@ public:
 private:
 	static uint64_t Factorial(int val);
 	static uint64_t FactorialUpperK(int n, int k);
-	std::vector<int> edges;
+	std::vector<int> edges; // edges whose locations are ranked
+	std::vector<int> edgeRotations; // edges whose rotations are ranked (subset of edges)
 	size_t puzzleSize;
 	uint64_t pdbSize;
 	MR1KPermutation mr1;

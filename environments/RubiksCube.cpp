@@ -883,6 +883,16 @@ RubikPDB::RubikPDB(RubiksCube *e, const RubiksState &s, std::vector<int> distinc
 	//PDBHeuristic<RubiksState, RubiksAction, RubiksCube, RubiksState, 4>::goalState = s;
 }
 
+RubikPDB::RubikPDB(RubiksCube *e, const RubiksState &s,
+				   const std::vector<int> &distinctEdgeLocations, const std::vector<int> &distinctEdgeRotations,
+				   const std::vector<int> &distinctCornerLocations, const std::vector<int> &distinctCornerRotations)
+:PDBHeuristic(e), ePDB(&e->e, s.edge, distinctEdgeLocations, distinctEdgeRotations),
+cPDB(&e->c, s.corner, distinctCornerLocations, distinctCornerRotations),
+edges(distinctEdgeLocations), corners(distinctCornerLocations)
+{
+	SetGoal(s);
+}
+
 uint64_t RubikPDB::GetStateHash(const RubiksState &s) const
 {
 	//assert(!"Not implemented - need 66 bits!");

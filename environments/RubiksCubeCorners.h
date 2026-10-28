@@ -211,6 +211,11 @@ private:
 class RubikCornerPDB : public PDBHeuristic<RubiksCornerState, RubiksCornersAction, RubiksCorner, RubiksCornerState, 4> {
 public:
 	RubikCornerPDB(RubiksCorner *e, const RubiksCornerState &s, std::vector<int> &distinctCorners);
+	/** Track the locations of distinctCornerLocations, but only the rotations of distinctCornerRotations.
+	 Every corner in distinctCornerRotations must also be in distinctCornerLocations; if not, a warning
+	 is printed and the corner is added to the locations. **/
+	RubikCornerPDB(RubiksCorner *e, const RubiksCornerState &s,
+				   const std::vector<int> &distinctCornerLocations, const std::vector<int> &distinctCornerRotations);
 	static uint64_t GetStateSpaceSize();
 	static uint64_t GetStateHash(const RubiksCornerState &s);
 	static void GetStateFromHash(RubiksCornerState &s, uint64_t hash);
@@ -228,7 +233,8 @@ public:
 private:
 	uint64_t Factorial(int val) const;
 	uint64_t FactorialUpperK(int n, int k) const;
-	std::vector<int> corners;
+	std::vector<int> corners; // corners whose locations are ranked
+	std::vector<int> cornerRotations; // corners whose rotations are ranked (subset of corners)
 	size_t puzzleSize;
 	uint64_t pdbSize;
 	MR1KPermutation mr1;

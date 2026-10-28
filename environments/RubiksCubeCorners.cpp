@@ -9,6 +9,7 @@
 #include "RubiksCubeCorners.h"
 #include "Constants.h"
 #include <assert.h>
+#include <algorithm>
 
 #define LINEAR_RANK 1
 #define POLYNOMIAL_RANK 0
@@ -994,8 +995,8 @@ void RubiksCorner::GetTriangles(const RubiksCornerState &s, int cube) const
 		{
 			// Face 1 - cube 18
 			int c = GetFaceColor(14, s);
-			triangles.push_back({{{-scale+epsilon, scale-offset2, -scale}, {-scale, scale-offset, -scale+offset}, {-scale, scale, -scale+offset}}, c});
-			triangles.push_back({{{-scale, scale, -scale+offset}, {-scale, scale, -scale}, {-scale+epsilon, scale-offset2, -scale}}, c});
+			triangles.push_back({{{-scale, scale-offset, -scale}, {-scale, scale-offset, -scale+offset}, {-scale, scale, -scale+offset}}, c});
+			triangles.push_back({{{-scale, scale, -scale+offset}, {-scale, scale, -scale}, {-scale, scale-offset, -scale}}, c});
 //			glVertex3f(-scale, scale-offset, -scale);
 //			glVertex3f(-scale, scale-offset, -scale+offset);
 //			glVertex3f(-scale, scale, -scale+offset);
@@ -1671,8 +1672,24 @@ int RubiksCorner::GetFaceColor(int face, const RubiksCornerState &s) const
 
 
 RubikCornerPDB::RubikCornerPDB(RubiksCorner *e, const RubiksCornerState &s, std::vector<int> &distinctCorners)
-:PDBHeuristic(e), corners(distinctCorners)
+:PDBHeuristic(e), corners(distinctCorners), cornerRotations(distinctCorners)
 {
+	SetGoal(s);
+}
+
+RubikCornerPDB::RubikCornerPDB(RubiksCorner *e, const RubiksCornerState &s,
+							   const std::vector<int> &distinctCornerLocations, const std::vector<int> &distinctCornerRotations)
+:PDBHeuristic(e), corners(distinctCornerLocations), cornerRotations(distinctCornerRotations)
+{
+	// We can only track the rotation of a corner if we also track its location
+	for (int c : cornerRotations)
+	{
+		if (std::find(corners.begin(), corners.end(), c) == corners.end())
+		{
+			printf("Warning: RubikCornerPDB corner %d has its rotation ranked but not its location; adding it to the locations.\n", c);
+			corners.push_back(c);
+		}
+	}
 	SetGoal(s);
 }
 
@@ -1700,7 +1717,10 @@ uint64_t RubikCornerPDB::GetPDBSize() const
 //	int elts = (int)corners.size();
 //	return FactorialUpperK(8, 8-elts)*power3[elts];
 	uint64_t answer[] = {1, 24, 504, 9072, 136080, 1632960, 14696640, 88179840, 88179840};
-	return answer[corners.size()];
+	if (cornerRotations == corners)
+		return answer[corners.size()];
+	uint64_t power3[] = {1, 3, 9, 27, 81, 243, 729, 2187, 2187}; // last rotation is determined by the others
+	return FactorialUpperK(8, 8-(int)corners.size())*power3[cornerRotations.size()];
 }
 
 #define MR
@@ -1725,10 +1745,10 @@ uint64_t RubikCornerPDB::GetPDBHash(const RubiksCornerState &s, int threadID) co
 	uint64_t part2 = 0;
 	hashVal = mr1.Rank(puzzle, newdual, cornerSize, 8);//mr1.GetRank(puzzle, threadID);
 
-	int limit = std::min((int)cornerSize, 7);
+	int limit = std::min((int)cornerRotations.size(), 7);
 	for (int x = 0; x < limit; x++)
 	{
-		part2 = part2*3+s.GetCubeOrientation(corners[x]);
+		part2 = part2*3+s.GetCubeOrientation(cornerRotations[x]);
 		//part2 = part2*3+s.GetCubeOrientation(dual[corners[x]]);
 	}
 	return part2*FactorialUpperK(8, lastPiece)+hashVal;
@@ -1759,10 +1779,10 @@ uint64_t RubikCornerPDB::GetPDBHash(const RubiksCornerState &s, int threadID) co
 				puzzle[y]--;
 		}
 	}
-	int limit = std::min((int)cornerSize, 7);
+	int limit = std::min((int)cornerRotations.size(), 7);
 	for (int x = 0; x < limit; x++)
 	{
-		part2 = part2*3+s.GetCubeOrientation(corners[x]);
+		part2 = part2*3+s.GetCubeOrientation(cornerRotations[x]);
 		//part2 = part2*3+s.GetCubeOrientation(dual[corners[x]]);
 	}
 	return part2*FactorialUpperK(8, lastPiece)+hashVal;
@@ -1794,15 +1814,15 @@ void RubikCornerPDB::GetStateFromPDBHash(uint64_t hash, RubiksCornerState &s, in
 	}
 	
 	int cnt = 0;
-	int limit = std::min((int)cornerSize, 7);
+	int limit = std::min((int)cornerRotations.size(), 7);
 	for (int x = limit-1; x >= 0; x--)
 	{
-		s.SetCubeOrientation(corners[x], hash%3);
+		s.SetCubeOrientation(cornerRotations[x], hash%3);
 		cnt += hash%3;
 		hash/=3;
 	}
-	if (cornerSize == 8)
-		s.SetCubeOrientation(corners[7], (3-(cnt%3))%3); // 0->0 2->1 1->2
+	if (cornerRotations.size() == 8)
+		s.SetCubeOrientation(cornerRotations[7], (3-(cnt%3))%3); // 0->0 2->1 1->2
 #else
 	
 	int lastPiece = 8-(int)corners.size();
@@ -1838,15 +1858,15 @@ void RubikCornerPDB::GetStateFromPDBHash(uint64_t hash, RubiksCornerState &s, in
 	}
 	
 	int cnt = 0;
-	int limit = std::min((int)corners.size(), 7);
+	int limit = std::min((int)cornerRotations.size(), 7);
 	for (int x = limit-1; x >= 0; x--)
 	{
-		s.SetCubeOrientation(corners[x], hash%3);
+		s.SetCubeOrientation(cornerRotations[x], hash%3);
 		cnt += hash%3;
 		hash/=3;
 	}
-	if (corners.size() == 8)
-		s.SetCubeOrientation(corners[7], (3-(cnt%3))%3); // 0->0 2->1 1->2
+	if (cornerRotations.size() == 8)
+		s.SetCubeOrientation(cornerRotations[7], (3-(cnt%3))%3); // 0->0 2->1 1->2
 
 #endif
 }
@@ -1860,7 +1880,7 @@ bool RubikCornerPDB::Load(const char *prefix)
 		perror("Opening RubiksCornerPDB file");
 		return false;
 	}
-	Save(f);
+	Load(f);
 	fclose(f);
 	return true;
 }
@@ -1925,6 +1945,17 @@ std::string RubikCornerPDB::GetFileName(const char *prefix)
 		fileName += ";";
 	}
 	fileName.pop_back(); // remove colon
+	if (cornerRotations != corners) // only mark rotations if they differ, so existing file names are unchanged
+	{
+		fileName += "-R";
+		for (size_t x = 0; x < cornerRotations.size(); x++)
+		{
+			fileName += std::to_string(cornerRotations[x]);
+			fileName += ";";
+		}
+		if (cornerRotations.size() > 0)
+			fileName.pop_back();
+	}
 #ifdef MR
 	fileName += "-MR";
 #endif

@@ -11,6 +11,7 @@
 #include <cassert>
 #include <string>
 #include <thread>
+#include <algorithm>
 
 /**
  *
@@ -1715,8 +1716,26 @@ int RubikEdge::GetCubeColor(int which, bool face, const RubikEdgeState &s) const
 
 
 RubikEdgePDB::RubikEdgePDB(RubikEdge *e, const RubikEdgeState &s, std::vector<int> &distinctEdges)
-:PDBHeuristic(e), edges(distinctEdges), puzzles(std::thread::hardware_concurrency())
+:PDBHeuristic(e), edges(distinctEdges), edgeRotations(distinctEdges), puzzles(std::thread::hardware_concurrency())
 {
+	for (size_t x = 0; x < puzzles.size(); x++)
+		puzzles[x].resize(12);
+	SetGoal(s);
+}
+
+RubikEdgePDB::RubikEdgePDB(RubikEdge *e, const RubikEdgeState &s,
+						   const std::vector<int> &distinctEdgeLocations, const std::vector<int> &distinctEdgeRotations)
+:PDBHeuristic(e), edges(distinctEdgeLocations), edgeRotations(distinctEdgeRotations), puzzles(std::thread::hardware_concurrency())
+{
+	// We can only track the rotation of an edge if we also track its location
+	for (int c : edgeRotations)
+	{
+		if (std::find(edges.begin(), edges.end(), c) == edges.end())
+		{
+			printf("Warning: RubikEdgePDB edge %d has its rotation ranked but not its location; adding it to the locations.\n", c);
+			edges.push_back(c);
+		}
+	}
 	for (size_t x = 0; x < puzzles.size(); x++)
 		puzzles[x].resize(12);
 	SetGoal(s);
@@ -1783,7 +1802,7 @@ uint64_t RubikEdgePDB::GetPDBSize() const
 	// last tile is symmetric
 	uint64_t power2[] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 2048};
 	int elts = (int)edges.size();
-	return FactorialUpperK(12, 12-elts)*power2[elts];
+	return FactorialUpperK(12, 12-elts)*power2[edgeRotations.size()];
 //	return mr1.GetMaxRank()*power2[elts];
 }
 
@@ -1809,10 +1828,10 @@ uint64_t RubikEdgePDB::GetPDBHash(const RubikEdgeState &s, int threadID) const
 	hashVal = mr1.Rank(puzzle, newdual, edgeSize, 12);//mr1.GetRank(puzzle, threadID);
 
 	
-	int limit = std::min((int)edges.size(), 11);
+	int limit = std::min((int)edgeRotations.size(), 11);
 	for (int x = 0; x < limit; x++)
 	{
-		part2 = part2*2+(s.GetCubeOrientation(edges[x]));
+		part2 = part2*2+(s.GetCubeOrientation(edgeRotations[x]));
 	}
 	return part2*FactorialUpperK(12, lastPiece)+hashVal;
 #else
@@ -1839,10 +1858,10 @@ uint64_t RubikEdgePDB::GetPDBHash(const RubikEdgeState &s, int threadID) const
 				puzzle[y]--;
 		}
 	}
-	int limit = std::min((int)edges.size(), 11);
+	int limit = std::min((int)edgeRotations.size(), 11);
 	for (int x = 0; x < limit; x++)
 	{
-		part2 = part2*2+(s.GetCubeOrientation(edges[x])?1:0);
+		part2 = part2*2+(s.GetCubeOrientation(edgeRotations[x])?1:0);
 		//part2 = part2*3+s.GetCubeOrientation(dual[corners[x]]);
 	}
 	return part2*FactorialUpperK(12, lastPiece)+hashVal;
@@ -1875,17 +1894,17 @@ void RubikEdgePDB::GetStateFromPDBHash(uint64_t hash, RubikEdgeState &s, int thr
 	}
 	
 	int cnt = 0;
-	int limit = std::min((int)edgeSize, 11);
+	int limit = std::min((int)edgeRotations.size(), 11);
 	for (int x = limit-1; x >= 0; x--)
 	{
-		s.SetCubeOrientation(edges[x], hash%2);
+		s.SetCubeOrientation(edgeRotations[x], hash%2);
 		cnt += hash%2;
 		hash/=2;
 	}
-	if (edges.size() == 12)
+	if (edgeRotations.size() == 12)
 	{
 		assert(!"Be sure to test this code");
-		s.SetCubeOrientation(edges[11], cnt%2);
+		s.SetCubeOrientation(edgeRotations[11], cnt%2);
 	}
 	
 #else
@@ -1922,16 +1941,16 @@ void RubikEdgePDB::GetStateFromPDBHash(uint64_t hash, RubikEdgeState &s, int thr
 	}
 	
 	int cnt = 0;
-	int limit = std::min((int)edges.size(), 11);
+	int limit = std::min((int)edgeRotations.size(), 11);
 	for (int x = limit-1; x >= 0; x--)
 	{
-		s.SetCubeOrientation(edges[x], hash%2);
+		s.SetCubeOrientation(edgeRotations[x], hash%2);
 		//s.SetCubeOrientation(dual[corners[x]], hash%3);
 		cnt += hash%2;
 		hash/=2;
 	}
-	if (edges.size() == 12)
-		s.SetCubeOrientation(edges[11], cnt%2);
+	if (edgeRotations.size() == 12)
+		s.SetCubeOrientation(edgeRotations[11], cnt%2);
 #endif
 }
 
@@ -1943,7 +1962,7 @@ bool RubikEdgePDB::Load(const char *prefix)
 		perror("Opening RubiksEdgePDB file");
 		return false;
 	}
-	Save(f);
+	Load(f);
 	fclose(f);
 	return true;
 }
@@ -2010,6 +2029,17 @@ std::string RubikEdgePDB::GetFileName(const char *prefix)
 		fileName += ";";
 	}
 	fileName.pop_back(); // remove colon
+	if (edgeRotations != edges) // only mark rotations if they differ, so existing file names are unchanged
+	{
+		fileName += "-R";
+		for (size_t x = 0; x < edgeRotations.size(); x++)
+		{
+			fileName += std::to_string(edgeRotations[x]);
+			fileName += ";";
+		}
+		if (edgeRotations.size() > 0)
+			fileName.pop_back();
+	}
 #ifdef MR
 	fileName += "-MR";
 #endif
