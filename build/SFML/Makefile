@@ -64,6 +64,7 @@ PROJECTS = \
   papers/DSDWA \
   tests/mnpuzzle \
   tests/graphics \
+  tests/permutationpdb \
   papers/FMDH \
 #  generic \
 
