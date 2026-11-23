@@ -10,6 +10,7 @@
 #define hog2_glut_PermutationPDB_h
 
 #include "PDBHeuristic.h"
+#include <stdexcept>
 
 /**
  * This class does the basic permutation calculation with a regular N^2 permutation
@@ -50,6 +51,8 @@ PermutationPDB<state, action, environment, bits>::PermutationPDB(environment *e,
 	pdbSize = 1;
 	for (int x = (int)s.size(); x > s.size()-distincts.size(); x--)
 	{
+		if (pdbSize > UINT64_MAX/x)
+			throw std::length_error("PermutationPDB: pattern size exceeds 2^64 entries");
 		pdbSize *= x;
 	}
 }
