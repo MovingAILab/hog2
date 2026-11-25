@@ -830,19 +830,18 @@ void DoDrawCommands(Graphics::Display &display, int port, sf::RenderWindow &wind
 				break;
 			}
 		case Graphics::Display::kFrameTriangle:
-			{
+			{ 
 				glColor3f(i.triangle.c.r, i.triangle.c.g, i.triangle.c.b);
-				
-				glBegin(GL_QUADS);
+				//glBegin(GL_QUADS);
 				Line(i.triangle.p1, i.triangle.p2, i.triangle.width, i.viewport);
 				Line(i.triangle.p2, i.triangle.p3, i.triangle.width, i.viewport);
 				Line(i.triangle.p3, i.triangle.p1, i.triangle.width, i.viewport);
-				glEnd();
+				//glEnd();
 			}
+				break;
 		case Graphics::Display::kLine:
 			{
 				glColor3f(i.line.c.r, i.line.c.g, i.line.c.b);
-
 				Line(i.line.start, i.line.end, i.line.width, i.viewport);
 				//std::cout << i.line.start << " <=> " << i.line.end << " " << i.line.width << "\n";
 				/*
